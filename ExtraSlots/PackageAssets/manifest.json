@@ -1,7 +1,7 @@
 {
     "name": "Extra QuickSlots",
-    "version_number": "0.1.0",
-    "website_url": "https://github.com/ModifAmorphic/outward",
+    "version_number": "0.2.0",
+    "website_url": "https://github.com/ModifAmorphic/outward/tree/master/ExtraSlots",
     "description": "Adds a Extra QuickSlots to the Quickslot Bar.",
     "dependencies": [
 	    "BepInEx-BepInExPack_Outward-5.4.8",

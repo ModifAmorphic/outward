@@ -1,15 +1,13 @@
-## __Alpha__
+## __Alpha Version__
 - - - -
-<br>
+  
 
 # ThunderStore with r2modman Installation Instructions
 ## Dependencies
 - Download and install [r2modman](https://thunderstore.io/package/ebkr/r2modman/)
-  - For instructions, see the [Thunderstore]https://outward.fandom.com/wiki/Installing_Mods#Thunderstore of the Outward Wiki
+  - For instructions, see the [Thunderstore](https://outward.fandom.com/wiki/Installing_Mods#Thunderstore) of the Outward Wiki
 - Install SideLoader by sinai-dev [Thunderstore](https://outward.thunderstore.io/package/sinai-dev/SideLoader/)
 - Install Outward Config Manager by Mefino [Thunderstore](https://outward.thunderstore.io/package/Mefino/Outward_Config_Manager/)
-- Finally, Search for [Extra Quickslots]([Thunderstore](https://outward.thunderstore.io/package/ModifAmorphic/Extra-QuickSlots/) by ModifAmorphic and Install it.
-
 
 ## First-time Configuration
 - Click "Start modded" in [r2modman](https://thunderstore.io/package/ebkr/r2modman/).
@@ -19,13 +17,13 @@
 - __Restart the game__.  (Exit and "Start modded" in [r2modman](https://thunderstore.io/package/ebkr/r2modman/) again)
   - Restarting is required whenever this value is changed. Extra Quick Slots can currently only be added when the game first starts.
 
+## UI / Alignment Options
+- __CenterQuickslotPanel__ - Just like it sounds, moves the QuickSlot bar to the horizontal center of the screen. You will probably need to make additional adjustments as the QuickSlot and Stability Bars will likely overlap.
+- QuickSlotBarAlignmentOptions
+  - __MoveQuickSlotAboveStability__: Moves the QuickSlot Bar above the Stability Bar.
+  - __MoveStabilityAboveQuickSlot__: Moves the Stability Bar above the QuickSlot Bar.
+
 ## Configuring Hotkeys
 - The Extra Quick Slots will be at the top of the __Quick Slots__ section of the Keyboard settings.
 - Configure them to whatever you like, keeping in mind keys may already be assigned elsewhere.
 - Assign Items or Skills to your new slots.
-
-## Alignment Options
-- CenterQuickslotPanel - Just like it sounds, centers the QuickSlot bar to the horizontal center of the screen. You will probably need to make additional adjustments as the QuickSlot and Stability Bars will likely overlap.
-- QuickSlotBarAlignmentOptions
- - MoveQuickSlotAboveStability: Moves the QuickSlot Bar above the Stability Bar.
- - MoveStabilityAboveQuickSlot: Moves the Stability Bar above the QuickSlot Bar.
