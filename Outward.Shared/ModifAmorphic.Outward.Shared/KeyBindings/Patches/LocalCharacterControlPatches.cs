@@ -3,12 +3,14 @@ using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Models;
+#if DEBUG
+using Rewired;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace ModifAmorphic.Outward.KeyBindings.Listeners
+namespace ModifAmorphic.Outward.KeyBindings.Patches
 {
     [HarmonyPatch]
     static class LocalCharacterControlPatches
@@ -34,6 +36,21 @@ namespace ModifAmorphic.Outward.KeyBindings.Listeners
         public static void OnControlsInputSetup_SetPlayerInputManager()
         {
             _playerInputManager = ((ControlsInput)null).GetPlayerInputManager();
+
+#if DEBUG
+            var actionCategories = ReInput.mapping.ActionCategories;
+            var logout = string.Empty;
+            foreach (var cat in actionCategories)
+            {
+                logout += $"Category ID: {cat.id}, Name: {cat.name}, DescriptiveName: {cat.descriptiveName}\n";
+                var actions = ReInput.mapping.ActionsInCategory(cat.id);
+                foreach (var a in actions)
+                {
+                    logout += $"\tAction Id: {a.id}, Name: {a.name}, DescriptiveName: {a.descriptiveName}\n";
+                }
+            }
+            _logger.LogTrace(logout);
+#endif
         }
         /// <summary>
         /// Hooked method that checks for extended quickslot button presses, and triggers QuickSlotInput on the Character.

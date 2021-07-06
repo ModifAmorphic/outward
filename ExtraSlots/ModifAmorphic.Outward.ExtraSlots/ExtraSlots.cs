@@ -37,7 +37,7 @@ namespace ModifAmorphic.Outward.ExtraSlots
             plugin.Config.ConfigReloaded += (object sender, EventArgs e) => configService.Configure();
 
             _logger.LogInfo($"Extending Quickslots by {_extraSlotsConfig.ExtraQuickSlots}.");
-            var quickSlotExtender = new QuickSlotExtender(_extraSlotsConfig.InternalQuickSlotStartingId, this._logger);
+            var quickSlotExtender = new QuickSlotExtender(this._logger);
             quickSlotExtender.ExtendQuickSlots(_extraSlotsConfig.ExtraQuickSlots, _extraSlotsConfig.ExtraQuickSlotMenuText);
         }
     }

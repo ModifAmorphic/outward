@@ -18,7 +18,7 @@ namespace ModifAmorphic.Outward
     {
         public const string ModId = "modifamorphic.outward.shared";
         public const string ModName = "ModifAmorphic Shared Library";
-        public const string ModVersion = "0.1.0";
+        public const string ModVersion = "0.2.0";
 
         private Logger _logger;
 
@@ -35,7 +35,6 @@ namespace ModifAmorphic.Outward
                 LoggerEvents.RaiseLoggerConfigured(this, _logger);
 
                 _logger.LogDebug($"[{ModName}] Patching");
-                //KeyBindings.Listeners.LocalCharacterControlPatches.Patch();
 
                 harmony.PatchAll();
             }
