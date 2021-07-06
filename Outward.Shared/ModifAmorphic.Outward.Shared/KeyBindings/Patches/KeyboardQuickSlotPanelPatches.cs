@@ -15,7 +15,6 @@ namespace ModifAmorphic.Outward.KeyBindings
     {
         private static int _quickslotsToAdd;
         private static int _exQuickslotStartId;
-        private static bool _extraSlotsAdded = false;
         private static ModifAmorphicLogging.Logger _logger;
 
         private static void LoggerEvents_LoggerLoaded(object sender, ModifAmorphicLogging.Logger logger) => _logger = logger;
@@ -35,7 +34,7 @@ namespace ModifAmorphic.Outward.KeyBindings
         [HarmonyPrefix]
         public static void OnInitializeQuickSlotDisplays_AddExtraSlots(KeyboardQuickSlotPanel __instance)
         {
-            if (_quickslotsToAdd < 1 || _extraSlotsAdded)
+            if (_quickslotsToAdd < 1)
                 return;
 
             try
@@ -49,7 +48,6 @@ namespace ModifAmorphic.Outward.KeyBindings
                 {
                     __instance.DisplayOrder[n] = (QuickSlot.QuickSlotIDs)(exSlotId++);
                 }
-                _extraSlotsAdded = true;
             }
             catch (Exception ex)
             {

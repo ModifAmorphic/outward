@@ -43,8 +43,8 @@ namespace ModifAmorphic.Outward.KeyBindings
                 var quickslotTransform = __instance.transform.Find("QuickSlots");
                 var qsStartId = quickslotTransform.childCount + 1;
                 _logger.LogDebug($"Adding {_quickslotsToAdd} extra quickslots to the CharacterQuickSlotManager QuickSlots transform. Starting with Id {qsStartId}.");
-#if DEBUG
                 var sb = new StringBuilder();
+#if DEBUG
                 sb.AppendLine($"\n\t//////*************quickslotTransform Start*************//////");
                 for (int i = 0; i < quickslotTransform.childCount; i++)
                 {
