@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Reflection;
-using ModifAmorphic.Outward.KeyBindings.Listeners;
 using SideLoader;
-using HarmonyLib;
 using ModifAmorphic.Outward.Models;
 using ModifAmorphic.Outward.Events;
+using System.Linq;
 
 namespace ModifAmorphic.Outward.KeyBindings
 {
@@ -15,7 +13,6 @@ namespace ModifAmorphic.Outward.KeyBindings
         private readonly Logging.Logger logger;
         private CustomKeybindings _customKeyBindings;
 
-        private readonly int _startingId;
         private bool _lazyInitNeeded = true;
         private const string ActionNamePrefix = "QS_Instant";
         private const string ActionKeyPrefix = "InputAction_";
@@ -23,28 +20,14 @@ namespace ModifAmorphic.Outward.KeyBindings
         private const string MenuDescriptionDefaultFormat = "Ex Quick Slot {ExtraSlotNumber}";
 
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
-        public QuickSlotExtender(int startingId)
+        public QuickSlotExtender()
         {
-            string loggerName = Assembly.GetCallingAssembly().ToString();
-            this.logger = Logging.InternalLoggerFactory.GetLogger(Logging.LogLevel.Info, loggerName);
-            this._startingId = startingId;
+            this.logger = Logging.InternalLoggerFactory.GetLogger(Logging.LogLevel.Info, SharedPlugin.ModName);
         }
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
-        public QuickSlotExtender(int startingId, Logging.Logger logger)
+        public QuickSlotExtender(Logging.Logger logger)
         {
-            if (logger == null)
-                throw new ArgumentNullException(nameof(logger));
-
-            this.logger = Logging.InternalLoggerFactory.GetLogger(logger);
-            this._startingId = startingId;
-        }
-        public QuickSlotExtender(int startingId, string loggerName, Logging.LogLevel logLevel = Logging.LogLevel.Info)
-        {
-            if (string.IsNullOrEmpty(loggerName?.Trim()))
-                throw new ArgumentNullException(nameof(loggerName));
-
-            this.logger = Logging.InternalLoggerFactory.GetLogger(logLevel, loggerName);
-            this._startingId = startingId;
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         private void LazyInit()
         {
@@ -56,23 +39,20 @@ namespace ModifAmorphic.Outward.KeyBindings
             }
         }
 
-        /// <summary>
-        /// Add's a new quickslot to 
-        /// </summary>
-        /// <param name="quickSlotId"></param>
-        /// <param name="description"></param>
+        
         public void ExtendQuickSlots(Queue<string> menuDescriptions)
         {
             try
             {
                 LazyInit();
-                int extendAmount = menuDescriptions.Count;
-                int x = 0;
+                var extendAmount = menuDescriptions.Count;
+                var x = 0;
                 var exQuickSlots = new List<ExtendedQuickSlot>();
+                var startingId = Enum.GetValues(typeof(QuickSlot.QuickSlotIDs)).Cast<int>().Max() + 1;
 
                 while (menuDescriptions.Count > 0)
                 {
-                    int quickSlotId = x + this._startingId;
+                    int quickSlotId = x + startingId;
                     int exSlotNo = x + 1;
                     string actionName = ActionNamePrefix + quickSlotId.ToString();
                     string description = menuDescriptions.Dequeue();
@@ -98,9 +78,9 @@ namespace ModifAmorphic.Outward.KeyBindings
                     x++;
                 }
 
-                logger.LogTrace($"RaiseSlotsChanged Event. StartId = {_startingId}, QuickSlotsToAdd = {exQuickSlots.Count}");
+                logger.LogTrace($"RaiseSlotsChanged Event. StartId = {startingId}, QuickSlotsToAdd = {exQuickSlots.Count}");
                 //Raise event that slots changed so subscribers can react
-                QuickSlotExtenderEvents.RaiseSlotsChanged(this, new QuickSlotExtendedArgs(_startingId, exQuickSlots));
+                QuickSlotExtenderEvents.RaiseSlotsChanged(this, new QuickSlotExtendedArgs(startingId, exQuickSlots));
             }
             catch (Exception ex)
             {

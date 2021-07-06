@@ -21,6 +21,9 @@
       <HintPath>..\..\..\outward-shared-assemblies\BepInEx.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="Rewired_Core">
+      <HintPath>..\..\..\outward-shared-assemblies\Rewired_Core.dll</HintPath>
+    </Reference>
     <Reference Include="SideLoader">
       <HintPath>..\..\..\outward-shared-assemblies\SideLoader.dll</HintPath>
       <Private>false</Private>

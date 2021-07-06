@@ -47,11 +47,12 @@ namespace ModifAmorphic.Outward.ExtraSlots.Config
 
             #region UI Settings
             const string uiSection = "UI";
+            int uiOrder = int.MaxValue;
             //Quickslot Bar Centering
             ConfigEntry<bool> centerQsEntry =
                 BindConfigEntry(nameof(ExtraSlotsConfig.CenterQuickSlotPanel), extraConfig.CenterQuickSlotPanel
                 , uiSection, "Move the quickslot bar to the middle of the screen."
-                , int.MaxValue);
+                , uiOrder);
             extraConfig.CenterQuickSlotPanel = centerQsEntry.Value;
             centerQsEntry.SettingChanged += ((object sender, EventArgs e) =>
             {
@@ -62,21 +63,20 @@ namespace ModifAmorphic.Outward.ExtraSlots.Config
 
             //Quickslot & Stability bar Alignment Options
             ConfigEntry<QuickSlotBarAlignmentOptions> alignmentEntry = 
-                BindConfigEntry(nameof(ExtraSlotsConfig.ExtraSlotsAlignmentOption), extraConfig.ExtraSlotsAlignmentOption
+                BindConfigEntry(nameof(ExtraSlotsConfig.QuickSlotBarAlignmentOption), extraConfig.QuickSlotBarAlignmentOption
                 , uiSection, "Alignment the quickslot and stability bar relative to each other."
-                , int.MaxValue - 1);
-            extraConfig.ExtraSlotsAlignmentOption = alignmentEntry.Value;
+                , uiOrder--);
+            extraConfig.QuickSlotBarAlignmentOption = alignmentEntry.Value;
             alignmentEntry.SettingChanged += ((object sender, EventArgs e) =>
             {
-                extraConfig.ExtraSlotsAlignmentOption = GetConfigEntryLatest(alignmentEntry).Value;
+                extraConfig.QuickSlotBarAlignmentOption = GetConfigEntryLatest(alignmentEntry).Value;
                 ExtraSlotsConfigEvents.RaiseUiConfigChanged(this, extraConfig);
                 ExtraSlotsConfigEvents.RaiseExtraSlotsConfigChanged(this, extraConfig);
             });
 
-            //Advanced Option - Change Hotkey Label text in Main Menu Hotkeys section.
             ConfigEntry<float> stabilityBarOffsetY = BindConfigEntry(nameof(ExtraSlotsConfig.MoveStabilityBarUp_Y_Offset), extraConfig.MoveStabilityBarUp_Y_Offset
-                , uiSection, $"The distance the stability bar is offset above the Quickslot bar when the {Enum.GetName(typeof(QuickSlotBarAlignmentOptions), QuickSlotBarAlignmentOptions.MoveStabilityAboveQuickSlot)} is selected."
-                , order: int.MaxValue - 2
+                , uiSection, $"The distance the stability bar is offset above the Quickslot bar when {Enum.GetName(typeof(QuickSlotBarAlignmentOptions), QuickSlotBarAlignmentOptions.MoveStabilityAboveQuickSlot)} alignment is selected."
+                , order: uiOrder--
                 , isAdvanced: true);
             extraConfig.MoveStabilityBarUp_Y_Offset = stabilityBarOffsetY.Value;
             stabilityBarOffsetY.SettingChanged += ((object sender, EventArgs e) =>
@@ -86,22 +86,33 @@ namespace ModifAmorphic.Outward.ExtraSlots.Config
                 ExtraSlotsConfigEvents.RaiseExtraSlotsConfigChanged(this, extraConfig);
             });
 
-            //Advanced Option - Change Hotkey Label text in Main Menu Hotkeys section.
-            ConfigEntry<float> quickSlotXOffset = BindConfigEntry(nameof(ExtraSlotsConfig.QuickSlotXOffset), extraConfig.QuickSlotXOffset
-                , uiSection, $"Can be used to \"fine tune\" the position of the quickslot bar when centered.  Offsets the X position of the bar (negative numbers can be used)."
-                , order: int.MaxValue - 3
+            ConfigEntry<float> quickSlotBarOffsetY = BindConfigEntry(nameof(ExtraSlotsConfig.MoveQuickSlotBarUp_Y_Offset), extraConfig.MoveQuickSlotBarUp_Y_Offset
+                , uiSection, $"The distance the Quick Slot Bar is offset above the Stability Bar when {Enum.GetName(typeof(QuickSlotBarAlignmentOptions), QuickSlotBarAlignmentOptions.MoveQuickSlotAboveStability)} alignment is selected."
+                , order: uiOrder--
                 , isAdvanced: true);
-            extraConfig.QuickSlotXOffset = quickSlotXOffset.Value;
+            extraConfig.MoveQuickSlotBarUp_Y_Offset = quickSlotBarOffsetY.Value;
+            quickSlotBarOffsetY.SettingChanged += ((object sender, EventArgs e) =>
+            {
+                extraConfig.MoveQuickSlotBarUp_Y_Offset = GetConfigEntryLatest(quickSlotBarOffsetY).Value;
+                ExtraSlotsConfigEvents.RaiseUiConfigChanged(this, extraConfig);
+                ExtraSlotsConfigEvents.RaiseExtraSlotsConfigChanged(this, extraConfig);
+            });
+
+            ConfigEntry<float> quickSlotXOffset = BindConfigEntry(nameof(ExtraSlotsConfig.CenterQuickSlot_X_Offset), extraConfig.CenterQuickSlot_X_Offset
+                , uiSection, $"Can be used to \"fine tune\" the position of the quickslot bar when centered.  Offsets the X position of the bar (negative numbers can be used)."
+                , order: uiOrder--
+                , isAdvanced: true);
+            extraConfig.CenterQuickSlot_X_Offset = quickSlotXOffset.Value;
             quickSlotXOffset.SettingChanged += ((object sender, EventArgs e) =>
             {
-                extraConfig.QuickSlotXOffset = GetConfigEntryLatest(quickSlotXOffset).Value;
+                extraConfig.CenterQuickSlot_X_Offset = GetConfigEntryLatest(quickSlotXOffset).Value;
                 ExtraSlotsConfigEvents.RaiseUiConfigChanged(this, extraConfig);
                 ExtraSlotsConfigEvents.RaiseExtraSlotsConfigChanged(this, extraConfig);
             });
 
             ConfigEntry<string> qsMenuTextEntry = BindConfigEntry(nameof(ExtraSlotsConfig.ExtraQuickSlotMenuText), extraConfig.ExtraQuickSlotMenuText
                 , uiSection, "Hotkey text used for labels under Main Menu, Hotkeys section. **Requires Restart**"
-                , order: int.MaxValue - 2
+                , order: uiOrder--
                 , isAdvanced: true);
             extraConfig.ExtraQuickSlotMenuText = qsMenuTextEntry.Value;
             qsMenuTextEntry.SettingChanged += ((object sender, EventArgs e) =>
@@ -123,19 +134,6 @@ namespace ModifAmorphic.Outward.ExtraSlots.Config
             {
                 extraConfig.LogLevel = GetConfigEntryLatest(qsLogLevelEntry).Value;
                 ExtraSlotsConfigEvents.RaiseLoggerConfigChanged(this, extraConfig);
-                ExtraSlotsConfigEvents.RaiseInternalConfigChanged(this, extraConfig);
-                ExtraSlotsConfigEvents.RaiseExtraSlotsConfigChanged(this, extraConfig);
-            });
-            //ID in which to start adding Quickslots at
-            ConfigEntry<int> qsStartingIdDef = BindConfigEntry(nameof(ExtraSlotsConfig.InternalQuickSlotStartingId), extraConfig.InternalQuickSlotStartingId
-                , internalSection
-                , "For new quickslots, the internal Id that they should start at.  Shouldn't ever need to change unless Outward adds more quickslots or changes the id's quickslots."
-                , order: int.MaxValue
-                , isAdvanced: true);
-            extraConfig.InternalQuickSlotStartingId = qsStartingIdDef.Value;
-            qsStartingIdDef.SettingChanged += ((object sender, EventArgs e) =>
-            {
-                extraConfig.InternalQuickSlotStartingId = GetConfigEntryLatest(qsStartingIdDef).Value;
                 ExtraSlotsConfigEvents.RaiseInternalConfigChanged(this, extraConfig);
                 ExtraSlotsConfigEvents.RaiseExtraSlotsConfigChanged(this, extraConfig);
             });

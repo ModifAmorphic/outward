@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModifAmorphic.Outward.KeyBindings.Listeners
+namespace ModifAmorphic.Outward.KeyBindings.Patches
 {
     [HarmonyPatch(typeof(LocalizationManager), "Awake")]
     static class LocalizationManagerPatches

@@ -26,7 +26,7 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
         private static Vector3? _originalQsBarPos = null;
         private static Vector3? _originalQsBarParentPos = null;
         private static Vector3? _originalStabilityBarPos = null;
-        private static QuickSlotBarAlignmentOptions _currentAlignmentOption;
+        private static bool _qsBarNeedsAlignmentNextUpdate = false;
 
         private static void SaveOriginalQsBarPosition(QuickSlotPanel quickSlotPanel)
         {
@@ -74,6 +74,7 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
                 _characterHasBarsAligned.Clear();
                 _characterHasQsCentered.Clear();
                 _characterHasQsDefault.Clear();
+                _qsBarNeedsAlignmentNextUpdate = true;
             };
         }
 
@@ -91,7 +92,7 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
                 {
                     _characterHasQsDefault.RemoveWhere(c => c == __instance.LocalCharacter.UID);
                     _logger.LogTrace($"{nameof(QuickSlotPanelPatches)}.{nameof(QuickSlotPanel_Update)}(): Centering {__instance.name};");
-                    _ = qspMover.CenterHorizontally(_esConfig.QuickSlotXOffset);
+                    _ = qspMover.CenterHorizontally(_esConfig.CenterQuickSlot_X_Offset);
                     _characterHasQsCentered.Add(__instance.LocalCharacter.UID);
                 }
             }
@@ -101,7 +102,7 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
             }
 
             //check to see if the alingment option has changed
-            if (_currentAlignmentOption != _esConfig.ExtraSlotsAlignmentOption)
+            if (_qsBarNeedsAlignmentNextUpdate)
                 AlignQuickSlotAndStabilityBars(__instance);
         }
         [HarmonyPatch("AwakeInit")]
@@ -123,7 +124,7 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
             {
                 var characterUID = quickSlotPanel.LocalCharacter.UID;
 
-                if (!_characterHasBarsAligned.Contains(characterUID) || _currentAlignmentOption != _esConfig.ExtraSlotsAlignmentOption)
+                if (!_characterHasBarsAligned.Contains(characterUID) || _qsBarNeedsAlignmentNextUpdate)
                 {
                     var stabilityDisplay = UIQuery.GetCharacterStabilityDisplay(quickSlotPanel.LocalCharacter);
                     //Reset everything back to original before aligning.
@@ -135,7 +136,7 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
 
                     var rectMover = new TransformMover(_logger);
 
-                    switch (_esConfig.ExtraSlotsAlignmentOption)
+                    switch (_esConfig.QuickSlotBarAlignmentOption)
                     {
                         case QuickSlotBarAlignmentOptions.None:
                             {
@@ -146,24 +147,24 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
                             {
                                 _logger.LogInfo("Moving QuickSlot Bar above Stability Bar.");
                                 rectMover
-                                    .MoveAbove(stabilityRect, qsParentRectTransform, 37);
+                                    .MoveAbove(stabilityRect, qsParentRectTransform, _esConfig.MoveQuickSlotBarUp_Y_Offset);
                                 break;
                             }
                         case QuickSlotBarAlignmentOptions.MoveStabilityAboveQuickSlot:
                             {
                                 _logger.LogInfo("Moving Stability Bar above QuickSlot Bar.");
-                                _ = rectMover
+                                rectMover
                                     .MoveAbove(quickSlotPanel.RectTransform, stabilityRect, _esConfig.MoveStabilityBarUp_Y_Offset);
                                 break;
                             }
                         default:
                             {
-                                _logger.LogWarning($"Unknown Alignment Option: {(int?)_esConfig?.ExtraSlotsAlignmentOption}. Defaulting to no alignment.");
+                                _logger.LogWarning($"Unknown Alignment Option: {(int?)_esConfig?.QuickSlotBarAlignmentOption}. Defaulting to no alignment.");
                                 break;
                             }
                     }
                     _characterHasBarsAligned.Add(characterUID);
-                    _currentAlignmentOption = _esConfig.ExtraSlotsAlignmentOption;
+                    _qsBarNeedsAlignmentNextUpdate = false;
                 }
             }
             catch (Exception ex)

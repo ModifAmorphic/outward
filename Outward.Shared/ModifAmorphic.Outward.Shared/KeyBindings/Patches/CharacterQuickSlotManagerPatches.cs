@@ -16,11 +16,10 @@ namespace ModifAmorphic.Outward.KeyBindings
     static class CharacterQuickSlotManagerPatches
     {
         private static int _quickslotsToAdd;
-        private static int _exQuickslotStartId;
         private static ModifAmorphicLogging.Logger _logger;
         
         private static void LoggerEvents_LoggerLoaded(object sender, ModifAmorphicLogging.Logger logger) => _logger = logger;
-        private static void QuickSlotExtenderEvents_SlotsChanged(object sender, QuickSlotExtendedArgs e) => (_quickslotsToAdd, _exQuickslotStartId) = (e.ExtendedQuickSlots.Count(), e.StartId);
+        private static void QuickSlotExtenderEvents_SlotsChanged(object sender, QuickSlotExtendedArgs e) => (_quickslotsToAdd) = (e.ExtendedQuickSlots.Count());
 
         [EventSubscription]
         public static void SubscribeToEvents()
@@ -42,7 +41,9 @@ namespace ModifAmorphic.Outward.KeyBindings
             try
             {
                 var quickslotTransform = __instance.transform.Find("QuickSlots");
-
+                var qsStartId = quickslotTransform.childCount + 1;
+                _logger.LogDebug($"Adding {_quickslotsToAdd} extra quickslots to the CharacterQuickSlotManager QuickSlots transform. Starting with Id {qsStartId}.");
+#if DEBUG
                 var sb = new StringBuilder();
                 sb.AppendLine($"\n\t//////*************quickslotTransform Start*************//////");
                 for (int i = 0; i < quickslotTransform.childCount; i++)
@@ -53,13 +54,14 @@ namespace ModifAmorphic.Outward.KeyBindings
                 }
                 sb.AppendLine($"\t//////*************quickslotTransform End*************//////");
                 _logger.LogTrace(sb.ToString());
+#endif
 
                 for (int s = 0; s < _quickslotsToAdd; s++)
                 {
                     GameObject gameObject = new GameObject($"ExtraQuickSlot_{s}");
                     _logger.LogDebug($"{nameof(OnAwake_AddQuickSlots)}(): created new GameObject(ExtraQuickSlot_{s}).  gameObject.name: '{gameObject.name}'");
                     QuickSlot qs = gameObject.AddComponent<QuickSlot>();
-                    qs.name = (_exQuickslotStartId + s).ToString();
+                    qs.name = (qsStartId + s).ToString();
                     gameObject.transform.SetParent(quickslotTransform);
                 }
                 //Once all the extra slots are added, set the quickslotTransform parent back to the self.transform.
