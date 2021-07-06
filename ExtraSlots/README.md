@@ -28,16 +28,9 @@
 - Configure them to whatever you like, keeping in mind keys may already be assigned elsewhere.
 - Assign Items or Skills to your new slots.
 
----
-
-## Known Issues / Conflicts
-### Vheos Mod Pack
-- Enabling the __"16 gamepad quickslots"__ under __"Quickslots"__ in Vheos Mod Pack when used with Extra_QuickSlots enabled can cause an infinite loading issue when Continuing a save.  There's two work arounds for this.
-  1. Disabling the __"16 gamepad quickslots"__ setting Configuration Manager option.
-  #### --  OR  --
-  2. Disabling the __[Extra_QuickSlots]__ Mod in __r2modman__.
 
 ---
+
 
 # Change Logs
 
