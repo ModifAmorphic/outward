@@ -9,13 +9,11 @@ on:
     branches: [ master ]
     paths:
     - 'Outward.Shared/*'
-    paths-ignore:
-    - '**/README.md'
-    - '**/readme.md'
-    - '**/workflows/*'
-    - '**/manifest.json'
-    - '**/icon.png'
-    
+    - '!**/README.md'
+    - '!**/readme.md'
+    - '!**/workflows/*'
+    - '!**/manifest.json'
+    - '!**/icon.png'
   pull_request:
     branches: [ master ]
 
