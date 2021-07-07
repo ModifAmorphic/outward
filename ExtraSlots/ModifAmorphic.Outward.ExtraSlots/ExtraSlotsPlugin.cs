@@ -10,20 +10,16 @@ namespace ModifAmorphic.Outward.ExtraSlots
 {
     [BepInDependency("com.bepis.bepinex.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("modifamorphic.outward.shared", BepInDependency.DependencyFlags.HardDependency)]
-    [BepInPlugin(ModId, ModName, ModVersion)]
+    [BepInPlugin(ModInfo.ModId, ModInfo.ModName, ModInfo.ModVersion)]
     public class ExtraSlotsPlugin : BaseUnityPlugin
     {
-        public const string ModId = "modifamorphic.outward.extraquickslots";
-        public const string ModName = "Extra QuickSlots";
-        public const string ModVersion = "0.2.0";
-        //string modVersion = AssemblyName.GetAssemblyName(System.Reflection.Assembly.GetExecutingAssembly().Location).Version.ToString();
 
         internal void Awake()
         {
-            var harmony = new Harmony(ModId);
+            var harmony = new Harmony(ModInfo.ModId);
             try
             {
-                UnityEngine.Debug.Log($"[{ModName}] - Starting...");
+                UnityEngine.Debug.Log($"[{ModInfo.ModName}] - Starting...");
                 harmony.PatchAll();
 
                 var extraSlots = new ExtraSlots();
@@ -31,7 +27,7 @@ namespace ModifAmorphic.Outward.ExtraSlots
             }
             catch
             {
-                UnityEngine.Debug.LogError($"Failed to enable {ModId} {ModName}.");
+                UnityEngine.Debug.LogError($"Failed to enable {ModInfo.ModId} {ModInfo.ModName}.");
                 harmony.UnpatchSelf();
                 throw;
             }

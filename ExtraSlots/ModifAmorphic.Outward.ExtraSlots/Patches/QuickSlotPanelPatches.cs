@@ -67,7 +67,7 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
         [EventSubscription]
         public static void SubscribeToEvents()
         {
-            ExtraSlotsConfigEvents.LoggerConfigChanged += (object sender, ExtraSlotsConfig e) => _logger = new ModifAmorphicLogging.Logger(e.LogLevel, ExtraSlotsPlugin.ModName);
+            ExtraSlotsConfigEvents.LoggerConfigChanged += (object sender, ExtraSlotsConfig e) => _logger = new ModifAmorphicLogging.Logger(e.LogLevel, ModInfo.ModName);
             ExtraSlotsConfigEvents.UiConfigChanged += (object sender, ExtraSlotsConfig e) => {
                 _logger?.LogDebug($"{nameof(QuickSlotPanelPatches)} - UI config change notification received.");
                 _esConfig = e;

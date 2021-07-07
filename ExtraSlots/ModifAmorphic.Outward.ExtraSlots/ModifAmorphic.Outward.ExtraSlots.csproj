@@ -1,36 +1,36 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Outward.Shared\ModifAmorphic.Outward.Shared\ModifAmorphic.Outward.Shared.csproj" />
+    <PackageReference Include="ModifAmorphic.Outward.Shared" Version="0.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\..\..\outward-shared-assemblies\0Harmony.dll</HintPath>
+      <HintPath>..\..\outward-shared-assemblies\0Harmony.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\outward-shared-assemblies\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\outward-shared-assemblies\Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>..\..\..\outward-shared-assemblies\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>..\..\outward-shared-assemblies\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>..\..\..\outward-shared-assemblies\BepInEx.dll</HintPath>
+      <HintPath>..\..\outward-shared-assemblies\BepInEx.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\outward-shared-assemblies\UnityEngine.dll</HintPath>
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\outward-shared-assemblies\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

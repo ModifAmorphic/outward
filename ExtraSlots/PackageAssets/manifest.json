@@ -1,6 +1,6 @@
 {
     "name": "Extra_QuickSlots",
-    "version_number": "0.2.0",
+    "version_number": "${PACKAGE_VERSION}",
     "website_url": "https://github.com/ModifAmorphic/outward/tree/master/ExtraSlots",
     "description": "**Alpha Version** Adds a Extra QuickSlots to the Quickslot Bar.",
     "dependencies": [

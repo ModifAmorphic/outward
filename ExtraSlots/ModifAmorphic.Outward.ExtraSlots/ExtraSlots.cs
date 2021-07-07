@@ -24,7 +24,7 @@ namespace ModifAmorphic.Outward.ExtraSlots
         public void Enable(BaseUnityPlugin plugin)
         {
             ExtraSlotsConfigEvents.ExtraSlotsConfigChanged += (object sender, ExtraSlotsConfig extraSlotsSettings) => _extraSlotsConfig = extraSlotsSettings;
-            ExtraSlotsConfigEvents.LoggerConfigChanged += (object sender, ExtraSlotsConfig extraSlotsSettings) => _logger = new ModifAmorphicLogging.Logger(extraSlotsSettings.LogLevel, ExtraSlotsPlugin.ModName);
+            ExtraSlotsConfigEvents.LoggerConfigChanged += (object sender, ExtraSlotsConfig extraSlotsSettings) => _logger = new ModifAmorphicLogging.Logger(extraSlotsSettings.LogLevel, ModInfo.ModName);
 
             var configService = new ConfigService(plugin.Config);
 #if DEBUG  //So event subscription invokes get logged when debugging
@@ -33,7 +33,7 @@ namespace ModifAmorphic.Outward.ExtraSlots
 #endif
             EventSubscriberService.RegisterSubscriptions(_logger);
             configService.Configure();
-            _logger.LogDebug($"{ExtraSlotsPlugin.ModName} {ExtraSlotsPlugin.ModVersion} configured.");
+            _logger.LogDebug($"{ModInfo.ModName} {ModInfo.ModVersion} configured.");
             plugin.Config.ConfigReloaded += (object sender, EventArgs e) => configService.Configure();
 
             _logger.LogInfo($"Extending Quickslots by {_extraSlotsConfig.ExtraQuickSlots}.");
