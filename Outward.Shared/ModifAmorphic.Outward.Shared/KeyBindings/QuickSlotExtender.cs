@@ -5,6 +5,7 @@ using SideLoader;
 using ModifAmorphic.Outward.Models;
 using ModifAmorphic.Outward.Events;
 using System.Linq;
+using ModifAmorphic.Outward.Shared;
 
 namespace ModifAmorphic.Outward.KeyBindings
 {
@@ -22,7 +23,7 @@ namespace ModifAmorphic.Outward.KeyBindings
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
         public QuickSlotExtender()
         {
-            this.logger = Logging.InternalLoggerFactory.GetLogger(Logging.LogLevel.Info, SharedPlugin.ModName);
+            this.logger = Logging.InternalLoggerFactory.GetLogger(Logging.LogLevel.Info, ModInfo.ModName);
         }
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
         public QuickSlotExtender(Logging.Logger logger)
