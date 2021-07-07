@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+#Custom ignores
+outward-shared-assemblies/
+
 # User-specific files
 *.rsuser
 *.suo

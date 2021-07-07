@@ -6,34 +6,34 @@
 
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\..\..\outward-shared-assemblies\0Harmony.dll</HintPath>
+      <HintPath>..\..\outward-shared-assemblies\0Harmony.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\outward-shared-assemblies\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\outward-shared-assemblies\Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>..\..\..\outward-shared-assemblies\Assembly-CSharp-firstpass.dll</HintPath>
+      <HintPath>..\..\outward-shared-assemblies\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>..\..\..\outward-shared-assemblies\BepInEx.dll</HintPath>
+      <HintPath>..\..\outward-shared-assemblies\BepInEx.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="Rewired_Core">
-      <HintPath>..\..\..\outward-shared-assemblies\Rewired_Core.dll</HintPath>
+      <HintPath>..\..\outward-shared-assemblies\Rewired_Core.dll</HintPath>
     </Reference>
     <Reference Include="SideLoader">
-      <HintPath>..\..\..\outward-shared-assemblies\SideLoader.dll</HintPath>
+      <HintPath>..\..\outward-shared-assemblies\SideLoader.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\outward-shared-assemblies\UnityEngine.dll</HintPath>
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\outward-shared-assemblies\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
