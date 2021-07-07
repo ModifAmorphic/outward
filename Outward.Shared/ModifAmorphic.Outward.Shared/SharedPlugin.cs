@@ -10,37 +10,33 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModifAmorphic.Outward
+namespace ModifAmorphic.Outward.Shared
 {
     [BepInDependency("com.sinai.SideLoader", BepInDependency.DependencyFlags.HardDependency)]
-    [BepInPlugin(ModId, ModName, ModVersion)]
+    [BepInPlugin(ModInfo.ModId, ModInfo.ModName, ModInfo.ModVersion)]
     public class SharedPlugin : BaseUnityPlugin
     {
-        public const string ModId = "modifamorphic.outward.shared";
-        public const string ModName = "ModifAmorphic Shared Library";
-        public const string ModVersion = "0.2.0";
-
         private Logger _logger;
 
         internal void Awake()
         {
-            var harmony = new Harmony(ModId);
+            var harmony = new Harmony(ModInfo.ModId);
             try
             {
                 LoggerEvents.LoggerLoaded += LoggerEvents_LoggerLoaded;
                 ConfigureLogger();
-                _logger.LogDebug($"[{ModName}] Registering Event Subscriptions");
+                _logger.LogDebug($"[{ModInfo.ModName}] Registering Event Subscriptions");
                 EventSubscriberService.RegisterSubscriptions(_logger);
                 //raise logger event again because nothing else was subscribed the first time.
                 LoggerEvents.RaiseLoggerConfigured(this, _logger);
 
-                _logger.LogDebug($"[{ModName}] Patching");
+                _logger.LogDebug($"[{ModInfo.ModName}] Patching");
 
                 harmony.PatchAll();
             }
             catch (Exception ex)
             {
-                UnityEngine.Debug.LogError($"[{ModName}] Failed to enable {ModId} {ModName}. Exception: \\n{ex}");
+                UnityEngine.Debug.LogError($"[{ModInfo.ModName}] Failed to enable {ModInfo.ModId} {ModInfo.ModName}. Exception: \\n{ex}");
                 harmony.UnpatchSelf();
                 throw;
             }
@@ -60,7 +56,7 @@ namespace ModifAmorphic.Outward
 
             SubscribeToLogLevelChanges(logLevelEntry);
 
-            LoggerEvents.RaiseLoggerConfigured(this, InternalLoggerFactory.GetLogger(logLevelEntry.Value, ModName));
+            LoggerEvents.RaiseLoggerConfigured(this, InternalLoggerFactory.GetLogger(logLevelEntry.Value, ModInfo.ModName));
         }
         private ConfigEntry<LogLevel> GetConfiguredLogLevel(ConfigDefinition logLevelDef, ConfigDescription logLevelDesc)
         {
@@ -74,7 +70,7 @@ namespace ModifAmorphic.Outward
         {
             logLevelEntry.SettingChanged += ((object sender, EventArgs e) => {
                 var changedLogLevelEntry = GetConfiguredLogLevel(logLevelEntry.Definition, logLevelEntry.Description);
-                LoggerEvents.RaiseLoggerConfigured(this, InternalLoggerFactory.GetLogger(changedLogLevelEntry.Value, ModName));
+                LoggerEvents.RaiseLoggerConfigured(this, InternalLoggerFactory.GetLogger(changedLogLevelEntry.Value, ModInfo.ModName));
             });
         }
     }
