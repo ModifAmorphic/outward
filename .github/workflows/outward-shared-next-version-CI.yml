@@ -7,6 +7,14 @@ on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [ next-version ]
+    paths:
+    - 'Outward.Shared/*'
+    paths-ignore:
+    - '**/README.md'
+    - '**/readme.md'
+    - '**/workflows/*'
+    - '**/manifest.json'
+    - '**/icon.png'
   pull_request:
     branches: [ next-version ]
 
