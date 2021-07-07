@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.31313.79
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModifAmorphic.Outward.ExtraSlots", "ModifAmorphic.Outward.ExtraSlots\ModifAmorphic.Outward.ExtraSlots.csproj", "{89DE7F7B-5435-4766-9B0D-1806D9EF49A0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModifAmorphic.Outward.Shared", "..\Outward.Shared\ModifAmorphic.Outward.Shared\ModifAmorphic.Outward.Shared.csproj", "{D35AA797-4E95-4FE6-86EA-E49ABA5340B7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{89DE7F7B-5435-4766-9B0D-1806D9EF49A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89DE7F7B-5435-4766-9B0D-1806D9EF49A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89DE7F7B-5435-4766-9B0D-1806D9EF49A0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D35AA797-4E95-4FE6-86EA-E49ABA5340B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D35AA797-4E95-4FE6-86EA-E49ABA5340B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D35AA797-4E95-4FE6-86EA-E49ABA5340B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D35AA797-4E95-4FE6-86EA-E49ABA5340B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
