@@ -27,5 +27,5 @@ jobs:
           uses: Azure/pipelines@v1
           with:
             azure-devops-project-url: https://dev.azure.com/ModifAmorphic/outward
-            azure-pipeline-name: 'next-outward-shared-build'
+            azure-pipeline-name: 'outward-shared-next-version-build'
             azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
