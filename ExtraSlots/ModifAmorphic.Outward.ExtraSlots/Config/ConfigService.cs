@@ -146,15 +146,20 @@ namespace ModifAmorphic.Outward.ExtraSlots.Config
             });
             #endregion
 
-            var configManager = _plugin.GetComponent<ConfigurationManager.ConfigurationManager>();
-            _config.SettingChanged += ((object sender, SettingChangedEventArgs e) => configManager.BuildSettingList());
+            //var configManager = _plugin.GetComponent<ConfigurationManager.ConfigurationManager>();
+            var configManager = _plugin.GetComponent("ConfigurationManager.ConfigurationManager");
+            if (configManager != null)
+            {
+                var buildSettingList = configManager.GetType().GetMethod("BuildSettingList");
+                if (buildSettingList != null)
+                    _config.SettingChanged += (object sender, SettingChangedEventArgs e) => buildSettingList.Invoke(configManager, null);
+            }
 
             ExtraSlotsConfigEvents.RaiseLoggerConfigChanged(this, _extraConfig);
             ExtraSlotsConfigEvents.RaiseMainConfigChanged(this, _extraConfig);
             ExtraSlotsConfigEvents.RaiseUiConfigChanged(this, _extraConfig);
             ExtraSlotsConfigEvents.RaiseInternalConfigChanged(this, _extraConfig);
             ExtraSlotsConfigEvents.RaiseExtraSlotsConfigChanged(this, _extraConfig);
-
             
         }
         private void ToggleCenteringOptions(bool quickslotCentered, ConfigEntry<float> quickSlotXOffset)
