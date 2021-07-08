@@ -25,6 +25,9 @@
       <HintPath>..\..\outward-shared-assemblies\BepInEx.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="ConfigurationManager">
+      <HintPath>..\..\outward-shared-assemblies\ConfigurationManager.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.dll</HintPath>
       <Private>false</Private>

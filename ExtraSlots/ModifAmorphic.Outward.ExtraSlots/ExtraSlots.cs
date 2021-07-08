@@ -26,7 +26,7 @@ namespace ModifAmorphic.Outward.ExtraSlots
             ExtraSlotsConfigEvents.ExtraSlotsConfigChanged += (object sender, ExtraSlotsConfig extraSlotsSettings) => _extraSlotsConfig = extraSlotsSettings;
             ExtraSlotsConfigEvents.LoggerConfigChanged += (object sender, ExtraSlotsConfig extraSlotsSettings) => _logger = new ModifAmorphicLogging.Logger(extraSlotsSettings.LogLevel, ModInfo.ModName);
 
-            var configService = new ConfigService(plugin.Config);
+            var configService = new ConfigService(plugin);
 #if DEBUG  //So event subscription invokes get logged when debugging
             configService.Configure();
             _logger.LogDebug($"Registering Event Subscriptions.");
