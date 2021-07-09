@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ModifAmorphic.Outward.Shared
+﻿namespace ModifAmorphic.Outward.Shared
 {
     public static class ModInfo
     {

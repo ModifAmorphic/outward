@@ -1,14 +1,11 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
+
 using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Shared.Config;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ModifAmorphic.Outward.Shared
 {
@@ -26,6 +23,7 @@ namespace ModifAmorphic.Outward.Shared
                 LoggerEvents.LoggerLoaded += LoggerEvents_LoggerLoaded;
                 ConfigureLogger();
                 _logger.LogDebug($"[{ModInfo.ModName}] Registering Event Subscriptions");
+                //Register all classes event subscriptions
                 EventSubscriberService.RegisterSubscriptions(_logger);
                 //raise logger event again because nothing else was subscribed the first time.
                 LoggerEvents.RaiseLoggerConfigured(this, _logger);
@@ -46,7 +44,6 @@ namespace ModifAmorphic.Outward.Shared
         {
             _logger = e;
         }
-
         private void ConfigureLogger()
         {
             var logLevelDef = new ConfigDefinition("", "logLevel");
@@ -68,7 +65,8 @@ namespace ModifAmorphic.Outward.Shared
         }
         private void SubscribeToLogLevelChanges(ConfigEntry<LogLevel> logLevelEntry)
         {
-            logLevelEntry.SettingChanged += ((object sender, EventArgs e) => {
+            logLevelEntry.SettingChanged += ((object sender, EventArgs e) =>
+            {
                 var changedLogLevelEntry = GetConfiguredLogLevel(logLevelEntry.Definition, logLevelEntry.Description);
                 LoggerEvents.RaiseLoggerConfigured(this, InternalLoggerFactory.GetLogger(changedLogLevelEntry.Value, ModInfo.ModName));
             });

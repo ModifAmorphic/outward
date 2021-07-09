@@ -67,7 +67,7 @@ namespace ModifAmorphic.Outward.KeyBindings.Patches
                 _logger?.LogTrace($"LocalCharacterControl.UpdateQuickSlots - Character or Character.QuickSlotMng was null.");
                 return;
             }
-            
+
             try
             {
                 var playerId = __instance.Character.OwnerPlayerSys.PlayerID;

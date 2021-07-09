@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using SideLoader;
+﻿using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Models;
-using ModifAmorphic.Outward.Events;
-using System.Linq;
 using ModifAmorphic.Outward.Shared;
+using SideLoader;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace ModifAmorphic.Outward.KeyBindings
 {
@@ -40,7 +40,7 @@ namespace ModifAmorphic.Outward.KeyBindings
             }
         }
 
-        
+
         public void ExtendQuickSlots(Queue<string> menuDescriptions)
         {
             try

@@ -1,11 +1,8 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Logging;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ModifAmorphic.Outward.KeyBindings.Patches
 {
@@ -38,7 +35,7 @@ namespace ModifAmorphic.Outward.KeyBindings.Patches
         [HarmonyPostfix]
         public static void AddCustomLocalizations(LocalizationManager __instance)
         {
-            foreach(var listener in _customLocalizationListeners)
+            foreach (var listener in _customLocalizationListeners)
             {
                 __instance.RegisterLocalizeElement(listener);
             }

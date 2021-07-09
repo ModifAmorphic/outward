@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Events;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -17,7 +16,7 @@ namespace ModifAmorphic.Outward.KeyBindings
     {
         private static int _quickslotsToAdd;
         private static ModifAmorphicLogging.Logger _logger;
-        
+
         private static void LoggerEvents_LoggerLoaded(object sender, ModifAmorphicLogging.Logger logger) => _logger = logger;
         private static void QuickSlotExtenderEvents_SlotsChanged(object sender, QuickSlotExtendedArgs e) => (_quickslotsToAdd) = (e.ExtendedQuickSlots.Count());
 
@@ -26,7 +25,7 @@ namespace ModifAmorphic.Outward.KeyBindings
         {
             LoggerEvents.LoggerLoaded += LoggerEvents_LoggerLoaded;
             QuickSlotExtenderEvents.SlotsChanged += QuickSlotExtenderEvents_SlotsChanged;
-        }        
+        }
 
         /// <summary>
         /// Add extra quickslots to the CharacterQuickSlotManager QuickSlots transform.
@@ -92,7 +91,7 @@ namespace ModifAmorphic.Outward.KeyBindings
             {
                 _logger.LogException($"{nameof(OnAwake_AddQuickSlots)}() error.", ex);
                 throw;
-            }            
+            }
         }
     }
 }

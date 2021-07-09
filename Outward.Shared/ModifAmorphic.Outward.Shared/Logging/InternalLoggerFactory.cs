@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace ModifAmorphic.Outward.Logging
+﻿namespace ModifAmorphic.Outward.Logging
 {
     static class InternalLoggerFactory
     {
@@ -21,6 +16,6 @@ namespace ModifAmorphic.Outward.Logging
         {
             return new Logger(logLevel, string.Format(loggerNameFormat, callingAssemblyName, internalLoggerName));
         }
-        
+
     }
 }
