@@ -1,28 +1,24 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Events;
-using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.ExtraSlots.Config;
 using ModifAmorphic.Outward.ExtraSlots.Display;
 using ModifAmorphic.Outward.ExtraSlots.Events;
 using ModifAmorphic.Outward.ExtraSlots.Query;
-using ModifAmorphic.Outward.ExtraSlots.Config;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using UnityEngine;
 using ModifAmorphicLogging = ModifAmorphic.Outward.Logging;
 
 namespace ModifAmorphic.Outward.ExtraSlots.Patches
 {
     [HarmonyPatch(typeof(QuickSlotPanel))]
-    class QuickSlotPanelPatches
+    public class QuickSlotPanelPatches
     {
         private static ModifAmorphicLogging.Logger _logger;
         private static readonly HashSet<UID> _characterHasBarsAligned = new HashSet<UID>();
         private static readonly HashSet<UID> _characterHasQsCentered = new HashSet<UID>();
         private static readonly HashSet<UID> _characterHasQsDefault = new HashSet<UID>();
-        private static ExtraSlotsConfig _esConfig;
+        private static ExtraSlotsSettings _esSettings;
         private static Vector3? _originalQsBarPos = null;
         private static Vector3? _originalQsBarParentPos = null;
         private static Vector3? _originalStabilityBarPos = null;
@@ -40,37 +36,44 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
         {
             if (_originalStabilityBarPos == null)
             {
-                var stabilityBarPos = UIQuery.GetCharacterStabilityDisplay(quickSlotPanel.LocalCharacter).transform.position;
-                _originalStabilityBarPos = new Vector3(stabilityBarPos.x, stabilityBarPos.y, stabilityBarPos.z);
+                var stabilityDisplay = UIQuery.GetCharacterStabilityDisplay(quickSlotPanel.LocalCharacter).transform;
+                _originalStabilityBarPos = new Vector3(stabilityDisplay.position.x, stabilityDisplay.position.y, stabilityDisplay.position.z);
             }
         }
-        private static void SetOriginalQsBarPosition(UIElement quickSlotPanel)
+        private static void MoveQsBarToOriginalPosition(UIElement quickSlotPanel)
         {
+            _logger.LogTrace("Moving Quickslot Bar back to Original Position.");
             if (_originalQsBarPos != null)
             {
-                _characterHasQsCentered.RemoveWhere(c => c == quickSlotPanel.LocalCharacter.UID);
+                _ = _characterHasQsCentered.RemoveWhere(c => c == quickSlotPanel.LocalCharacter.UID);
                 var qsParentRectTransform = UIQuery.GetParentRectTransform(quickSlotPanel.transform);
-                TransformMover.SetPosition(qsParentRectTransform.transform, (Vector3)_originalQsBarParentPos);
-                TransformMover.SetPosition(quickSlotPanel.transform, (Vector3)_originalQsBarPos);
-                _characterHasQsDefault.Add(quickSlotPanel.LocalCharacter.UID);
+                TransformMover.SetPosition(qsParentRectTransform.transform, _originalQsBarParentPos.Value);
+                TransformMover.SetPosition(quickSlotPanel.transform, _originalQsBarPos.Value);
+                _ = _characterHasQsDefault.Add(quickSlotPanel.LocalCharacter.UID);
             }
         }
-        private static void SetOriginalStabilityBarPosition(UIElement stabilityBar)
+        private static void MoveStabilityBarToOriginalPosition(UIElement stabilityBar)
         {
             if (_originalStabilityBarPos != null)
             {
-                TransformMover.SetPosition(stabilityBar.transform, (Vector3)_originalStabilityBarPos);
-                _characterHasBarsAligned.RemoveWhere(c => c == stabilityBar.LocalCharacter.UID);
+                _logger.LogTrace("Moving Stability Bar back to Original Position.\n" +
+                    $"\tOriginal Position: ({_originalStabilityBarPos.Value.x},{_originalStabilityBarPos.Value.y}, {_originalStabilityBarPos.Value.z})\n" +
+                    $"\tCurrent Position: ({stabilityBar.transform.position.x},{stabilityBar.transform.position.y}, {stabilityBar.transform.position.z})");
+                TransformMover.SetPosition(stabilityBar.transform, _originalStabilityBarPos.Value);
+                _logger.LogTrace("Moved Stability Bar back to Original Position.\n" +
+                    $"\tOriginal Position: ({_originalStabilityBarPos.Value.x},{_originalStabilityBarPos.Value.y}, {_originalStabilityBarPos.Value.z})\n" +
+                    $"\tCurrent Position: ({stabilityBar.transform.position.x},{stabilityBar.transform.position.y}, {stabilityBar.transform.position.z})");
             }
         }
 
         [EventSubscription]
         public static void SubscribeToEvents()
         {
-            ExtraSlotsConfigEvents.LoggerConfigChanged += (object sender, ExtraSlotsConfig e) => _logger = new ModifAmorphicLogging.Logger(e.LogLevel, ModInfo.ModName);
-            ExtraSlotsConfigEvents.UiConfigChanged += (object sender, ExtraSlotsConfig e) => {
+            ExtraSlotsConfigEvents.LoggerSettingsChanged += (object sender, ExtraSlotsSettings e) => _logger = new ModifAmorphicLogging.Logger(e.LogLevel.Value, ModInfo.ModName);
+            ExtraSlotsConfigEvents.UiSettingsChanged += (object sender, ExtraSlotsSettings e) =>
+            {
                 _logger?.LogDebug($"{nameof(QuickSlotPanelPatches)} - UI config change notification received.");
-                _esConfig = e;
+                _esSettings = e;
                 _characterHasBarsAligned.Clear();
                 _characterHasQsCentered.Clear();
                 _characterHasQsDefault.Clear();
@@ -86,19 +89,19 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
                 return;
 
             var qspMover = new QuickSlotPanelDisplayMover(__instance, _logger);
-            if (_esConfig.CenterQuickSlotPanel)
+            if (_esSettings.CenterQuickSlotPanel.Value)
             {
                 if (!_characterHasQsCentered.Contains(__instance.LocalCharacter.UID))
                 {
                     _characterHasQsDefault.RemoveWhere(c => c == __instance.LocalCharacter.UID);
                     _logger.LogTrace($"{nameof(QuickSlotPanelPatches)}.{nameof(QuickSlotPanel_Update)}(): Centering {__instance.name};");
-                    _ = qspMover.CenterHorizontally(_esConfig.CenterQuickSlot_X_Offset);
+                    _ = qspMover.CenterHorizontally(_esSettings.CenterQuickSlot_X_Offset.Value);
                     _characterHasQsCentered.Add(__instance.LocalCharacter.UID);
                 }
             }
             else if (_originalQsBarPos != null && !_characterHasQsDefault.Contains(__instance.LocalCharacter.UID))
             {
-                SetOriginalQsBarPosition(__instance);
+                MoveQsBarToOriginalPosition(__instance);
             }
 
             //check to see if the alingment option has changed
@@ -111,7 +114,7 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
         {
             if (__instance.name != "Keyboard" || __instance.transform.parent.name != "QuickSlot")
                 return;
-            
+
             //Capture the original positions of the Stability and Quickslot Bars
             SaveOriginalStabilityBarPosition(__instance);
             SaveOriginalQsBarPosition(__instance);
@@ -128,15 +131,16 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
                 {
                     var stabilityDisplay = UIQuery.GetCharacterStabilityDisplay(quickSlotPanel.LocalCharacter);
                     //Reset everything back to original before aligning.
-                    SetOriginalStabilityBarPosition(stabilityDisplay);
-                    SetOriginalQsBarPosition(quickSlotPanel);
-                    
+                    MoveStabilityBarToOriginalPosition(stabilityDisplay);
+                    MoveQsBarToOriginalPosition(quickSlotPanel);
+                    _characterHasBarsAligned.RemoveWhere(c => c == characterUID);
+
                     var stabilityRect = (RectTransform)stabilityDisplay.transform;
                     var qsParentRectTransform = UIQuery.GetParentRectTransform(quickSlotPanel.transform);
 
                     var rectMover = new TransformMover(_logger);
 
-                    switch (_esConfig.QuickSlotBarAlignmentOption)
+                    switch (_esSettings.QuickSlotBarAlignmentOption.Value)
                     {
                         case QuickSlotBarAlignmentOptions.None:
                             {
@@ -147,19 +151,19 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
                             {
                                 _logger.LogInfo("Moving QuickSlot Bar above Stability Bar.");
                                 rectMover
-                                    .MoveAbove(stabilityRect, qsParentRectTransform, _esConfig.MoveQuickSlotBarUp_Y_Offset);
+                                    .MoveAbove(stabilityRect, qsParentRectTransform, _esSettings.MoveQuickSlotBarUp_Y_Offset.Value);
                                 break;
                             }
                         case QuickSlotBarAlignmentOptions.MoveStabilityAboveQuickSlot:
                             {
                                 _logger.LogInfo("Moving Stability Bar above QuickSlot Bar.");
                                 rectMover
-                                    .MoveAbove(quickSlotPanel.RectTransform, stabilityRect, _esConfig.MoveStabilityBarUp_Y_Offset);
+                                    .MoveAbove(quickSlotPanel.RectTransform, stabilityRect, _esSettings.MoveStabilityBarUp_Y_Offset.Value);
                                 break;
                             }
                         default:
                             {
-                                _logger.LogWarning($"Unknown Alignment Option: {(int?)_esConfig?.QuickSlotBarAlignmentOption}. Defaulting to no alignment.");
+                                _logger.LogWarning($"Unknown Alignment Option: {(int?)_esSettings?.QuickSlotBarAlignmentOption?.Value}. Defaulting to no alignment.");
                                 break;
                             }
                     }

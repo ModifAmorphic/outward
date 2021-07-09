@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using BepInEx;
+﻿using BepInEx;
 using HarmonyLib;
 
 namespace ModifAmorphic.Outward.ExtraSlots
@@ -24,7 +19,7 @@ namespace ModifAmorphic.Outward.ExtraSlots
                 harmony.PatchAll();
 
                 var extraSlots = new ExtraSlots();
-                extraSlots.Enable(this);
+                extraSlots.Start(this);
             }
             catch
             {

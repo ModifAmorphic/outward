@@ -1,40 +1,53 @@
 ﻿using ModifAmorphic.Outward.ExtraSlots.Config;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.ExtraSlots.Events
 {
-    static class ExtraSlotsConfigEvents
+    internal static class ExtraSlotsConfigEvents
     {
-        public static event EventHandler<ExtraSlotsConfig> ExtraSlotsConfigChanged;
-        public static void RaiseExtraSlotsConfigChanged(object sender, ExtraSlotsConfig extraSlotsConfig)
+        public static event EventHandler<ExtraSlotsSettings> ExtraSlotsSettingsChanged;
+        public static void RaiseExtraSlotsSettingsChanged(object sender, ExtraSlotsSettings extraSlotsSettings)
         {
-            ExtraSlotsConfigChanged?.Invoke(sender, extraSlotsConfig);
+#if DEBUG
+            UnityEngine.Debug.Log($"[{ModInfo.ModName}] - Triggering {nameof(ExtraSlotsSettingsChanged)} Event. {nameof(ExtraSlotsSettingsChanged)} null? {ExtraSlotsSettingsChanged == null}");
+#endif
+            ExtraSlotsSettingsChanged?.Invoke(sender, extraSlotsSettings);
         }
 
-        public static event EventHandler<ExtraSlotsConfig> UiConfigChanged;
-        public static void RaiseUiConfigChanged(object sender, ExtraSlotsConfig extraSlotsConfig)
+        public static event EventHandler<ExtraSlotsSettings> UiSettingsChanged;
+        public static void RaiseUiSettingsChanged(object sender, ExtraSlotsSettings extraSlotsSettings)
         {
-            UiConfigChanged?.Invoke(sender, extraSlotsConfig);
+#if DEBUG
+            UnityEngine.Debug.Log($"[{ModInfo.ModName}] - Triggering {nameof(UiSettingsChanged)} Event. {nameof(UiSettingsChanged)} null? {UiSettingsChanged == null}");
+#endif
+            UiSettingsChanged?.Invoke(sender, extraSlotsSettings);
         }
 
-        public static event EventHandler<ExtraSlotsConfig> InternalConfigChanged;
-        public static void RaiseInternalConfigChanged(object sender, ExtraSlotsConfig extraSlotsConfig)
+        public static event EventHandler<ExtraSlotsSettings> AdvancedSettingsChanged;
+        public static void RaiseAdvancedSettingsChanged(object sender, ExtraSlotsSettings extraSlotsSettings)
         {
-            InternalConfigChanged?.Invoke(sender, extraSlotsConfig);
+#if DEBUG
+            UnityEngine.Debug.Log($"[{ModInfo.ModName}] - Triggering {nameof(AdvancedSettingsChanged)} Event. {nameof(AdvancedSettingsChanged)} null? {AdvancedSettingsChanged == null}");
+#endif
+            AdvancedSettingsChanged?.Invoke(sender, extraSlotsSettings);
         }
 
-        public static event EventHandler<ExtraSlotsConfig> MainConfigChanged;
-        public static void RaiseMainConfigChanged(object sender, ExtraSlotsConfig extraSlotsConfig)
+        public static event EventHandler<ExtraSlotsSettings> MainSettingsChanged;
+        public static void RaiseMainSettingsChanged(object sender, ExtraSlotsSettings extraSlotsSettings)
         {
-            MainConfigChanged?.Invoke(sender, extraSlotsConfig);
+#if DEBUG
+            UnityEngine.Debug.Log($"[{ModInfo.ModName}] - Triggering {nameof(MainSettingsChanged)} Event. {nameof(MainSettingsChanged)} null? {MainSettingsChanged == null}");
+#endif
+            MainSettingsChanged?.Invoke(sender, extraSlotsSettings);
         }
 
-        public static event EventHandler<ExtraSlotsConfig> LoggerConfigChanged;
-        public static void RaiseLoggerConfigChanged(object sender, ExtraSlotsConfig extraSlotsConfig)
+        public static event EventHandler<ExtraSlotsSettings> LoggerSettingsChanged;
+        public static void RaiseLoggerSettingsChanged(object sender, ExtraSlotsSettings extraSlotsSettings)
         {
-            LoggerConfigChanged?.Invoke(sender, extraSlotsConfig);
+#if DEBUG
+            UnityEngine.Debug.Log($"[{ModInfo.ModName}] - Triggering {nameof(LoggerSettingsChanged)} Event. {nameof(LoggerSettingsChanged)} null? {LoggerSettingsChanged == null}");
+#endif
+            LoggerSettingsChanged?.Invoke(sender, extraSlotsSettings);
         }
     }
 }

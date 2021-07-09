@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.ExtraSlots.Query
 {
-    class UIQuery
+    internal class UIQuery
     {
         public static StabilityDisplay_Simple GetCharacterStabilityDisplay(Character character)
         {

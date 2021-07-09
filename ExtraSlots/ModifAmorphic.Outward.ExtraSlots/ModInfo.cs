@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ModifAmorphic.Outward.ExtraSlots
+﻿namespace ModifAmorphic.Outward.ExtraSlots
 {
-    static class ModInfo
+    internal static class ModInfo
     {
         public const string ModId = "modifamorphic.outward.extraquickslots";
         public const string ModName = "Extra QuickSlots";
