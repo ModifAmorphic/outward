@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace ModifAmorphic.Outward.ExtraSlots.Config
+﻿namespace ModifAmorphic.Outward.ExtraSlots.Config
 {
-    public enum QuickSlotBarAlignmentOptions
+    internal enum QuickSlotBarAlignmentOptions
     {
         None = 0,
         MoveQuickSlotAboveStability = 1,
-        MoveStabilityAboveQuickSlot = 2
+        MoveStabilityAboveQuickSlot = 2,
+        AbsolutePositioning = 3
     }
 }

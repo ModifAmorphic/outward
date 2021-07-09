@@ -1,20 +1,15 @@
 ﻿using ModifAmorphic.Outward.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Extensions
 {
     public static class QuickSlotPanelExtensions
     {
-        
+
         public static bool GetActive(this QuickSlotPanel quickSlotPanel)
         {
             return ReflectUtil.GetReflectedPrivateField<bool, QuickSlotPanel>(QuickSlotPanelPropertyNames.Active, quickSlotPanel);
         }
-        
+
         public static QuickSlotDisplay[] GetQuickSlotDisplays(this QuickSlotPanel quickSlotPanel)
         {
             return ReflectUtil.GetReflectedPrivateField<QuickSlotDisplay[], QuickSlotPanel>(QuickSlotPanelPropertyNames.QuickSlotDisplays, quickSlotPanel);

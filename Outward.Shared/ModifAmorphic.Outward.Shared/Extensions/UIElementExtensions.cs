@@ -1,9 +1,5 @@
 ﻿using ModifAmorphic.Outward.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Extensions
 {
@@ -19,7 +15,7 @@ namespace ModifAmorphic.Outward.Extensions
             if (method != null)
                 method.Invoke(uiElement, null);
         }
-        
+
     }
     static class UIElementFieldNames
     {

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace ModifAmorphic.Outward.Internal
 {
-    public class SafeDictionary<TKey, TValue>
+    internal class SafeDictionary<TKey, TValue>
 
     {
         private readonly object _lock = new object();

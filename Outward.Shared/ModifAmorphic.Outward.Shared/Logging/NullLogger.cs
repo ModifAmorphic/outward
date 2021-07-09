@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Logging
 {
-    static class NullLogger
+    internal static class NullLogger
     {
         public static void LogTrace(Logging.Logger logger, string message)
         {

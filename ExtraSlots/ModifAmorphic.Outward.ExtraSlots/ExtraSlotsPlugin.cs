@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using BepInEx;
+﻿using BepInEx;
 using HarmonyLib;
 
 namespace ModifAmorphic.Outward.ExtraSlots
 {
     [BepInDependency("com.bepis.bepinex.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("io.mefino.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("modifamorphic.outward.shared", BepInDependency.DependencyFlags.HardDependency)]
     [BepInPlugin(ModInfo.ModId, ModInfo.ModName, ModInfo.ModVersion)]
     public class ExtraSlotsPlugin : BaseUnityPlugin
@@ -23,7 +19,7 @@ namespace ModifAmorphic.Outward.ExtraSlots
                 harmony.PatchAll();
 
                 var extraSlots = new ExtraSlots();
-                extraSlots.Enable(this);
+                extraSlots.Start(this);
             }
             catch
             {

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace ModifAmorphic.Outward.Logging
+﻿namespace ModifAmorphic.Outward.Logging
 {
-    static class InternalLoggerFactory
+    internal static class InternalLoggerFactory
     {
         const string loggerNameFormat = "{0} - {1}";
         static readonly string modifInternalLoggerName = $"{nameof(ModifAmorphic)}.{nameof(Outward)}";
@@ -21,6 +16,6 @@ namespace ModifAmorphic.Outward.Logging
         {
             return new Logger(logLevel, string.Format(loggerNameFormat, callingAssemblyName, internalLoggerName));
         }
-        
+
     }
 }

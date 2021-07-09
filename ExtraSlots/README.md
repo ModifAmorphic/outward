@@ -1,38 +1,47 @@
-## __Alpha Version__
+# Summary
+Extra QuickSlots enables additional Keyboard QuickSlots and repositioning of the QuickSlot and Stability Bars.
+1. Set the amount of extra keyboard Quick Slots.
+2. Restart the game.
+3. Set the positions of both bars.
+\
+&nbsp;
 - - - -
-  
-    
+# Configuration Instructions
+## First-time Configuration
+- Click "Start modded" in [r2modman](https://thunderstore.io/package/ebkr/r2modman/).
+- Press F5 to open up the Configuration Manager.
+- Expand the __Extra Quickslots X.X.X__ configuration.
+- Set the first setting, __QuickSlots to add__, to the amount of Extra Quickslots you want. For example, entering 3 will add 3 quickslots to the existing 8 in the unmodded game for a total of 11.
+- __Restart the game__.  (Exit and "Start modded" in [r2modman](https://thunderstore.io/package/ebkr/r2modman/) again)
+  - Restarting is required whenever the __QuickSlots to add__ value is changed before it takes effect.
+
+## UI / Alignment Options
+- __Center QuickSlot bar__ - Centers the QuickSlot bar horizontaly. You will probably need to make additional adjustments as the QuickSlot and Stability Bars will likely overlap with this option.
+- __QuickSlot and Stability Bar Alignment__
+  - ___MoveQuickSlotAboveStability___: Moves the QuickSlot Bar above the Stability Bar. The __Y Offset QuickSlot Bar by__ setting allows for additional fine tuning of the QuickSlot Bar when this option is selected.
+  - ___MoveStabilityAboveQuickSlot___: Moves the Stability Bar above the QuickSlot Bar. The __Y Offset Stability Bar by__ setting allows for additional fine tuning of the Stability Bar when this option is selected.
+
+## Configuring Hotkeys
+- The Extra Quick Slots will be at the top of the __Quick Slots__ section of the __Keyboard__ settings, starting with "Ex Quickslot 1".
+- Configure them to whatever you like, keeping in mind keys may already be assigned elsewhere.
+- Assign Items or Skills to your new slots.
+
 # ThunderStore with r2modman Installation Instructions
-## Dependencies
 - Download and install [r2modman](https://thunderstore.io/package/ebkr/r2modman/)
   - For instructions, see the [Thunderstore](https://outward.fandom.com/wiki/Installing_Mods#Thunderstore) of the Outward Wiki
 - Install SideLoader by sinai-dev [Thunderstore](https://outward.thunderstore.io/package/sinai-dev/SideLoader/)
 - Install Outward Config Manager by Mefino [Thunderstore](https://outward.thunderstore.io/package/Mefino/Outward_Config_Manager/)
-
-## First-time Configuration
-- Click "Start modded" in [r2modman](https://thunderstore.io/package/ebkr/r2modman/).
-- Press F5 to open up the Configuration Manager.
-- Expand the __Extra Quickslots X.X.X__ section.
-- Set the first setting, __ExtraQuickSlots__, to the amount of Extra Quickslots you want. For example, entering 3 will add 3 quickslots to the existing 8 in the base game for a total of 11.
-- __Restart the game__.  (Exit and "Start modded" in [r2modman](https://thunderstore.io/package/ebkr/r2modman/) again)
-  - Restarting is required whenever this value, __ExtraQuickSlots__, is changed before it takes effect.
-
-## UI / Alignment Options
-- __CenterQuickslotPanel__ - Just like it sounds, moves the QuickSlot bar to the horizontal center of the screen. You will probably need to make additional adjustments as the QuickSlot and Stability Bars will likely overlap.
-- QuickSlotBarAlignmentOption
-  - __MoveQuickSlotAboveStability__: Moves the QuickSlot Bar above the Stability Bar.
-  - __MoveStabilityAboveQuickSlot__: Moves the Stability Bar above the QuickSlot Bar.
-
-## Configuring Hotkeys
-- The Extra Quick Slots will be at the top of the __Quick Slots__ section of the Keyboard settings.
-- Configure them to whatever you like, keeping in mind keys may already be assigned elsewhere.
-- Assign Items or Skills to your new slots.
-
-
----
-
-
+\
+&nbsp;
 # Change Logs
+
+## Alpha Version 0.3.0
+- Settings in ConfigurationManager use friendly display names instead of their internal variable / config names.
+- Stability and Quickslot Bar positioning settings no longer advanced and show/hide depending on alignment setting selected.
+- New Absolute Positoning option added to alignment options.
+ - The QuickSlot* and Stability Bars will be moved to the bottom right corner the first time this new Alignment option is set.
+   - *If the "Center QuickSlot bar" option is enabled, the X Position setting of the QuickSlot will be effectively ignored. Disable centering if you want to control the X position.
+- *Internal* - Rewrite of how config settings and the configuration handler are managed. Again...
 
 ## Alpha Version 0.2.0
 - Fix for infinite load issue when the  __"16 gamepad quickslots"__ setting was enabled in [Vheos Mod Pack](https://github.com/Vheos777/OutwardMods).

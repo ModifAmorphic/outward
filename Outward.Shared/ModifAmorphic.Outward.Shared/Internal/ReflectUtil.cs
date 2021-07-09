@@ -1,13 +1,9 @@
-﻿using ModifAmorphic.Outward.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Reflection;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Internal
 {
-    static class ReflectUtil
+    internal static class ReflectUtil
     {
         static readonly SafeDictionary<Type, SafeDictionary<string, FieldInfo>> _fieldCache = new SafeDictionary<Type, SafeDictionary<string, FieldInfo>>();
         public static TField GetReflectedPrivateField<TField, TOwner>(string propertyName, TOwner propertyOwner)

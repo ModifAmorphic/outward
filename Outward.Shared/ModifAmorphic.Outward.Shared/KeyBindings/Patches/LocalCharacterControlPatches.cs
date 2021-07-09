@@ -13,7 +13,7 @@ using System.Linq;
 namespace ModifAmorphic.Outward.KeyBindings.Patches
 {
     [HarmonyPatch]
-    static class LocalCharacterControlPatches
+    internal static class LocalCharacterControlPatches
     {
         private static Dictionary<int, RewiredInputs> _playerInputManager = new Dictionary<int, RewiredInputs>();
         //private static SortedDictionary<int, string> _exQuickSlots = new SortedDictionary<int, string>();
@@ -67,7 +67,7 @@ namespace ModifAmorphic.Outward.KeyBindings.Patches
                 _logger?.LogTrace($"LocalCharacterControl.UpdateQuickSlots - Character or Character.QuickSlotMng was null.");
                 return;
             }
-            
+
             try
             {
                 var playerId = __instance.Character.OwnerPlayerSys.PlayerID;

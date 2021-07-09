@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Logging
 {
@@ -16,7 +13,7 @@ namespace ModifAmorphic.Outward.Logging
         }
         public void Log(LogLevel logLevel, string message)
         {
-            string logMsg =  $"[{this.LoggerName}][{Enum.GetName(typeof(LogLevel), logLevel)}] - {message}";
+            string logMsg = $"[{this.LoggerName}][{Enum.GetName(typeof(LogLevel), logLevel)}] - {message}";
             if (logLevel <= this.LogLevel)
             {
                 switch (logLevel)

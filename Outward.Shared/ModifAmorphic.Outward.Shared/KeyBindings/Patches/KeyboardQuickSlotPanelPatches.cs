@@ -1,17 +1,13 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Events;
-using ModifAmorphic.Outward.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using UnityEngine;
 using ModifAmorphicLogging = ModifAmorphic.Outward.Logging;
 
 namespace ModifAmorphic.Outward.KeyBindings
 {
     [HarmonyPatch(typeof(KeyboardQuickSlotPanel), "InitializeQuickSlotDisplays")]
-    static class KeyboardQuickSlotPanelPatches
+    internal static class KeyboardQuickSlotPanelPatches
     {
         private static int _quickslotsToAdd;
         private static int _exQuickslotStartId;
