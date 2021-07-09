@@ -8,7 +8,7 @@ on:
   push:
     branches: [ next-version ]
     paths:
-    - 'ExtraSlots/*'
+    - 'ExtraSlots/**'
     - '!**/README.md'
     - '!**/readme.md'
     - '!**/workflows/*'

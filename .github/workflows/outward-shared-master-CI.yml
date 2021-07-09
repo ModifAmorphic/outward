@@ -8,7 +8,7 @@ on:
   push:
     branches: [ master ]
     paths:
-    - 'Outward.Shared/*'
+    - 'Outward.Shared/**'
     - '!**/README.md'
     - '!**/readme.md'
     - '!**/workflows/*'
