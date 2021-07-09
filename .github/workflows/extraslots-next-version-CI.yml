@@ -23,10 +23,10 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
     build:
-        name: Call Azure Pipeline
+        name: Run ExtraSlots Next-Version Azure Build Pipeline
         runs-on: ubuntu-latest
         steps:
-        - name: Azure Pipelines Action
+        - name: Run Build extraslots-next-version-build
           uses: Azure/pipelines@v1
           with:
             azure-devops-project-url: https://dev.azure.com/ModifAmorphic/outward
