@@ -5,7 +5,7 @@
     "description": "**Alpha Version** Adds a Extra QuickSlots to the Keyboard Quickslot Bar.",
     "dependencies": [
 	    "BepInEx-BepInExPack_Outward-5.4.8",
-		"Mefino-Outward_Config_Manager-16.3.3",
-		"sinai-dev-SideLoader-3.3.6"
+		  "Mefino-Outward_Config_Manager-16.3.3",
+		  "sinai-dev-SideLoader-3.4.10"
     ]
 }
