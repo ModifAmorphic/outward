@@ -76,6 +76,58 @@ namespace ModifAmorphic.Outward.ExtraSlots.Config
             Order = UiTopOrder - 4,
             IsAdvanced = false
         };
+        const string UiAbsoluteQuickSlotSection = "QuickSlot Bar Position";
+        const int uiAbsoluteQsTopOrder = UiTopOrder - 1000;
+        public ConfigSetting<float> QuickSlotBarAbsolute_X { get; } = new ConfigSetting<float>()
+        {
+            Name = nameof(QuickSlotBarAbsolute_X),
+            DefaultValue = 0f,
+            Section = UiAbsoluteQuickSlotSection,
+            DisplayName = "    Bottom Left Corner X Position",
+            Description = $"The absolute X position of the bottom left corner of the QuickSlot bar when " +
+                $"{Enum.GetName(typeof(QuickSlotBarAlignmentOptions), QuickSlotBarAlignmentOptions.AbsolutePositioning)} " +
+                $"alignment is selected, unless the \"Center QuickSlot bar\" option is enabled.",
+            Order = uiAbsoluteQsTopOrder - 1,
+            IsAdvanced = false
+        };
+        public ConfigSetting<float> QuickSlotBarAbsolute_Y { get; } = new ConfigSetting<float>()
+        {
+            Name = nameof(QuickSlotBarAbsolute_Y),
+            DefaultValue = 0f,
+            Section = UiAbsoluteQuickSlotSection,
+            DisplayName = "    Bottom Left Corner Y Position",
+            Description = $"The absolute Y position of the bottom left corner of the QuickSlot bar when " +
+                $"{Enum.GetName(typeof(QuickSlotBarAlignmentOptions), QuickSlotBarAlignmentOptions.AbsolutePositioning)} " +
+                $"alignment is selected.",
+            Order = uiAbsoluteQsTopOrder - 2,
+            IsAdvanced = false
+        };
+        const string UiAbsoluteStabilitySection = "Stability Bar Position";
+        const int uiAbsoluteStabilityTopOrder = uiAbsoluteQsTopOrder - 1000;
+        public ConfigSetting<float> StabilityBarAbsolute_X { get; } = new ConfigSetting<float>()
+        {
+            Name = nameof(StabilityBarAbsolute_X),
+            DefaultValue = 0f,
+            Section = UiAbsoluteStabilitySection,
+            DisplayName = "    Center X Position",
+            Description = $"The absolute X position of the center of the Stability bar when " +
+                $"{Enum.GetName(typeof(QuickSlotBarAlignmentOptions), QuickSlotBarAlignmentOptions.AbsolutePositioning)} " +
+                $"alignment is selected.",
+            Order = uiAbsoluteStabilityTopOrder - 1,
+            IsAdvanced = false
+        };
+        public ConfigSetting<float> StabilityBarAbsolute_Y { get; } = new ConfigSetting<float>()
+        {
+            Name = nameof(StabilityBarAbsolute_Y),
+            DefaultValue = 0f,
+            Section = UiAbsoluteStabilitySection,
+            DisplayName = "    Bottom Edge Y Position",
+            Description = $"The absolute Y position of the bottom edge of the Stability bar when " +
+                $"{Enum.GetName(typeof(QuickSlotBarAlignmentOptions), QuickSlotBarAlignmentOptions.AbsolutePositioning)} " +
+                $"alignment is selected.",
+            Order = uiAbsoluteStabilityTopOrder - 2,
+            IsAdvanced = false
+        };
 
         //Advanced Settings
         const string AdvancedSection = "zz--Advanced Settings--zz";

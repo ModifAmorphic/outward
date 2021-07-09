@@ -4,6 +4,7 @@
     {
         None = 0,
         MoveQuickSlotAboveStability = 1,
-        MoveStabilityAboveQuickSlot = 2
+        MoveStabilityAboveQuickSlot = 2,
+        AbsolutePositioning = 3
     }
 }

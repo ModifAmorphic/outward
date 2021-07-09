@@ -2,6 +2,7 @@
 using ModifAmorphic.Outward.ExtraSlots.Events;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Shared.Config;
+using ModifAmorphic.Outward.Shared.Config.Extensions;
 using ModifAmorphic.Outward.Shared.Config.Models;
 
 
@@ -46,7 +47,15 @@ namespace ModifAmorphic.Outward.ExtraSlots.Config
             _configService.BindConfigSetting(esSettings.QuickSlotBarAlignmentOption,
                 (SettingValueChangedArgs<QuickSlotBarAlignmentOptions> args) =>
                 {
-                    ToggleAlignmentOptions(esSettings.QuickSlotBarAlignmentOption.Value, esSettings.MoveStabilityBarUp_Y_Offset, esSettings.MoveQuickSlotBarUp_Y_Offset);
+                    ToggleAlignmentOptions(esSettings.QuickSlotBarAlignmentOption.Value
+                        , esSettings.MoveQuickSlotBarUp_Y_Offset
+                        , esSettings.MoveStabilityBarUp_Y_Offset
+                        , esSettings.QuickSlotBarAbsolute_X
+                        , esSettings.QuickSlotBarAbsolute_Y
+                        , esSettings.StabilityBarAbsolute_X
+                        , esSettings.StabilityBarAbsolute_Y
+                        );
+                    _configManagerService.RefreshConfigManager();
                     OnUiSettingsChanged(esSettings);
                 });
 
@@ -57,6 +66,19 @@ namespace ModifAmorphic.Outward.ExtraSlots.Config
             // Quickslot Bar Y Offset
             _configService.BindConfigSetting(esSettings.MoveQuickSlotBarUp_Y_Offset,
                 (SettingValueChangedArgs<float> args) => OnUiSettingsChanged(esSettings));
+
+            // QuickSlot Bar Absolute Postions
+            _configService.BindConfigSetting(esSettings.QuickSlotBarAbsolute_X,
+                (SettingValueChangedArgs<float> args) => OnUiSettingsChanged(esSettings));
+            _configService.BindConfigSetting(esSettings.QuickSlotBarAbsolute_Y,
+                (SettingValueChangedArgs<float> args) => OnUiSettingsChanged(esSettings));
+
+            // Stability Bar Absolute Postions
+            _configService.BindConfigSetting(esSettings.StabilityBarAbsolute_X,
+                (SettingValueChangedArgs<float> args) => OnUiSettingsChanged(esSettings));
+            _configService.BindConfigSetting(esSettings.StabilityBarAbsolute_Y,
+                (SettingValueChangedArgs<float> args) => OnUiSettingsChanged(esSettings));
+
             #endregion
             #endregion
 
@@ -78,10 +100,17 @@ namespace ModifAmorphic.Outward.ExtraSlots.Config
 
             //Toggle sub options to correct initial states
             ToggleCenteringOptions(esSettings.CenterQuickSlotPanel.Value, esSettings.CenterQuickSlot_X_Offset);
-            ToggleAlignmentOptions(esSettings.QuickSlotBarAlignmentOption.Value, esSettings.MoveStabilityBarUp_Y_Offset, esSettings.MoveQuickSlotBarUp_Y_Offset);
+            ToggleAlignmentOptions(esSettings.QuickSlotBarAlignmentOption.Value
+                        , esSettings.MoveQuickSlotBarUp_Y_Offset
+                        , esSettings.MoveStabilityBarUp_Y_Offset
+                        , esSettings.QuickSlotBarAbsolute_X
+                        , esSettings.QuickSlotBarAbsolute_Y
+                        , esSettings.StabilityBarAbsolute_X
+                        , esSettings.StabilityBarAbsolute_Y
+                        );
 
             //Refresh the window
-            //_configManagerService.RefreshConfigManager();
+            _configManagerService.RefreshConfigManager();
         }
         private void OnUiSettingsChanged(ExtraSlotsSettings esSettings)
         {
@@ -99,27 +128,61 @@ namespace ModifAmorphic.Outward.ExtraSlots.Config
             else
                 _configService.HideSettingAndRefresh(quickSlotXOffset);
         }
-        private void ToggleAlignmentOptions(QuickSlotBarAlignmentOptions alignment, ConfigSetting<float> stabilityBarOffsetY, ConfigSetting<float> quickSlotBarOffsetY)
+        //TODO: Fix this mess.  Ugly.
+        private void ToggleAlignmentOptions(QuickSlotBarAlignmentOptions alignment
+            , ConfigSetting<float> quickSlotBarOffsetY
+            , ConfigSetting<float> stabilityBarOffsetY
+            , ConfigSetting<float> quickSlotBarAbsoluteX
+            , ConfigSetting<float> quickSlotBarAbsoluteY
+            , ConfigSetting<float> stabilityBarAbsoluteX
+            , ConfigSetting<float> stabilityBarAbsoluteY
+            )
         {
 #if DEBUG
             _logger.LogTrace($"{nameof(ToggleAlignmentOptions)}: {nameof(alignment)}={alignment}.\n" +
                 $"{nameof(stabilityBarOffsetY)}.Name: {stabilityBarOffsetY.Name}. {nameof(stabilityBarOffsetY)}.IsVisible: {stabilityBarOffsetY.IsVisible}\n" +
-                $"{nameof(quickSlotBarOffsetY)}.Name:  {quickSlotBarOffsetY.Name}. {nameof(quickSlotBarOffsetY)}.IsVisible: {quickSlotBarOffsetY.IsVisible}");
+                $"{nameof(quickSlotBarOffsetY)}.Name:  {quickSlotBarOffsetY.Name}. {nameof(quickSlotBarOffsetY)}.IsVisible: {quickSlotBarOffsetY.IsVisible}\n " +
+                $"{nameof(quickSlotBarAbsoluteX)}.Name:  {quickSlotBarAbsoluteX.Name}. {nameof(quickSlotBarAbsoluteX)}.IsVisible: {quickSlotBarAbsoluteX.IsVisible}\n " +
+                $"{nameof(quickSlotBarAbsoluteY)}.Name:  {quickSlotBarAbsoluteY.Name}. {nameof(quickSlotBarAbsoluteY)}.IsVisible: {quickSlotBarAbsoluteY.IsVisible}\n " +
+                $"{nameof(stabilityBarAbsoluteX)}.Name:  {stabilityBarAbsoluteX.Name}. {nameof(stabilityBarAbsoluteX)}.IsVisible: {stabilityBarAbsoluteX.IsVisible}\n " +
+                $"{nameof(stabilityBarAbsoluteY)}.Name:  {stabilityBarAbsoluteY.Name}. {nameof(stabilityBarAbsoluteY)}.IsVisible: {stabilityBarAbsoluteY.IsVisible}"
+                );
 #endif
             if (QuickSlotBarAlignmentOptions.MoveQuickSlotAboveStability == alignment)
             {
-                _configService.ShowSettingAndRefresh(quickSlotBarOffsetY);
-                _configService.HideSettingAndRefresh(stabilityBarOffsetY);
+                quickSlotBarOffsetY.Show();
+                stabilityBarOffsetY.Hide();
+                quickSlotBarAbsoluteX.Hide();
+                quickSlotBarAbsoluteY.Hide();
+                stabilityBarAbsoluteX.Hide();
+                stabilityBarAbsoluteY.Hide();
             }
             else if (QuickSlotBarAlignmentOptions.MoveStabilityAboveQuickSlot == alignment)
             {
-                _configService.ShowSettingAndRefresh(stabilityBarOffsetY);
-                _configService.HideSettingAndRefresh(quickSlotBarOffsetY);
+                quickSlotBarOffsetY.Hide();
+                stabilityBarOffsetY.Show();
+                quickSlotBarAbsoluteX.Hide();
+                quickSlotBarAbsoluteY.Hide();
+                stabilityBarAbsoluteX.Hide();
+                stabilityBarAbsoluteY.Hide();
+            }
+            else if (QuickSlotBarAlignmentOptions.AbsolutePositioning == alignment)
+            {
+                quickSlotBarOffsetY.Hide();
+                stabilityBarOffsetY.Hide();
+                quickSlotBarAbsoluteX.Show();
+                quickSlotBarAbsoluteY.Show();
+                stabilityBarAbsoluteX.Show();
+                stabilityBarAbsoluteY.Show();
             }
             else
             {
-                _configService.HideSettingAndRefresh(stabilityBarOffsetY);
-                _configService.HideSettingAndRefresh(quickSlotBarOffsetY);
+                quickSlotBarOffsetY.Hide();
+                stabilityBarOffsetY.Hide();
+                quickSlotBarAbsoluteX.Hide();
+                quickSlotBarAbsoluteY.Hide();
+                stabilityBarAbsoluteX.Hide();
+                stabilityBarAbsoluteY.Hide();
             }
         }
     }

@@ -161,6 +161,20 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
                                     .MoveAbove(quickSlotPanel.RectTransform, stabilityRect, _esSettings.MoveStabilityBarUp_Y_Offset.Value);
                                 break;
                             }
+                        case QuickSlotBarAlignmentOptions.AbsolutePositioning:
+                            {
+                                _logger.LogInfo("Setting Absolution Positions of Quickslot and Stability bars.");
+                                //For the quickslot bar, move the parent transform on the Y access and the actual quickslot bar on the X.
+                                // This is done because the parent stretches the entire screen horizontal.
+                                TransformMover.SetPosition(qsParentRectTransform
+                                    , new Vector3(qsParentRectTransform.position.x, _esSettings.QuickSlotBarAbsolute_Y.Value, qsParentRectTransform.position.z));
+                                TransformMover.SetPosition(quickSlotPanel.transform
+                                    , new Vector3(_esSettings.QuickSlotBarAbsolute_X.Value, quickSlotPanel.transform.position.y, quickSlotPanel.transform.position.z));
+
+                                TransformMover.SetPosition(stabilityDisplay.transform
+                                    , new Vector3(_esSettings.StabilityBarAbsolute_X.Value, _esSettings.StabilityBarAbsolute_Y.Value, stabilityDisplay.transform.position.z));
+                                break;
+                            }
                         default:
                             {
                                 _logger.LogWarning($"Unknown Alignment Option: {(int?)_esSettings?.QuickSlotBarAlignmentOption?.Value}. Defaulting to no alignment.");
