@@ -12,7 +12,7 @@ namespace ModifAmorphic.Outward.KeyBindings
     /// This class is responsible for adding extra quickslots to the character's QuickSlotManager.
     /// </summary>
     [HarmonyPatch(typeof(CharacterQuickSlotManager), "Awake")]
-    static class CharacterQuickSlotManagerPatches
+    internal static class CharacterQuickSlotManagerPatches
     {
         private static int _quickslotsToAdd;
         private static ModifAmorphicLogging.Logger _logger;

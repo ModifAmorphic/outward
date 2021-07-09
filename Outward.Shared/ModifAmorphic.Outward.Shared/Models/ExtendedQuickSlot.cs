@@ -1,6 +1,6 @@
 ﻿namespace ModifAmorphic.Outward.Models
 {
-    class ExtendedQuickSlot
+    internal class ExtendedQuickSlot
     {
         public int QuickSlotId { get; set; }
         public string ActionName { get; set; }

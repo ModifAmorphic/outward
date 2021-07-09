@@ -7,7 +7,7 @@ using System.Linq;
 namespace ModifAmorphic.Outward.KeyBindings.Patches
 {
     [HarmonyPatch(typeof(LocalizationManager), "Awake")]
-    static class LocalizationManagerPatches
+    internal static class LocalizationManagerPatches
     {
         static Logger _logger;
         static readonly List<ILocalizeListener> _customLocalizationListeners = new List<ILocalizeListener>();

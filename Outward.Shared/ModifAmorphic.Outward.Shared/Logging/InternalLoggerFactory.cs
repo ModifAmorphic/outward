@@ -1,6 +1,6 @@
 ﻿namespace ModifAmorphic.Outward.Logging
 {
-    static class InternalLoggerFactory
+    internal static class InternalLoggerFactory
     {
         const string loggerNameFormat = "{0} - {1}";
         static readonly string modifInternalLoggerName = $"{nameof(ModifAmorphic)}.{nameof(Outward)}";

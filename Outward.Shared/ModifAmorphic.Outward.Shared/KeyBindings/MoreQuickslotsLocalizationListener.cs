@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ModifAmorphic.Outward.KeyBindings
 {
-    class MoreQuickslotsLocalizationListener : ILocalizeListener
+    internal class MoreQuickslotsLocalizationListener : ILocalizeListener
     {
         private readonly Dictionary<string, string> qsLocalizations;
         private readonly Logging.Logger logger;

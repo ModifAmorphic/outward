@@ -2,7 +2,7 @@
 
 namespace ModifAmorphic.Outward.Internal
 {
-    public class SafeDictionary<TKey, TValue>
+    internal class SafeDictionary<TKey, TValue>
 
     {
         private readonly object _lock = new object();

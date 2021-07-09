@@ -7,7 +7,7 @@ using ModifAmorphicLogging = ModifAmorphic.Outward.Logging;
 namespace ModifAmorphic.Outward.KeyBindings
 {
     [HarmonyPatch(typeof(KeyboardQuickSlotPanel), "InitializeQuickSlotDisplays")]
-    static class KeyboardQuickSlotPanelPatches
+    internal static class KeyboardQuickSlotPanelPatches
     {
         private static int _quickslotsToAdd;
         private static int _exQuickslotStartId;
