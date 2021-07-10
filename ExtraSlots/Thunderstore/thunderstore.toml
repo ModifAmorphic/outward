@@ -17,7 +17,7 @@ sinai-dev-SideLoader = "3.3.6"
 [build]
 icon = "Assets/icon.png"
 readme = "Assets/README.md"
-outdir = "${THUNDERSTORE_OUT_DIR}"
+outdir = "Build"
 
 
 [[build.copy]]
