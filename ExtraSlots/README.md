@@ -22,7 +22,7 @@ Extra QuickSlots enables additional Keyboard QuickSlots and repositioning of the
 - __QuickSlot and Stability Bar Alignment__
   - ___MoveQuickSlotAboveStability___: Moves the QuickSlot Bar above the Stability Bar. The __Y Offset QuickSlot Bar by__ setting allows for additional fine tuning of the QuickSlot Bar when this option is selected.
   - ___MoveStabilityAboveQuickSlot___: Moves the Stability Bar above the QuickSlot Bar. The __Y Offset Stability Bar by__ setting allows for additional fine tuning of the Stability Bar when this option is selected.
-    - ___AbsolutePositioning___: Allows for absolution X-Y coordinated positioning of the stability and quickslot bars.
+    - ___AbsolutePositioning___: Absolute X-Y coordinate positioning of the stability and quickslot bars.
 
 ## Configuring Hotkeys
 - The Extra Quick Slots will be at the top of the __Quick Slots__ section of the __Keyboard__ settings, starting with "Ex Quickslot 1".
