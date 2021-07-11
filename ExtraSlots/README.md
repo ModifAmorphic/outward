@@ -1,5 +1,7 @@
 # Summary
 Extra QuickSlots enables additional Keyboard QuickSlots and repositioning of the QuickSlot and Stability Bars.
+## *** The Latest Beta version of this mod will reset all config settings back to their defaults! ***
+
 1. Set the amount of extra keyboard Quick Slots.
 2. Restart the game.
 3. Set the positions of both bars.
@@ -35,7 +37,13 @@ Extra QuickSlots enables additional Keyboard QuickSlots and repositioning of the
 &nbsp;
 # Change Logs
 
-## Alpha Version 0.3.0
+## Beta Version 0.4.3
+- First beta version of this mod.
+- Implemented minumum versions into config. Allows for config to be recreated from scratch if minium version is not met.
+  - Noticed issues when updating from older versions of this mod caused by inability to name anything correctly the first time. Decided on a clean start for Beta.
+- Reworked to get rid of they "sidecar" shared mod that was loading alongside with ExtraSlots with it's own configuration.
+
+## Alpha Version 0.3.7
 - Settings in ConfigurationManager use friendly display names instead of their internal variable / config names.
 - Stability and Quickslot Bar positioning settings no longer advanced and show/hide depending on alignment setting selected.
 - New Absolute Positoning option added to alignment options.

@@ -5,7 +5,7 @@ schemaVersion = "0.0.1"
 namespace = "ModifAmorphic"
 name = "Extra_QuickSlots"
 versionNumber = "${PACKAGE_VERSION}"
-description = "**Alpha Version** Adds a Extra QuickSlots to the Keyboard Quickslot Bar."
+description = "**Beta Version - Config Reset!** Adds Extra QuickSlots to the Keyboard Quickslot Bar."
 websiteUrl = "https://github.com/ModifAmorphic/outward/tree/master/ExtraSlots"
 containsNsfwContent = false
 
