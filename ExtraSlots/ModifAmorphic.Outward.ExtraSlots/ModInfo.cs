@@ -7,8 +7,8 @@
 #if PIPELINE
         public const string ModVersion = "${PACKAGE_VERSION}";
 #else
-        public const string ModVersion = "0.3.8";
+        public const string ModVersion = "0.4.0";
 #endif
-        public const string MinimumConfigVersion = "0.3.8";
+        public const string MinimumConfigVersion = "0.4.0";
     }
 }
