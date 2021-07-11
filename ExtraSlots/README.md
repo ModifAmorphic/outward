@@ -37,7 +37,7 @@ Extra QuickSlots enables additional Keyboard QuickSlots and repositioning of the
 &nbsp;
 # Change Logs
 
-## Beta Version 0.4.3
+## Beta Version 0.4.0
 - First beta version of this mod.
 - Implemented minumum versions into config. Config to be recreated from scratch if minimum version is not met.
   - Noticed issues when updating from older versions of this mod caused by my inability to name anything correctly the first, second or third time. Decided on a clean start for Beta.
