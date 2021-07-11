@@ -1,17 +1,21 @@
 ﻿using ModifAmorphic.Outward.Events;
+using ModifAmorphic.Outward.KeyBindings.Patches;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Models;
-using ModifAmorphic.Outward.Shared;
+using ModifAmorphic.Outward;
 using SideLoader;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace ModifAmorphic.Outward.KeyBindings
+namespace ModifAmorphic.Outward.Modules
 {
-    public class QuickSlotExtender
+    public class QuickSlotExtender : IModifModule
     {
-        private readonly Logging.Logger logger;
+        private readonly Func<IModifLogger> _loggerFactory;
+        private IModifLogger Logger => _loggerFactory.Invoke();
+
         private CustomKeybindings _customKeyBindings;
 
         private bool _lazyInitNeeded = true;
@@ -20,17 +24,25 @@ namespace ModifAmorphic.Outward.KeyBindings
         private const string MenuSlotNoKey = "{ExtraSlotNumber}";
         private const string MenuDescriptionDefaultFormat = "Ex Quick Slot {ExtraSlotNumber}";
 
+        public HashSet<Type> PatchDependencies => new HashSet<Type>() { 
+            typeof(CharacterQuickSlotManagerPatches),
+            typeof(KeyboardQuickSlotPanelPatches),
+            typeof(LocalCharacterControlPatches),
+            typeof(LocalizationManagerPatches)
+        };
+        public HashSet<Type> EventSubscriptions => new HashSet<Type>() {
+            typeof(CharacterQuickSlotManagerPatches),
+            typeof(KeyboardQuickSlotPanelPatches),
+            typeof(LocalCharacterControlPatches),
+            typeof(LocalizationManagerPatches)
+        };
+
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
-        public QuickSlotExtender()
+        internal QuickSlotExtender(Func<IModifLogger> loggerFactory)
         {
-            this.logger = Logging.InternalLoggerFactory.GetLogger(Logging.LogLevel.Info, ModInfo.ModName);
+            this._loggerFactory = loggerFactory;
         }
-        [MethodImplAttribute(MethodImplOptions.NoInlining)]
-        public QuickSlotExtender(Logging.Logger logger)
-        {
-            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
-        private void LazyInit()
+        internal void LazyInit()
         {
             if (_lazyInitNeeded)
             {
@@ -59,7 +71,7 @@ namespace ModifAmorphic.Outward.KeyBindings
                     string description = menuDescriptions.Dequeue();
                     if (string.IsNullOrEmpty(description?.Trim()))
                     {
-                        logger.LogWarning($"{nameof(ExtendQuickSlots)}(): Empty menu description found in queue {nameof(menuDescriptions)}. Defaulting menu message text for extra slot {exSlotNo}.");
+                        Logger.LogWarning($"{nameof(ExtendQuickSlots)}(): Empty menu description found in queue {nameof(menuDescriptions)}. Defaulting menu message text for extra slot {exSlotNo}.");
                         description = MenuDescriptionDefaultFormat.Replace(MenuSlotNoKey, exSlotNo.ToString());
                     }
 
@@ -75,17 +87,17 @@ namespace ModifAmorphic.Outward.KeyBindings
                     CustomKeybindings.AddAction(actionName, KeybindingsCategory.QuickSlot, ControlType.Both, SideLoader.InputType.Button);
 
                     //_customKeyBindings.AddAction(actionName, description, KeybindingsCategory.QuickSlot, ControlType.Both, 5);
-                    logger.LogDebug($"Adding quickslot - id: {quickSlotId}; actionName: '{actionName}'; description: {description}");
+                    Logger.LogDebug($"Adding quickslot - id: {quickSlotId}; actionName: '{actionName}'; description: {description}");
                     x++;
                 }
 
-                logger.LogTrace($"RaiseSlotsChanged Event. StartId = {startingId}, QuickSlotsToAdd = {exQuickSlots.Count}");
+                Logger.LogTrace($"RaiseSlotsChanged Event. StartId = {startingId}, QuickSlotsToAdd = {exQuickSlots.Count}");
                 //Raise event that slots changed so subscribers can react
                 QuickSlotExtenderEvents.RaiseSlotsChanged(this, new QuickSlotExtendedArgs(startingId, exQuickSlots));
             }
             catch (Exception ex)
             {
-                logger.LogException($"Exception in {nameof(QuickSlotExtender)}.{nameof(ExtendQuickSlots)}(Queue<string> menuDescriptions). Extend failed.", ex);
+                Logger.LogException($"Exception in {nameof(QuickSlotExtender)}.{nameof(ExtendQuickSlots)}(Queue<string> menuDescriptions). Extend failed.", ex);
                 throw;
             }
         }
@@ -93,7 +105,7 @@ namespace ModifAmorphic.Outward.KeyBindings
         public void ExtendQuickSlots(int extendAmount, string menuDescriptionFormat)
         {
             var menuDescriptions = new Queue<string>();
-            logger.LogDebug($"Extending quickslots by {extendAmount}.");
+            Logger.LogDebug($"Extending quickslots by {extendAmount}.");
             try
             {
                 string menuFormat = menuDescriptionFormat;
@@ -101,7 +113,7 @@ namespace ModifAmorphic.Outward.KeyBindings
                     throw new ArgumentOutOfRangeException(nameof(extendAmount), $"Value of {nameof(extendAmount)} must be greater than 0.  Value was {extendAmount}.");
                 if (string.IsNullOrEmpty(menuDescriptionFormat?.Trim()) || !menuDescriptionFormat.Contains(MenuSlotNoKey))
                 {
-                    logger.LogWarning($"{nameof(ExtendQuickSlots)}(): '{MenuSlotNoKey}' replacer not found in {nameof(menuDescriptionFormat)} parameter. Using default menu formatting.");
+                    Logger.LogWarning($"{nameof(ExtendQuickSlots)}(): '{MenuSlotNoKey}' replacer not found in {nameof(menuDescriptionFormat)} parameter. Using default menu formatting.");
                     menuFormat = MenuDescriptionDefaultFormat;
                 }
                 for (int x = 0; x < extendAmount; x++)
@@ -112,7 +124,7 @@ namespace ModifAmorphic.Outward.KeyBindings
             }
             catch (Exception ex)
             {
-                logger.LogException($"Exception in {nameof(QuickSlotExtender)}.{nameof(ExtendQuickSlots)}(int extendAmount, string menuDescriptionFormat). Extend failed.", ex);
+                Logger.LogException($"Exception in {nameof(QuickSlotExtender)}.{nameof(ExtendQuickSlots)}(int extendAmount, string menuDescriptionFormat). Extend failed.", ex);
                 throw;
             }
             ExtendQuickSlots(menuDescriptions);

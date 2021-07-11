@@ -1,7 +1,7 @@
 ﻿using BepInEx.Configuration;
 using System;
 
-namespace ModifAmorphic.Outward.Shared.Config.Models
+namespace ModifAmorphic.Outward.Config.Models
 {
     public class ConfigSetting<T>
     {
@@ -40,7 +40,7 @@ namespace ModifAmorphic.Outward.Shared.Config.Models
             if (!SuppressValueChangedEvents)
             {
 #if DEBUG
-                UnityEngine.Debug.Log($"[{ModInfo.ModName}] - ConfigSetting: {this.Name}. Triggering {nameof(ValueChanged)} Event. " +
+                UnityEngine.Debug.Log($"[{DebugLoggerInfo.ModName}] - ConfigSetting: {this.Name}. Triggering {nameof(ValueChanged)} Event. " +
                     $"oldValue: {oldValue}. newvalue: {newValue} " +
                     $"{nameof(ValueChanged)} null? {ValueChanged == null}. " +
                     $"{nameof(SuppressValueChangedEvents)}? {SuppressValueChangedEvents}");

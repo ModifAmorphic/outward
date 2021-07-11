@@ -1,6 +1,6 @@
 ﻿using BepInEx.Configuration;
 
-namespace ModifAmorphic.Outward.Shared.Config.Extensions
+namespace ModifAmorphic.Outward.Config.Extensions
 {
     public static class ConfigEntryExtentions
     {

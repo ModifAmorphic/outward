@@ -2,7 +2,7 @@
 
 namespace ModifAmorphic.Outward.Logging
 {
-    public class Logger
+    public class Logger : IModifLogger
     {
         public LogLevel LogLevel { get; }
         public string LoggerName { get; }

@@ -18,16 +18,17 @@ namespace ModifAmorphic.Outward.KeyBindings.Patches
         private static Dictionary<int, RewiredInputs> _playerInputManager = new Dictionary<int, RewiredInputs>();
         //private static SortedDictionary<int, string> _exQuickSlots = new SortedDictionary<int, string>();
         private static IEnumerable<ExtendedQuickSlot> _exQuickSlots = new List<ExtendedQuickSlot>();
-        private static Logging.Logger _logger = new Logging.Logger(Logging.LogLevel.Trace, "ModifAmorphic-Outward");
 
+        private static Func<IModifLogger> _getLogger;
+        private static IModifLogger Logger => _getLogger?.Invoke()?? new NullLogger();
+        private static void LoggerEvents_LoggerLoaded(object sender, Func<IModifLogger> getLogger) => _getLogger = getLogger;
 
-        private static void LoggerEvents_LoggerLoaded(object sender, Logger logger) => _logger = logger;
         private static void QuickSlotExtenderEvents_SlotsChanged(object sender, QuickSlotExtendedArgs e) => _exQuickSlots = e.ExtendedQuickSlots;
 
         [EventSubscription]
         public static void SubscribeToEvents()
         {
-            LoggerEvents.LoggerLoaded += LoggerEvents_LoggerLoaded;
+            LoggerEvents.LoggerReady += LoggerEvents_LoggerLoaded;
             QuickSlotExtenderEvents.SlotsChanged += QuickSlotExtenderEvents_SlotsChanged;
         }
 
@@ -49,7 +50,7 @@ namespace ModifAmorphic.Outward.KeyBindings.Patches
                     logout += $"\tAction Id: {a.id}, Name: {a.name}, DescriptiveName: {a.descriptiveName}\n";
                 }
             }
-            _logger.LogTrace(logout);
+            Logger.LogTrace(logout);
 #endif
         }
         /// <summary>
@@ -64,7 +65,7 @@ namespace ModifAmorphic.Outward.KeyBindings.Patches
 
             if (__instance.Character == null || __instance.Character.QuickSlotMngr == null)
             {
-                _logger?.LogTrace($"LocalCharacterControl.UpdateQuickSlots - Character or Character.QuickSlotMng was null.");
+                Logger?.LogTrace($"LocalCharacterControl.UpdateQuickSlots - Character or Character.QuickSlotMng was null.");
                 return;
             }
 
@@ -74,20 +75,20 @@ namespace ModifAmorphic.Outward.KeyBindings.Patches
                 //If any of the built in QuickSlot buttons are down, exit.
                 if (AnyQuickSlotInstantButtonsDown(playerId))
                 {
-                    _logger?.LogTrace($"LocalCharacterControl.UpdateQuickSlots - Built in quickslot button was pressed.  Exiting.");
+                    Logger?.LogTrace($"LocalCharacterControl.UpdateQuickSlots - Built in quickslot button was pressed.  Exiting.");
                     return;
                 }
 
                 var exQsButtonDown = GetFirstExQuickSlotInstantDown(playerId);
                 if (exQsButtonDown > 0)
                 {
-                    _logger?.LogTrace($"Triggering Ex Quickslot #{exQsButtonDown}");
+                    Logger?.LogTrace($"Triggering Ex Quickslot #{exQsButtonDown}");
                     __instance.Character.QuickSlotMngr.QuickSlotInput(exQsButtonDown - 1);
                 }
             }
             catch (Exception ex)
             {
-                _logger?.LogException($"Exception in {nameof(QuickSlotExtender)}.{nameof(OnUpdateQuickSlots_CheckForButtonPresses)}().", ex);
+                Logger?.LogException($"Exception in {nameof(LocalCharacterControlPatches)}.{nameof(OnUpdateQuickSlots_CheckForButtonPresses)}().", ex);
                 throw;
             }
         }
