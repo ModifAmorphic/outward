@@ -39,9 +39,9 @@ Extra QuickSlots enables additional Keyboard QuickSlots and repositioning of the
 
 ## Beta Version 0.4.3
 - First beta version of this mod.
-- Implemented minumum versions into config. Allows for config to be recreated from scratch if minium version is not met.
-  - Noticed issues when updating from older versions of this mod caused by inability to name anything correctly the first time. Decided on a clean start for Beta.
-- Reworked to get rid of they "sidecar" shared mod that was loading alongside with ExtraSlots with it's own configuration.
+- Implemented minumum versions into config. Config to be recreated from scratch if minimum version is not met.
+  - Noticed issues when updating from older versions of this mod caused by my inability to name anything correctly the first, second or third time. Decided on a clean start for Beta.
+- Reworked to get rid of the "sidecar" shared mod that was loading alongside with ExtraSlots with its own configuration.
 
 ## Alpha Version 0.3.7
 - Settings in ConfigurationManager use friendly display names instead of their internal variable / config names.
