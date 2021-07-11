@@ -1,25 +1,35 @@
 ﻿using BepInEx;
 using ModifAmorphic.Outward.ExtraSlots.Events;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Shared.Config;
-using ModifAmorphic.Outward.Shared.Config.Extensions;
-using ModifAmorphic.Outward.Shared.Config.Models;
-
+using ModifAmorphic.Outward.Config;
+using ModifAmorphic.Outward.Config.Extensions;
+using ModifAmorphic.Outward.Config.Models;
+using System;
 
 namespace ModifAmorphic.Outward.ExtraSlots.Config
 {
-    internal class ConfigSettingsService
+    internal class SettingsService
     {
         private readonly ConfigManagerService _configManagerService;
-        private readonly ConfigService _configService;
+        private readonly ConfigSettingsService _configService;
+        private readonly string _minConfigVersion;
 #if DEBUG
         private readonly Logger _logger = new Logger(LogLevel.Trace, ModInfo.ModName);
 #endif
-        public ConfigSettingsService(BaseUnityPlugin plugin) => (_configManagerService, _configService) = (new ConfigManagerService(plugin), new ConfigService(plugin));
+        public SettingsService(BaseUnityPlugin plugin, string minConfigVersion) => 
+            (_configManagerService, _configService, _minConfigVersion) = (new ConfigManagerService(plugin), new ConfigSettingsService(plugin), minConfigVersion);
 
         public void Configure()
         {
             ExtraSlotsSettings esSettings = new ExtraSlotsSettings();
+
+            if (!MeetsMinimumVersion(_minConfigVersion))
+            {
+#if DEBUG
+                _logger.LogInfo($"Minimum version requirement not met. Minumum version is {_minConfigVersion}. Resetting all settings.");
+#endif
+                _configService.RemoveAllSettings();
+            }
 
             _configService.BindConfigSetting(esSettings.ExtraQuickSlots,
                 (SettingValueChangedArgs<int> args) =>
@@ -89,6 +99,10 @@ namespace ModifAmorphic.Outward.ExtraSlots.Config
             //Logging Level
             _configService.BindConfigSetting(esSettings.LogLevel,
                 (SettingValueChangedArgs<LogLevel> args) => ExtraSlotsConfigEvents.RaiseLoggerSettingsChanged(this, esSettings));
+
+            //The Version the config was originally created with
+            _configService.BindConfigSetting(esSettings.ConfigVersion, null);
+
             #endregion
 
             //Raise all Events and refresh the ConfigurationManager
@@ -184,6 +198,22 @@ namespace ModifAmorphic.Outward.ExtraSlots.Config
                 stabilityBarAbsoluteX.Hide();
                 stabilityBarAbsoluteY.Hide();
             }
+        }
+        private bool MeetsMinimumVersion(string minimumVersion)
+        {
+            var configVersionValue = _configService.PeekSavedConfigValue(new ExtraSlotsSettings().ConfigVersion);
+            if (string.IsNullOrWhiteSpace(configVersionValue))
+                return false;
+            
+            if (!Version.TryParse(configVersionValue, out var configVersion)
+                || !Version.TryParse(minimumVersion, out var minVersion))
+                return false;
+#if DEBUG
+            _logger.LogDebug($"Current Config {nameof(MeetsMinimumVersion)}? {configVersion.CompareTo(minVersion) >= 0}. Compared: " +
+                   $"ConfigVersion: {configVersion} to MinimumVersion: {minVersion}");
+#endif
+            return configVersion.CompareTo(minVersion) >= 0;
+
         }
     }
 }

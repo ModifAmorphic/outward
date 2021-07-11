@@ -5,7 +5,7 @@ namespace ModifAmorphic.Outward.ExtraSlots
 {
     [BepInDependency("com.bepis.bepinex.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("io.mefino.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency("modifamorphic.outward.shared", BepInDependency.DependencyFlags.HardDependency)]
+    //[BepInDependency("modifamorphic.outward.shared", BepInDependency.DependencyFlags.HardDependency)]
     [BepInPlugin(ModInfo.ModId, ModInfo.ModName, ModInfo.ModVersion)]
     public class ExtraSlotsPlugin : BaseUnityPlugin
     {

@@ -4,6 +4,7 @@ using ModifAmorphic.Outward.ExtraSlots.Config;
 using ModifAmorphic.Outward.ExtraSlots.Display;
 using ModifAmorphic.Outward.ExtraSlots.Events;
 using ModifAmorphic.Outward.ExtraSlots.Query;
+using ModifAmorphic.Outward.Logging;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,9 +13,9 @@ using ModifAmorphicLogging = ModifAmorphic.Outward.Logging;
 namespace ModifAmorphic.Outward.ExtraSlots.Patches
 {
     [HarmonyPatch(typeof(QuickSlotPanel))]
-    public class QuickSlotPanelPatches
+    internal static class QuickSlotPanelPatches
     {
-        private static ModifAmorphicLogging.Logger _logger;
+        private static IModifLogger _logger;
         private static readonly HashSet<UID> _characterHasBarsAligned = new HashSet<UID>();
         private static readonly HashSet<UID> _characterHasQsCentered = new HashSet<UID>();
         private static readonly HashSet<UID> _characterHasQsDefault = new HashSet<UID>();
