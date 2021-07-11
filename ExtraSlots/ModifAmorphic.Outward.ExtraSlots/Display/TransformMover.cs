@@ -1,13 +1,14 @@
-﻿using System.Text;
+﻿using ModifAmorphic.Outward.Logging;
+using System.Text;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.ExtraSlots.Display
 {
     internal class TransformMover
     {
-        private readonly Logging.Logger _logger;
+        private readonly IModifLogger _logger;
 
-        public TransformMover(Logging.Logger logger)
+        public TransformMover(IModifLogger logger)
         {
             this._logger = logger;
         }

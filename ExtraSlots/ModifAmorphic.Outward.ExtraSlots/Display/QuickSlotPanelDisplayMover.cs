@@ -1,12 +1,13 @@
-﻿using UnityEngine;
+﻿using ModifAmorphic.Outward.Logging;
+using UnityEngine;
 
 namespace ModifAmorphic.Outward.ExtraSlots.Display
 {
     internal class QuickSlotPanelDisplayMover
     {
-        private readonly Logging.Logger _logger;
+        private readonly IModifLogger _logger;
         private readonly QuickSlotPanel _quickSlotPanel;
-        public QuickSlotPanelDisplayMover(QuickSlotPanel quickSlotPanel, Logging.Logger logger)
+        public QuickSlotPanelDisplayMover(QuickSlotPanel quickSlotPanel, IModifLogger logger)
         {
             this._quickSlotPanel = quickSlotPanel;
             this._logger = logger;
