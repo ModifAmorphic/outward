@@ -1,7 +1,7 @@
 ﻿using BepInEx.Configuration;
 using System.Linq;
 
-namespace ModifAmorphic.Outward.Shared.Config.Extensions
+namespace ModifAmorphic.Outward.Config.Extensions
 {
     public static class ConfigDescriptionExtensions
     {

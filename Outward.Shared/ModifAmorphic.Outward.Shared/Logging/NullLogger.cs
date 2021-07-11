@@ -2,37 +2,50 @@
 
 namespace ModifAmorphic.Outward.Logging
 {
-    internal static class NullLogger
+    internal class NullLogger : IModifLogger
     {
-        public static void LogTrace(Logging.Logger logger, string message)
+        public string LoggerName => "NullLogger";
+
+        public LogLevel LogLevel => default;
+
+        public void Log(LogLevel logLevel, string message)
         {
-            if (logger != null)
-                logger.LogTrace(message);
+            
         }
-        public static void LogDebug(Logging.Logger logger, string message)
+
+        public void LogDebug(string message)
         {
-            if (logger != null)
-                logger.LogDebug(message);
+            
         }
-        public static void LogWarning(Logging.Logger logger, string message)
+
+        public void LogError(string message)
         {
-            if (logger != null)
-                logger.LogWarning(message);
+            
         }
-        public static void LogError(Logging.Logger logger, string message)
+
+        public void LogException(Exception ex)
         {
-            if (logger != null)
-                logger.LogError(message);
+            
         }
-        public static void LogException(Logging.Logger logger, Exception ex)
+
+        public void LogException(string message, Exception ex)
         {
-            if (logger != null)
-                logger.LogException(ex);
+            
         }
-        public static void LogException(Logging.Logger logger, string message, Exception ex)
+
+        public void LogInfo(string message)
         {
-            if (logger != null)
-                logger.LogException(message, ex);
+            
+        }
+
+        public void LogTrace(string message)
+        {
+            
+        }
+
+        public void LogWarning(string message)
+        {
+            
         }
     }
 }

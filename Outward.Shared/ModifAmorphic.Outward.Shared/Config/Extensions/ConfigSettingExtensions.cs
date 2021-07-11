@@ -1,8 +1,8 @@
 ﻿using BepInEx.Configuration;
-using ModifAmorphic.Outward.Shared.Config.Models;
+using ModifAmorphic.Outward.Config.Models;
 using System;
 
-namespace ModifAmorphic.Outward.Shared.Config.Extensions
+namespace ModifAmorphic.Outward.Config.Extensions
 {
     public static class ConfigSettingExtensions
     {
@@ -32,7 +32,7 @@ namespace ModifAmorphic.Outward.Shared.Config.Extensions
             configSetting.IsVisible = false;
             configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes().Browsable = configSetting.IsVisible;
 #if DEBUG
-            UnityEngine.Debug.Log($"[{ModInfo.ModName}] - Hid ConfigSetting {configSetting.Name}. " +
+            UnityEngine.Debug.Log($"[{DebugLoggerInfo.ModName}] - Hid ConfigSetting {configSetting.Name}. " +
                 $"IsVisible = {configSetting.IsVisible}. " +
                 $"Browsable = {configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes().Browsable}.");
 #endif
@@ -44,7 +44,7 @@ namespace ModifAmorphic.Outward.Shared.Config.Extensions
             configSetting.IsVisible = true;
             configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes().Browsable = configSetting.IsVisible;
 #if DEBUG
-            UnityEngine.Debug.Log($"[{ModInfo.ModName}] - Showed ConfigSetting {configSetting.Name}. " +
+            UnityEngine.Debug.Log($"[{DebugLoggerInfo.ModName}] - Showed ConfigSetting {configSetting.Name}. " +
                 $"IsVisible = {configSetting.IsVisible}. " +
                 $"Browsable = {configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes().Browsable}.");
 #endif

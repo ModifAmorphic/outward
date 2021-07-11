@@ -1,25 +1,27 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Events;
+using ModifAmorphic.Outward.Logging;
 using System;
 using System.Linq;
 using ModifAmorphicLogging = ModifAmorphic.Outward.Logging;
 
-namespace ModifAmorphic.Outward.KeyBindings
+namespace ModifAmorphic.Outward.KeyBindings.Patches
 {
     [HarmonyPatch(typeof(KeyboardQuickSlotPanel), "InitializeQuickSlotDisplays")]
     internal static class KeyboardQuickSlotPanelPatches
     {
         private static int _quickslotsToAdd;
         private static int _exQuickslotStartId;
-        private static ModifAmorphicLogging.Logger _logger;
 
-        private static void LoggerEvents_LoggerLoaded(object sender, ModifAmorphicLogging.Logger logger) => _logger = logger;
+        private static Func<IModifLogger> _getLogger;
+        private static IModifLogger Logger => _getLogger?.Invoke() ?? new NullLogger();
+        private static void LoggerEvents_LoggerLoaded(object sender, Func<IModifLogger> getLogger) => _getLogger = getLogger;
         private static void QuickSlotExtenderEvents_SlotsChanged(object sender, QuickSlotExtendedArgs e) => (_quickslotsToAdd, _exQuickslotStartId) = (e.ExtendedQuickSlots.Count(), e.StartId);
 
         [EventSubscription]
         public static void SubscribeToEvents()
         {
-            LoggerEvents.LoggerLoaded += LoggerEvents_LoggerLoaded;
+            LoggerEvents.LoggerReady += LoggerEvents_LoggerLoaded;
             QuickSlotExtenderEvents.SlotsChanged += QuickSlotExtenderEvents_SlotsChanged;
         }
 
@@ -39,7 +41,7 @@ namespace ModifAmorphic.Outward.KeyBindings
                 int exEndIndex = __instance.DisplayOrder.Length + _quickslotsToAdd;
                 int exSlotId = _exQuickslotStartId;
                 Array.Resize(ref __instance.DisplayOrder, exEndIndex);
-                _logger.LogTrace($"{nameof(OnInitializeQuickSlotDisplays_AddExtraSlots)}(): exStartIndex={exStartIndex}; exEndIndex={exEndIndex}; Starting Quickslot Id={exSlotId})");
+                Logger.LogTrace($"{nameof(OnInitializeQuickSlotDisplays_AddExtraSlots)}(): exStartIndex={exStartIndex}; exEndIndex={exEndIndex}; Starting Quickslot Id={exSlotId})");
                 for (int n = exStartIndex; n < exEndIndex; n++)
                 {
                     __instance.DisplayOrder[n] = (QuickSlot.QuickSlotIDs)(exSlotId++);
@@ -47,7 +49,7 @@ namespace ModifAmorphic.Outward.KeyBindings
             }
             catch (Exception ex)
             {
-                _logger.LogException($"{nameof(OnInitializeQuickSlotDisplays_AddExtraSlots)}() error.", ex);
+                Logger.LogException($"{nameof(OnInitializeQuickSlotDisplays_AddExtraSlots)}() error.", ex);
                 throw;
             }
         }

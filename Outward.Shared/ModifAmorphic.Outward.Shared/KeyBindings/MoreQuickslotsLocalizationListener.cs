@@ -1,4 +1,5 @@
 ﻿using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.Logging;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,11 +8,11 @@ namespace ModifAmorphic.Outward.KeyBindings
     internal class MoreQuickslotsLocalizationListener : ILocalizeListener
     {
         private readonly Dictionary<string, string> qsLocalizations;
-        private readonly Logging.Logger logger;
+        private readonly IModifLogger logger;
         /// <summary>
         /// Listener that adds quick slot descriptions to the localization array that are later used when displaying the keybindings in the setup menu.
         /// </summary>
-        public MoreQuickslotsLocalizationListener(Dictionary<string, string> qsLocalizations, Logging.Logger logger)
+        public MoreQuickslotsLocalizationListener(Dictionary<string, string> qsLocalizations, IModifLogger logger)
         {
             this.logger = logger;
             this.qsLocalizations = qsLocalizations;

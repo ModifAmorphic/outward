@@ -2,7 +2,7 @@
 using ModifAmorphic.Outward.Logging;
 using System;
 
-namespace ModifAmorphic.Outward.Shared.Config
+namespace ModifAmorphic.Outward.Config
 {
     public class ConfigManagerService
     {
@@ -23,8 +23,8 @@ namespace ModifAmorphic.Outward.Shared.Config
         {
             var buildSettingList = _reflectedConfigManager.GetType().GetMethod("BuildSettingList");
 #if DEBUG
-            (new Logger(LogLevel.Debug, ModInfo.ModName)).LogDebug(
-                $"[{ModInfo.ModName}] - Refreshing ConfigurationManager " +
+            (new Logger(LogLevel.Debug, DebugLoggerInfo.ModName)).LogDebug(
+                $"[{DebugLoggerInfo.ModName}] - Refreshing ConfigurationManager " +
                 $"Reflected ConfigurationManager found? {_reflectedConfigManager != null}. " +
                 $"BuildSettingList method found? {buildSettingList != null}.");
 #endif

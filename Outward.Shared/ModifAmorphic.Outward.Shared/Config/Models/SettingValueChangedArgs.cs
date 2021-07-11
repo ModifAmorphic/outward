@@ -1,4 +1,4 @@
-﻿namespace ModifAmorphic.Outward.Shared.Config.Models
+﻿namespace ModifAmorphic.Outward.Config.Models
 {
     public class SettingValueChangedArgs<T>
     {
