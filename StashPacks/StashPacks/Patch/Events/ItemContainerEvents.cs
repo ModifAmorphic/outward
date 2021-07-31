@@ -1,8 +1,6 @@
 ﻿using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.StashPacks.WorldInstance.Extensions;
+using ModifAmorphic.Outward.StashPacks.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.StashPacks.Patch.Events
 {
@@ -56,6 +54,6 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
                     UnityEngine.Debug.LogError($"Exception in {nameof(ItemContainerEvents)}::{nameof(RaiseRefreshWeightAfter)}:\n{ex}");
             }
         }
-        
+
     }
 }

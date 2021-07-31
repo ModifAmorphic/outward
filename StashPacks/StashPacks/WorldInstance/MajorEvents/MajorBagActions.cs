@@ -2,8 +2,6 @@
 using ModifAmorphic.Outward.StashPacks.State;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents

@@ -8,7 +8,6 @@ using ModifAmorphic.Outward.StashPacks.WorldInstance.Data;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine.SceneManagement;
 
 namespace ModifAmorphic.Outward.StashPacks.State
@@ -27,7 +26,7 @@ namespace ModifAmorphic.Outward.StashPacks.State
         /// CharacterUID, CharacterSaveInstanceHolder
         /// </summary>
         private readonly ConcurrentDictionary<string, CharacterSaveInstanceHolder> _characterSaveInstanceHolders = new ConcurrentDictionary<string, CharacterSaveInstanceHolder>();
-        
+
         public IReadOnlyDictionary<AreaManager.AreaEnum, (string StashUID, int ItemId)> StashIds => StashPacksConstants.PermenantStashUids;
 
         /// <summary>
@@ -42,7 +41,7 @@ namespace ModifAmorphic.Outward.StashPacks.State
         /// <summary>
         /// Actions that will be executed when a SaveInstance.Save prefix event is triggered. Indexed by CharacterUID.
         /// </summary>
-        private readonly ConcurrentDictionary<string, EventStashSaveExecuter> _stashSaveExecuters = new ConcurrentDictionary<string, EventStashSaveExecuter>();
+        //private readonly ConcurrentDictionary<string, EventStashSaveExecuter> _stashSaveExecuters = new ConcurrentDictionary<string, EventStashSaveExecuter>();
 
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
@@ -59,18 +58,18 @@ namespace ModifAmorphic.Outward.StashPacks.State
         {
             //Remove a character's stash saveExecuter once a save is complete so a new one is created next time.
             //SaveInstanceEvents.SaveAfter += (saveInstance => _stashSaveExecuters.TryRemove(saveInstance.CharSave.CharacterUID, out _));
-            SceneManager.sceneLoaded += (s, l) => 
-            { 
+            SceneManager.sceneLoaded += (s, l) =>
+            {
                 Logger.LogDebug("New scene loaded. Disposing of scene singletons.");
                 foreach (var instance in _singletons.Values)
-                    if (instance is IDisposable)
-                        ((IDisposable)instance).Dispose();
+                    if (instance is IDisposable disposable)
+                        disposable.Dispose();
                 _singletons.Clear();
 
                 foreach (var charInstances in _characterSingletons.Values)
                     foreach (var instance in charInstances.Values)
-                        if (instance is IDisposable)
-                            ((IDisposable)instance).Dispose();
+                        if (instance is IDisposable disposable)
+                            disposable.Dispose();
 
                 _characterSingletons.Clear();
 
@@ -95,7 +94,7 @@ namespace ModifAmorphic.Outward.StashPacks.State
             stashSaveData = null;
             if (_characterSaveInstanceHolders.TryGetValue(characterUID, out var characterSaveInstanceHolder))
                 stashSaveData = new StashSaveData(_areaManager, characterSaveInstanceHolder, StashIds, _getLogger);
-            
+
             return stashSaveData != null;
         }
         public bool TryGetStashPackWorldData(out StashPackWorldData stashPackWorldData)
@@ -114,21 +113,13 @@ namespace ModifAmorphic.Outward.StashPacks.State
 
             return (SyncPlanner)_singletons[typeof(SyncPlanner)];
         }
-        public StashPackSaveExecuter GetStashPackSaveExecuter()
-        {
-            if (!_singletons.TryGetValue(typeof(StashPackSaveExecuter), out _))
-            {
-                _singletons.TryAdd(typeof(StashPackSaveExecuter), new StashPackSaveExecuter(_getLogger));
-            }
 
-            return (StashPackSaveExecuter)_singletons[typeof(StashPackSaveExecuter)];
-        }
         public BagStateService GetBagStateService(string characterUID)
         {
             var singletons = _characterSingletons.GetOrAdd(characterUID, new ConcurrentDictionary<Type, object>());
 
             _ = singletons.GetOrAdd(typeof(BagStateService), new BagStateService(characterUID, this, _getLogger));
-            
+
             return (BagStateService)_characterSingletons[characterUID][typeof(BagStateService)];
         }
         public bool TryGetStashPackWorldExecuter(out StashPackWorldExecuter planExecuter)
@@ -138,18 +129,8 @@ namespace ModifAmorphic.Outward.StashPacks.State
             {
                 planExecuter = new StashPackWorldExecuter(_itemManager, _getLogger);
             }
-            
-            return planExecuter != null;
-        }
-        public EventStashSaveExecuter GetEventStashSaveExecuter(string characterUID, StashSaveData stashSaveData)
-        {
-            if (!_stashSaveExecuters.TryGetValue(characterUID, out var stashSaveExecuter))
-                if (_stashSaveExecuters.TryAdd(characterUID, new EventStashSaveExecuter(stashSaveData, _getLogger)))
-                {
-                    _stashSaveExecuters[characterUID].SubscribeToSaves();
-                }
 
-            return _stashSaveExecuters[characterUID];
+            return planExecuter != null;
         }
         public StashSaveExecuter GetStashSaveExecuter(string characterUID, StashSaveData stashSaveData)
         {
@@ -157,14 +138,18 @@ namespace ModifAmorphic.Outward.StashPacks.State
 
             if (!characterInstances.ContainsKey(typeof(StashSaveExecuter)))
                 characterInstances.TryAdd(typeof(StashSaveExecuter), new StashSaveExecuter(stashSaveData, _getLogger));
-                
+
 
             return (StashSaveExecuter)_characterSingletons[characterUID][typeof(StashSaveExecuter)];
         }
-        public void AddOrUpdateBeforeSaveAction(string characterUID, EventStashSaveExecuter stashSaveExecuter)
-        {
-            _stashSaveExecuters.AddOrUpdate(characterUID, stashSaveExecuter, (k, v) => stashSaveExecuter);
-        }
+        //public StashPackSaveExecuter GetStashPackSaveExecuter()
+        //{
+        //    if (!_singletons.TryGetValue(typeof(StashPackSaveExecuter), out _))
+        //    {
+        //        _singletons.TryAdd(typeof(StashPackSaveExecuter), new StashPackSaveExecuter(_getLogger));
+        //    }
 
+        //    return (StashPackSaveExecuter)_singletons[typeof(StashPackSaveExecuter)];
+        //}
     }
 }

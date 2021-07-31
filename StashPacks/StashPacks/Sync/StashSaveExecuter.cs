@@ -1,13 +1,10 @@
 ﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.SaveData.Data;
-using ModifAmorphic.Outward.StashPacks.SaveData.Extensions;
-using ModifAmorphic.Outward.StashPacks.Sync.Extensions;
 using ModifAmorphic.Outward.StashPacks.Sync.Models;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.StashPacks.Sync
 {
@@ -23,9 +20,7 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
         {
             (_stashSaveData, _getLogger) = (stashSaveData, getLogger);
 
-            Logger.LogTrace($"{nameof(EventStashSaveExecuter)}:: New instance created.");
-            //CharacterSaveInstanceHolderEvents.SaveBefore += ExecuteBeforeSaveActions;
-            //CharacterSaveInstanceHolderEvents.SaveAfter += ExecuteAfterSaveActions;
+            Logger.LogTrace($"{nameof(StashSaveExecuter)}:: New instance created.");
         }
         public void ExecutePlan(ContainerSyncPlan syncPlan, SaveInstance saveInstance)
         {
@@ -51,7 +46,7 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
                 stashItems.Add(syncPlan.SaveDataAfter);
             envSave.ItemList.AddRange(stashItems);
 
-            var backupFiles = BackupCurrentSave(envSave, saveInstance.SavePath);
+            var (OriginalFileName, BackupFileName) = BackupCurrentSave(envSave, saveInstance.SavePath);
             try
             {
                 Logger.LogInfo($"{nameof(StashSaveExecuter)}::{nameof(ExecutePlan)}: Saving area '{stashSave.SceneName}'.");
@@ -60,7 +55,7 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
             catch (Exception ex)
             {
                 Logger.LogException($"{nameof(StashSaveExecuter)}::{nameof(ExecutePlan)}: Failed to save area '{stashSave.SceneName}'.", ex);
-                RestoreSave(backupFiles.BackupFileName, backupFiles.OriginalFileName);
+                RestoreSave(BackupFileName, OriginalFileName);
             }
 
         }
@@ -94,7 +89,7 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
                     $"Backup save file '{backupFileName}' not found. Backup cannot be restored for '{restoreFileName}'.");
                 return;
             }
-            
+
             Logger.LogInfo($"Restoring save '{restoreFileName}' from backup '{backupFileName}'.");
             File.Move(backupFileName, restoreFileName);
         }

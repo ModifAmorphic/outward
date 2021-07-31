@@ -1,5 +1,4 @@
-﻿using ModifAmorphic.Outward.StashPacks.Sync.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ModifAmorphic.Outward.StashPacks.SaveData.Models
 {
@@ -11,6 +10,6 @@ namespace ModifAmorphic.Outward.StashPacks.SaveData.Models
         int ItemID { get; }
         AreaManager.AreaEnum Area { get; }
         BasicSaveData BasicSaveData { get; }
-        IEnumerable<BasicSaveData> ItemsSaveData { get; }        
+        IEnumerable<BasicSaveData> ItemsSaveData { get; }
     }
 }

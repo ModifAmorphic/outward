@@ -1,13 +1,10 @@
 ﻿using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
-using ModifAmorphic.Outward.StashPacks.SaveData.Extensions;
 using ModifAmorphic.Outward.StashPacks.SaveData.Models;
-using ModifAmorphic.Outward.StashPacks.Sync.Extensions;
 using ModifAmorphic.Outward.StashPacks.Sync.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.StashPacks.Sync
 {
@@ -27,27 +24,6 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
         /// <param name="saveDataChanges">The list of items to sync to the <paramref name="targetSaveData"/>'s <see cref="IContainerSaveData.ItemsSaveData"/>.</param>
         public ContainerSyncPlan PlanSync(IContainerSaveData targetSaveData, int updatedSilver, IEnumerable<BasicSaveData> saveDataChanges)
         {
-            //var logTargetItems = $"{nameof(SyncPlanner)}::{nameof(PlanSync)}:{targetSaveData.ItemsSaveData.Count()} items in Target {targetSaveData.Area.GetName()} {targetSaveData.ContainerType.GetName()}.\n";
-            /////Don't add if not set to Trace. Adds a decent chunk of processing time building the strings
-            /////and writing to disk.
-            //if (Logger.LogLevel == LogLevel.Trace)
-            //{
-            //    foreach (var item in targetSaveData.ItemsSaveData)
-            //        logTargetItems += $"  {item.Identifier}: {item.SyncData}\n";
-            //}
-            //Logger.LogDebug(logTargetItems);
-
-#if DEBUG   //Shouldn't ever happen. Used to troubleshoot
-            //var sourceGroup = from s in saveDataChanges
-            //                  orderby s.Identifier
-            //                  group s by s.Identifier into grp
-            //                  select new { uid = grp.Key, cnt = grp.Count() };
-            //var dupes = sourceGroup.Where(g => g.cnt > 1);
-            //var logDupes = $"Found {dupes.Count()} duplicate entries in {nameof(saveDataChanges)}: \n";
-            //foreach (var d in dupes)
-            //    logDupes += $"UID: {d.uid} - Duplicates: {d.cnt}\n";
-            //Logger.LogDebug(logDupes);
-#endif
             Logger.LogInfo($"{nameof(SyncPlanner)}::{nameof(PlanSync)}: Building new plan for character's ({targetSaveData.CharacterUID}) {targetSaveData.Area.GetName()} {targetSaveData.ContainerType.GetName()}. " +
                 $"Target container has {targetSaveData.ItemsSaveData.Count()} items and {targetSaveData.BasicSaveData.GetContainerSilver()} silver. " +
                 $"Source container has {saveDataChanges.Count()} items and {updatedSilver} silver.");
@@ -89,7 +65,7 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
                 logNoChanges = "  ****No Changes were detected for this Sync Plan****\n";
             }
             var logSummary = $"Sync Summary for {areaName} {syncPlan.ContainerType.GetName()}\n" +
-                logNoChanges + 
+                logNoChanges +
                 (syncPlan.SaveDataAfter != null ?
                     $"\tChange Silver Amount to: {syncPlan.SaveDataAfter.GetContainerSilver()}\n"
                     : string.Empty) +

@@ -2,13 +2,11 @@
 using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.SaveData.Data;
-using ModifAmorphic.Outward.StashPacks.SaveData.Extensions;
 using ModifAmorphic.Outward.StashPacks.State;
 using ModifAmorphic.Outward.StashPacks.Sync.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
 {
@@ -26,7 +24,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
 
         private void SaveAfter(CharacterSaveInstanceHolder characterSaveInstanceHolder)
         {
-            
+
             var characterUID = characterSaveInstanceHolder.CharacterUID;
             var bagStateService = _instances.GetBagStateService(characterUID);
             var bagStates = bagStateService.GetAllBagStates();
@@ -53,15 +51,16 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
 
             var stashExecuter = _instances.GetStashSaveExecuter(characterUID, stashSaveData);
             var planner = _instances.GetSyncPlanner();
-            foreach(var plan in syncPlans)
+            foreach (var plan in syncPlans)
             {
                 planner.LogSyncPlan(plan);
-                stashExecuter.ExecutePlan(plan, characterSaveInstanceHolder.CurrentSaveInstance);
+                if (plan.HasChanges())
+                    stashExecuter.ExecutePlan(plan, characterSaveInstanceHolder.CurrentSaveInstance);
             }
         }
         private List<ContainerSyncPlan> CreateSyncPlans(string characterUID, IEnumerable<BagState> bagStates, StashSaveData stashSaveData)
         {
-            
+
 
             var syncPlans = new List<ContainerSyncPlan>();
             var syncPlanner = _instances.GetSyncPlanner();

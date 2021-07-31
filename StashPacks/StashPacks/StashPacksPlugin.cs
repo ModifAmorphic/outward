@@ -1,8 +1,5 @@
 ﻿using BepInEx;
 using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.StashPacks
 {

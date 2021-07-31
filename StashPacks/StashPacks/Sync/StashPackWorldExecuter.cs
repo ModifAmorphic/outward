@@ -1,11 +1,8 @@
 ﻿using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
-using ModifAmorphic.Outward.StashPacks.Sync.Extensions;
 using ModifAmorphic.Outward.StashPacks.Sync.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.StashPacks.Sync
 {

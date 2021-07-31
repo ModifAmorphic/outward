@@ -1,12 +1,11 @@
 ﻿using BepInEx;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.StashPacks.WorldInstance.Extensions;
+using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.WorldInstance.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance.Data
@@ -19,8 +18,8 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.Data
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
-        public StashPackWorldData(ItemManager itemManager, BaseUnityPlugin unityPlugin, IReadOnlyDictionary<int, AreaManager.AreaEnum> areaStashBags, Func<IModifLogger> getLogger) 
-            => (_itemManager, _unityPlugin, _areaStashBags, _getLogger) = (itemManager, unityPlugin, areaStashBags,  getLogger);
+        public StashPackWorldData(ItemManager itemManager, BaseUnityPlugin unityPlugin, IReadOnlyDictionary<int, AreaManager.AreaEnum> areaStashBags, Func<IModifLogger> getLogger)
+            => (_itemManager, _unityPlugin, _areaStashBags, _getLogger) = (itemManager, unityPlugin, areaStashBags, getLogger);
 
 
         public StashPack GetStashPack(string UID)
@@ -36,7 +35,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.Data
                 StashBag = bag,
                 HomeArea = areaEnum
             };
-                
+
         }
         public IEnumerator InvokeAfterStashPackLoaded(string UID, Action<StashPack> invokeAfter)
         {
@@ -67,11 +66,6 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.Data
             return bags.Select(b => new StashPack()
             {
                 StashBag = b as Bag,
-#if DEBUG
-                WantsSyncToStash = true,
-#else
-                WantsSyncToStash = false,
-#endif
                 HomeArea = _areaStashBags[b.ItemID]
             });
         }

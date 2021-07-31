@@ -1,7 +1,5 @@
 ﻿using ModifAmorphic.Outward.StashPacks.SaveData.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.StashPacks.State
 {

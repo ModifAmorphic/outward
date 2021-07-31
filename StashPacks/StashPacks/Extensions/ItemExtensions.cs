@@ -1,9 +1,6 @@
 ﻿using ModifAmorphic.Outward.StashPacks.Settings;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace ModifAmorphic.Outward.StashPacks.WorldInstance.Extensions
+namespace ModifAmorphic.Outward.StashPacks.Extensions
 {
     public static class ItemExtensions
     {

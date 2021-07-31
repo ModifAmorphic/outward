@@ -1,8 +1,5 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.StashPacks.Patch
 {
@@ -22,6 +19,6 @@ namespace ModifAmorphic.Outward.StashPacks.Patch
         {
             ItemManagerEvents.RaiseOnReceiveItemSyncAfter(__instance);
         }
-        
+
     }
 }

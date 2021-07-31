@@ -1,11 +1,9 @@
 ﻿using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
-using ModifAmorphic.Outward.StashPacks.SaveData.Extensions;
 using ModifAmorphic.Outward.StashPacks.SaveData.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.StashPacks.SaveData.Data
 {
@@ -25,8 +23,8 @@ namespace ModifAmorphic.Outward.StashPacks.SaveData.Data
 
         public StashSaveData(AreaManager areaManager
             , CharacterSaveInstanceHolder characterSaveInstanceHolder
-            , IReadOnlyDictionary<AreaManager.AreaEnum, (string StashUID, int ItemId)>  areaStashes
-            , Func<IModifLogger> getLogger) => 
+            , IReadOnlyDictionary<AreaManager.AreaEnum, (string StashUID, int ItemId)> areaStashes
+            , Func<IModifLogger> getLogger) =>
                 (_areaManager, _areaStashes, _characterSaveInstanceHolder, _getLogger) = (areaManager, areaStashes, characterSaveInstanceHolder, getLogger);
 
         /// <summary>

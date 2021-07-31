@@ -1,8 +1,6 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.StashPacks.Patch

@@ -1,15 +1,10 @@
 ﻿using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
-using ModifAmorphic.Outward.StashPacks.SaveData.Extensions;
-using ModifAmorphic.Outward.StashPacks.SaveData.Models;
 using ModifAmorphic.Outward.StashPacks.Settings;
 using ModifAmorphic.Outward.StashPacks.State;
-using ModifAmorphic.Outward.StashPacks.WorldInstance.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
 {
@@ -86,7 +81,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
                 if (packs != null)
                 {
                     var bagsToFree = packs.Where(p => p.StashBag.ItemID == claimedBag.ItemID && p.StashBag.UID != claimedBag.UID).Select(p => p.StashBag);
-                    foreach(var bag in bagsToFree)
+                    foreach (var bag in bagsToFree)
                     {
                         bag.PreviousOwnerUID = string.Empty;
                         bag.EmptyContents();
@@ -103,7 +98,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
             {
                 var silver = bagState.BasicSaveData.GetContainerSilver();
                 var updatedBagSilver = (new BasicSaveData(bag.UID, bag.ToSaveData())).ToUpdatedContainerSilver(silver);
-                
+
                 var loadItems = bagState.ItemsSaveData.Select(isd =>
                     isd.ToUpdatedHierachy(bag.UID + StashPacksConstants.BagUidSuffix, bag.Container.ItemID))
                     .ToList();
@@ -124,7 +119,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
                 var stashSave = stashSaveData.GetStashSave(GetBagAreaEnum(bag));
                 if (stashSave != null)
                 {
-                    var bagSave = bag.ToStashPackSave(characterUID, _instances.AreaStashPackItemIds);
+                    var bagSave = bag.ToBagState(characterUID, _instances.AreaStashPackItemIds);
                     var stashItems = stashSave.ItemsSaveData.Select(i => i.ToUpdatedHierachy(bag.UID + StashPacksConstants.BagUidSuffix, bag.Container.ItemID));
                     var syncPlanner = _instances.GetSyncPlanner();
 

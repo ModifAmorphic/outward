@@ -3,8 +3,6 @@ using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.State;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
 {
@@ -34,14 +32,14 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
                     $"UID {bag.OwnerCharacter.UID}. Bag is likely equipped or in character's inventory. Ignoring content changes.");
                 return;
             }
-            
+
             //check if owned by anyone
             if (string.IsNullOrWhiteSpace(bag.PreviousOwnerUID))
             {
                 Logger.LogDebug($"{nameof(ContentsChangedActions)}::{nameof(ContentsChanged)}: Bag '{bag.Name}' ({bag.UID}) has no PreviousOwnerUID. Ignoring content changes.");
                 return;
             }
-            
+
             var characterUID = bag.PreviousOwnerUID;
             var character = CharacterManager.Instance.GetCharacter(characterUID);
             var bagStates = _instances.GetBagStateService(characterUID);

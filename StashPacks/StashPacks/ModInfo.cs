@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ModifAmorphic.Outward.StashPacks
+﻿namespace ModifAmorphic.Outward.StashPacks
 {
     internal static class ModInfo
     {

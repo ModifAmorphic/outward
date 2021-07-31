@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
-namespace ModifAmorphic.Outward.StashPacks.SaveData.Extensions
+namespace ModifAmorphic.Outward.StashPacks.Extensions
 {
     public static class BasicSaveDataExtensions
     {
@@ -39,7 +38,7 @@ namespace ModifAmorphic.Outward.StashPacks.SaveData.Extensions
         {
             var ownerIdMatch = Regex.Match(basicSaveData.SyncData, @"<ID>(-?\d+)</ID>");
 
-            if (ownerIdMatch.Success && ownerIdMatch.Groups.Count > 1 
+            if (ownerIdMatch.Success && ownerIdMatch.Groups.Count > 1
                 && int.TryParse(ownerIdMatch.Groups[1].Value, out itemID))
                 return true;
             itemID = 0;
@@ -56,9 +55,9 @@ namespace ModifAmorphic.Outward.StashPacks.SaveData.Extensions
         {
             var ownerIdMatch = Regex.Match(basicSaveData.SyncData, @"<PreviousOwnerUID>(.+?)</PreviousOwnerUID>");
 
-            if (ownerIdMatch.Success 
+            if (ownerIdMatch.Success
                 && ownerIdMatch.Groups.Count > 1
-                && ! string.IsNullOrWhiteSpace(ownerIdMatch.Groups[1].Value)
+                && !string.IsNullOrWhiteSpace(ownerIdMatch.Groups[1].Value)
                 && ownerIdMatch.Groups[1].Value.Trim() != "-")
             {
                 previousOwnerUID = ownerIdMatch.Groups[1].Value;
@@ -141,7 +140,7 @@ namespace ModifAmorphic.Outward.StashPacks.SaveData.Extensions
                     saveData.GetHierarchyData().HierachyXml, $"<Hierarchy>1{parentUID};{parentItemId}</Hierarchy>")
                 );
 
-        public static bool IsStashPack(this BasicSaveData saveData, IEnumerable<int> stashPackItemIds) => 
+        public static bool IsStashPack(this BasicSaveData saveData, IEnumerable<int> stashPackItemIds) =>
             stashPackItemIds.Any(itemId => saveData.SyncData.Contains($"<ID>{itemId}</ID>"));
     }
 }

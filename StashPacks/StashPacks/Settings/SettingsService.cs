@@ -3,8 +3,6 @@ using ModifAmorphic.Outward.Config;
 using ModifAmorphic.Outward.Config.Models;
 using ModifAmorphic.Outward.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.StashPacks.Settings
 {
