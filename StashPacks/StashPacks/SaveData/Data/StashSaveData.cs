@@ -86,11 +86,13 @@ namespace ModifAmorphic.Outward.StashPacks.SaveData.Data
             }
 
             var envSave = GetEnvironmentSave(saveDetails.SceneName);
+            Logger.LogTrace($"{nameof(StashSaveData)}::{nameof(GetStashSave)}: Got EnvironmentSave for area {area.GetName()} and character '{CharacterUID}'. Save Path: {saveDetails.SaveFilePath}");
             if (envSave != null)
             {
                 var stashItems = envSave.ItemList.GetContainerItems(areaStash.StashUID, areaStash.ItemId);
                 return new StashSave()
                 {
+                    CharacterUID = _characterSaveInstanceHolder.CharacterUID,
                     Area = area,
                     SceneName = saveDetails.SceneName,
                     UID = areaStash.StashUID,

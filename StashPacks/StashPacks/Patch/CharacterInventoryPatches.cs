@@ -12,10 +12,19 @@ namespace ModifAmorphic.Outward.StashPacks.Patch
     {
         [HarmonyPatch(nameof(CharacterInventory.DropItem))]
         [HarmonyPatch(new Type[] { typeof(Item), typeof(Transform), typeof(bool) })]
-        [HarmonyPostfix]
-        public static void DropItemPostfix(Item _item, Transform _newParent = null, bool _playAnim = true)
+        [HarmonyPrefix]
+        public static bool DropItemPrefix(Character ___m_character, Item _item, Transform _newParent = null, bool _playAnim = true)
         {
-            CharacterInventoryEvents.RaiseDropBagItemAfter(_item);
+            CharacterInventoryEvents.RaiseDropBagItemBefore(___m_character, ref _item);
+            return true;
+        }
+
+        [HarmonyPatch(nameof(CharacterInventory.DropItem))]
+        [HarmonyPatch(new Type[] { typeof(Item), typeof(Transform), typeof(bool) })]
+        [HarmonyPostfix]
+        public static void DropItemPostfix(Character ___m_character, Item _item, Transform _newParent = null, bool _playAnim = true)
+        {
+            CharacterInventoryEvents.RaiseDropBagItemAfter(___m_character, _item);
         }
     }
 }

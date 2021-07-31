@@ -13,9 +13,9 @@ namespace ModifAmorphic.Outward.StashPacks.Patch
         [HarmonyPrefix]
         private static bool PerformEquipPrefix(ref Item __instance, EquipmentSlot _slot, bool _alreadySynced = true)
         {
-            
-            ItemEvents.RaisePerformEquipBefore(ref __instance);
-            
+
+            ItemEvents.RaisePerformEquipBefore(ref __instance, _slot);
+
             return true;
         }
     }

@@ -1,4 +1,6 @@
 ﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.StashPacks.Extensions;
+using ModifAmorphic.Outward.StashPacks.Sync.Extensions;
 using ModifAmorphic.Outward.StashPacks.Sync.Models;
 using System;
 using System.Collections.Generic;
@@ -19,6 +21,11 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
 
         public void ExecutePlan(ContainerSyncPlan syncPlan)
         {
+            if (!syncPlan.HasChanges())
+            {
+                Logger.LogInfo($"Sync Plan for '{syncPlan.Area.GetName()}' {syncPlan.ContainerType.GetName()} has no changes to execute.");
+                return;
+            }
             lock (_syncLock)
             {
                 foreach (var uid in syncPlan.RemovedItems.Keys)
@@ -26,6 +33,9 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
 
                 var upserts = syncPlan.AddedItems.Values.ToList();
                 upserts.AddRange(syncPlan.ModifiedItems.Values);
+
+                if (syncPlan.HasDifferentSilverAmount())
+                    upserts.Add(syncPlan.SaveDataAfter);
                 _itemManager.LoadItems(upserts, false);
             }
         }

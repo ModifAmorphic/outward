@@ -7,6 +7,7 @@ namespace ModifAmorphic.Outward.StashPacks.Sync.Models
 {
     public class ContainerSyncPlan
     {
+        public string CharacterUID { get; internal set; }
         public ContainerTypes ContainerType { get; internal set; }
         public int ItemID { get; internal set; }
         public AreaManager.AreaEnum Area { get; internal set; }

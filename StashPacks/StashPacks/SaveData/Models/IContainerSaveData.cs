@@ -5,6 +5,7 @@ namespace ModifAmorphic.Outward.StashPacks.SaveData.Models
 {
     public interface IContainerSaveData
     {
+        string CharacterUID { get; }
         ContainerTypes ContainerType { get; }
         string UID { get; }
         int ItemID { get; }

@@ -10,6 +10,11 @@ namespace ModifAmorphic.Outward.StashPacks.SaveData.Models
     /// </summary>
     public class StashSave : IContainerSaveData
     {
+        /// <summary>
+        /// The Character's UID the Save belongs to.
+        /// </summary>
+        public string CharacterUID { get; internal set; }
+
         public ContainerTypes ContainerType => ContainerTypes.Stash;
         /// <summary>
         /// The unique ID of the Stash <see cref="TreasureChest"/>
@@ -33,6 +38,5 @@ namespace ModifAmorphic.Outward.StashPacks.SaveData.Models
         /// Collection of each <see cref="Item"/> <see cref="global::BasicSaveData"/> contained in the Stash <see cref="TreasureChest"/>.
         /// </summary>
         public IEnumerable<BasicSaveData> ItemsSaveData { get; internal set; }
-
     }
 }

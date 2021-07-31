@@ -28,7 +28,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.Data
             var bag = _itemManager.GetItem(UID) as Bag;
             if (bag == null)
                 return null;
-
+            Logger.LogDebug($"{nameof(StashPackWorldData)}::{nameof(GetStashPack)}('{UID}'): Found Bag with ItemID of {bag.ItemID}.");
             if (!_areaStashBags.TryGetValue(bag.ItemID, out var areaEnum))
                 return null;
             return new StashPack()
@@ -38,13 +38,13 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.Data
             };
                 
         }
-        public IEnumerator GetStashPackWait(string UID, Action<StashPack> invokeAfter)
+        public IEnumerator InvokeAfterStashPackLoaded(string UID, Action<StashPack> invokeAfter)
         {
             StashPack stashPack = null;
-            while (stashPack == null)
+            while (stashPack == null || !_itemManager.IsAllItemSynced || string.IsNullOrEmpty(stashPack.StashBag.PreviousOwnerUID))
             {
                 stashPack = GetStashPack(UID);
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(.5f);
             }
             invokeAfter?.Invoke(stashPack);
         }
@@ -52,15 +52,15 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.Data
         /// Get's all StashPacks currently loaded into the world for this instances <see cref="CharacterUID"./>.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<StashPack> GetStashPacks(string characterUID)
+        public IEnumerable<StashPack> GetStashPacks(string previousOwnerUID)
         {
             var bags = ItemManager.Instance.WorldItems.Values.FindAll(wi =>
                     wi.IsStashBag()
-                    && wi.PreviousOwnerUID == characterUID
+                    && wi.PreviousOwnerUID == previousOwnerUID
                 );
             if (bags == default)
             {
-                Logger.LogDebug($"No stash packs found loaded in world for player character UID {characterUID}");
+                Logger.LogDebug($"No stash packs found loaded in world for player character UID {previousOwnerUID}");
                 return null;
             }
 

@@ -15,5 +15,13 @@ namespace ModifAmorphic.Outward.StashPacks.Patch
         {
             ItemManagerEvents.RaiseAwakeAfter(ref __instance);
         }
+
+        [HarmonyPatch("OnReceiveItemSync", MethodType.Normal)]
+        [HarmonyPostfix]
+        private static void OnReceiveItemSyncPostfix(ItemManager __instance)
+        {
+            ItemManagerEvents.RaiseOnReceiveItemSyncAfter(__instance);
+        }
+        
     }
 }

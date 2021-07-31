@@ -2,6 +2,7 @@
 using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.SaveData.Extensions;
 using ModifAmorphic.Outward.StashPacks.SaveData.Models;
+using ModifAmorphic.Outward.StashPacks.Sync.Extensions;
 using ModifAmorphic.Outward.StashPacks.Sync.Models;
 using System;
 using System.Collections.Generic;
@@ -26,36 +27,31 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
         /// <param name="saveDataChanges">The list of items to sync to the <paramref name="targetSaveData"/>'s <see cref="IContainerSaveData.ItemsSaveData"/>.</param>
         public ContainerSyncPlan PlanSync(IContainerSaveData targetSaveData, int updatedSilver, IEnumerable<BasicSaveData> saveDataChanges)
         {
-            var logTargetItems = $"{nameof(SyncPlanner)}::{nameof(PlanSync)}:{targetSaveData.ItemsSaveData.Count()} items in {targetSaveData.Area.GetName()} {targetSaveData.ContainerType.GetName()}.\n";
-            ///Don't add if not set to Trace. Adds a decent chunk of processing time building the strings
-            ///and writing to disk.
-            if (Logger.LogLevel == LogLevel.Trace)
-            {
-                foreach (var item in targetSaveData.ItemsSaveData)
-                    logTargetItems += $"  {item.Identifier}: {item.SyncData}\n";
-            }
-            Logger.LogDebug(logTargetItems);
+            //var logTargetItems = $"{nameof(SyncPlanner)}::{nameof(PlanSync)}:{targetSaveData.ItemsSaveData.Count()} items in Target {targetSaveData.Area.GetName()} {targetSaveData.ContainerType.GetName()}.\n";
+            /////Don't add if not set to Trace. Adds a decent chunk of processing time building the strings
+            /////and writing to disk.
+            //if (Logger.LogLevel == LogLevel.Trace)
+            //{
+            //    foreach (var item in targetSaveData.ItemsSaveData)
+            //        logTargetItems += $"  {item.Identifier}: {item.SyncData}\n";
+            //}
+            //Logger.LogDebug(logTargetItems);
 
 #if DEBUG   //Shouldn't ever happen. Used to troubleshoot
-            var sourceGroup = from s in saveDataChanges
-                              orderby s.Identifier
-                              group s by s.Identifier into grp
-                              select new { uid = grp.Key, cnt = grp.Count() };
-            var dupes = sourceGroup.Where(g => g.cnt > 1);
-            var logDupes = $"Found {dupes.Count()} duplicate entries in {nameof(saveDataChanges)}: \n";
-            foreach (var d in dupes)
-                logDupes += $"UID: {d.uid} - Duplicates: {d.cnt}\n";
-            Logger.LogDebug(logDupes);
+            //var sourceGroup = from s in saveDataChanges
+            //                  orderby s.Identifier
+            //                  group s by s.Identifier into grp
+            //                  select new { uid = grp.Key, cnt = grp.Count() };
+            //var dupes = sourceGroup.Where(g => g.cnt > 1);
+            //var logDupes = $"Found {dupes.Count()} duplicate entries in {nameof(saveDataChanges)}: \n";
+            //foreach (var d in dupes)
+            //    logDupes += $"UID: {d.uid} - Duplicates: {d.cnt}\n";
+            //Logger.LogDebug(logDupes);
 #endif
-            var syncPlan = new ContainerSyncPlan()
-            {
-                Area = targetSaveData.Area,
-                ItemID = targetSaveData.ItemID,
-                SaveDataBefore = targetSaveData.BasicSaveData,
-                SaveDataAfter = targetSaveData.BasicSaveData.ToUpdatedContainerSilver(updatedSilver)
-            };
-            syncPlan.ItemsSaveDataBefore = targetSaveData.ItemsSaveData.ToDictionary(s => s.Identifier.ToString(), s => s);
-            syncPlan.ItemsSaveDataAfter = targetSaveData.ItemsSaveData.ToDictionary(s => s.Identifier.ToString(), s => s);
+            Logger.LogInfo($"{nameof(SyncPlanner)}::{nameof(PlanSync)}: Building new plan for character's ({targetSaveData.CharacterUID}) {targetSaveData.Area.GetName()} {targetSaveData.ContainerType.GetName()}. " +
+                $"Target container has {targetSaveData.ItemsSaveData.Count()} items and {targetSaveData.BasicSaveData.GetContainerSilver()} silver. " +
+                $"Source container has {saveDataChanges.Count()} items and {updatedSilver} silver.");
+            var syncPlan = targetSaveData.ToContainerSyncPlan(updatedSilver);
 
             var saveItems = saveDataChanges.ToDictionary(s => s.Identifier.ToString(), s => s);
             var uidsToRemove = syncPlan.ItemsSaveDataBefore.Keys.Except(saveItems.Keys);
@@ -83,15 +79,25 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
         public void LogSyncPlan(ContainerSyncPlan syncPlan)
         {
             var areaName = syncPlan.Area.GetName();
+            var sourceContainerType = ContainerTypes.StashPack;
+            if (syncPlan.ContainerType == ContainerTypes.StashPack)
+                sourceContainerType = ContainerTypes.Stash;
 
-            Logger.LogInfo($"Sync Summary for {areaName} {syncPlan.ContainerType.GetName()}\n" +
+            var logNoChanges = string.Empty;
+            if (!syncPlan.HasChanges())
+            {
+                logNoChanges = "  ****No Changes were detected for this Sync Plan****\n";
+            }
+            var logSummary = $"Sync Summary for {areaName} {syncPlan.ContainerType.GetName()}\n" +
+                logNoChanges + 
                 (syncPlan.SaveDataAfter != null ?
                     $"\tChange Silver Amount to: {syncPlan.SaveDataAfter.GetContainerSilver()}\n"
                     : string.Empty) +
-                $"\t{syncPlan.ContainerType.GetName()} Items: {syncPlan.ItemsSaveDataAfter.Count()},  {syncPlan.ContainerType.GetName()} Items: {syncPlan.ItemsSaveDataBefore.Count}\n" +
+                $"\t{syncPlan.ContainerType.GetName()} (Target) Items: {syncPlan.ItemsSaveDataBefore.Count()},  {sourceContainerType.GetName()} (Source) Items: {syncPlan.ItemsSaveDataAfter.Count}\n" +
                 $"\tItems to Remove: {syncPlan.RemovedItems.Count()}\n" +
                 $"\tItems to Add: {syncPlan.AddedItems.Count()}\n" +
-                $"\tItems to Modify: {syncPlan.ModifiedItems.Count()}");
+                $"\tItems to Modify: {syncPlan.ModifiedItems.Count()}";
+            Logger.LogInfo(logSummary);
 
             var logSyncPlan = $"Sync Plan Detail for {areaName} {syncPlan.ContainerType.GetName()}\n";
             if (syncPlan.SaveDataAfter != null)
@@ -108,7 +114,7 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
             foreach (var removed in syncPlan.RemovedItems.Values)
                 logSyncPlan += $"    Remove: {removed.SyncData}\n";
 
-            logSyncPlan += $"  Adding {syncPlan.AddedItems.Count()} Items to {areaName} Stash\n";
+            logSyncPlan += $"  Adding {syncPlan.AddedItems.Count()} Items to {areaName} {syncPlan.ContainerType.GetName()}\n";
             foreach (var added in syncPlan.AddedItems.Values)
                 logSyncPlan += $"    Add: {added.SyncData}\n";
 
@@ -117,7 +123,7 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
                 logSyncPlan += $"    Before: {syncPlan.ItemsSaveDataBefore[uid].SyncData}\n" +
                                $"     After: {syncPlan.ModifiedItems[uid].SyncData}\n";
 
-            Logger.LogDebug(logSyncPlan);
+            Logger.LogInfo(logSyncPlan);
         }
     }
 }

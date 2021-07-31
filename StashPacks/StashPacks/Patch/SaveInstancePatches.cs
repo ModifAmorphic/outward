@@ -17,5 +17,11 @@ namespace ModifAmorphic.Outward.StashPacks.Patch
             SaveInstanceEvents.RaiseSaveBefore(__instance);
             return true;
         }
+        [HarmonyPatch(nameof(SaveInstance.Save))]
+        [HarmonyPostfix]
+        private static void SavePostfix(SaveInstance __instance)
+        {
+            SaveInstanceEvents.RaiseSaveAfter(__instance);
+        }
     }
 }

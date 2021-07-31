@@ -17,7 +17,7 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
         {
             try
             {
-                Logger?.LogDebug($"{nameof(EnvironmentSaveEvents)}::{nameof(RaiseApplyDataBefore)} raised. EnvironmentSave has {environmentSave?.ItemList?.Count??0} items in it's ItemList.");
+                Logger?.LogTrace($"{nameof(EnvironmentSaveEvents)}::{nameof(RaiseApplyDataBefore)} raised. EnvironmentSave has {environmentSave?.ItemList?.Count??0} items in it's ItemList.");
                 ApplyDataBefore?.Invoke(environmentSave);
             }
             catch (Exception ex)

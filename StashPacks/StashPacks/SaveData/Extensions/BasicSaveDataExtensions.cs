@@ -91,11 +91,15 @@ namespace ModifAmorphic.Outward.StashPacks.SaveData.Extensions
             return 0;
         }
 
+        public static BasicSaveData ToClone(this BasicSaveData saveData)
+        {
+            return new BasicSaveData(saveData.Identifier.ToString(), saveData.SyncData);
+        }
         /// <summary>
         /// Sets the TreasureChestContainedSilver or BagSilver amount in a new copy of this BasicSavaData item.
         /// </summary>
         /// <param name="saveData">The BasicSaveData instance who's SyncData potentially contains a TreasureChestContainedSilver or BagSilver property.</param>
-        /// <returns>A new BasicSaveData if a match to a TreasureChestContainedSilver property was found and changed from this objects SyncData. Otherwise retuns null.</returns>
+        /// <returns>A new BasicSaveData if a match to a TreasureChestContainedSilver property was found.</returns>
         public static BasicSaveData ToUpdatedContainerSilver(this BasicSaveData saveData, int silver)
         {
             var updatedSilverSyncData = saveData.SyncData;
@@ -104,9 +108,7 @@ namespace ModifAmorphic.Outward.StashPacks.SaveData.Extensions
             else if (saveData.SyncData.Contains("BagSilver"))
                 updatedSilverSyncData = Regex.Replace(saveData.SyncData, @"(?<=BagSilver/)[\d+]*(?=;)", silver.ToString());
 
-            return updatedSilverSyncData != saveData.SyncData ?
-                new BasicSaveData(saveData.Identifier, updatedSilverSyncData)
-                : null;
+            return new BasicSaveData(saveData.Identifier, updatedSilverSyncData);
         }
 
         /// <summary>

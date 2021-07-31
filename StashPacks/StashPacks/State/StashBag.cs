@@ -1,15 +1,13 @@
-﻿using ModifAmorphic.Outward.StashPacks.Sync.Models;
+﻿using ModifAmorphic.Outward.StashPacks.SaveData.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.StashPacks.SaveData.Models
+namespace ModifAmorphic.Outward.StashPacks.State
 {
-    /// <summary>
-    /// Container for a special stash pack <see cref="Bag"/> <see cref="BasicSaveData"/> and additional metadata around the specific Bag' or StashPack' save data.
-    /// </summary>
-    public class StashPackSave : IContainerSaveData
+    public class StashBag : IContainerSaveData
     {
+        public bool Disabled { get; internal set; }
         public ContainerTypes ContainerType => ContainerTypes.StashPack;
         /// <summary>
         /// The UID of the Area Stash <see cref="Bag"/> Item.

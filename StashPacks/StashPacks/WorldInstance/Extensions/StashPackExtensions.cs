@@ -20,7 +20,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.Extensions
                     BasicSaveData = new BasicSaveData(stashPack.StashBag.UID, stashPack.StashBag.ToSaveData()),
                     ItemID = stashPack.StashBag.ItemID,
                     UID = stashPack.StashBag.UID,
-                    PreviousOwnerUid = stashPack.StashBag.PreviousOwnerUID,
+                    CharacterUID = stashPack.StashBag.PreviousOwnerUID,
                     ItemsSaveData = stashPack.StashBag.Container.GetContainedItems().Select(i => new BasicSaveData(i.UID, i.ToSaveData()))
                 };
             }

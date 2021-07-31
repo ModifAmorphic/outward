@@ -14,9 +14,9 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
         /// <summary>
         /// Triggers whenever a special Stash <see cref="Bag"/> is about to be equipped. The <see cref="Bag"/> is a reference to the bag.
         /// </summary>
-        public static event Action<Bag> PerformEquipBefore;
+        public static event Action<Bag, EquipmentSlot> PerformEquipBefore;
 
-        public static void RaisePerformEquipBefore(ref Item item)
+        public static void RaisePerformEquipBefore(ref Item item, EquipmentSlot slot)
         {
             try
             {
@@ -24,7 +24,7 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
 
                 //only care about stash bags.
                 if (bag != null && StashPacksConstants.StashBackpackItemIds.ContainsKey(bag.ItemID))
-                    PerformEquipBefore?.Invoke(bag);
+                    PerformEquipBefore?.Invoke(bag, slot);
             }
             catch (Exception ex)
             {

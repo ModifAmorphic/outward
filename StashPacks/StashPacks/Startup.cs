@@ -3,6 +3,7 @@ using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.Settings;
 using ModifAmorphic.Outward.StashPacks.State;
+using ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,13 +20,27 @@ namespace ModifAmorphic.Outward.StashPacks
             var settingsService = new SettingsService(unityPlugin, ModInfo.MinimumConfigVersion)
                                         .Configure();
             var instanceFactory = new InstanceFactory(unityPlugin, LoggerFactory.GetLogger);
-            var spBehaviors = new StashPackBehaviors(instanceFactory, LoggerFactory.GetLogger);
+            //var stashBagState = new StashBagState(instanceFactory, LoggerFactory.GetLogger);
+            //var spBehaviors = new StashPackBehaviors(instanceFactory, stashBagState, LoggerFactory.GetLogger);
+            var bagDropActions = new BagDropActions(instanceFactory, LoggerFactory.GetLogger);
+            bagDropActions.SubscribeToEvents();
+            var bagPickedActions = new BagPickedActions(instanceFactory, LoggerFactory.GetLogger);
+            bagPickedActions.SubscribeToEvents();
+            var changedActions = new ContentsChangedActions(instanceFactory, LoggerFactory.GetLogger);
+            changedActions.SubscribeToEvents();
+            var saveActions = new PlayerSaveActions(instanceFactory, LoggerFactory.GetLogger);
+            saveActions.SubscribeToEvents();
+
             ConfigurePatchLogging();
         }
         private void ConfigurePatchLogging()
         {
             EnvironmentSaveEvents.LoggerFactory = LoggerFactory.GetLogger;
             CharacterSaveInstanceHolderEvents.LoggerFactory = LoggerFactory.GetLogger;
+            ItemEvents.LoggerFactory = LoggerFactory.GetLogger;
+            ItemContainerEvents.LoggerFactory = LoggerFactory.GetLogger;
+            SaveInstanceEvents.LoggerFactory = LoggerFactory.GetLogger;
+            CharacterInventoryEvents.LoggerFactory = LoggerFactory.GetLogger;
         }
     }
 }
