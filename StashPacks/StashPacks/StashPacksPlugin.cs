@@ -19,7 +19,6 @@ namespace ModifAmorphic.Outward.StashPacks
 
                 var startup = new Startup();
                 startup.Start(this);
-                var pack = SideLoader.SL.GetSLPack("DeployablePack");
             }
             catch
             {
