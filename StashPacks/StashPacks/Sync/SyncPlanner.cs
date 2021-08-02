@@ -26,10 +26,10 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
         {
             Logger.LogInfo($"{nameof(SyncPlanner)}::{nameof(PlanSync)}: Building new plan for character's ({targetSaveData.CharacterUID}) {targetSaveData.Area.GetName()} {targetSaveData.ContainerType.GetName()}. " +
                 $"Target container has {targetSaveData.ItemsSaveData.Count()} items and {targetSaveData.BasicSaveData.GetContainerSilver()} silver. " +
-                $"Source container has {saveDataChanges.Count()} items and {updatedSilver} silver.");
+                $"Source container has {saveDataChanges?.Count()??0} items and {updatedSilver} silver.");
             var syncPlan = targetSaveData.ToContainerSyncPlan(updatedSilver);
 
-            var saveItems = saveDataChanges.ToDictionary(s => s.Identifier.ToString(), s => s);
+            var saveItems = saveDataChanges?.ToDictionary(s => s.Identifier.ToString(), s => s)?? new Dictionary<string, BasicSaveData>();
             var uidsToRemove = syncPlan.ItemsSaveDataBefore.Keys.Except(saveItems.Keys);
             var uidsToAdd = saveItems.Keys.Except(syncPlan.ItemsSaveDataBefore.Keys);
             var matchedItemUids = saveItems.Keys.Intersect(syncPlan.ItemsSaveDataBefore.Keys);
@@ -52,12 +52,19 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
 
             return syncPlan;
         }
-        public void LogSyncPlan(ContainerSyncPlan syncPlan)
+        public void LogSyncPlan(ContainerSyncPlan syncPlan, bool suppressIfEmpty = false)
         {
             var areaName = syncPlan.Area.GetName();
             var sourceContainerType = ContainerTypes.StashPack;
             if (syncPlan.ContainerType == ContainerTypes.StashPack)
                 sourceContainerType = ContainerTypes.Stash;
+
+            if (suppressIfEmpty && !syncPlan.HasChanges())
+            {
+                Logger.LogDebug($"{nameof(SyncPlanner)}::{nameof(PlanSync)}: Plan for '{areaName}' had no changes and {nameof(suppressIfEmpty)} was set to true." +
+                    $" Not logging SyncPlan.");
+                return;
+            }
 
             var logNoChanges = string.Empty;
             if (!syncPlan.HasChanges())

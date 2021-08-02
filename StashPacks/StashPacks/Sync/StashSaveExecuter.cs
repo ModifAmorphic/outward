@@ -27,6 +27,12 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
             var stashSave = _stashSaveData.GetStashSave(syncPlan.Area);
             var envSave = _stashSaveData.GetEnvironmentSave(stashSave.SceneName);
 
+            if (syncPlan.HasDifferentSilverAmount())
+            {
+                var stashIndex = envSave.ItemList.FindIndex(i => i.Identifier.ToString() == syncPlan.UID);
+                envSave.ItemList[stashIndex] = syncPlan.SaveDataAfter;
+            }
+
             envSave.ItemList.RemoveAll(i => syncPlan.RemovedItems.ContainsKey(i.Identifier.ToString()));
 
             foreach (var modItem in syncPlan.ModifiedItems)
@@ -41,10 +47,7 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
                         $"Item in stash not found. Bad sync plan or EnvironmentSave changed between plan and execute.");
                 }
             }
-            var stashItems = syncPlan.AddedItems.Values.ToList();
-            if (syncPlan.HasDifferentSilverAmount())
-                stashItems.Add(syncPlan.SaveDataAfter);
-            envSave.ItemList.AddRange(stashItems);
+            envSave.ItemList.AddRange(syncPlan.AddedItems.Values.ToList());
 
             var (OriginalFileName, BackupFileName) = BackupCurrentSave(envSave, saveInstance.SavePath);
             try

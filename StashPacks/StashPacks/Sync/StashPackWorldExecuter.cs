@@ -25,8 +25,13 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
             }
             lock (_syncLock)
             {
+                var bag = (Bag)_itemManager.GetItem(syncPlan.UID);
                 foreach (var uid in syncPlan.RemovedItems.Keys)
-                    _itemManager.DestroyItem(uid);
+                {
+                    var removeItem = bag.Container.GetItem(uid);
+                    if (removeItem != null)
+                        bag.Container.RemoveItem(removeItem);
+                }
 
                 var upserts = syncPlan.AddedItems.Values.ToList();
                 upserts.AddRange(syncPlan.ModifiedItems.Values);

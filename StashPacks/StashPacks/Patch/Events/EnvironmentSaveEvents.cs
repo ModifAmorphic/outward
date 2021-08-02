@@ -11,7 +11,7 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
         public static event Action<EnvironmentSave> ApplyDataBefore;
         public static event Action<EnvironmentSave> ApplyDataAfter;
 
-        public static void RaiseApplyDataBefore(EnvironmentSave environmentSave)
+        public static void RaiseApplyDataBefore(ref EnvironmentSave environmentSave)
         {
             try
             {

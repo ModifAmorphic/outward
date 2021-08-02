@@ -41,5 +41,11 @@ namespace ModifAmorphic.Outward.StashPacks.Extensions
                 ItemsSaveData = bag.Container.GetContainedItems().Select(i => new BasicSaveData(i.UID, i.ToSaveData())).ToList()
             };
         }
+        public static bool IsUpdateable(this Bag bag)
+        {
+            return (!bag.IsInContainer
+                && !string.IsNullOrEmpty(bag.PreviousOwnerUID)
+                && !bag.IsEquipped);
+        }
     }
 }

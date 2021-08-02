@@ -26,10 +26,9 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
             }
 
             //check if in someone's inventory
-            if (bag.OwnerCharacter != null)
+            if (!bag.IsUpdateable())
             {
-                Logger.LogDebug($"{nameof(ContentsChangedActions)}::{nameof(ContentsChanged)}: Bag '{bag.Name}' is currently owned by Character " +
-                    $"UID {bag.OwnerCharacter.UID}. Bag is likely equipped or in character's inventory. Ignoring content changes.");
+                Logger.LogDebug($"{nameof(ContentsChangedActions)}::{nameof(ContentsChanged)}: Bag '{bag.Name}' is not in an updateable statues. May be unowned, equipped or in another container. Ignoring content changes.");
                 return;
             }
 
@@ -45,7 +44,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
             var bagStates = _instances.GetBagStateService(characterUID);
 
             //Check if disabled
-            if (bagStates.IsBagDisabled(bag.UID))
+            if (BagStateService.IsBagDisabled(bag.UID))
             {
                 Logger.LogDebug($"{nameof(ContentsChangedActions)}::{nameof(ContentsChanged)}: Bag '{bag.Name}' ({bag.UID}) has StashBag functionalty disabled. Ignoring content changes.");
                 return;
@@ -55,7 +54,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
             {
                 Logger.LogDebug($"{nameof(ContentsChangedActions)}::{nameof(ContentsChanged)}: Player Character '{characterUID}' is not a local player. Ignoring content changes for bag '{bag.Name}' ({bag.UID}) " +
                     $"and disabling.");
-                bagStates.DisableBag(bag.UID);
+                BagStateService.DisableBag(bag.UID);
                 return;
             }
 
@@ -77,7 +76,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
             if (IsHost(CharacterManager.Instance.GetCharacter(characterUID)) && GetBagAreaEnum(bag) == GetCurrentAreaEnum())
             {
                 Logger.LogDebug($"{nameof(ContentsChangedActions)}::{nameof(ContentsChanged)}: Character '{characterUID}' is hosting the game and is in '{bag.Name}' ({bag.UID}) home area {GetBagAreaEnum(bag).GetName()}. StashBag functionalty disabled for bag.");
-                bagStates.DisableBag(bag.UID);
+                BagStateService.DisableBag(bag.UID);
                 return;
             }
 
@@ -85,7 +84,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
             if (!bagStates.TrySaveState(bag))
             {
                 Logger.LogDebug($"{nameof(ContentsChangedActions)}::{nameof(ContentsChanged)}: Unexpected problem saving bag '{bag.Name}' ({bag.UID}) for Character '{characterUID}'. Disabling StashBag functionalty for bag.");
-                bagStates.DisableBag(bag.UID);
+                BagStateService.DisableBag(bag.UID);
             }
 
             Logger.LogDebug($"{nameof(ContentsChangedActions)}::{nameof(ContentsChanged)}: Saved current state of bag '{bag.Name}' ({bag.UID}) for Character '{characterUID}'.");

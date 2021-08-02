@@ -30,7 +30,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
             {
                 Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(BagPickedUp)}: Player Character '{charUID}' is not a local player. Ignoring Pick Up event for bag '{bag.Name}' ({bag.UID}) " +
                     $"and disabling.");
-                bagStates.DisableBag(bag.UID);
+                BagStateService.DisableBag(bag.UID);
                 return;
             }
             bagStates.DisableTracking(bag.ItemID);
@@ -43,6 +43,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
             if (!bagStates.TryGetState(bag.ItemID, out var bagState) && bag.HasContents())
             {
                 Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(BagPickedUp)}: No existing state found for bag, but already has contents. Disabling and treating as a regular backpack bag.");
+                BagStateService.DisableBag(bag.UID);
                 return;
             }
 

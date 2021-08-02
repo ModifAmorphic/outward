@@ -4,6 +4,7 @@ using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.SaveData.Data;
 using ModifAmorphic.Outward.StashPacks.State;
 using ModifAmorphic.Outward.StashPacks.Sync.Models;
+using ModifAmorphic.Outward.StashPacks.WorldInstance.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,8 +19,39 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
 
         public void SubscribeToEvents()
         {
-            //CharacterInventoryEvents.DropBagItemBefore += DropBagItemBefore;
             CharacterSaveInstanceHolderEvents.SaveAfter += SaveAfter;
+            SaveInstanceEvents.SaveBefore += SaveBefore;
+        }
+
+        private void SaveBefore(SaveInstance saveInstance)
+        {
+            if (PhotonNetwork.isNonMasterClientInRoom)
+            {
+                Logger.LogDebug($"{nameof(LevelLoadingActions)}::{nameof(SaveBefore)}: Character '{saveInstance.CharSave.CharacterUID}' is not master client. No presave action taken.");
+                return;
+            }
+
+            if (!_instances.TryGetStashPackWorldData(out var stashPackWorldData)
+                || !_instances.TryGetItemManager(out var itemManager))
+            {
+                Logger.LogError($"{nameof(PlayerSaveActions)}::{nameof(SaveBefore)}: Could not retrieve world data instances.");
+                return;
+            }
+            var stashPacks = stashPackWorldData.GetAllStashPacks();
+
+            //Wipe all stashpack data from the ItemList before they get loaded into the world.
+
+            foreach (var pack in stashPacks)
+            {
+                if (!BagStateService.IsBagDisabled(pack.StashBag.UID)
+                    && pack.StashBag.IsUpdateable())
+                {
+                    pack.StashBag.EmptyContents();
+                    Logger.LogDebug($"{nameof(PlayerSaveActions)}::{nameof(SaveBefore)}: Emptied contents of StashPack Bag '{pack.StashBag.Name}' ({pack.StashBag.UID}).");
+                }
+                else
+                    Logger.LogDebug($"{nameof(PlayerSaveActions)}::{nameof(SaveBefore)}: Bag '{pack.StashBag.Name}' ({pack.StashBag.UID}) is not in an updateable state and will not be emptied.");
+            }
         }
 
         private void SaveAfter(CharacterSaveInstanceHolder characterSaveInstanceHolder)
@@ -61,7 +93,6 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
         private List<ContainerSyncPlan> CreateSyncPlans(string characterUID, IEnumerable<BagState> bagStates, StashSaveData stashSaveData)
         {
 
-
             var syncPlans = new List<ContainerSyncPlan>();
             var syncPlanner = _instances.GetSyncPlanner();
 
@@ -74,7 +105,6 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
                         $"Character UID '{characterUID}'. Bag State changes will not be saved to this stash!");
                     continue;
                 }
-
                 var stashPackItems = state.ItemsSaveData.Select(isd => isd.ToUpdatedHierachy(stashSave.UID, stashSave.ItemID));
                 syncPlans.Add(
                     syncPlanner.PlanSync(stashSave, state.BasicSaveData.GetContainerSilver(), stashPackItems)

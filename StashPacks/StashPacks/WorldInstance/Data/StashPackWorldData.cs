@@ -47,10 +47,12 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.Data
             }
             invokeAfter?.Invoke(stashPack);
         }
+
         /// <summary>
-        /// Get's all StashPacks currently loaded into the world for this instances <see cref="CharacterUID"./>.
+        /// Get's all StashPacks currently loaded into the world for for the <paramref name="previousOwnerUID"/>.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="previousOwnerUID">The UID to compare to the <see cref="Item.PreviousOwnerUID"/> property.</param>
+        /// <returns>Collection of <see cref="StashPack"/> instances found in the WorldItems collection.</returns>
         public IEnumerable<StashPack> GetStashPacks(string previousOwnerUID)
         {
             var bags = ItemManager.Instance.WorldItems.Values.FindAll(wi =>
@@ -59,10 +61,27 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.Data
                 );
             if (bags == default)
             {
-                Logger.LogDebug($"No stash packs found loaded in world for player character UID {previousOwnerUID}");
+                Logger.LogDebug($"{nameof(StashPackWorldData)}::{nameof(GetAllStashPacks)}: No stash packs found loaded in {nameof(ItemManager.WorldItems)} for player character UID {previousOwnerUID}.");
                 return null;
             }
 
+            return bags.Select(b => new StashPack()
+            {
+                StashBag = b as Bag,
+                HomeArea = _areaStashBags[b.ItemID]
+            });
+        }
+        
+        public IEnumerable<StashPack> GetAllStashPacks()
+        {
+            var bags = ItemManager.Instance.WorldItems.Values.FindAll(wi =>
+                    wi.IsStashBag()
+                );
+            if (bags == default)
+            {
+                Logger.LogDebug($"{nameof(StashPackWorldData)}::{nameof(GetAllStashPacks)}: No stash packs found loaded in {nameof(ItemManager.WorldItems)}.");
+                return null;
+            }
             return bags.Select(b => new StashPack()
             {
                 StashBag = b as Bag,

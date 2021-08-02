@@ -19,13 +19,12 @@ namespace ModifAmorphic.Outward.StashPacks.State
 
         private readonly ConcurrentDictionary<int, bool> _recievedStashSync = new ConcurrentDictionary<int, bool>();
 
-        private readonly ConcurrentDictionary<string, byte> _disabledBags = new ConcurrentDictionary<string, byte>();
+        private readonly static ConcurrentDictionary<string, byte> _disabledBags = new ConcurrentDictionary<string, byte>();
 
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
         public BagStateService(string characterUID, InstanceFactory instances, Func<IModifLogger> getLogger) => (_characterUID, _instances, _getLogger) = (characterUID, instances, getLogger);
-
 
         public bool TrySaveState(Bag bag)
         {
@@ -96,13 +95,17 @@ namespace ModifAmorphic.Outward.StashPacks.State
         {
             _stateTracked.TryRemove(itemID, out _);
         }
-        public void DisableBag(string bagUID)
+        public static void DisableBag(string bagUID)
         {
             _disabledBags.TryAdd(bagUID, new byte());
         }
-        public bool IsBagDisabled(string bagUID)
+        public static bool IsBagDisabled(string bagUID)
         {
             return _disabledBags.ContainsKey(bagUID);
+        }
+        public static void ClearDisabledBags()
+        {
+            _disabledBags.Clear();
         }
     }
 }

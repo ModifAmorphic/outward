@@ -73,6 +73,8 @@ namespace ModifAmorphic.Outward.StashPacks.State
 
                 _characterSingletons.Clear();
 
+                BagStateService.ClearDisabledBags();
+
             };
             ItemManagerEvents.AwakeAfter += (itemManager => _itemManager = itemManager);
             AreaManagerEvents.AwakeAfter += (areaManager => _areaManager = areaManager);

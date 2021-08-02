@@ -5,7 +5,6 @@ namespace ModifAmorphic.Outward.StashPacks.State
 {
     public class BagState : IContainerSaveData
     {
-        public bool RecievedStashSync { get; internal set; }
         public ContainerTypes ContainerType => ContainerTypes.StashPack;
         /// <summary>
         /// The UID of the Area Stash <see cref="Bag"/> Item.

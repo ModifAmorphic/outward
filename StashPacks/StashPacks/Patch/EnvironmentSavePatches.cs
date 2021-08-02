@@ -10,7 +10,7 @@ namespace ModifAmorphic.Outward.StashPacks.Patch
         [HarmonyPrefix]
         private static bool ApplyDataPreFix(ref EnvironmentSave __instance)
         {
-            EnvironmentSaveEvents.RaiseApplyDataBefore(__instance);
+            EnvironmentSaveEvents.RaiseApplyDataBefore(ref __instance);
             return true;
         }
         [HarmonyPatch(nameof(EnvironmentSave.ApplyData))]

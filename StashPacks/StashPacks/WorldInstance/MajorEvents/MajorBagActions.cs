@@ -1,7 +1,9 @@
 ﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.State;
 using System;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
@@ -21,8 +23,15 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
         }
         protected bool IsHost(Character character)
         {
-
             return character.OwnerPlayerSys.IsMasterClient && character.OwnerPlayerSys.PlayerID == 0;
+        }
+        protected bool IsLocalPlayerCharacter(string characterUID)
+        {
+            return SplitScreenManager.Instance.LocalPlayers.Any(p => p.AssignedCharacter.UID.ToString() == characterUID);
+        }
+        protected bool IsPlayerCharacterInGame(string characterUID)
+        {
+            return Global.Lobby.PlayersInLobby.Any(ps => ps.CharUID == characterUID);
         }
         protected AreaManager.AreaEnum GetCurrentAreaEnum()
         {
@@ -41,6 +50,58 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
         {
             _instances.UnityPlugin.StartCoroutine(AfterBagLoadedCoroutine(bag, action));
         }
+        protected bool DisableHostBagIfInHomeArea(Character character, Bag bag)
+        {
+            if (IsHost(character) && GetBagAreaEnum(bag) == GetCurrentAreaEnum())
+            {
+                Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(DisableHostBagIfInHomeArea)}: Character '{character.UID}' is hosting the game" +
+                    $" and is in '{bag.Name}' ({bag.UID}) home area {GetBagAreaEnum(bag).GetName()}. StashBag functionalty disabled for bag.");
+                BagStateService.DisableBag(bag.UID);
+                return true;
+            }
+            return false;
+        }
+        protected void SaveStateEnableTracking(string characterUID, string bagUID)
+        {
+            var bagStates = _instances.GetBagStateService(characterUID);
+            if (!_instances.TryGetItemManager(out var itemManager))
+            {
+                Logger.LogWarning($"{nameof(MajorBagActions)}::{nameof(SaveStateEnableTracking)}: Unable to retrieve an '{nameof(ItemManager)}' instance for bag '{bagUID}'. Bag state will not be saved." +
+                    $"  Disabling StashBag functionalty this bag.");
+                BagStateService.DisableBag(bagUID);
+                return;
+            }
+
+            var bagInstance = (Bag)itemManager.GetItem(bagUID);
+            if (bagInstance == null || !bagStates.TrySaveState(bagInstance))
+            {
+                Logger.LogWarning($"{nameof(MajorBagActions)}::{nameof(SaveStateEnableTracking)}: Unable to save state for character '{characterUID}' bag '{bagInstance.Name}' ({bagInstance.UID})." +
+                    $"  Disabling StashBag functionalty this bag.");
+                BagStateService.DisableBag(bagInstance.UID);
+                return;
+            }
+            bagStates.SetSyncedFromStash(bagInstance.ItemID, true);
+            bagStates.EnableTracking(bagInstance.ItemID);
+        }
+        protected void UnclaimClearOtherBags(string characterUID, Bag claimedBag)
+        {
+            if (_instances.TryGetStashPackWorldData(out var stashPackWorldData))
+            {
+                var packs = stashPackWorldData.GetStashPacks(characterUID);
+                if (packs != null)
+                {
+                    var bagsToFree = packs.Where(p => p.StashBag.ItemID == claimedBag.ItemID && p.StashBag.UID != claimedBag.UID && p.StashBag.IsUpdateable()).Select(p => p.StashBag);
+                    foreach (var bag in bagsToFree)
+                    {
+                        //bag.PreviousOwnerUID = string.Empty;
+                        bag.OnContainerChangedOwner(null);
+                        bag.OnContainerChangedOwner(null);
+                        bag.EmptyContents();
+                        Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(UnclaimClearOtherBags)}: Removed character's ({characterUID}) claim from bag {bag.Name} ({bag.UID}) and emptied its contents.");
+                    }
+                }
+            }
+        }
         protected IEnumerator AfterBagLoadedCoroutine(Bag bag, Action action)
         {
             if (_instances.TryGetItemManager(out var itemManager))
@@ -50,7 +111,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
                 while (!itemManager.IsAllItemSynced || worldBag == null || string.IsNullOrWhiteSpace(worldBag.PreviousOwnerUID))
                 {
                     worldBag = itemManager.GetItem(bag.UID);
-                    yield return new WaitForSeconds(.2f);
+                    yield return new WaitForSeconds(.5f);
                 }
                 Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterBagLoadedCoroutine)}: Bag '{bag.Name}' ({bag.UID}) finished" +
                     $" loading into world. Invoking action {action.Method.Name}.");

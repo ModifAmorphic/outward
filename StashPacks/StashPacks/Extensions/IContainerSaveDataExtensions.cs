@@ -10,6 +10,7 @@ namespace ModifAmorphic.Outward.StashPacks.Extensions
         {
             return new ContainerSyncPlan()
             {
+                UID = containerSaveData.UID,
                 CharacterUID = containerSaveData.CharacterUID,
                 Area = containerSaveData.Area,
                 ContainerType = containerSaveData.ContainerType,
