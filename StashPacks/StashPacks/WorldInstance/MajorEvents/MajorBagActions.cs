@@ -102,6 +102,20 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
                 }
             }
         }
+        protected static Vector3 GetTerrainPos(float x, float y)
+        {
+            //Create object to store raycast data
+            RaycastHit hit;
+
+            //Create origin for raycast that is above the terrain. I chose 100.
+            Vector3 origin = new Vector3(x, 100, y);
+
+            //Send the raycast.
+            Physics.Raycast(origin, Vector3.down, out hit, Mathf.Infinity);
+
+            Debug.Log("Terrain location found at " + hit.point);
+            return hit.point;
+        }
         protected IEnumerator AfterBagLoadedCoroutine(Bag bag, Action action)
         {
             if (_instances.TryGetItemManager(out var itemManager))
@@ -120,6 +134,39 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
             else
             {
                 Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterBagLoadedCoroutine)}: Unexpected error. Unable " +
+                    $"to retrieve {nameof(ItemManager)} instance. StashPack functionality may not work correctly for " +
+                    $"bag '{bag.Name}' ({bag.UID})");
+            }
+        }
+
+        protected IEnumerator AfterBagLandedCoroutine(Bag bag, Action action)
+        {
+            yield return new WaitForSeconds(.2f);
+
+            if (_instances.TryGetItemManager(out var itemManager))
+            {
+                var worldBag = itemManager.GetItem(bag.UID);
+                var rigidBody = worldBag.GetComponent<Rigidbody>();
+                var waits = 0;
+
+                while (worldBag == null || rigidBody == null 
+                    || rigidBody.velocity.magnitude > 0f
+                    || rigidBody.velocity.x > 0f || rigidBody.velocity.y > 0f || rigidBody.velocity.z > 0f)
+                {
+                    worldBag = itemManager.GetItem(bag.UID);
+                    rigidBody = worldBag.GetComponent<Rigidbody>();
+                    waits++;
+                    Logger.LogTrace($"{nameof(MajorBagActions)}::{nameof(AfterBagLandedCoroutine)}: Bag '{bag.Name}' ({bag.UID}) Velocity " +
+                        $"({rigidBody.velocity.magnitude}, {rigidBody.velocity.x}, {rigidBody.velocity.y}, {rigidBody.velocity.z}). Waited {waits} times.");
+                    yield return new WaitForSeconds(.1f);
+                }
+                Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterBagLandedCoroutine)}: Bag '{bag.Name}' ({bag.UID}) finished" +
+                    $" moving. Invoking action {action.Method.Name}.");
+                action.Invoke();
+            }
+            else
+            {
+                Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterBagLandedCoroutine)}: Unexpected error. Unable " +
                     $"to retrieve {nameof(ItemManager)} instance. StashPack functionality may not work correctly for " +
                     $"bag '{bag.Name}' ({bag.UID})");
             }

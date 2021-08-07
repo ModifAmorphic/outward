@@ -15,27 +15,6 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
         //public static event Action<Bag> RemoveStackAmountAfter;
         public static event Action<Bag> RefreshWeightAfter;
 
-
-
-        //public static void RaiseRemoveStackAmountAfter(ItemContainer itemContainer)
-        //{
-        //    try
-        //    {
-        //        Logger?.LogDebug($"{nameof(ItemContainerEvents)}::{nameof(RaiseRemoveStackAmountAfter)} triggered.");
-        //        if (itemContainer.RefBag != null && itemContainer.RefBag.IsStashBag())
-        //        {
-        //            Logger?.LogDebug($"{nameof(ItemContainerEvents)}::{nameof(RaiseRemoveStackAmountAfter)} triggered for bag '{itemContainer.RefBag.Name}'.");
-        //            RemoveStackAmountAfter?.Invoke(itemContainer.RefBag);
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Logger?.LogException($"Exception in {nameof(ItemContainerEvents)}::{nameof(RaiseRemoveStackAmountAfter)}.", ex);
-        //        if (Logger == null)
-        //            UnityEngine.Debug.LogError($"Exception in {nameof(ItemContainerEvents)}::{nameof(RaiseRemoveStackAmountAfter)}:\n{ex}");
-        //    }
-        //}
         public static void RaiseRefreshWeightAfter(ItemContainer itemContainer)
         {
             try

@@ -32,7 +32,7 @@ namespace ModifAmorphic.Outward.StashPacks.State
         /// <summary>
         /// Bag ItemId, Area
         /// </summary>
-        public IReadOnlyDictionary<int, AreaManager.AreaEnum> AreaStashPackItemIds => StashPacksConstants.StashBackpackItemIds;
+        public IReadOnlyDictionary<int, AreaManager.AreaEnum> AreaStashPackItemIds => StashPacksConstants.StashBackpackAreas;
 
         private readonly ConcurrentDictionary<Type, object> _singletons = new ConcurrentDictionary<Type, object>();
 

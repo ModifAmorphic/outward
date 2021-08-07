@@ -17,8 +17,6 @@ namespace ModifAmorphic.Outward.StashPacks
             var settingsService = new SettingsService(unityPlugin, ModInfo.MinimumConfigVersion)
                                         .Configure();
             var instanceFactory = new InstanceFactory(unityPlugin, LoggerFactory.GetLogger);
-            //var stashBagState = new StashBagState(instanceFactory, LoggerFactory.GetLogger);
-            //var spBehaviors = new StashPackBehaviors(instanceFactory, stashBagState, LoggerFactory.GetLogger);
             var levelLoadActions = new LevelLoadingActions(instanceFactory, LoggerFactory.GetLogger);
             levelLoadActions.SubscribeToEvents();
             var bagDropActions = new BagDropActions(instanceFactory, LoggerFactory.GetLogger);
@@ -36,7 +34,7 @@ namespace ModifAmorphic.Outward.StashPacks
         {
             EnvironmentSaveEvents.LoggerFactory = LoggerFactory.GetLogger;
             CharacterSaveInstanceHolderEvents.LoggerFactory = LoggerFactory.GetLogger;
-            ItemEvents.LoggerFactory = LoggerFactory.GetLogger;
+            CharacterEvents.LoggerFactory = LoggerFactory.GetLogger;
             ItemContainerEvents.LoggerFactory = LoggerFactory.GetLogger;
             ItemManagerEvents.LoggerFactory = LoggerFactory.GetLogger;
             NetworkLevelLoaderEvents.LoggerFactory = LoggerFactory.GetLogger;

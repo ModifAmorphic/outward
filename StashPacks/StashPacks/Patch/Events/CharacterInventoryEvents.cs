@@ -38,6 +38,7 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
             {
                 if (item.IsStashBag())
                     DropBagItemAfter?.Invoke(character, (Bag)item);
+
             }
             catch (Exception ex)
             {
@@ -46,6 +47,5 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
                     UnityEngine.Debug.LogError($"Exception in {nameof(CharacterInventoryEvents)}::{nameof(RaiseDropBagItemAfter)}:\n{ex}");
             }
         }
-
     }
 }

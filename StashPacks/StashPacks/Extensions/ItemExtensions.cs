@@ -6,7 +6,7 @@ namespace ModifAmorphic.Outward.StashPacks.Extensions
     {
         public static bool IsStashBag(this Item item)
         {
-            return item is Bag && StashPacksConstants.StashBackpackItemIds.ContainsKey(item.ItemID);
+            return item is Bag && StashPacksConstants.StashBackpackAreas.ContainsKey(item.ItemID);
         }
     }
 }

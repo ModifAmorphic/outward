@@ -15,7 +15,7 @@ namespace ModifAmorphic.Outward.StashPacks.Extensions
         }
         public static bool IsStashBag(this Bag bag)
         {
-            return StashPacksConstants.StashBackpackItemIds.ContainsKey(bag.ItemID);
+            return StashPacksConstants.StashBackpackAreas.ContainsKey(bag.ItemID);
         }
         public static bool HasContents(this Bag stashBag)
         {

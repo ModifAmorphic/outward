@@ -15,10 +15,11 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
                 { AreaManager.AreaEnum.Harmattan, ("ImqRiGAT80aE2WtUHfdcMw", 1000000) },
                 { AreaManager.AreaEnum.NewSirocco, ("IqUugGqBBkaOcQdRmhnMng", 1000000) }
             });
+
         /// <summary>
         /// Key Value Collection of Stash Backpacs for area's with stashes. Key = ItemId.
         /// </summary>
-        public static ReadOnlyDictionary<int, AreaManager.AreaEnum> StashBackpackItemIds = new ReadOnlyDictionary<int, AreaManager.AreaEnum>(
+        public static ReadOnlyDictionary<int, AreaManager.AreaEnum> StashBackpackAreas = new ReadOnlyDictionary<int, AreaManager.AreaEnum>(
             new Dictionary<int, AreaManager.AreaEnum>()
             {
                 { -1301000, AreaManager.AreaEnum.CierzoVillage },
@@ -30,5 +31,22 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
             });
 
         public const string BagUidSuffix = "_Content";
+
+        public static ReadOnlyDictionary<AreaManager.AreaEnum, StashBagVisual> StashBagVisuals = new ReadOnlyDictionary<AreaManager.AreaEnum, StashBagVisual>(
+            new Dictionary<AreaManager.AreaEnum, StashBagVisual>()
+            {
+                { AreaManager.AreaEnum.CierzoVillage, new StashBagVisual() },
+                { AreaManager.AreaEnum.Monsoon, new StashBagVisual() },
+                { AreaManager.AreaEnum.Berg, new StashBagVisual() },
+                { AreaManager.AreaEnum.Levant, new StashBagVisual() },
+                { AreaManager.AreaEnum.Harmattan, new StashBagVisual() 
+                { 
+                    Scale = new UnityEngine.Vector3(2f, 2f, 2f)
+                } },
+                { AreaManager.AreaEnum.NewSirocco, new StashBagVisual()
+                {
+                    Scale = new UnityEngine.Vector3(2f, 2f, 2f),
+                } }
+            });
     }
 }

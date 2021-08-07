@@ -35,8 +35,6 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
         }
         public void SubscribeToEvents()
         {
-            //This fires too early, before scene loads. Need a better hook
-            //NetworkLevelLoaderEvents.OnJoinedRoomBefore += OnJoinedRoomBefore;
             
             //TODO: Not sure if this happens for remote players.
             NetworkLevelLoaderEvents.MidLoadLevelBefore += MidLoadLevelBefore;
@@ -70,18 +68,6 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
         private void MidLoadLevelBefore(NetworkLevelLoader networkLevelLoader)
         {
             _packProcessingEnabled = true;
-        }
-
-        private void OnJoinedRoomBefore(OnJoinedRoomArgs args)
-        {
-            if (PhotonNetwork.isNonMasterClientInRoom || Global.Lobby.LocalPlayerCount == 0 || args.FailedJoin)
-            {
-                if (!_networkLoadEventAlreadyOccured)
-                {
-                    _networkLoadEventAlreadyOccured = true;
-                    _packProcessingEnabled = true;
-                }
-            }
         }
 
         private void ClearFlags()
@@ -158,6 +144,11 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
             var syncPlans = GenerateSyncPlans(uniqueOwnedPacks);
             ExecuteAllPlans(syncPlans);
             SaveBagStates(uniqueOwnedPacks);
+
+            foreach(var p in uniqueOwnedPacks.Values.SelectMany(b => b))
+            {
+                BagVisualizer.BagLoaded(p.StashBag);
+            }
 
         }
         private void ExecuteAllPlans(IEnumerable<ContainerSyncPlan> syncPlans)

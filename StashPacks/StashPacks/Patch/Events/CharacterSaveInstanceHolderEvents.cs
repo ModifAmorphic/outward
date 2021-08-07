@@ -10,7 +10,7 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
         public static Func<IModifLogger> LoggerFactory { get; set; }
 
         public static event Action<CharacterSaveInstanceHolder, Character> PlayerSaveLoadedAfter;
-        public static event Action<CharacterSaveInstanceHolder> SaveBefore;
+        //public static event Action<CharacterSaveInstanceHolder> SaveBefore;
         public static event Action<CharacterSaveInstanceHolder> SaveAfter;
 
         public static void RaisePlayerSaveLoadedAfter(CharacterSaveInstanceHolder characterSaveInstanceHolder, Character character)
@@ -28,21 +28,21 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
                     UnityEngine.Debug.LogError($"Exception in {nameof(CharacterSaveInstanceHolderEvents)}::{nameof(RaisePlayerSaveLoadedAfter)}:\n{ex}");
             }
         }
-        public static void RaiseSaveBefore(CharacterSaveInstanceHolder characterSaveInstanceHolder)
-        {
-            try
-            {
-                Logger?.LogTrace($"{nameof(CharacterSaveInstanceHolderEvents)}::{nameof(RaiseSaveBefore)} raised. {nameof(CharacterSaveInstanceHolder)}" +
-                    $".{nameof(CharacterSaveInstanceHolder.CharacterUID)} is '{characterSaveInstanceHolder?.CharacterUID}'.");
-                SaveBefore?.Invoke(characterSaveInstanceHolder);
-            }
-            catch (Exception ex)
-            {
-                Logger?.LogException($"Exception in {nameof(CharacterSaveInstanceHolderEvents)}::{nameof(RaiseSaveBefore)}.", ex);
-                if (Logger == null)
-                    UnityEngine.Debug.LogError($"Exception in {nameof(CharacterSaveInstanceHolderEvents)}::{nameof(RaiseSaveBefore)}:\n{ex}");
-            }
-        }
+        //public static void RaiseSaveBefore(CharacterSaveInstanceHolder characterSaveInstanceHolder)
+        //{
+        //    try
+        //    {
+        //        Logger?.LogTrace($"{nameof(CharacterSaveInstanceHolderEvents)}::{nameof(RaiseSaveBefore)} raised. {nameof(CharacterSaveInstanceHolder)}" +
+        //            $".{nameof(CharacterSaveInstanceHolder.CharacterUID)} is '{characterSaveInstanceHolder?.CharacterUID}'.");
+        //        SaveBefore?.Invoke(characterSaveInstanceHolder);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger?.LogException($"Exception in {nameof(CharacterSaveInstanceHolderEvents)}::{nameof(RaiseSaveBefore)}.", ex);
+        //        if (Logger == null)
+        //            UnityEngine.Debug.LogError($"Exception in {nameof(CharacterSaveInstanceHolderEvents)}::{nameof(RaiseSaveBefore)}:\n{ex}");
+        //    }
+        //}
         public static void RaiseSaveAfter(CharacterSaveInstanceHolder characterSaveInstanceHolder)
         {
             try
