@@ -11,35 +11,28 @@
 
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\..\features\stash-mash\outward\outward-shared-assemblies\0Harmony.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>..\..\outward-shared-assemblies\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\..\..\features\stash-mash\outward\outward-shared-assemblies\Assembly-CSharp.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>..\..\outward-shared-assemblies\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>..\..\..\..\..\features\stash-mash\outward\outward-shared-assemblies\Assembly-CSharp-firstpass.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>..\..\outward-shared-assemblies\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>..\..\..\..\..\features\stash-mash\outward\outward-shared-assemblies\BepInEx.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>..\..\outward-shared-assemblies\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="SideLoader">
-      <HintPath>..\..\..\..\..\features\stash-mash\outward\outward-shared-assemblies\SideLoader.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>..\..\outward-shared-assemblies\SideLoader.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\..\..\features\stash-mash\outward\outward-shared-assemblies\UnityEngine.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\..\..\features\stash-mash\outward\outward-shared-assemblies\UnityEngine.CoreModule.dll</HintPath>
-      <Private>false</Private>
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
-      <HintPath>..\..\..\outward-shared-assemblies\UnityEngine.PhysicsModule.dll</HintPath>
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
   </ItemGroup>
 
