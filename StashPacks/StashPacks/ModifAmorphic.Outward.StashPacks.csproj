@@ -36,8 +36,4 @@
     </Reference>
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy $(OutDir)\ModifAmorphic.Outward.StashPacks.dll %25appdata%25\r2modmanPlus-local\Outward\profiles\Default\BepInEx\plugins\ModifAmorphic-StashPacks\ /y" />
-  </Target>
-
 </Project>
