@@ -24,7 +24,7 @@
     <string>Misc</string>
   </Tags>
   <StatsHolder>
-    <BaseValue>25</BaseValue>
+    <BaseValue>250</BaseValue>
     <RawWeight>0.1</RawWeight>
     <MaxDurability>-1</MaxDurability>
   </StatsHolder>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SL_RecipeItem xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Target_ItemID>5700339</Target_ItemID>
-  <New_ItemID>-1302006</New_ItemID>
-  <Name>Crafting: Levant Stash Backpack</Name>
+  <New_ItemID>-1302010</New_ItemID>
+  <Name>Crafting: New Sirocco Stash Backpack</Name>
   <Description>Teaches how to craft equipment, requiring no crafting station.</Description>
   <LegacyItemID>-1</LegacyItemID>
   <IsPickable>true</IsPickable>
@@ -63,5 +63,5 @@
     <PositionOffset xsi:nil="true" />
     <RotationOffset xsi:nil="true" />
   </ItemVisuals>
-  <RecipeUID>lPRLP3cQA4KDNfmIS9Myt3</RecipeUID>
+  <RecipeUID>cokktI0Fa64J03sJKXDFRM</RecipeUID>
 </SL_RecipeItem>

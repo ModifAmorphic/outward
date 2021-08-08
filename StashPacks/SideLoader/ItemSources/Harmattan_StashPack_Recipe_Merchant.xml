@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SL_DropTableAddition xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <IdentifierName>bIYrBdeXNYf5y3xuRvyNAt</IdentifierName>
+  <SelectorTargets>
+    <string>MGQFz1eHf0C0MTf7AnEBmg</string>
+  </SelectorTargets>
+  <DropTableUIDsToAdd>
+    <string>Harmattan_StashPack_Recipe_Drop_UU6cwWMdnEQG0KKHnUA5xW</string>
+  </DropTableUIDsToAdd>
+</SL_DropTableAddition>
