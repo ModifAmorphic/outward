@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SL_ItemSpawn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <IdentifierName>p5nRSbT31JtVaZNaZhxc00</IdentifierName>
+  <ItemID>-1302002</ItemID>
+  <Quantity>1</Quantity>
+  <SceneToSpawnIn>HallowedDungeonsSmall</SceneToSpawnIn>
+  <SpawnPosition>
+    <x>1505.034</x>
+    <y>-4.063</y>
+    <z>35.403</z>
+  </SpawnPosition>
+  <SpawnRotation>
+    <x>0</x>
+    <y>0</y>
+    <z>0</z>
+  </SpawnRotation>
+  <ForceNonPickable>false</ForceNonPickable>
+  <TryLightFueledContainer>false</TryLightFueledContainer>
+</SL_ItemSpawn>

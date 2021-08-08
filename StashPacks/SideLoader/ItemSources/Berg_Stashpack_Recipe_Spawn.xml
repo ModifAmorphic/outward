@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SL_ItemSpawn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <IdentifierName>FoWpNcI2TorqeLGTsBPW0p</IdentifierName>
+  <ItemID>-1302004</ItemID>
+  <Quantity>1</Quantity>
+  <SceneToSpawnIn>Emercar_Dungeon1</SceneToSpawnIn>
+  <SpawnPosition>
+    <x>18.147</x>
+    <y>20.053</y>
+    <z>-121.427</z>
+  </SpawnPosition>
+  <SpawnRotation>
+    <x>0</x>
+    <y>0</y>
+    <z>0</z>
+  </SpawnRotation>
+  <ForceNonPickable>false</ForceNonPickable>
+  <TryLightFueledContainer>false</TryLightFueledContainer>
+</SL_ItemSpawn>

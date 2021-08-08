@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SL_ItemSpawn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <IdentifierName>N9Qek7nlmGXqjc8MujcVJt</IdentifierName>
+  <ItemID>-1302000</ItemID>
+  <Quantity>1</Quantity>
+  <SceneToSpawnIn>Chersonese_Dungeon9</SceneToSpawnIn>
+  <SpawnPosition>
+    <x>772.458</x>
+    <y>22.755</y>
+    <z>1873.479</z>
+  </SpawnPosition>
+  <SpawnRotation>
+    <x>0</x>
+    <y>0</y>
+    <z>0</z>
+  </SpawnRotation>
+  <ForceNonPickable>false</ForceNonPickable>
+  <TryLightFueledContainer>false</TryLightFueledContainer>
+</SL_ItemSpawn>
