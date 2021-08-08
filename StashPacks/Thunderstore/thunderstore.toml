@@ -22,7 +22,11 @@ outdir = "Build"
 
 [[build.copy]]
 source = "bin"
-target = ""
+target = "files/plugins/"
+
+[[build.copy]]
+source = "../SideLoader"
+target = "files/plugins/SideLoader"
 
 [publish]
 repository = "https://outward.thunderstore.io"

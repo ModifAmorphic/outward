@@ -1,11 +1,12 @@
 ﻿using BepInEx;
 using HarmonyLib;
+using System;
 
 namespace ModifAmorphic.Outward.StashPacks
 {
     [BepInDependency("com.bepis.bepinex.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("io.mefino.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
-    //[BepInDependency("modifamorphic.outward.shared", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("com.sinai.SideLoader", BepInDependency.DependencyFlags.HardDependency)]
     [BepInPlugin(ModInfo.ModId, ModInfo.ModName, ModInfo.ModVersion)]
     public class StashPool : BaseUnityPlugin
     {
@@ -14,15 +15,16 @@ namespace ModifAmorphic.Outward.StashPacks
             var harmony = new Harmony(ModInfo.ModId);
             try
             {
-                UnityEngine.Debug.Log($"[{ModInfo.ModName}] - Starting...");
+                UnityEngine.Debug.Log($"[{ModInfo.ModName}] - Patching...");
                 harmony.PatchAll();
 
                 var startup = new Startup();
+                UnityEngine.Debug.Log($"[{ModInfo.ModName}] - Starting...");
                 startup.Start(this);
             }
-            catch
+            catch (Exception ex)
             {
-                UnityEngine.Debug.LogError($"Failed to enable {ModInfo.ModId} {ModInfo.ModName}.");
+                UnityEngine.Debug.LogError($"Failed to enable {ModInfo.ModId} {ModInfo.ModName}. Error: {ex}");
                 harmony.UnpatchSelf();
                 throw;
             }
