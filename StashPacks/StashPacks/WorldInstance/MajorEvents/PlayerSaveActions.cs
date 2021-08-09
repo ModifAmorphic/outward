@@ -25,6 +25,11 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
 
         private void SaveBefore(SaveInstance saveInstance)
         {
+            if (!IsCurrentSceneStashPackEnabled())
+            {
+                Logger.LogDebug($"{nameof(PlayerSaveActions)}::{nameof(SaveBefore)}: Current Scene is not StashPack Enabled. Not saving for Character '{saveInstance.CharSave.CharacterUID}'.");
+                return;
+            }
             if (PhotonNetwork.isNonMasterClientInRoom)
             {
                 Logger.LogDebug($"{nameof(LevelLoadingActions)}::{nameof(SaveBefore)}: Character '{saveInstance.CharSave.CharacterUID}' is not master client. No presave action taken.");
@@ -56,6 +61,11 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
 
         private void SaveAfter(CharacterSaveInstanceHolder characterSaveInstanceHolder)
         {
+            if (!IsCurrentSceneStashPackEnabled())
+            {
+                Logger.LogDebug($"{nameof(PlayerSaveActions)}::{nameof(SaveBefore)}: Current Scene is not StashPack Enabled. Not saving for Character '{characterSaveInstanceHolder.CharacterUID}'.");
+                return;
+            }
 
             var characterUID = characterSaveInstanceHolder.CharacterUID;
             var bagStateService = _instances.GetBagStateService(characterUID);

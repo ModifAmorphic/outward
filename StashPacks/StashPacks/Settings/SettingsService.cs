@@ -18,7 +18,7 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
             (_configManagerService, _configService, _minConfigVersion) = (new ConfigManagerService(plugin), new ConfigSettingsService(plugin), minConfigVersion);
 
 
-        public SettingsService Configure()
+        public StashPacksSettings Configure()
         {
             var settings = new StashPacksSettings();
 
@@ -30,6 +30,11 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
                 _configService.RemoveAllSettings();
             }
 
+            #region Main Section
+            //All all scenes
+            _configService.BindConfigSetting(settings.AllScenesEnabled, null);
+            #endregion
+
             #region Advanced Section
             //Logging Level
             _configService.BindConfigSetting(settings.LogLevel,
@@ -40,7 +45,7 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
 
             #endregion
 
-            return this;
+            return settings;
         }
 
 

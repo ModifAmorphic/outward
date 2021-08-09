@@ -25,6 +25,13 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
                 return;
             }
 
+            if (!IsCurrentSceneStashPackEnabled())
+            {
+                Logger.LogDebug($"{nameof(ContentsChangedActions)}::{nameof(ContentsChanged)}: Current Scene is not StashPack Enabled. Disabling stashpack functionality for bag {bag.Name} ({bag.UID}).");
+                BagStateService.DisableBag(bag.UID);
+                return;
+            }
+
             //check if in someone's inventory
             if (!bag.IsUpdateable())
             {

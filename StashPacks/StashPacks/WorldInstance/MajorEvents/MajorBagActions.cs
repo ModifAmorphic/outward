@@ -1,10 +1,12 @@
 ﻿using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
+using ModifAmorphic.Outward.StashPacks.Settings;
 using ModifAmorphic.Outward.StashPacks.State;
 using System;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
 {
@@ -14,12 +16,25 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
 
         protected IModifLogger Logger => _getLogger.Invoke();
         protected readonly Func<IModifLogger> _getLogger;
+        private bool _lastKnownAllScenesEnabled = false;
+        protected bool LastKnownAllScenesEnabled => _lastKnownAllScenesEnabled;
 
-        public MajorBagActions(InstanceFactory instances, Func<IModifLogger> getLogger) => (_instances, _getLogger) = (instances, getLogger);
+        public MajorBagActions(InstanceFactory instances, Func<IModifLogger> getLogger)
+        {
+            (_instances, _getLogger) = (instances, getLogger);
+            SceneManager.sceneLoaded += (s, l) =>
+            {
+                _lastKnownAllScenesEnabled = instances.StashPacksSettings.AllScenesEnabled.Value;
+            };
+        }
 
         protected bool IsWorldLoaded()
         {
             return NetworkLevelLoader.Instance.IsOverallLoadingDone;
+        }
+        protected bool IsCurrentSceneStashPackEnabled()
+        {
+            return StashPacksConstants.PermenantStashUids.ContainsKey(GetCurrentAreaEnum()) || LastKnownAllScenesEnabled; 
         }
         protected bool IsHost(Character character)
         {

@@ -23,6 +23,13 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
 
         private void DropBagItemBefore(Character character, Bag bag)
         {
+            if (!IsCurrentSceneStashPackEnabled())
+            {
+                Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(DropBagItemBefore)}: Current Scene is not StashPack Enabled. Disabling stashpack functionality for bag {bag.Name} ({bag.UID}).");
+                BagStateService.DisableBag(bag.UID);
+                return;
+            }
+
             if (BagStateService.IsBagDisabled(bag.UID))
             {
                 Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(DropBagItemBefore)}: Bag {bag.Name} ({bag.UID}) has StashBag functionality disabled. Not scaling.");

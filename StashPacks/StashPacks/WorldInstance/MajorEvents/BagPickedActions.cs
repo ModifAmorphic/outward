@@ -8,14 +8,12 @@ using UnityEngine;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
 {
-    internal class BagPickedActions
+    internal class BagPickedActions : MajorBagActions
     {
-        private readonly InstanceFactory _instances;
 
-        private IModifLogger Logger => _getLogger.Invoke();
-        private readonly Func<IModifLogger> _getLogger;
-
-        public BagPickedActions(InstanceFactory instances, Func<IModifLogger> getLogger) => (_instances, _getLogger) = (instances, getLogger);
+        public BagPickedActions(InstanceFactory instances, Func<IModifLogger> getLogger) : base(instances, getLogger)
+        {
+        }
 
         public void SubscribeToEvents()
         {
@@ -27,6 +25,16 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
         {
             try
             {
+                if (!IsCurrentSceneStashPackEnabled())
+                {
+                    var bag = character.Interactable?.ItemToPreview as Bag;
+                    if (bag != null)
+                    {
+                        Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(TryHandleBackpackBefore)}: Current Scene is not StashPack Enabled. Disabling stashpack functionality for bag {bag.Name} ({bag.UID}).");
+                        BagStateService.DisableBag(bag.UID);
+                    }
+                    return true;
+                }
                 return HandleBackpackBefore(character, cprivates);
             }
             catch (Exception ex)

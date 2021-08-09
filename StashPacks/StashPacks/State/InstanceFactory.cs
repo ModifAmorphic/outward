@@ -20,6 +20,9 @@ namespace ModifAmorphic.Outward.StashPacks.State
         private readonly BaseUnityPlugin _unityPlugin;
         public BaseUnityPlugin UnityPlugin => _unityPlugin;
 
+        private readonly StashPacksSettings _stashPacksSettings;
+        public StashPacksSettings StashPacksSettings => _stashPacksSettings;
+
         private ItemManager _itemManager;
 
         /// <summary>
@@ -46,10 +49,11 @@ namespace ModifAmorphic.Outward.StashPacks.State
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
-        public InstanceFactory(BaseUnityPlugin unityPlugin, Func<IModifLogger> getLogger)
+        public InstanceFactory(BaseUnityPlugin unityPlugin, StashPacksSettings stashPackSettings, Func<IModifLogger> getLogger)
         {
             _unityPlugin = unityPlugin;
             _getLogger = getLogger;
+            _stashPacksSettings = stashPackSettings;
             RoutePatchEvents();
         }
 

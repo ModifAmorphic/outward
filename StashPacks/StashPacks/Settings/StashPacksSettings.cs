@@ -6,17 +6,31 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
 {
     internal class StashPacksSettings
     {
+        const string MainSection = "StashPack Settings";
+        const int MainTopOrder = int.MaxValue;
+
+        public ConfigSetting<bool> AllScenesEnabled { get; } = new ConfigSetting<bool>()
+        {
+            Name = nameof(AllScenesEnabled),
+            DefaultValue = false,
+            Section = MainSection,
+            DisplayName = "Enable StashPacks for All Scenes",
+            Description = $"Enables StashPack functionality for all scenes. Normally only Scenes with Stashes are enabled.",
+            Order = MainTopOrder - 1,
+            IsAdvanced = false
+        };
+
         const string AdvancedSection = "zz--Advanced Settings--zz";
-        const int AdvancedTopOrder = 1000;
+        const int AdvancedTopOrder = MainTopOrder - 1000;
 
         public ConfigSetting<LogLevel> LogLevel { get; } = new ConfigSetting<LogLevel>()
         {
             Name = nameof(LogLevel),
-            DefaultValue = Logging.LogLevel.Info,
+            DefaultValue = Logging.LogLevel.Debug,
             Section = AdvancedSection,
             DisplayName = "Minimum level for logging",
             Description = $"The threshold for logging events to the UnityEngine.Debug logger. " +
-        $"{Enum.GetName(typeof(LogLevel), Logging.LogLevel.Info)} is the default.",
+        $"{Enum.GetName(typeof(LogLevel), Logging.LogLevel.Debug)} is the default.",
             Order = AdvancedTopOrder - 1,
             IsAdvanced = true
         };

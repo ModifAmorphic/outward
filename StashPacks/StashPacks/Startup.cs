@@ -14,9 +14,9 @@ namespace ModifAmorphic.Outward.StashPacks
         public Startup() { }
         public void Start(BaseUnityPlugin unityPlugin)
         {
-            var settingsService = new SettingsService(unityPlugin, ModInfo.MinimumConfigVersion)
+            var settings = new SettingsService(unityPlugin, ModInfo.MinimumConfigVersion)
                                         .Configure();
-            var instanceFactory = new InstanceFactory(unityPlugin, LoggerFactory.GetLogger);
+            var instanceFactory = new InstanceFactory(unityPlugin, settings, LoggerFactory.GetLogger);
             var levelLoadActions = new LevelLoadingActions(instanceFactory, LoggerFactory.GetLogger);
             levelLoadActions.SubscribeToEvents();
             var bagDropActions = new BagDropActions(instanceFactory, LoggerFactory.GetLogger);

@@ -67,7 +67,11 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
 
         private void MidLoadLevelBefore(NetworkLevelLoader networkLevelLoader)
         {
-            _packProcessingEnabled = true;
+            if (IsCurrentSceneStashPackEnabled())
+            {
+                _packProcessingEnabled = true;
+            }
+            
         }
 
         private void ClearFlags()
@@ -82,7 +86,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
             //ignore all events that have not been triggered by level loading events
             //also, even if triggered by a level load, don't start until the base game
             //has had a chance to sync all items.
-            if (!_packProcessingEnabled || !baseResult)
+            if (!_packProcessingEnabled || !baseResult || !IsCurrentSceneStashPackEnabled())
                 return baseResult;
 
             try
