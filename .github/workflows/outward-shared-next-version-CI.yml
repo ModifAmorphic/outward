@@ -1,4 +1,4 @@
-name: outward-shared-next-version-CI
+name: outward-shared-develop-CI
 
 # Controls when the workflow will run
 on:
