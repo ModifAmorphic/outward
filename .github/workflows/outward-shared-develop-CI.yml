@@ -20,10 +20,10 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
     build:
-        name: Run Outward-Shared Next-Version Azure Build Pipeline
+        name: Run Outward-Shared Develop Azure Build Pipeline
         runs-on: ubuntu-latest
         steps:
-        - name: Run Build outward-shared-next-version-build
+        - name: Run Build outward-shared-develop-build
           uses: Azure/pipelines@v1
           with:
             azure-devops-project-url: https://dev.azure.com/ModifAmorphic/outward
