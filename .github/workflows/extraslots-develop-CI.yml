@@ -1,18 +1,21 @@
-name: outward-shared-next-version-CI
+# This is a basic workflow to help you get started with Actions
+
+name: extraslots-develop-CI
 
 # Controls when the workflow will run
 on:
+  # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ next-version ]
+    branches: [ mods/extraslots ]
     paths:
-    - 'Outward.Shared/**'
+    - 'ExtraSlots/**'
     - '!**/README.md'
     - '!**/readme.md'
     - '!**/workflows/*'
     - '!**/manifest.json'
     - '!**/icon.png'
   pull_request:
-    branches: [ next-version ]
+    branches: [ mods/extraslots ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -20,12 +23,12 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
     build:
-        name: Run Outward-Shared Next-Version Azure Build Pipeline
+        name: Run ExtraSlots Develop Azure Build Pipeline
         runs-on: ubuntu-latest
         steps:
-        - name: Run Build outward-shared-next-version-build
+        - name: Run Build 'extraslots-develop-build
           uses: Azure/pipelines@v1
           with:
             azure-devops-project-url: https://dev.azure.com/ModifAmorphic/outward
-            azure-pipeline-name: 'outward-shared-next-version-build'
+            azure-pipeline-name: 'extraslots-develop-build'
             azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
