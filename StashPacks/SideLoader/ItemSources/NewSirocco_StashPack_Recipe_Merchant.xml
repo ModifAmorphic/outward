@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SL_DropTableAddition xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <IdentifierName>QqIgLGzCzVvV2l3Fh1jz5W</IdentifierName>
+  <SelectorTargets>
+    <string>W1TeRCeXOE-E5J_dHYVOjw</string>
+  </SelectorTargets>
+  <DropTableUIDsToAdd>
+    <string>NewSirocco_StashPack_Recipe_Drop_NcAT2e8pLEe73MuIhoLUwQ</string>
+  </DropTableUIDsToAdd>
+</SL_DropTableAddition>

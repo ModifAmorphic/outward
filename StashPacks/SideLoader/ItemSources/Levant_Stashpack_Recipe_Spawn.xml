@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SL_ItemSpawn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <IdentifierName>NUNeC0Wwsp8X6MoPQS5i0h</IdentifierName>
+  <ItemID>-1302006</ItemID>
+  <Quantity>1</Quantity>
+  <SceneToSpawnIn>Abrassar_Dungeon6</SceneToSpawnIn>
+  <SpawnPosition>
+    <x>-84.311</x>
+    <y>3.191</y>
+    <z>24.047</z>
+  </SpawnPosition>
+  <SpawnRotation>
+    <x>0</x>
+    <y>0</y>
+    <z>0</z>
+  </SpawnRotation>
+  <ForceNonPickable>false</ForceNonPickable>
+  <TryLightFueledContainer>false</TryLightFueledContainer>
+</SL_ItemSpawn>

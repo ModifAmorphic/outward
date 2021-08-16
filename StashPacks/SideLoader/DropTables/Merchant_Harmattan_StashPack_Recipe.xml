@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SL_DropTable xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <UID>Harmattan_StashPack_Recipe_Drop_UU6cwWMdnEQG0KKHnUA5xW</UID>
+  <GuaranteedDrops>
+    <SL_ItemDrop>
+      <MinQty>1</MinQty>
+      <MaxQty>1</MaxQty>
+      <DroppedItemID>-1302008</DroppedItemID>
+    </SL_ItemDrop>
+  </GuaranteedDrops>
+  <RandomTables />
+</SL_DropTable>
