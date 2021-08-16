@@ -3,7 +3,7 @@ using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.Settings;
 using ModifAmorphic.Outward.StashPacks.State;
-using ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents;
+using ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions;
 
 namespace ModifAmorphic.Outward.StashPacks
 {
@@ -17,16 +17,8 @@ namespace ModifAmorphic.Outward.StashPacks
             var settings = new SettingsService(unityPlugin, ModInfo.MinimumConfigVersion)
                                         .Configure();
             var instanceFactory = new InstanceFactory(unityPlugin, settings, LoggerFactory.GetLogger);
-            var levelLoadActions = new LevelLoadingActions(instanceFactory, LoggerFactory.GetLogger);
-            levelLoadActions.SubscribeToEvents();
-            var bagDropActions = new BagDropActions(instanceFactory, LoggerFactory.GetLogger);
-            bagDropActions.SubscribeToEvents();
-            var bagPickedActions = new BagPickedActions(instanceFactory, LoggerFactory.GetLogger);
-            bagPickedActions.SubscribeToEvents();
-            var changedActions = new ContentsChangedActions(instanceFactory, LoggerFactory.GetLogger);
-            changedActions.SubscribeToEvents();
-            var saveActions = new PlayerSaveActions(instanceFactory, LoggerFactory.GetLogger);
-            saveActions.SubscribeToEvents();
+            var actionInstances = new ActionInstanceManager(instanceFactory, LoggerFactory.GetLogger);
+            actionInstances.StartActions();
 
             ConfigurePatchLogging();
         }

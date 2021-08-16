@@ -18,6 +18,8 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
         /// </summary>
         public static event Action<Character, Bag> DropBagItemAfter;
 
+        public static event Action<CharacterInventory, Character, Tag, DictionaryExt<int, CompatibleIngredient>> InventoryIngredientsAfter;
+
         public static void RaiseDropBagItemBefore(Character character, ref Item item)
         {
             try
@@ -45,6 +47,19 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
                 Logger?.LogException($"Exception in {nameof(CharacterInventoryEvents)}::{nameof(RaiseDropBagItemAfter)}.", ex);
                 if (Logger == null)
                     UnityEngine.Debug.LogError($"Exception in {nameof(CharacterInventoryEvents)}::{nameof(RaiseDropBagItemAfter)}:\n{ex}");
+            }
+        }
+        public static void RaiseInventoryIngredientsAfter(CharacterInventory characterInventory, Character character, Tag craftingStationTag, ref DictionaryExt<int, CompatibleIngredient> sortedIngredients)
+        {
+            try
+            {
+                InventoryIngredientsAfter?.Invoke(characterInventory, character, craftingStationTag, sortedIngredients);
+            }
+            catch (Exception ex)
+            {
+                Logger?.LogException($"Exception in {nameof(CharacterInventoryEvents)}::{nameof(RaiseInventoryIngredientsAfter)}.", ex);
+                if (Logger == null)
+                    UnityEngine.Debug.LogError($"Exception in {nameof(CharacterInventoryEvents)}::{nameof(RaiseInventoryIngredientsAfter)}:\n{ex}");
             }
         }
     }

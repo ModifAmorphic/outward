@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.SaveData.Data;
@@ -9,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
+namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 {
     internal class PlayerSaveActions : MajorBagActions
     {
@@ -17,7 +18,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
         {
         }
 
-        public void SubscribeToEvents()
+        public override void SubscribeToEvents()
         {
             CharacterSaveInstanceHolderEvents.SaveAfter += SaveAfter;
             SaveInstanceEvents.SaveBefore += SaveBefore;

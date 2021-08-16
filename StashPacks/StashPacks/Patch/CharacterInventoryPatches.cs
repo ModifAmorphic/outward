@@ -24,5 +24,14 @@ namespace ModifAmorphic.Outward.StashPacks.Patch
         {
             CharacterInventoryEvents.RaiseDropBagItemAfter(___m_character, _item);
         }
+
+        [HarmonyPatch(nameof(CharacterInventory.InventoryIngredients), MethodType.Normal)]
+        [HarmonyPatch(new Type[] { typeof(Tag), typeof(DictionaryExt<int, CompatibleIngredient>) },
+            new[] { ArgumentType.Normal, ArgumentType.Ref })]
+        [HarmonyPostfix]
+        public static void InventoryIngredientsPostFix(CharacterInventory __instance, Character ___m_character, Tag _craftingStationTag, ref DictionaryExt<int, CompatibleIngredient> _sortedIngredient)
+        {
+            CharacterInventoryEvents.RaiseInventoryIngredientsAfter(__instance, ___m_character, _craftingStationTag, ref _sortedIngredient);
+        }
     }
 }

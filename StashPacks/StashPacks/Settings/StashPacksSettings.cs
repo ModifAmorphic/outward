@@ -9,6 +9,17 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
         const string MainSection = "StashPack Settings";
         const int MainTopOrder = int.MaxValue;
 
+
+        public ConfigSetting<bool> CraftingFromStashPackItems { get; } = new ConfigSetting<bool>()
+        {
+            Name = nameof(CraftingFromStashPackItems),
+            DefaultValue = false,
+            Section = MainSection,
+            DisplayName = "Use StashPack Inventory for Crafting",
+            Description = $"Enables crafting from any owned StashPacks that are on the ground and linked to their home Stash.",
+            Order = MainTopOrder - 1,
+            IsAdvanced = false
+        };
         public ConfigSetting<bool> AllScenesEnabled { get; } = new ConfigSetting<bool>()
         {
             Name = nameof(AllScenesEnabled),
@@ -16,7 +27,7 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
             Section = MainSection,
             DisplayName = "Enable StashPacks for All Scenes",
             Description = $"Enables StashPack functionality for all scenes. Normally only Scenes with Stashes are enabled.",
-            Order = MainTopOrder - 1,
+            Order = MainTopOrder - 2,
             IsAdvanced = false
         };
 

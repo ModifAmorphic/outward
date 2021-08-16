@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Settings;
 using ModifAmorphic.Outward.StashPacks.State;
@@ -8,7 +9,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
+namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 {
     internal abstract class MajorBagActions
     {
@@ -27,6 +28,8 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
                 _lastKnownAllScenesEnabled = instances.StashPacksSettings.AllScenesEnabled.Value;
             };
         }
+
+        public abstract void SubscribeToEvents();
 
         protected bool IsWorldLoaded()
         {

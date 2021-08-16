@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.SaveData.Models;
 using System;
@@ -52,6 +53,8 @@ namespace ModifAmorphic.Outward.StashPacks.SaveData.Data
             var savePaths = new Dictionary<AreaManager.AreaEnum, (string SceneName, string SaveFilePath)>();
             foreach (var area in _areaStashes.Keys)
             {
+                Logger.LogDebug($"{nameof(StashSaveData)}::{nameof(GetStashesSavePaths)}: Getting Save Path for {area.GetName()} area, character {_characterSaveInstanceHolder?.CharacterUID}. " +
+                    $"SavePath: {_characterSaveInstanceHolder.CurrentSaveInstance?.SavePath}");
                 var sceneName = _areaManager.GetArea(area)?.SceneName;
                 if (!string.IsNullOrWhiteSpace(sceneName))
                 {

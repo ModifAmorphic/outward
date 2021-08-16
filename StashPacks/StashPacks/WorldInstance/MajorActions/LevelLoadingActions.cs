@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.SaveData.Data;
@@ -15,7 +16,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
+namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 {
     internal class LevelLoadingActions : MajorBagActions
     {
@@ -33,7 +34,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
                 _packProcessingEnabled = true;
             }
         }
-        public void SubscribeToEvents()
+        public override void SubscribeToEvents()
         {
             
             //TODO: Not sure if this happens for remote players.
@@ -47,8 +48,9 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
             //Wipe all stashpack data from the ItemList before they get loaded into the world.
             var stashPackSaves = envSave.ItemList.Where(s =>
                             s.TryGetPreviousOwnerUID(out _)
-                            && s.IsStashPack(_instances.AreaStashPackItemIds.Keys))
-                .ToDictionary(b => b.Identifier.ToString(), b => b);;
+                            && _instances.AreaStashPackItemIds.Keys
+                            .Any(itemId => s.SyncData.Contains($"<ID>{itemId}</ID>")))
+                .ToDictionary(b => b.Identifier.ToString(), b => b);
 
             foreach (var uid in stashPackSaves.Keys)
             {

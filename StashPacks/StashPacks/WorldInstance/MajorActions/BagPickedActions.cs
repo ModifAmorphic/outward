@@ -6,7 +6,7 @@ using System;
 using System.Reflection;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
+namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 {
     internal class BagPickedActions : MajorBagActions
     {
@@ -15,7 +15,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
         {
         }
 
-        public void SubscribeToEvents()
+        public override void SubscribeToEvents()
         {
             //ItemEvents.PerformEquipBefore += BagPickedUp;
             CharacterEvents.HandleBackpackBefore += TryHandleBackpackBefore;

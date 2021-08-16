@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Sync.Models;
 using System;
@@ -37,7 +38,12 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
                 upserts.AddRange(syncPlan.ModifiedItems.Values);
 
                 if (syncPlan.HasDifferentSilverAmount())
-                    upserts.Add(syncPlan.SaveDataAfter);
+                {
+                    //bag.Container?.SetSilverCount(syncPlan.SaveDataAfter.GetContainerSilver());
+                    bag.Container.RemoveAllSilver();
+                    bag.Container.AddSilver(syncPlan.SaveDataAfter.GetContainerSilver());
+                }
+
                 _itemManager.LoadItems(upserts, false);
             }
         }

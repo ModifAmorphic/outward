@@ -8,6 +8,7 @@ using ModifAmorphic.Outward.StashPacks.WorldInstance.Data;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.SceneManagement;
 
 namespace ModifAmorphic.Outward.StashPacks.State
@@ -25,10 +26,7 @@ namespace ModifAmorphic.Outward.StashPacks.State
 
         private ItemManager _itemManager;
 
-        /// <summary>
-        /// CharacterUID, CharacterSaveInstanceHolder
-        /// </summary>
-        private readonly ConcurrentDictionary<string, CharacterSaveInstanceHolder> _characterSaveInstanceHolders = new ConcurrentDictionary<string, CharacterSaveInstanceHolder>();
+
 
         public IReadOnlyDictionary<AreaManager.AreaEnum, (string StashUID, int ItemId)> StashIds => StashPacksConstants.PermenantStashUids;
 
@@ -82,12 +80,7 @@ namespace ModifAmorphic.Outward.StashPacks.State
             };
             ItemManagerEvents.AwakeAfter += (itemManager => _itemManager = itemManager);
             AreaManagerEvents.AwakeAfter += (areaManager => _areaManager = areaManager);
-            CharacterSaveInstanceHolderEvents.PlayerSaveLoadedAfter += ((charSaveInstanceHolder, character) =>
-                _characterSaveInstanceHolders.AddOrUpdate(
-                    character.UID.ToString(),
-                    charSaveInstanceHolder,
-                    (uid, ch) => ch)
-            );
+
         }
         #endregion
         public bool TryGetItemManager(out ItemManager itemManager)
@@ -98,7 +91,8 @@ namespace ModifAmorphic.Outward.StashPacks.State
         public bool TryGetStashSaveData(string characterUID, out StashSaveData stashSaveData)
         {
             stashSaveData = null;
-            if (_characterSaveInstanceHolders.TryGetValue(characterUID, out var characterSaveInstanceHolder))
+            var characterSaveInstanceHolder = SaveManager.Instance.CharacterSaves.FirstOrDefault(cs => cs.CharacterUID == characterUID);
+            if (characterSaveInstanceHolder != default)
                 stashSaveData = new StashSaveData(_areaManager, characterSaveInstanceHolder, StashIds, _getLogger);
 
             return stashSaveData != null;
@@ -148,14 +142,6 @@ namespace ModifAmorphic.Outward.StashPacks.State
 
             return (StashSaveExecuter)_characterSingletons[characterUID][typeof(StashSaveExecuter)];
         }
-        //public StashPackSaveExecuter GetStashPackSaveExecuter()
-        //{
-        //    if (!_singletons.TryGetValue(typeof(StashPackSaveExecuter), out _))
-        //    {
-        //        _singletons.TryAdd(typeof(StashPackSaveExecuter), new StashPackSaveExecuter(_getLogger));
-        //    }
 
-        //    return (StashPackSaveExecuter)_singletons[typeof(StashPackSaveExecuter)];
-        //}
     }
 }

@@ -1,10 +1,11 @@
-﻿using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.State;
 using System;
 
-namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
+namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 {
     internal class ContentsChangedActions : MajorBagActions
     {
@@ -12,7 +13,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
         {
         }
 
-        public void SubscribeToEvents()
+        public override void SubscribeToEvents()
         {
             ItemContainerEvents.RefreshWeightAfter += ContentsChanged;
         }

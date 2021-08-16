@@ -31,7 +31,10 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
             }
 
             #region Main Section
-            //All all scenes
+            //Allow crafting from items in stash packs
+            _configService.BindConfigSetting(settings.CraftingFromStashPackItems, null);
+
+            //Allow use in all scenes
             _configService.BindConfigSetting(settings.AllScenesEnabled, null);
             #endregion
 

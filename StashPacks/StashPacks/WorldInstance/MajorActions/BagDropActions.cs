@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.Settings;
@@ -7,7 +8,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
+namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 {
     internal class BagDropActions : MajorBagActions
     {
@@ -15,7 +16,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
         {
         }
 
-        public void SubscribeToEvents()
+        public override void SubscribeToEvents()
         {
             CharacterInventoryEvents.DropBagItemBefore += DropBagItemBefore;
             CharacterInventoryEvents.DropBagItemAfter += DropBagItemAfter;
@@ -46,8 +47,8 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
                 Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(DropBagItemAfter)}: Bag {bag.Name} ({bag.UID}) has StashBag functionality disabled.");
                 return;
             }
-
-            BagVisualizer.BagDropping(bag, character.transform);
+            if (!PhotonNetwork.isNonMasterClientInRoom)
+                BagVisualizer.BagDropping(bag, character.transform);
 
             DoAfterBagLoaded(bag, () => ProcessBagDropAfterLoaded(character, bag));
         }
@@ -78,7 +79,8 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
 
 
             DoAfterBagLoaded(bag, () => SaveStateEnableTracking(charUID, bag.UID));
-            DoAfterBagLanded(bag, () => BagVisualizer.BagLanded(bag, character.transform));
+            if (!PhotonNetwork.isNonMasterClientInRoom)
+                DoAfterBagLanded(bag, () => BagVisualizer.BagLanded(bag, character.transform));
         }
 
         private void DoAfterBagLanded(Bag bag, Action invokeAfter)
@@ -116,14 +118,14 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorEvents
             if (bagStates.TryGetState(bag.ItemID, out var bagState) && _instances.TryGetItemManager(out var itemManager))
             {
                 var silver = bagState.BasicSaveData.GetContainerSilver();
-                var updatedBagSilver = (new BasicSaveData(bag.UID, bag.ToSaveData())).ToUpdatedContainerSilver(silver);
-
+                
                 var loadItems = bagState.ItemsSaveData.Select(isd =>
                     isd.ToUpdatedHierachy(bag.UID + StashPacksConstants.BagUidSuffix, bag.Container.ItemID))
                     .ToList();
-                loadItems.Add(updatedBagSilver);
                 itemManager.LoadItems(loadItems);
-                Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(TryRestoreState)}: Removed bag {bag.Name} ({bag.UID}) state for character ({characterUID})." +
+                //bag.Container?.SetSilverCount(silver);
+                bag.Container.AddSilver(silver);
+                Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(TryRestoreState)}: Restored bag {bag.Name} ({bag.UID}) state for character ({characterUID})." +
                     $" Set silver to {silver} and loaded {bagState.ItemsSaveData.Count()} items.");
                 return true;
             }
