@@ -33,9 +33,12 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                         Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(TryHandleBackpackBefore)}: Current Scene is not StashPack Enabled. Disabling stashpack functionality for bag {bag.Name} ({bag.UID}).");
                         BagStateService.DisableBag(bag.UID);
                     }
-                    character.Inventory.TakeItem(bag, false);
-                    bag.Container.AllowOverCapacity = false;
-                    return false;
+                    if (!bag.HasContents())
+                    {
+                        character.Inventory.TakeItem(bag, false);
+                        bag.Container.AllowOverCapacity = false;
+                        return false;
+                    }
                 }
                 return HandleBackpackBefore(character, cprivates);
             }
@@ -77,18 +80,14 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             {
                 Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(HandleBackpackBefore)}: No existing state found for bag, but already has contents. Disabling Stashpack functionality.");
                 BagStateService.DisableBag(bag.UID);
-                character.Inventory.TakeItem(bag, false);
-                bag.Container.AllowOverCapacity = false;
-                return false;
+                return true;
             }
-
 
             if (bag.HasContents())
             {
                 bag.EmptyContents();
                 Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(HandleBackpackBefore)}: Character '{charUID}' Bag {bag.Name} ({bag.UID}) contents cleared on pickup.");
             }
-
 
             Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(HandleBackpackBefore)}: Placing Bag {bag.Name} ({bag.UID}) into Character '{charUID}' inventory. character.transform: {character.transform?.name}," +
                 $" character.transform.parent: {character.transform?.parent?.name}");
