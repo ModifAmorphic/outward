@@ -33,7 +33,9 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                         Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(TryHandleBackpackBefore)}: Current Scene is not StashPack Enabled. Disabling stashpack functionality for bag {bag.Name} ({bag.UID}).");
                         BagStateService.DisableBag(bag.UID);
                     }
-                    return true;
+                    character.Inventory.TakeItem(bag, false);
+                    bag.Container.AllowOverCapacity = false;
+                    return false;
                 }
                 return HandleBackpackBefore(character, cprivates);
             }
@@ -71,17 +73,13 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             }
             bagStates.DisableTracking(bag.ItemID);
 
-            //if (!bag.HasContents())
-            //{
-            //    Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(BagPickedUp)}: Bag {bag.Name} ({bag.UID}) is empty.");
-            //    return true;
-            //}
-
             if (!bagStates.TryGetState(bag.ItemID, out var bagState) && bag.HasContents())
             {
-                Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(HandleBackpackBefore)}: No existing state found for bag, but already has contents. Disabling and treating as a regular backpack bag.");
+                Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(HandleBackpackBefore)}: No existing state found for bag, but already has contents. Disabling Stashpack functionality.");
                 BagStateService.DisableBag(bag.UID);
-                return true;
+                character.Inventory.TakeItem(bag, false);
+                bag.Container.AllowOverCapacity = false;
+                return false;
             }
 
 
@@ -95,43 +93,12 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(HandleBackpackBefore)}: Placing Bag {bag.Name} ({bag.UID}) into Character '{charUID}' inventory. character.transform: {character.transform?.name}," +
                 $" character.transform.parent: {character.transform?.parent?.name}");
 
+            if (BagStateService.IsBagDisabled(bag.UID) && !DisableHostBagIfInHomeArea(character, bag))
+                BagStateService.EnableBag(bag.UID);
+
             character.Inventory.TakeItem(bag, false);
             bag.Container.AllowOverCapacity = false;
 
-            return false;
-        }
-
-        private bool BagPickedUp(Bag bag, EquipmentSlot equipmentSlot)
-        {
-            string charUID = equipmentSlot.Character.UID.ToString();
-            Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(BagPickedUp)}: Character '{charUID}' Bag {bag.Name} ({bag.UID}) is being picked up.");
-
-            var bagStates = _instances.GetBagStateService(charUID);
-            if (!equipmentSlot.Character.IsLocalPlayer)
-            {
-                Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(BagPickedUp)}: Player Character '{charUID}' is not a local player. Ignoring Pick Up event for bag '{bag.Name}' ({bag.UID}) " +
-                    $"and disabling.");
-                BagStateService.DisableBag(bag.UID);
-                return true;
-            }
-            bagStates.DisableTracking(bag.ItemID);
-
-            if (!bag.HasContents())
-            {
-                Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(BagPickedUp)}: Bag {bag.Name} ({bag.UID}) is empty.");
-                return true;
-            }
-            if (!bagStates.TryGetState(bag.ItemID, out var bagState) && bag.HasContents())
-            {
-                Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(BagPickedUp)}: No existing state found for bag, but already has contents. Disabling and treating as a regular backpack bag.");
-                BagStateService.DisableBag(bag.UID);
-                return true;
-            }
-            
-            bag.Container.AllowOverCapacity = false;
-            bag.EmptyContents();
-            equipmentSlot.Character.Inventory.TakeItem(bag, false);
-            Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(BagPickedUp)}: Character '{charUID}' Bag {bag.Name} ({bag.UID}) contents cleared on pickup.");
             return false;
         }
     }

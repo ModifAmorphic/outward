@@ -95,6 +95,10 @@ namespace ModifAmorphic.Outward.StashPacks.State
         {
             _stateTracked.TryRemove(itemID, out _);
         }
+        public static void EnableBag(string bagUID)
+        {
+            _disabledBags.TryRemove(bagUID, out var _);
+        }
         public static void DisableBag(string bagUID)
         {
             _disabledBags.TryAdd(bagUID, new byte());
