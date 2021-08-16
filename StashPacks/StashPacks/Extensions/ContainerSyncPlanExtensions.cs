@@ -1,5 +1,4 @@
-﻿using ModifAmorphic.Outward.Extensions;
-using ModifAmorphic.Outward.StashPacks.Sync.Models;
+﻿using ModifAmorphic.Outward.StashPacks.Sync.Models;
 using System.Linq;
 
 namespace ModifAmorphic.Outward.StashPacks.Extensions

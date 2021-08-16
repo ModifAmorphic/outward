@@ -1,6 +1,5 @@
-﻿using ModifAmorphic.Outward.Extensions;
+﻿using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.SaveData.Data;
 using ModifAmorphic.Outward.StashPacks.Sync.Models;
 using System;

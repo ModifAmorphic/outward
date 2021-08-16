@@ -1,9 +1,9 @@
-﻿using ModifAmorphic.Outward.Extensions;
+﻿using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.State;
 using System;
+using ModifAmorphic.Outward.Extensions;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 {

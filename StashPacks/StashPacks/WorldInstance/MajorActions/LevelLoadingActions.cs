@@ -1,6 +1,5 @@
-﻿using ModifAmorphic.Outward.Extensions;
+﻿using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.SaveData.Data;
 using ModifAmorphic.Outward.StashPacks.Settings;
@@ -13,8 +12,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using UnityEngine;
+using ModifAmorphic.Outward.Extensions;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 {
