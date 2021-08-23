@@ -32,6 +32,7 @@ namespace ModifAmorphic.Outward.StashPacks
             NetworkLevelLoaderEvents.LoggerFactory = LoggerFactory.GetLogger;
             SaveInstanceEvents.LoggerFactory = LoggerFactory.GetLogger;
             CharacterInventoryEvents.LoggerFactory = LoggerFactory.GetLogger;
+            ItemEvents.LoggerFactory = LoggerFactory.GetLogger;
         }
     }
 }

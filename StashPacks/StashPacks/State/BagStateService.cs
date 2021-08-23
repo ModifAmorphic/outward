@@ -72,7 +72,7 @@ namespace ModifAmorphic.Outward.StashPacks.State
         public void EnableTracking(int itemID)
         {
             _stateTracked.AddOrUpdate(itemID, true, (k, v) => true);
-            Logger.LogDebug($"{nameof(BagStateService)}::{nameof(DisableTracking)}:[CharacterUID: {CharacterUID}]" +
+            Logger.LogDebug($"{nameof(BagStateService)}::{nameof(EnableTracking)}:[CharacterUID: {CharacterUID}]" +
                 $" Enabled tracking for Bag ItemID: {itemID}.");
         }
         public bool IsSyncedFromStash(int itemID)

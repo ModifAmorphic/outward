@@ -1,6 +1,7 @@
 ﻿using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
 using System;
+using UnityEngine;
 
 namespace ModifAmorphic.Outward.StashPacks.Patch.Events
 {
@@ -18,14 +19,31 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
         /// </summary>
         public static event Action<Character, Bag> DropBagItemAfter;
 
+        /// <summary>
+        /// Gets the preferred container location for a bag. 
+        /// <list type="number">
+        ///   <item><see cref="Bag"/> - StashBag to determine Relevant Container for</item>
+        ///   <item><see cref="ItemContainer"/> - Pouch ItemContainer</item>
+        ///   <item><see cref="ItemContainer"/> - The ItemContainer the base method determined was the most relevant</item>
+        ///   <item><see cref="ItemContainer"/> - The ItemContainer result</item>
+        /// </list>
+        /// 
+        /// </summary>
+        public static event Func<Bag, ItemContainer, ItemContainer, ItemContainer> GetMostRelevantContainerAfter;
+
         public static event Action<CharacterInventory, Character, Tag, DictionaryExt<int, CompatibleIngredient>> InventoryIngredientsAfter;
 
-        public static void RaiseDropBagItemBefore(Character character, ref Item item)
+        public static void RaiseDropBagItemBefore(Character character, ref Item item, Transform newParent, bool playAnim)
         {
             try
             {
                 if (item.IsStashBag())
-                    DropBagItemBefore?.Invoke(character, (Bag)item);
+                {
+                    var bag = (Bag)item;
+                    Logger?.LogTrace($"{nameof(CharacterInventoryEvents)}::{nameof(RaiseDropBagItemBefore)}:" +
+                        $" {item.Name} dropping. newParent.name = '{newParent?.name}', newParent.position = {newParent?.position}, playAnim = {playAnim}.");
+                    DropBagItemBefore?.Invoke(character, bag);
+                }
             }
             catch (Exception ex)
             {
@@ -47,6 +65,20 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
                 Logger?.LogException($"Exception in {nameof(CharacterInventoryEvents)}::{nameof(RaiseDropBagItemAfter)}.", ex);
                 if (Logger == null)
                     UnityEngine.Debug.LogError($"Exception in {nameof(CharacterInventoryEvents)}::{nameof(RaiseDropBagItemAfter)}:\n{ex}");
+            }
+        }
+        public static void RaiseGetMostRelevantContainerAfter(Item item, ItemContainer inventoryPouch, ref ItemContainer result)
+        {
+            try
+            {
+                if (item.IsStashBag())
+                    result = GetMostRelevantContainerAfter?.Invoke((Bag)item, inventoryPouch, result) ?? result;
+            }
+            catch (Exception ex)
+            {
+                Logger?.LogException($"Exception in {nameof(CharacterInventoryEvents)}::{nameof(RaiseInventoryIngredientsAfter)}.", ex);
+                if (Logger == null)
+                    UnityEngine.Debug.LogError($"Exception in {nameof(CharacterInventoryEvents)}::{nameof(RaiseInventoryIngredientsAfter)}:\n{ex}");
             }
         }
         public static void RaiseInventoryIngredientsAfter(CharacterInventory characterInventory, Character character, Tag craftingStationTag, ref DictionaryExt<int, CompatibleIngredient> sortedIngredients)

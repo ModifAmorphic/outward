@@ -26,7 +26,7 @@
   </Tags>
   <StatsHolder xsi:type="SL_EquipmentStats">
     <BaseValue>400</BaseValue>
-    <RawWeight>4</RawWeight>
+    <RawWeight>0.1</RawWeight>
     <MaxDurability>-1</MaxDurability>
     <Damage_Resistance>
       <float>0</float>

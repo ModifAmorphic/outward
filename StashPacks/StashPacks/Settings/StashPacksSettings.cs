@@ -9,7 +9,16 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
         const string MainSection = "StashPack Settings";
         const int MainTopOrder = int.MaxValue;
 
-
+        public ConfigSetting<bool> PreferPickupToPouch { get; } = new ConfigSetting<bool>()
+        {
+            Name = nameof(PreferPickupToPouch),
+            DefaultValue = false,
+            Section = MainSection,
+            DisplayName = "Prefer pickup to pouch",
+            Description = $"When picking up a StashPack, prefer that the bag is placed in the pouch first.",
+            Order = MainTopOrder - 1,
+            IsAdvanced = false
+        };
         public ConfigSetting<bool> CraftingFromStashPackItems { get; } = new ConfigSetting<bool>()
         {
             Name = nameof(CraftingFromStashPackItems),
@@ -17,7 +26,7 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
             Section = MainSection,
             DisplayName = "Use StashPack Inventory for Crafting",
             Description = $"Enables crafting from any owned StashPacks that are on the ground and linked to their home Stash.",
-            Order = MainTopOrder - 1,
+            Order = MainTopOrder - 2,
             IsAdvanced = false
         };
         public ConfigSetting<bool> AllScenesEnabled { get; } = new ConfigSetting<bool>()
@@ -27,7 +36,7 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
             Section = MainSection,
             DisplayName = "Enable StashPacks for All Scenes",
             Description = $"Enables StashPack functionality for all scenes. Normally only Scenes with Stashes are enabled.",
-            Order = MainTopOrder - 2,
+            Order = MainTopOrder - 3,
             IsAdvanced = false
         };
 

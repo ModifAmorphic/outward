@@ -71,7 +71,22 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.Data
                 HomeArea = _areaStashBags[b.ItemID]
             });
         }
-        
+        public IEnumerable<StashPack> GetDeployedStashPacks()
+        {
+            var bags = ItemManager.Instance.WorldItems.Values.FindAll(wi =>
+                    wi.IsStashBag() && !wi.IsInContainer && !wi.IsEquipped
+                );
+            if (bags == default)
+            {
+                Logger.LogDebug($"{nameof(StashPackWorldData)}::{nameof(GetDeployedStashPacks)}: No stash packs found loaded in {nameof(ItemManager.WorldItems)}.");
+                return null;
+            }
+            return bags.Select(b => new StashPack()
+            {
+                StashBag = b as Bag,
+                HomeArea = _areaStashBags[b.ItemID]
+            });
+        }
         public IEnumerable<StashPack> GetAllStashPacks()
         {
             var bags = ItemManager.Instance.WorldItems.Values.FindAll(wi =>

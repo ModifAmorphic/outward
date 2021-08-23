@@ -23,6 +23,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             _majorActions.Add(typeof(ContentsChangedActions), new ContentsChangedActions(_instances, _getLogger));
             _majorActions.Add(typeof(PlayerSaveActions), new PlayerSaveActions(_instances, _getLogger));
             _majorActions.Add(typeof(CharacterInventoryActions), new CharacterInventoryActions(_instances, _getLogger));
+            _majorActions.Add(typeof(BagDisplayActions), new BagDisplayActions(_instances, _getLogger));
 
             foreach (var a in _majorActions.Values)
                 a.SubscribeToEvents();

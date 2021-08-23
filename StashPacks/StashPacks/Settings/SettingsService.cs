@@ -31,6 +31,9 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
             }
 
             #region Main Section
+            //Prefer pick up stashpack to pouch over bag
+            _configService.BindConfigSetting(settings.PreferPickupToPouch, null);
+
             //Allow crafting from items in stash packs
             _configService.BindConfigSetting(settings.CraftingFromStashPackItems, null);
 

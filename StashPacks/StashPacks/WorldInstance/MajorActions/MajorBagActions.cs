@@ -8,6 +8,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using ModifAmorphic.Outward.Extensions;
+using System.Reflection;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 {
@@ -60,13 +61,14 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
         {
             return _instances.AreaStashPackItemIds[bag.ItemID];
         }
-        protected void ClearBagPreviousOwner(Bag bag)
+        protected void DoAfterBagLoaded(string bagUID, Action<Bag> action)
         {
-            bag.PreviousOwnerUID = string.Empty;
+            _instances.UnityPlugin.StartCoroutine(AfterBagLoadedCoroutine(bagUID, action));
         }
-        protected void DoAfterBagLoaded(Bag bag, Action action)
+        protected void DisableBag(Bag bag)
         {
-            _instances.UnityPlugin.StartCoroutine(AfterBagLoadedCoroutine(bag, action));
+            bag.Container.AllowOverCapacity = false;
+            BagStateService.DisableBag(bag.UID);
         }
         protected bool DisableHostBagIfInHomeArea(Character character, Bag bag)
         {
@@ -74,10 +76,31 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             {
                 Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(DisableHostBagIfInHomeArea)}: Character '{character.UID}' is hosting the game" +
                     $" and is in '{bag.Name}' ({bag.UID}) home area {GetBagAreaEnum(bag).GetName()}. StashBag functionalty disabled for bag.");
-                BagStateService.DisableBag(bag.UID);
+                DisableBag(bag);
                 return true;
             }
             return false;
+        }
+        protected void NetworkSyncBag(Bag bag)
+        {
+            if (_instances.TryGetItemManager(out var itemManger))
+            {
+                foreach (var i in bag.Container.GetContainedItems())
+                {
+                    if (PhotonNetwork.isNonMasterClientInRoom)
+                    {
+                        Logger.LogTrace($"{nameof(MajorBagActions)}::{nameof(NetworkSyncBag)}: Sending network data" +
+                            $" to master client for item '{i.Name}'.");
+                        Global.RPCManager.SendItemSyncToMaster(i.ToNetworkData());
+                    }
+                    else
+                    {
+                        Logger.LogTrace($"{nameof(MajorBagActions)}::{nameof(NetworkSyncBag)}: Sending network data" +
+                            $" to clients for item '{i.Name}'.");
+                        itemManger.AddItemToSyncToClients(i.UID);
+                    }
+                }
+            }
         }
         protected void SaveStateEnableTracking(string characterUID, string bagUID)
         {
@@ -98,6 +121,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 BagStateService.DisableBag(bagInstance.UID);
                 return;
             }
+            NetworkSyncBag(bagInstance);
             bagStates.SetSyncedFromStash(bagInstance.ItemID, true);
             bagStates.EnableTracking(bagInstance.ItemID);
         }
@@ -134,26 +158,26 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             Debug.Log("Terrain location found at " + hit.point);
             return hit.point;
         }
-        protected IEnumerator AfterBagLoadedCoroutine(Bag bag, Action action)
+        protected IEnumerator AfterBagLoadedCoroutine(string bagUID, Action<Bag> action)
         {
             if (_instances.TryGetItemManager(out var itemManager))
             {
-                var worldBag = itemManager.GetItem(bag.UID);
+                var worldBag = itemManager.GetItem(bagUID);
 
                 while (!itemManager.IsAllItemSynced || worldBag == null || string.IsNullOrWhiteSpace(worldBag.PreviousOwnerUID))
                 {
-                    worldBag = itemManager.GetItem(bag.UID);
+                    worldBag = itemManager.GetItem(bagUID);
                     yield return new WaitForSeconds(.5f);
                 }
-                Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterBagLoadedCoroutine)}: Bag '{bag.Name}' ({bag.UID}) finished" +
+                Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterBagLoadedCoroutine)}: Bag '{worldBag.Name}' ({worldBag.UID}) finished" +
                     $" loading into world. Invoking action {action.Method.Name}.");
-                action.Invoke();
+                action.Invoke((Bag)worldBag);
             }
             else
             {
                 Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterBagLoadedCoroutine)}: Unexpected error. Unable " +
                     $"to retrieve {nameof(ItemManager)} instance. StashPack functionality may not work correctly for " +
-                    $"bag '{bag.Name}' ({bag.UID})");
+                    $"bag '{bagUID}'");
             }
         }
 
@@ -187,6 +211,40 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterBagLandedCoroutine)}: Unexpected error. Unable " +
                     $"to retrieve {nameof(ItemManager)} instance. StashPack functionality may not work correctly for " +
                     $"bag '{bag.Name}' ({bag.UID})");
+            }
+        }
+        protected IEnumerator AfterBagDestroyedCoroutine(string bagUID, Action action)
+        {
+            yield return new WaitForSeconds(.2f);
+
+            if (_instances.TryGetItemManager(out var itemManager))
+            {
+                var bag = itemManager.GetItem(bagUID);
+                var waits = 0;
+
+                while (bag != null && waits < 300)
+                {
+                    bag = itemManager.GetItem(bagUID);
+                    waits++;
+                    yield return new WaitForSeconds(.1f);
+                }
+                if (waits < 300)
+                {
+                    Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterBagDestroyedCoroutine)}: Bag '{bagUID}' destroyed." +
+                        $" Invoking action {action.Method.Name}.");
+                    action.Invoke();
+                }
+                else
+                {
+                    Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterBagDestroyedCoroutine)}: Bag '{bagUID}' not destroyed." +
+                        $" Action not invoked: {action.Method.Name}.");
+                }
+            }
+            else
+            {
+                Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterBagLandedCoroutine)}: Unexpected error. Unable " +
+                    $"to retrieve {nameof(ItemManager)} instance. StashPack functionality may not work correctly for " +
+                    $"bag '{bagUID}'");
             }
         }
     }

@@ -21,6 +21,11 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance
             bagTransform.eulerAngles = new Vector3(bagVisuals.RotationToWorld.x, flippedY, bagTransform.eulerAngles.z + bagVisuals.RotationToWorld.z);
 
         }
+        public static void StandBagUp(Bag bag)
+        {
+            var bagTransform = bag.gameObject.transform;
+            bagTransform.eulerAngles = new Vector3(270f, bagTransform.eulerAngles.y, bagTransform.eulerAngles.z);
+        }
         public static void ScaleBag(Bag bag)
         {
             var bagVisuals = GetBagSettings(bag);
@@ -28,60 +33,12 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance
 
             bagTransform.localScale = bagVisuals.Scale;
         }
-        public static void BagLanded(Bag bag, Transform characterTransform)
+        public static void FreezeBag(Bag bag)
         {
-            //var bagVisuals = GetBagSettings(bag);
-
-            //var bagTransform = bag.gameObject.transform;
-
-            //bagTransform.LookAt(characterTransform.position);
-            //bagTransform.eulerAngles = new Vector3(bagVisuals.RotationToWorld.x, bagTransform.eulerAngles.y + bagVisuals.RotationToWorld.y - 180, bagTransform.eulerAngles.z + bagVisuals.RotationToWorld.z);
-
-            //var itemVisual = bag.CurrentVisual;
-            //var meshRenderer = itemVisual.GetComponentInChildren<MeshRenderer>();
-            //if (meshRenderer != null)
-            //{
-            //    var bagSize = Matrix4x4.Scale(bagTransform.localScale) * meshRenderer.bounds.size;
-            //    var boxCollider = itemVisual.GetComponent<BoxCollider>();
-
-            //    if (boxCollider != null)
-            //    {
-            //        boxCollider.size = new Vector3(bagSize.x, bagSize.y, bagSize.z);
-            //    }
-            //}
-
             var rigidBody = bag.GetComponent<Rigidbody>();
             rigidBody.constraints = RigidbodyConstraints.FreezeAll; //RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
-
         }
-        public static void BagLoaded(Bag bag)
-        {
-            ScaleBag(bag);
-            var bagVisuals = GetBagSettings(bag);
 
-
-            var bagTransform = bag.gameObject.transform;
-
-
-            bagTransform.eulerAngles = new Vector3(bagVisuals.RotationToWorld.x, bagTransform.eulerAngles.y, bagTransform.eulerAngles.z);
-
-            //var itemVisual = bag.CurrentVisual;
-            //var meshRenderer = itemVisual.GetComponentInChildren<MeshRenderer>();
-            //if (meshRenderer != null)
-            //{
-            //    var bagSize = Matrix4x4.Scale(bagTransform.localScale) * meshRenderer.bounds.size;
-            //    var boxCollider = itemVisual.GetComponent<BoxCollider>();
-
-            //    if (boxCollider != null)
-            //    {
-            //        boxCollider.size = new Vector3(bagSize.x, bagSize.y, bagSize.z);
-            //    }
-            //}
-
-            var rigidBody = bag.GetComponent<Rigidbody>();
-            rigidBody.constraints = RigidbodyConstraints.FreezeAll; //RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
-
-        }
         public static StashBagVisual GetBagSettings(Bag bag)
         {
             var area = StashPacksConstants.StashBackpackAreas[bag.ItemID];

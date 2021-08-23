@@ -136,8 +136,8 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 Logger.LogError($"{nameof(LevelLoadingActions)}::{nameof(UpdateAreaStashPacks)}: Could not retrieve a {nameof(StashPackWorldData)} instance.");
                 return;
             }
-            var stashPacks = stashPackWorldData.GetAllStashPacks();
-            if (stashPacks == null)
+            var stashPacks = stashPackWorldData.GetAllStashPacks()?.Where(p => !p.StashBag.IsEquipped && !p.StashBag.IsInContainer);
+            if (stashPacks == null || !stashPacks.Any())
             {
                 Logger.LogDebug($"{nameof(LevelLoadingActions)}::{nameof(UpdateAreaStashPacks)}: No {nameof(StashPack)} found in world.");
                 return;
@@ -151,7 +151,8 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 
             foreach(var p in uniqueOwnedPacks.Values.SelectMany(b => b))
             {
-                BagVisualizer.BagLoaded(p.StashBag);
+                BagVisualizer.ScaleBag(p.StashBag);
+                BagVisualizer.FreezeBag(p.StashBag);
             }
 
         }
@@ -177,7 +178,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             {
                 foreach (var pack in characterPacks[characterUID])
                 {
-                    DoAfterBagLoaded(pack.StashBag, () => SaveStateEnableTracking(characterUID, pack.StashBag.UID));
+                    DoAfterBagLoaded(pack.StashBag.UID, (Bag b) => SaveStateEnableTracking(characterUID, pack.StashBag.UID));
                 }
             }
         }

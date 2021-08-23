@@ -3,6 +3,8 @@ using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.State;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
@@ -19,6 +21,15 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
         {
             //ItemEvents.PerformEquipBefore += BagPickedUp;
             CharacterEvents.HandleBackpackBefore += TryHandleBackpackBefore;
+            CharacterInventoryEvents.GetMostRelevantContainerAfter += GetMostRelevantContainer;
+        }
+
+        private ItemContainer GetMostRelevantContainer(Bag bag, ItemContainer pouchContainer, ItemContainer defaultContainer)
+        {
+            if (_instances.StashPacksSettings.PreferPickupToPouch.Value)
+                return pouchContainer;
+
+            return defaultContainer;
         }
 
         private bool TryHandleBackpackBefore(Character character, CharacterPrivates cprivates)
@@ -31,13 +42,11 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                     if (bag != null)
                     {
                         Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(TryHandleBackpackBefore)}: Current Scene is not StashPack Enabled. Disabling stashpack functionality for bag {bag.Name} ({bag.UID}).");
-                        BagStateService.DisableBag(bag.UID);
+                        DisableBag(bag);
                     }
                     if (!bag.HasContents())
                     {
-                        character.Inventory.TakeItem(bag, false);
-                        bag.Container.AllowOverCapacity = false;
-                        return false;
+                        return !TakeBag(character, bag);
                     }
                 }
                 return HandleBackpackBefore(character, cprivates);
@@ -46,6 +55,43 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             {
                 Logger.LogException($"{nameof(BagPickedActions)}::{nameof(TryHandleBackpackBefore)}: Failed to handle Backpack Event.", ex);
             }
+            return true;
+        }
+        private bool TakeBag(Character character, Bag bag)
+        {
+            if (bag.HasContents())
+            {
+                var bagContents = bag.Container.GetContainedItems().ToList();
+                foreach (var item in bagContents)
+                {
+                    if (!PhotonNetwork.isNonMasterClientInRoom)
+                        ItemManager.Instance.DestroyItem(item.UID);
+                    else
+                        ItemManager.Instance.SendDestroyItem(item.UID);
+                }
+                bag.Container.RemoveAllSilver();
+            }
+
+            string bagUID = bag.UID;
+            int bagItemID = bag.ItemID;
+
+            if (!PhotonNetwork.isNonMasterClientInRoom)
+            {
+                Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(TakeBag)}: Destroying Bag {bag.Name} ({bag.UID}).");
+                ItemManager.Instance.DestroyItem(bag.UID);
+            }
+            else
+            {
+                Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(TakeBag)}: Sending Request to Destroy Bag {bag.Name} ({bag.UID}).");
+                ItemManager.Instance.SendDestroyItem(bag.UID);
+            }
+
+            _instances.UnityPlugin.StartCoroutine(AfterBagDestroyedCoroutine(bagUID, () =>
+            {
+                var bagPrefab = ResourcesPrefabManager.Instance.GetItemPrefab(bagItemID);
+                character.Inventory.GenerateItem(bagPrefab, 1, false);
+                character.Inventory.NotifyItemTake(bagPrefab, 1);
+            }));
             return true;
         }
         private bool HandleBackpackBefore(Character character, CharacterPrivates cprivates)
@@ -57,6 +103,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 || (cprivates.m_interactCoroutinePending || cprivates.m_IsHoldingInteract) 
                 || (cprivates.m_IsHoldingDragCorpse  || character.CharacterUI.IsDialogueInProgress))
                 return true;
+
             var bag = character.Interactable?.ItemToPreview as Bag;
             if (bag == null)
             {
@@ -78,16 +125,20 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 
             if (!bagStates.TryGetState(bag.ItemID, out var bagState) && bag.HasContents())
             {
-                Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(HandleBackpackBefore)}: No existing state found for bag, but already has contents. Disabling Stashpack functionality.");
-                BagStateService.DisableBag(bag.UID);
-                return true;
+                if (bag.PreviousOwnerUID == charUID)
+                {
+                    Logger.LogWarning($"{nameof(BagPickedActions)}::{nameof(HandleBackpackBefore)}: No existing state found for bag, but already has contents. Disabling Stashpack functionality.");
+                    BagStateService.DisableBag(bag.UID);
+                    return true;
+                }
             }
 
-            if (bag.HasContents())
-            {
-                bag.EmptyContents();
-                Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(HandleBackpackBefore)}: Character '{charUID}' Bag {bag.Name} ({bag.UID}) contents cleared on pickup.");
-            }
+            //only empty the bag before pickup if it's the current owner's. Gets rid of overweight notification flashing on and off quick on pickup.
+            //if (bag.HasContents() && bag.PreviousOwnerUID == charUID)
+            //{
+            //    bag.EmptyContents();
+            //    Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(HandleBackpackBefore)}: Character '{charUID}' Bag {bag.Name} ({bag.UID}) contents cleared on pickup.");
+            //}
 
             Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(HandleBackpackBefore)}: Placing Bag {bag.Name} ({bag.UID}) into Character '{charUID}' inventory. character.transform: {character.transform?.name}," +
                 $" character.transform.parent: {character.transform?.parent?.name}");
@@ -95,10 +146,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             if (BagStateService.IsBagDisabled(bag.UID) && !DisableHostBagIfInHomeArea(character, bag))
                 BagStateService.EnableBag(bag.UID);
 
-            character.Inventory.TakeItem(bag, false);
-            bag.Container.AllowOverCapacity = false;
-
-            return false;
+            return !TakeBag(character, bag);
         }
     }
 }

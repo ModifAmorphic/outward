@@ -42,7 +42,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 Logger.LogError($"{nameof(PlayerSaveActions)}::{nameof(SaveBefore)}: Could not retrieve world data instances.");
                 return;
             }
-            var stashPacks = stashPackWorldData.GetAllStashPacks();
+            var stashPacks = stashPackWorldData.GetDeployedStashPacks();
 
             //Wipe all stashpack data from the ItemList before they get loaded into the world.
 
