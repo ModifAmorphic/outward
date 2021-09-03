@@ -9,6 +9,6 @@
 #else
         public const string ModVersion = "0.0.1";
 #endif
-        public const string MinimumConfigVersion = "1.0.0";
+        public const string MinimumConfigVersion = "1.0.1";
     }
 }
