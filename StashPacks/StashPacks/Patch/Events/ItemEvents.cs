@@ -1,6 +1,5 @@
 ﻿using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
-using ModifAmorphic.Outward.StashPacks.Settings;
 using System;
 
 namespace ModifAmorphic.Outward.StashPacks.Patch.Events
@@ -14,6 +13,7 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
         /// Triggers whenever a special Stash <see cref="Bag"/> is about to be equipped. The <see cref="Bag"/> is a reference to the bag.
         /// </summary>
         public static event Func<Bag, string, string> DisplayNameAfter;
+
         public static void SetDisplayNameAfter(Item item, string displayNameBefore, out string displayNameAfter)
         {
             try
@@ -30,7 +30,9 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
             {
                 Logger?.LogException($"Exception in {nameof(ItemEvents)}::{nameof(SetDisplayNameAfter)}.", ex);
                 if (Logger == null)
+                {
                     UnityEngine.Debug.LogError($"Exception in {nameof(ItemEvents)}::{nameof(SetDisplayNameAfter)}:\n{ex}");
+                }
             }
 
             displayNameAfter = displayNameBefore;

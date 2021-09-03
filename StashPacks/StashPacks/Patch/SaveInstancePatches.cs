@@ -10,7 +10,6 @@ namespace ModifAmorphic.Outward.StashPacks.Patch
         [HarmonyPrefix]
         private static bool SavePrefix(SaveInstance __instance)
         {
-
             SaveInstanceEvents.RaiseSaveBefore(__instance);
             return true;
         }

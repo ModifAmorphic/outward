@@ -1,6 +1,5 @@
 ﻿using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
-using ModifAmorphic.Outward.StashPacks.Settings;
 using System;
 
 namespace ModifAmorphic.Outward.StashPacks.Patch.Events
@@ -28,6 +27,7 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
                 //only care about stash bags.
                 var bag = character.Interactable?.ItemToPreview as Bag;
                 if (bag != null && bag.IsStashBag())
+                {
                     return HandleBackpackBefore?.Invoke(character, new CharacterPrivates()
                     {
                         m_inventory = m_inventory,
@@ -35,14 +35,16 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
                         m_interactCoroutinePending = m_interactCoroutinePending,
                         m_IsHoldingInteract = m_IsHoldingInteract,
                         m_IsHoldingDragCorpse = m_IsHoldingDragCorpse
-                    }) ??true;
-
+                    }) ?? true;
+                }
             }
             catch (Exception ex)
             {
                 Logger?.LogException($"Exception in {nameof(CharacterEvents)}::{nameof(InvokeHandleBackpackBefore)}.", ex);
                 if (Logger == null)
+                {
                     UnityEngine.Debug.LogError($"Exception in {nameof(CharacterEvents)}::{nameof(InvokeHandleBackpackBefore)}:\n{ex}");
+                }
             }
 
             return true;

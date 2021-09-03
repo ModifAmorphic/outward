@@ -1,5 +1,5 @@
-﻿using ModifAmorphic.Outward.StashPacks.Extensions;
-using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Settings;
 using ModifAmorphic.Outward.StashPacks.State;
 using System;
@@ -7,8 +7,6 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using ModifAmorphic.Outward.Extensions;
-using System.Reflection;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 {
@@ -26,23 +24,27 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             (_instances, _getLogger) = (instances, getLogger);
             SceneManager.sceneLoaded += (s, l) =>
             {
-                _lastKnownAllScenesEnabled = instances.StashPacksSettings.AllScenesEnabled.Value;
+                _lastKnownAllScenesEnabled = instances.HostSettings.AllScenesEnabled;
             };
         }
 
         public abstract void SubscribeToEvents();
 
+        protected PlayerSystem GetPlayerSystem(string characterUID)
+        {
+            return Global.Lobby.PlayersInLobby.FirstOrDefault(ps => ps.CharUID == characterUID);
+        }
+        protected bool IsHomeStashInWorld(Character character, Bag bag)
+        {
+            return character.IsHostCharacter() && GetBagAreaEnum(bag) == GetCurrentAreaEnum();
+        }
         protected bool IsWorldLoaded()
         {
             return NetworkLevelLoader.Instance.IsOverallLoadingDone;
         }
         protected bool IsCurrentSceneStashPackEnabled()
         {
-            return StashPacksConstants.PermenantStashUids.ContainsKey(GetCurrentAreaEnum()) || LastKnownAllScenesEnabled; 
-        }
-        protected bool IsHost(Character character)
-        {
-            return character.OwnerPlayerSys.IsMasterClient && character.OwnerPlayerSys.PlayerID == 0;
+            return StashPacksConstants.PermenantStashUids.ContainsKey(GetCurrentAreaEnum()) || LastKnownAllScenesEnabled;
         }
         protected bool IsLocalPlayerCharacter(string characterUID)
         {
@@ -65,23 +67,23 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
         {
             _instances.UnityPlugin.StartCoroutine(AfterBagLoadedCoroutine(bagUID, action));
         }
-        protected void DisableBag(Bag bag)
-        {
-            bag.Container.AllowOverCapacity = false;
-            BagStateService.DisableBag(bag.UID);
-        }
         protected bool DisableHostBagIfInHomeArea(Character character, Bag bag)
         {
-            if (IsHost(character) && GetBagAreaEnum(bag) == GetCurrentAreaEnum())
+            if (IsHomeStashInWorld(character, bag))
             {
                 Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(DisableHostBagIfInHomeArea)}: Character '{character.UID}' is hosting the game" +
                     $" and is in '{bag.Name}' ({bag.UID}) home area {GetBagAreaEnum(bag).GetName()}. StashBag functionalty disabled for bag.");
-                DisableBag(bag);
+                //var stashUID = StashPacksConstants.PermenantStashUids[GetCurrentAreaEnum()].StashUID;
+                //var stash = (ItemContainer)ItemManager.Instance.GetItem(stashUID);
+                //var m_container_field = typeof(Bag).GetField("m_container", BindingFlags.Instance | BindingFlags.NonPublic);
+                //m_container_field.SetValue(bag, (ItemContainerStatic)stash);
+
+                UnclaimAndClearBag(bag);
                 return true;
             }
             return false;
         }
-        protected void NetworkSyncBag(Bag bag)
+        protected void NetworkSyncBagContents(Bag bag)
         {
             if (_instances.TryGetItemManager(out var itemManger))
             {
@@ -89,16 +91,36 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 {
                     if (PhotonNetwork.isNonMasterClientInRoom)
                     {
-                        Logger.LogTrace($"{nameof(MajorBagActions)}::{nameof(NetworkSyncBag)}: Sending network data" +
+                        Logger.LogTrace($"{nameof(MajorBagActions)}::{nameof(NetworkSyncBagContents)}: Sending network data" +
                             $" to master client for item '{i.Name}'.");
                         Global.RPCManager.SendItemSyncToMaster(i.ToNetworkData());
                     }
                     else
                     {
-                        Logger.LogTrace($"{nameof(MajorBagActions)}::{nameof(NetworkSyncBag)}: Sending network data" +
+                        Logger.LogTrace($"{nameof(MajorBagActions)}::{nameof(NetworkSyncBagContents)}: Sending network data" +
                             $" to clients for item '{i.Name}'.");
                         itemManger.AddItemToSyncToClients(i.UID);
                     }
+                }
+            }
+        }
+        protected void NetworkSyncBag(Bag bag)
+        {
+            if (_instances.TryGetItemManager(out var itemManger))
+            {
+                if (PhotonNetwork.isNonMasterClientInRoom)
+                {
+                    Logger.LogTrace($"{nameof(MajorBagActions)}::{nameof(NetworkSyncBag)}: Sending network data" +
+                        $" to master client for Bag '{bag.Name}' ({bag.UID}).");
+                    Global.RPCManager.SendItemSyncToMaster(bag.ToNetworkData());
+                    //Global.RPCManager.SendItemSyncToMaster(bag.Container.ToNetworkData());
+                }
+                else
+                {
+                    Logger.LogTrace($"{nameof(MajorBagActions)}::{nameof(NetworkSyncBag)}: Sending network data" +
+                        $" to clients for Bag '{bag.Name}' ({bag.UID}).");
+                    itemManger.AddItemToSyncToClients(bag.UID);
+                    //itemManger.AddItemToSyncToClients(bag.Container.UID);
                 }
             }
         }
@@ -121,10 +143,10 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 BagStateService.DisableBag(bagInstance.UID);
                 return;
             }
-            NetworkSyncBag(bagInstance);
-            bagStates.SetSyncedFromStash(bagInstance.ItemID, true);
-            bagStates.EnableTracking(bagInstance.ItemID);
+            NetworkSyncBagContents(bagInstance);
+            bagStates.EnableContentChangeTracking(bagInstance.ItemID);
         }
+
         protected void UnclaimClearOtherBags(string characterUID, Bag claimedBag)
         {
             if (_instances.TryGetStashPackWorldData(out var stashPackWorldData))
@@ -132,31 +154,46 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 var packs = stashPackWorldData.GetStashPacks(characterUID);
                 if (packs != null)
                 {
-                    var bagsToFree = packs.Where(p => p.StashBag.ItemID == claimedBag.ItemID && p.StashBag.UID != claimedBag.UID && p.StashBag.IsUpdateable()).Select(p => p.StashBag);
+                    var bagsToFree = packs.Where(p => p.StashBag.ItemID == claimedBag.ItemID && p.StashBag.UID != claimedBag.UID && p.StashBag.IsUsable()).Select(p => p.StashBag);
                     foreach (var bag in bagsToFree)
                     {
-                        //bag.PreviousOwnerUID = string.Empty;
-                        bag.OnContainerChangedOwner(null);
-                        bag.OnContainerChangedOwner(null);
-                        bag.EmptyContents();
-                        Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(UnclaimClearOtherBags)}: Removed character's ({characterUID}) claim from bag {bag.Name} ({bag.UID}) and emptied its contents.");
+                        UnclaimAndClearBag(bag);
                     }
                 }
             }
         }
-        protected static Vector3 GetTerrainPos(float x, float y)
+        protected void UnclaimAndClearBag(Bag bag)
         {
-            //Create object to store raycast data
-            RaycastHit hit;
-
-            //Create origin for raycast that is above the terrain. I chose 100.
-            Vector3 origin = new Vector3(x, 100, y);
-
-            //Send the raycast.
-            Physics.Raycast(origin, Vector3.down, out hit, Mathf.Infinity);
-
-            Debug.Log("Terrain location found at " + hit.point);
-            return hit.point;
+            var previousOwnerUID = bag.PreviousOwnerUID;
+            bag.PreviousOwnerUID = string.Empty;
+            bag.EmptyContents();
+            bag.Container.AllowOverCapacity = false;
+            NetworkSyncBag(bag);
+            Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(UnclaimClearOtherBags)}: Removed character's ({previousOwnerUID}) claim from bag {bag.Name} ({bag.UID}) and emptied its contents.");
+        }
+        protected IEnumerator AfterPlayerLeftCoroutine(string playerUID, Action action)
+        {
+            var waits = 0;
+            while (Global.Lobby.PlayersInLobby.Any(p => p.UID == playerUID)
+                && waits++ < 30)
+            {
+                Logger.LogTrace($"{nameof(MajorBagActions)}::{nameof(AfterPlayerLeftCoroutine)}: Waited {waits} times for " +
+                    $"playerUID {playerUID} to leave the game." +
+                    $"\n\tGlobal.Lobby.PlayersInLobby {Global.Lobby.PlayersInLobby.Count}.");
+                yield return new WaitForSeconds(1f);
+            }
+            if (!Global.Lobby.PlayersInLobby.Any(p => p.UID == playerUID))
+            {
+                Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterPlayerLeftCoroutine)}: playerUID {playerUID} left the game." +
+                    $" Invoking action {action.Method.Name}." +
+                    $"\n\tGlobal.Lobby.PlayersInLobby {Global.Lobby.PlayersInLobby.Count}.");
+                action.Invoke();
+            }
+            else
+            {
+                Logger.LogWarning($"{nameof(MajorBagActions)}::{nameof(AfterPlayerLeftCoroutine)}: Coroutine timed out " +
+                    $"waiting for PhotonPlayerID {playerUID} to leave game.");
+            }
         }
         protected IEnumerator AfterBagLoadedCoroutine(string bagUID, Action<Bag> action)
         {
@@ -191,16 +228,23 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 var rigidBody = worldBag.GetComponent<Rigidbody>();
                 var waits = 0;
 
-                while (worldBag == null || rigidBody == null 
+                while ((worldBag == null || rigidBody == null
                     || rigidBody.velocity.magnitude > 0f
                     || rigidBody.velocity.x > 0f || rigidBody.velocity.y > 0f || rigidBody.velocity.z > 0f)
+                    && waits < 75)
                 {
+
                     worldBag = itemManager.GetItem(bag.UID);
                     rigidBody = worldBag.GetComponent<Rigidbody>();
+                    if (worldBag != null && !_instances.HostSettings.DisableBagScalingRotation)
+                    {
+                        BagVisualizer.StandBagUp(bag);
+                    }
+
                     waits++;
                     Logger.LogTrace($"{nameof(MajorBagActions)}::{nameof(AfterBagLandedCoroutine)}: Bag '{bag.Name}' ({bag.UID}) Velocity " +
                         $"({rigidBody.velocity.magnitude}, {rigidBody.velocity.x}, {rigidBody.velocity.y}, {rigidBody.velocity.z}). Waited {waits} times.");
-                    yield return new WaitForSeconds(.1f);
+                    yield return new WaitForSeconds(.2f);
                 }
                 Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterBagLandedCoroutine)}: Bag '{bag.Name}' ({bag.UID}) finished" +
                     $" moving. Invoking action {action.Method.Name}.");

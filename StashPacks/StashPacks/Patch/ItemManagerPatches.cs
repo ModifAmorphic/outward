@@ -6,6 +6,7 @@ namespace ModifAmorphic.Outward.StashPacks.Patch
     [HarmonyPatch(typeof(ItemManager))]
     internal static class ItemManagerPatches
     {
+#pragma warning disable IDE0051 // Remove unused private members
         [HarmonyPatch(nameof(ItemManager.IsAllItemSynced), MethodType.Getter)]
         [HarmonyPostfix]
         private static void IsAllItemSyncedPostfix(ItemManager __instance, ref bool __result)
@@ -15,6 +16,7 @@ namespace ModifAmorphic.Outward.StashPacks.Patch
 
         [HarmonyPatch("Awake", MethodType.Normal)]
         [HarmonyPostfix]
+
         private static void AwakePostfix(ItemManager __instance)
         {
             ItemManagerEvents.RaiseAwakeAfter(ref __instance);

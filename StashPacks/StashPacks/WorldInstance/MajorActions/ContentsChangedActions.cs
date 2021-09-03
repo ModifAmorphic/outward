@@ -1,9 +1,8 @@
-﻿using ModifAmorphic.Outward.StashPacks.Extensions;
-using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.State;
 using System;
-using ModifAmorphic.Outward.Extensions;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 {
@@ -34,9 +33,9 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             }
 
             //check if in someone's inventory
-            if (!bag.IsUpdateable())
+            if (!bag.IsUsable())
             {
-                Logger.LogDebug($"{nameof(ContentsChangedActions)}::{nameof(ContentsChanged)}: Bag '{bag.Name}' is not in an updateable statues. May be unowned, equipped or in another container. Ignoring content changes.");
+                Logger.LogDebug($"{nameof(ContentsChangedActions)}::{nameof(ContentsChanged)}: Bag '{bag.Name}' is not in an updatable statues. May be unowned, equipped or in another container. Ignoring content changes.");
                 return;
             }
 
@@ -58,7 +57,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 return;
             }
 
-            if (!character.IsLocalPlayer)
+            if (character == null || !character.IsLocalPlayer)
             {
                 Logger.LogDebug($"{nameof(ContentsChangedActions)}::{nameof(ContentsChanged)}: Player Character '{characterUID}' is not a local player. Ignoring content changes for bag '{bag.Name}' ({bag.UID}) " +
                     $"and disabling.");
@@ -66,22 +65,15 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 return;
             }
 
-            //Check if ever received stash update for state saves
-            if (!bagStates.IsTracked(bag.ItemID))
-            {
-                Logger.LogDebug($"{nameof(ContentsChangedActions)}::{nameof(ContentsChanged)}: Bag '{bag.Name}' ({bag.UID}) has never received a sync from its home stash. Ignoring content changes.");
-                return;
-            }
-
             //Check if tracked for state saves
-            if (!bagStates.IsTracked(bag.ItemID))
+            if (!bagStates.IsContentChangesTracked(bag.ItemID))
             {
                 Logger.LogDebug($"{nameof(ContentsChangedActions)}::{nameof(ContentsChanged)}: Ignoring content changes. Bag '{bag.Name}' ({bag.UID}) currently has state tracking disabled.");
                 return;
             }
 
             //check if character is host, and bag is in home area (disable if so)
-            if (IsHost(CharacterManager.Instance.GetCharacter(characterUID)) && GetBagAreaEnum(bag) == GetCurrentAreaEnum())
+            if (IsHomeStashInWorld(character, bag))
             {
                 Logger.LogDebug($"{nameof(ContentsChangedActions)}::{nameof(ContentsChanged)}: Character '{characterUID}' is hosting the game and is in '{bag.Name}' ({bag.UID}) home area {GetBagAreaEnum(bag).GetName()}. StashBag functionalty disabled for bag.");
                 BagStateService.DisableBag(bag.UID);

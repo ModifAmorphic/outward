@@ -20,7 +20,11 @@ namespace ModifAmorphic.Outward.StashPacks.Patch
         [HarmonyPatch(nameof(CharacterInventory.DropItem))]
         [HarmonyPatch(new Type[] { typeof(Item), typeof(Transform), typeof(bool) })]
         [HarmonyPostfix]
+
+#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0060 // Remove unused parameter
         private static void DropItemPostfix(Character ___m_character, Item _item, Transform _newParent = null, bool _playAnim = true)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             CharacterInventoryEvents.RaiseDropBagItemAfter(___m_character, _item);
         }

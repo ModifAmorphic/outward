@@ -1,7 +1,4 @@
 ﻿using ModifAmorphic.Outward.StashPacks.Settings;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance
@@ -23,8 +20,19 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance
         }
         public static void StandBagUp(Bag bag)
         {
-            var bagTransform = bag.gameObject.transform;
-            bagTransform.eulerAngles = new Vector3(270f, bagTransform.eulerAngles.y, bagTransform.eulerAngles.z);
+            var bagTransform = bag.gameObject?.transform;
+            if (bagTransform != null)
+            {
+                if (bagTransform.eulerAngles.x < 270f - 10f || bagTransform.eulerAngles.x > 270f + 10f)
+                {
+                    bagTransform.eulerAngles = new Vector3(270f, bagTransform.eulerAngles.y, bagTransform.eulerAngles.z);
+                    var rigidBody = bag.GetComponent<Rigidbody>();
+                    if (rigidBody != null)
+                    {
+                        rigidBody.constraints = RigidbodyConstraints.FreezePositionX;
+                    }
+                }
+            }
         }
         public static void ScaleBag(Bag bag)
         {
@@ -33,12 +41,29 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance
 
             bagTransform.localScale = bagVisuals.Scale;
         }
+        public static void UnscaleBag(Bag bag)
+        {
+            var bagTransform = bag.gameObject.transform;
+
+            bagTransform.localScale = new Vector3(1f, 1f, 1f);
+        }
         public static void FreezeBag(Bag bag)
         {
             var rigidBody = bag.GetComponent<Rigidbody>();
             rigidBody.constraints = RigidbodyConstraints.FreezeAll; //RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
         }
+        public static void ThawBag(Bag bag)
+        {
+            var rigidBody = bag.GetComponent<Rigidbody>();
+            rigidBody.constraints = RigidbodyConstraints.None; //RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
+        }
+        public static bool IsBagScaled(Bag bag)
+        {
+            var bagVisuals = GetBagSettings(bag);
+            var bagTransform = bag.gameObject.transform;
 
+            return bagTransform.localScale == bagVisuals.Scale;
+        }
         public static StashBagVisual GetBagSettings(Bag bag)
         {
             var area = StashPacksConstants.StashBackpackAreas[bag.ItemID];

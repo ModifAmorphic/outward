@@ -4,6 +4,7 @@ using System;
 
 namespace ModifAmorphic.Outward.StashPacks
 {
+    [BepInIncompatibility("com.sinai.sharedstashes")]
     [BepInDependency("com.bepis.bepinex.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("io.mefino.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.sinai.SideLoader", BepInDependency.DependencyFlags.HardDependency)]

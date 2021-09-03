@@ -20,7 +20,9 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
             {
                 Logger?.LogException($"Exception in {nameof(AreaManagerEvents)}::{nameof(RaiseAwakeAfter)}.", ex);
                 if (Logger == null)
+                {
                     UnityEngine.Debug.LogError($"Exception in {nameof(AreaManagerEvents)}::{nameof(RaiseAwakeAfter)}:\n{ex}");
+                }
             }
         }
     }

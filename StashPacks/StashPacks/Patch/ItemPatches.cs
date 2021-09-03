@@ -1,7 +1,5 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
-using System;
-using UnityEngine;
 
 namespace ModifAmorphic.Outward.StashPacks.Patch
 {
@@ -14,5 +12,12 @@ namespace ModifAmorphic.Outward.StashPacks.Patch
         {
             ItemEvents.SetDisplayNameAfter(__instance, __result, out __result);
         }
+
+        //[HarmonyPatch(nameof(Item.OnReceiveParentChangeRequest), MethodType.Normal)]
+        //[HarmonyPostfix]
+        //private static void OnReceiveItemParentChangeRequestPostfix(ref Item __instance, string[] _infos)
+        //{
+        //    ItemEvents.RaiseOnReceiveItemParentChangeRequestAfter(ref __instance, _infos);
+        //}
     }
 }

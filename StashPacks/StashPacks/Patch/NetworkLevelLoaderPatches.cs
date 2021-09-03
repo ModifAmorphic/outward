@@ -13,5 +13,15 @@ namespace ModifAmorphic.Outward.StashPacks.Patch
         {
             NetworkLevelLoaderEvents.RaiseMidLoadLevelBefore(__instance);
         }
+
+        [HarmonyPatch("BaseLoadLevel", MethodType.Normal)]
+        [HarmonyPrefix]
+#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable IDE0060 // Remove unused parameter
+        private static void BaseLoadLevelPrefix(NetworkLevelLoader __instance, int _spawnPoint, float _spawnOffset, bool _save)
+#pragma warning restore IDE0060 // Remove unused parameter
+        {
+            NetworkLevelLoaderEvents.RaiseBaseLoadLevelBefore(__instance, _save);
+        }
     }
 }

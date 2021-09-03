@@ -49,7 +49,9 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
             {
                 Logger?.LogException($"Exception in {nameof(CharacterInventoryEvents)}::{nameof(RaiseDropBagItemBefore)}.", ex);
                 if (Logger == null)
+                {
                     UnityEngine.Debug.LogError($"Exception in {nameof(CharacterInventoryEvents)}::{nameof(RaiseDropBagItemBefore)}:\n{ex}");
+                }
             }
         }
         public static void RaiseDropBagItemAfter(Character character, Item item)
@@ -57,14 +59,17 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
             try
             {
                 if (item.IsStashBag())
+                {
                     DropBagItemAfter?.Invoke(character, (Bag)item);
-
+                }
             }
             catch (Exception ex)
             {
                 Logger?.LogException($"Exception in {nameof(CharacterInventoryEvents)}::{nameof(RaiseDropBagItemAfter)}.", ex);
                 if (Logger == null)
+                {
                     UnityEngine.Debug.LogError($"Exception in {nameof(CharacterInventoryEvents)}::{nameof(RaiseDropBagItemAfter)}:\n{ex}");
+                }
             }
         }
         public static void RaiseGetMostRelevantContainerAfter(Item item, ItemContainer inventoryPouch, ref ItemContainer result)
@@ -72,13 +77,17 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
             try
             {
                 if (item.IsStashBag())
+                {
                     result = GetMostRelevantContainerAfter?.Invoke((Bag)item, inventoryPouch, result) ?? result;
+                }
             }
             catch (Exception ex)
             {
                 Logger?.LogException($"Exception in {nameof(CharacterInventoryEvents)}::{nameof(RaiseInventoryIngredientsAfter)}.", ex);
                 if (Logger == null)
+                {
                     UnityEngine.Debug.LogError($"Exception in {nameof(CharacterInventoryEvents)}::{nameof(RaiseInventoryIngredientsAfter)}:\n{ex}");
+                }
             }
         }
         public static void RaiseInventoryIngredientsAfter(CharacterInventory characterInventory, Character character, Tag craftingStationTag, ref DictionaryExt<int, CompatibleIngredient> sortedIngredients)
@@ -91,7 +100,9 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
             {
                 Logger?.LogException($"Exception in {nameof(CharacterInventoryEvents)}::{nameof(RaiseInventoryIngredientsAfter)}.", ex);
                 if (Logger == null)
+                {
                     UnityEngine.Debug.LogError($"Exception in {nameof(CharacterInventoryEvents)}::{nameof(RaiseInventoryIngredientsAfter)}:\n{ex}");
+                }
             }
         }
     }

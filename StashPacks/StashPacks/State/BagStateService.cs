@@ -15,16 +15,17 @@ namespace ModifAmorphic.Outward.StashPacks.State
 
         private readonly ConcurrentDictionary<int, BagState> _bagsStates = new ConcurrentDictionary<int, BagState>();
 
-        private readonly ConcurrentDictionary<int, bool> _stateTracked = new ConcurrentDictionary<int, bool>();
-
-        private readonly ConcurrentDictionary<int, bool> _recievedStashSync = new ConcurrentDictionary<int, bool>();
+        private readonly ConcurrentDictionary<int, bool> _contentChangesTracked = new ConcurrentDictionary<int, bool>();
 
         private readonly static ConcurrentDictionary<string, byte> _disabledBags = new ConcurrentDictionary<string, byte>();
 
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
-        public BagStateService(string characterUID, InstanceFactory instances, Func<IModifLogger> getLogger) => (_characterUID, _instances, _getLogger) = (characterUID, instances, getLogger);
+        public BagStateService(string characterUID, InstanceFactory instances, Func<IModifLogger> getLogger)
+        {
+            (_characterUID, _instances, _getLogger) = (characterUID, instances, getLogger);
+        }
 
         public bool TrySaveState(Bag bag)
         {
@@ -64,36 +65,26 @@ namespace ModifAmorphic.Outward.StashPacks.State
             _bagsStates.TryRemove(bagItemID, out _);
             RemoveTracking(bagItemID);
         }
-        public bool IsTracked(int itemID)
+        public bool IsContentChangesTracked(int itemID)
         {
             //enable tracking by default.
-            return _stateTracked.GetOrAdd(itemID, true);
+            return _contentChangesTracked.GetOrAdd(itemID, true);
         }
-        public void EnableTracking(int itemID)
+        public void EnableContentChangeTracking(int itemID)
         {
-            _stateTracked.AddOrUpdate(itemID, true, (k, v) => true);
-            Logger.LogDebug($"{nameof(BagStateService)}::{nameof(EnableTracking)}:[CharacterUID: {CharacterUID}]" +
+            _contentChangesTracked.AddOrUpdate(itemID, true, (k, v) => true);
+            Logger.LogDebug($"{nameof(BagStateService)}::{nameof(EnableContentChangeTracking)}:[CharacterUID: {CharacterUID}]" +
                 $" Enabled tracking for Bag ItemID: {itemID}.");
         }
-        public bool IsSyncedFromStash(int itemID)
+        public void DisableContentChangeTracking(int itemID)
         {
-            return _recievedStashSync.GetOrAdd(itemID, false);
-        }
-        public void SetSyncedFromStash(int itemID, bool isSynced)
-        {
-            _recievedStashSync.AddOrUpdate(itemID, isSynced, (k, v) => isSynced);
-            Logger.LogDebug($"{nameof(BagStateService)}::{nameof(SetSyncedFromStash)}:[CharacterUID: {CharacterUID}]" +
-                $" Marked Bag ItemID: {itemID} as having received a sync from stash.");
-        }
-        public void DisableTracking(int itemID)
-        {
-            _stateTracked.AddOrUpdate(itemID, false, (k, v) => false);
-            Logger.LogDebug($"{nameof(BagStateService)}::{nameof(DisableTracking)}:[CharacterUID: {CharacterUID}]" +
+            _contentChangesTracked.AddOrUpdate(itemID, false, (k, v) => false);
+            Logger.LogDebug($"{nameof(BagStateService)}::{nameof(DisableContentChangeTracking)}:[CharacterUID: {CharacterUID}]" +
                 $" Disabled tracking for Bag ItemID: {itemID}.");
         }
         public void RemoveTracking(int itemID)
         {
-            _stateTracked.TryRemove(itemID, out _);
+            _contentChangesTracked.TryRemove(itemID, out _);
         }
         public static void EnableBag(string bagUID)
         {

@@ -1,12 +1,10 @@
-﻿using ModifAmorphic.Outward.StashPacks.Extensions;
-using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.Settings;
 using ModifAmorphic.Outward.StashPacks.State;
 using System;
 using System.Linq;
-using ModifAmorphic.Outward.Extensions;
-using System.Reflection;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 {
@@ -18,31 +16,38 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 
         public override void SubscribeToEvents()
         {
-            CharacterInventoryEvents.DropBagItemBefore += DropBagItemBefore;
+            CharacterInventoryEvents.DropBagItemBefore += (character, bag) =>
+            {
+                if (PhotonNetwork.isNonMasterClientInRoom)
+                {
+                    _instances.StashPackNet.SendDroppingStashPack(character.UID, bag.UID);
+                }
+            };
             CharacterInventoryEvents.DropBagItemAfter += DropBagItemAfter;
         }
 
-        private void DropBagItemBefore(Character character, Bag bag)
-        {
-            if (!IsCurrentSceneStashPackEnabled())
-            {
-                Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(DropBagItemBefore)}: Current Scene is not StashPack Enabled. Disabling stashpack functionality for bag {bag.Name} ({bag.UID}).");
-                DisableBag(bag);
-                return;
-            }
+        //private void DropBagItemBefore(Character character, Bag bag)
+        //{
+        //    if (!IsCurrentSceneStashPackEnabled())
+        //    {
+        //        Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(DropBagItemBefore)}: Current Scene is not StashPack Enabled. Disabling stashpack functionality for bag {bag.Name} ({bag.UID}).");
+        //        BagStateService.DisableBag(bag.UID);
+        //        return;
+        //    }
 
-            if (BagStateService.IsBagDisabled(bag.UID))
-            {
-                Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(DropBagItemBefore)}: Bag {bag.Name} ({bag.UID}) has StashBag functionality disabled. Not scaling.");
-                return;
-            }
-        }
+        //    if (BagStateService.IsBagDisabled(bag.UID) || DisableHostBagIfInHomeArea(character, bag))
+        //    {
+        //        Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(DropBagItemBefore)}: Bag {bag.Name} ({bag.UID}) has StashBag functionality disabled. Not scaling.");
+        //        return;
+        //    }
+        //}
 
         private void DropBagItemAfter(Character character, Bag bag)
         {
             if (BagStateService.IsBagDisabled(bag.UID))
             {
                 Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(DropBagItemAfter)}: Bag {bag.Name} ({bag.UID}) has StashBag functionality disabled.");
+                UnclaimAndClearBag(bag);
                 return;
             }
 
@@ -55,25 +60,29 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             var bagStates = _instances.GetBagStateService(charUID);
 
             if (DisableHostBagIfInHomeArea(character, bag))
+            {
                 return;
+            }
 
-            bagStates.DisableTracking(bag.ItemID);
+            bagStates.DisableContentChangeTracking(bag.ItemID);
 
             UnclaimClearOtherBags(charUID, bag);
 
             if (!bag.Container.AllowOverCapacity)
+            {
                 bag.Container.AllowOverCapacity = true;
+            }
 
             if (!TryRestoreState(charUID, bag))
             {
                 if (!TryRestoreStash(charUID, bag))
                 {
                     Logger.LogInfo($"Unable restore either state or stash to bag. Disabling StashPack functionality.");
-                    DisableBag(bag);
+                    UnclaimAndClearBag(bag);
                     return;
                 }
             }
-            
+            bag.Container.SpecialType = ItemContainer.SpecialContainerTypes.Stash;
             DoAfterBagLoaded(bag.UID, (Bag b) => SaveStateEnableTracking(charUID, b.UID));
         }
         private bool TryRestoreStash(string characterUID, Bag bag)
