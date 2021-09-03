@@ -17,7 +17,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             BagEvents.ShowContentBefore += ShowStashPanel;
             ItemEvents.DisplayNameAfter += GetPersonalizedBagDisplayName;
             InteractionDisplayEvents.SetInteractableBefore += SetBagInteractionActionText;
-            //CharacterInventoryEvents.DropBagItemBefore += (c, bag) => DoAfterBagLoaded(bag.UID, (uid) => RemoveLanternSlot(bag));
+            CharacterInventoryEvents.DropBagItemBefore += (c, bag) => DoAfterBagLoaded(bag.UID, (uid) => RemoveLanternSlot(bag));
             _instances.HostSettings.DisableBagScalingRotationChanged += (newValue) => ToggleBagScaleRotation(newValue);
             ToggleBagScaleRotation(_instances.HostSettings.DisableBagScalingRotation);
             //BagUnclaimed += OnBagUnclaimed;
@@ -94,6 +94,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             CharacterInventoryEvents.DropBagItemAfter += DropBagItemAfter;
             ItemContainerEvents.RefreshWeightAfter += ScaleBag;
             _instances.StashPackNet.DroppingStashPack += ScaleRotateFreezeOthersStashPack;
+            _instances.StashPackNet.StashPackLinkChanged += (args) => FreezeIfNotFrozen(args.bagUID);
             //ItemEvents.OnReceiveItemParentChangeRequestAfter += OnReceiveItemParentChangeRequestAfter;
         }
 
@@ -104,6 +105,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             ItemContainerEvents.RefreshWeightAfter -= ScaleBag;
             //ItemEvents.OnReceiveItemParentChangeRequestAfter -= OnReceiveItemParentChangeRequestAfter;
             _instances.StashPackNet.DroppingStashPack -= ScaleRotateFreezeOthersStashPack;
+            _instances.StashPackNet.StashPackLinkChanged -= (args) => FreezeIfNotFrozen(args.bagUID);
         }
         //private void OnReceiveItemParentChangeRequestAfter(Bag bag, string[] _arg2)
         //{
@@ -128,7 +130,6 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                         BagVisualizer.StandBagUp(bag);
                         _instances.UnityPlugin.StartCoroutine(AfterBagLandedCoroutine(bag, () => BagVisualizer.FreezeBag(bag)));
                     }
-
                 }
             });
 
@@ -165,8 +166,25 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             }
         }
 
+        private void FreezeIfNotFrozen(string bagUID)
+        {
+            _instances.TryGetStashPackWorldData(out var stashPackWorldData);
+            var bag = stashPackWorldData.GetStashPack(bagUID)?.StashBag;
+            if (bag != null)
+            {
+                _instances.UnityPlugin.StartCoroutine(AfterBagLandedCoroutine(bag, () =>
+                {
+                    if (IsBagLinked(bag))
+                    {
+                        BagVisualizer.FreezeBag(bag);
+                    }
+                }));
+            }
+        }
+
         private string GetPersonalizedBagDisplayName(Bag bag, string displayName)
         {
+            //crafting menu
             if (string.IsNullOrWhiteSpace(bag.UID))
             {
                 return displayName;
@@ -208,12 +226,13 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 return false;
             }
 
-            return bag.IsUsable() && IsCurrentSceneStashPackEnabled();
+            return BagStateService.IsLinked(bag.UID) && IsCurrentSceneStashPackEnabled();
         }
         private bool WillBagBeUsable(Bag bag)
         {
             if (bag.OwnerCharacter == null || !IsPlayerCharacterInGame(bag.OwnerCharacter.UID)
-                || (BagStateService.IsBagDisabled(bag.UID) && IsLocalPlayerCharacter(bag.OwnerCharacter.UID)))
+                || (BagStateService.IsBagDisabled(bag.UID) && IsLocalPlayerCharacter(bag.OwnerCharacter.UID))
+                || !IsCurrentSceneStashPackEnabled())
             {
                 return false;
             }

@@ -1,8 +1,10 @@
 ﻿using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
+using ModifAmorphic.Outward.StashPacks.Network;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ModifAmorphic.Outward.StashPacks.State
 {
@@ -19,12 +21,19 @@ namespace ModifAmorphic.Outward.StashPacks.State
 
         private readonly static ConcurrentDictionary<string, byte> _disabledBags = new ConcurrentDictionary<string, byte>();
 
+        //CharacterUID, BagUID
+        private readonly static ConcurrentDictionary<string, string> _linkedBags = new ConcurrentDictionary<string, string>();
+
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
         public BagStateService(string characterUID, InstanceFactory instances, Func<IModifLogger> getLogger)
         {
             (_characterUID, _instances, _getLogger) = (characterUID, instances, getLogger);
+        }
+        public static void ConfigureNet(StashPackNet stashPackNet)
+        {
+            stashPackNet.StashPackLinkChanged += StashPackLinkChanged;
         }
 
         public bool TrySaveState(Bag bag)
@@ -50,14 +59,9 @@ namespace ModifAmorphic.Outward.StashPacks.State
             _bagsStates.AddOrUpdate(bag.ItemID, bagState, (id, value) => bagState);
             return true;
         }
-        public bool TryGetState(int itemID, out BagState bagState)
-        {
-            return _bagsStates.TryGetValue(itemID, out bagState);
-        }
-        public IEnumerable<BagState> GetAllBagStates()
-        {
-            return _bagsStates.Values;
-        }
+
+        public bool TryGetState(int itemID, out BagState bagState) => _bagsStates.TryGetValue(itemID, out bagState);
+        public IEnumerable<BagState> GetAllBagStates() => _bagsStates.Values;
         public void RemoveState(int bagItemID)
         {
             Logger.LogTrace($"{nameof(BagStateService)}::{nameof(RemoveState)}:[CharacterUID: {CharacterUID}]" +
@@ -65,11 +69,9 @@ namespace ModifAmorphic.Outward.StashPacks.State
             _bagsStates.TryRemove(bagItemID, out _);
             RemoveTracking(bagItemID);
         }
-        public bool IsContentChangesTracked(int itemID)
-        {
-            //enable tracking by default.
-            return _contentChangesTracked.GetOrAdd(itemID, true);
-        }
+
+        public bool IsContentChangesTracked(int itemID) => _contentChangesTracked.GetOrAdd(itemID, true);
+
         public void EnableContentChangeTracking(int itemID)
         {
             _contentChangesTracked.AddOrUpdate(itemID, true, (k, v) => true);
@@ -82,25 +84,30 @@ namespace ModifAmorphic.Outward.StashPacks.State
             Logger.LogDebug($"{nameof(BagStateService)}::{nameof(DisableContentChangeTracking)}:[CharacterUID: {CharacterUID}]" +
                 $" Disabled tracking for Bag ItemID: {itemID}.");
         }
-        public void RemoveTracking(int itemID)
+        public void RemoveTracking(int itemID) => _contentChangesTracked.TryRemove(itemID, out _);
+
+        private static void StashPackLinkChanged((string bagUID, string characterUID, bool isLinked) args)
         {
-            _contentChangesTracked.TryRemove(itemID, out _);
+            if (args.isLinked)
+                LinkBag(args.bagUID, args.characterUID);
+            else
+                UnlinkBag(args.bagUID);
         }
-        public static void EnableBag(string bagUID)
+        public static bool IsLinked(string bagUID) => _linkedBags.ContainsKey(bagUID);
+        public static void LinkBag(string bagUID, string characterUID) => _linkedBags.AddOrUpdate(bagUID, characterUID, (k, v) => characterUID);
+        public static void UnlinkBag(string bagUID) => _linkedBags.TryRemove(bagUID, out var _);
+        public static void UnlinkCharacterBags(string characterUID)
         {
-            _disabledBags.TryRemove(bagUID, out var _);
+            var keys = _linkedBags.Where(kvp => kvp.Value == characterUID).Select(kvp => kvp.Key).ToList();
+            foreach (var k in keys)
+                _linkedBags.TryRemove(k, out var _);
         }
-        public static void DisableBag(string bagUID)
-        {
-            _disabledBags.TryAdd(bagUID, new byte());
-        }
-        public static bool IsBagDisabled(string bagUID)
-        {
-            return _disabledBags.ContainsKey(bagUID);
-        }
-        public static void ClearDisabledBags()
-        {
-            _disabledBags.Clear();
-        }
+        public static IEnumerable<(string BagUID, string CharacterUID)> GetLinkedBags() => _linkedBags.Select(kvp => (kvp.Key, kvp.Value));
+        public static void ClearLinkedBags() => _linkedBags.Clear();
+
+        public static void EnableBag(string bagUID) => _disabledBags.TryRemove(bagUID, out var _);
+        public static void DisableBag(string bagUID) => _disabledBags.TryAdd(bagUID, new byte());
+        public static bool IsBagDisabled(string bagUID) => _disabledBags.ContainsKey(bagUID);
+        public static void ClearDisabledBags() => _disabledBags.Clear();
     }
 }

@@ -23,6 +23,20 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             SaveInstanceEvents.SaveBefore += SaveBefore;
             //SplitScreenManagerEvents.ReceivedPlayerHasLeftAfter += (photonPlayer, playerUID) => ReceivedPlayerHasLeftAfter(playerUID);
             LobbySystemEvents.PlayerSystemHasBeenDestroyedAfter += ReceivedPlayerHasLeftAfter;
+            _instances.StashPackNet.PlayerConnected += PlayerConnected;
+            _instances.StashPackNet.LeftRoom += LeftRoom;
+        }
+
+        private void LeftRoom()
+        {
+            _instances.ResetFactory();
+            _instances.ResetHostSettings();
+        }
+
+        private void PlayerConnected(PhotonPlayer player)
+        {
+            if (!PhotonNetwork.isNonMasterClientInRoom)
+                _instances.StashPackNet.SendLinkedStashPacks(player, BagStateService.GetLinkedBags());
         }
 
         private void ReceivedPlayerHasLeftAfter(string playerUID)

@@ -101,6 +101,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 character.Inventory.GenerateItem(bagPrefab, 1, false);
                 character.Inventory.NotifyItemTake(bagPrefab, 1);
             }));
+            _instances.StashPackNet.SendStashPackLinkChanged(bagUID, character.UID, false);
             return true;
         }
         private bool HandleBackpackBefore(Character character, CharacterPrivates cprivates)

@@ -19,6 +19,7 @@ namespace ModifAmorphic.Outward.StashPacks
             var settingsService = new SettingsService(unityPlugin, ModInfo.MinimumConfigVersion);
             var configSettings = settingsService.ConfigureSettings();
             var stashPackNet = ConfigureStashPackNet();
+            BagStateService.ConfigureNet(stashPackNet);
             var hostSettings = settingsService.ConfigureHostSettings(configSettings, stashPackNet);
             var instanceFactory = new InstanceFactory(unityPlugin, configSettings, hostSettings, stashPackNet, LoggerFactory.GetLogger);
             var actionInstances = new ActionInstanceManager(instanceFactory, LoggerFactory.GetLogger);

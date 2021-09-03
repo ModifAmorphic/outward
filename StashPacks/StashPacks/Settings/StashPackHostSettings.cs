@@ -19,11 +19,6 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
             }
         }
 
-        public object[] Serialize()
-        {
-            return Serialize(this);
-        }
-
         public static StashPackHostSettings Deserialize(object[] data)
         {
             return new StashPackHostSettings()
@@ -41,5 +36,7 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
                 Convert.ToByte(hostSettings.DisableBagScalingRotation)
             };
         }
+
+        
     }
 }

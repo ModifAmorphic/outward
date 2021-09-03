@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Network;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.SaveData.Data;
@@ -25,6 +26,8 @@ namespace ModifAmorphic.Outward.StashPacks.State
         private readonly StashPacksConfigSettings _stashPacksSettings;
         public StashPacksConfigSettings StashPacksSettings => _stashPacksSettings;
 
+
+        private readonly StashPackHostSettings _localHostSettings;
         private StashPackHostSettings _hostSettings;
         public StashPackHostSettings HostSettings => _hostSettings;
 
@@ -49,12 +52,13 @@ namespace ModifAmorphic.Outward.StashPacks.State
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
-        public InstanceFactory(BaseUnityPlugin unityPlugin, StashPacksConfigSettings stashPackSettings, StashPackHostSettings initialHostSettings, StashPackNet stashPackNet, Func<IModifLogger> getLogger)
+        public InstanceFactory(BaseUnityPlugin unityPlugin, StashPacksConfigSettings stashPackSettings, StashPackHostSettings localHostSettings, StashPackNet stashPackNet, Func<IModifLogger> getLogger)
         {
             _unityPlugin = unityPlugin;
             _getLogger = getLogger;
             _stashPacksSettings = stashPackSettings;
-            _hostSettings = initialHostSettings;
+            _localHostSettings = localHostSettings;
+            _hostSettings = localHostSettings.Clone();
             _stashPackNet = stashPackNet;
             RoutePatchEvents();
         }
@@ -64,38 +68,43 @@ namespace ModifAmorphic.Outward.StashPacks.State
         {
             //Remove a character's stash saveExecuter once a save is complete so a new one is created next time.
             //SaveInstanceEvents.SaveAfter += (saveInstance => _stashSaveExecuters.TryRemove(saveInstance.CharSave.CharacterUID, out _));
-            SceneManager.sceneLoaded += (s, l) =>
+            SceneManager.sceneLoaded += (s, l) => ResetFactory();
+            ItemManagerEvents.AwakeAfter += (itemManager => _itemManager = itemManager);
+            AreaManagerEvents.AwakeAfter += (areaManager => _areaManager = areaManager);
+            StashPackNet.OnReceivedHostSettings += (hostSettings) => _hostSettings.SetChangedValues(hostSettings);
+        }
+        public void ResetHostSettings()
+        {
+            StashPackNet.BufferHostSettings(_localHostSettings);
+        }
+        public void ResetFactory()
+        {
+            Logger.LogDebug("New scene loaded. Disposing of scene singletons.");
+            foreach (var instance in _singletons.Values)
             {
-                Logger.LogDebug("New scene loaded. Disposing of scene singletons.");
-                foreach (var instance in _singletons.Values)
+                if (instance is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
+
+            _singletons.Clear();
+
+            foreach (var charInstances in _characterSingletons.Values)
+            {
+                foreach (var instance in charInstances.Values)
                 {
                     if (instance is IDisposable disposable)
                     {
                         disposable.Dispose();
                     }
                 }
+            }
 
-                _singletons.Clear();
+            _characterSingletons.Clear();
 
-                foreach (var charInstances in _characterSingletons.Values)
-                {
-                    foreach (var instance in charInstances.Values)
-                    {
-                        if (instance is IDisposable disposable)
-                        {
-                            disposable.Dispose();
-                        }
-                    }
-                }
-
-                _characterSingletons.Clear();
-
-                BagStateService.ClearDisabledBags();
-
-            };
-            ItemManagerEvents.AwakeAfter += (itemManager => _itemManager = itemManager);
-            AreaManagerEvents.AwakeAfter += (areaManager => _areaManager = areaManager);
-            StashPackNet.OnReceivedHostSettings += (hostSettings) => _hostSettings = hostSettings;
+            BagStateService.ClearDisabledBags();
+            BagStateService.ClearLinkedBags();
         }
         #endregion
         public bool TryGetItemManager(out ItemManager itemManager)

@@ -169,6 +169,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             bag.EmptyContents();
             bag.Container.AllowOverCapacity = false;
             NetworkSyncBag(bag);
+            _instances.StashPackNet.SendStashPackLinkChanged(bag.UID, previousOwnerUID, false);
             Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(UnclaimClearOtherBags)}: Removed character's ({previousOwnerUID}) claim from bag {bag.Name} ({bag.UID}) and emptied its contents.");
         }
         protected IEnumerator AfterPlayerLeftCoroutine(string playerUID, Action action)

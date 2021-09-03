@@ -50,6 +50,12 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 UnclaimAndClearBag(bag);
                 return;
             }
+            if (!IsCurrentSceneStashPackEnabled())
+            {
+                Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(DropBagItemAfter)}: Scene is not enabled for StashPacks. Bag {bag.Name} ({bag.UID}) has StashBag functionality disabled.");
+                UnclaimAndClearBag(bag);
+                return;
+            }
 
             DoAfterBagLoaded(bag.UID, (b) => ProcessBagDropAfterLoaded(character, b));
         }
@@ -83,6 +89,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 }
             }
             bag.Container.SpecialType = ItemContainer.SpecialContainerTypes.Stash;
+            _instances.StashPackNet.SendStashPackLinkChanged(bag.UID, charUID, true);
             DoAfterBagLoaded(bag.UID, (Bag b) => SaveStateEnableTracking(charUID, b.UID));
         }
         private bool TryRestoreStash(string characterUID, Bag bag)
