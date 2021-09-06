@@ -254,15 +254,17 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                     worldBag = itemManager.GetItem(bagUID);
                 yield return new WaitForSeconds(waitTime);
             }
-            Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterBagLoadedCoroutine)}: Bag '{worldBag.Name}' ({worldBag.UID}) finished" +
-                $" loading into world. Invoking action {action.Method.Name}.");
             try
             {
                 if (waits >= maxWaits)
                     Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterBagLoadedCoroutine)}: Timed out after waiting {waits} times for Bag '{bagUID}' to load." +
                         $" Action not invoked: {action.Method.Name}.");
                 else if (worldBag is Bag)
+                {
+                    Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterBagLoadedCoroutine)}: Bag '{worldBag.Name}' ({worldBag.UID}) finished" +
+                            $" loading into world. Invoking action {action.Method.Name}.");
                     action.Invoke(worldBag as Bag);
+                }
                 else
                     Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterBagLoadedCoroutine)}: Unexpected error. Item with " +
                             $"UID '{bagUID}' is not a Bag. Not invoking action {action.Method.Name}.");
