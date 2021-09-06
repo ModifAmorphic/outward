@@ -3,9 +3,9 @@
   <Target_ItemID>5300050</Target_ItemID>
   <New_ItemID>-1301008</New_ItemID>
   <Name>Harmattan Stash Pack</Name>
-  <Description>This backpack allows for tranfering of items to and from an owner's home Stash. In actuality it's not really a backpack at all but rather a small hole torn through the ethereal plane.
+  <Description>This backpack allows for tranfering of items to and from an owner's home Stash. In reality it is less a backpack and more a small hole torn through the ethereal plane.
 
-&lt;color=#ff5043&gt;Equipping this backpack disconnects it from the Stash.&lt;/color&gt;</Description>
+&lt;color=#ff5043&gt;Taking this backpack disconnects it from the Stash.&lt;/color&gt;</Description>
   <LegacyItemID>-1</LegacyItemID>
   <IsPickable>true</IsPickable>
   <IsUsable>false</IsUsable>
