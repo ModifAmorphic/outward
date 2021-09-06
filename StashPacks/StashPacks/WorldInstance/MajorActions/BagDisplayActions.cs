@@ -17,10 +17,63 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             BagEvents.ShowContentBefore += ShowStashPanel;
             ItemEvents.DisplayNameAfter += GetPersonalizedBagDisplayName;
             InteractionDisplayEvents.SetInteractableBefore += SetBagInteractionActionText;
-            CharacterInventoryEvents.DropBagItemBefore += (c, bag) => DoAfterBagLoaded(bag.UID, (uid) => RemoveLanternSlot(bag));
+            CharacterInventoryEvents.DropBagItemBefore += (c, bag) => DoAfterBagLoaded(bag.UID, (uid) => BagVisualizer.RemoveLanternSlot(bag));
             _instances.HostSettings.DisableBagScalingRotationChanged += (newValue) => ToggleBagScaleRotation(newValue);
             ToggleBagScaleRotation(_instances.HostSettings.DisableBagScalingRotation);
             //BagUnclaimed += OnBagUnclaimed;
+        }
+        private void ToggleBagScaleRotation(bool isDisabled)
+        {
+            if (!isDisabled)
+            {
+                EnableScaleRotation();
+            }
+            else
+            {
+                DisableScaleRotation();
+            }
+        }
+        private void EnableScaleRotation()
+        {
+            NetworkLevelLoaderEvents.MidLoadLevelBefore += SizeBagsForNewLevel;
+            CharacterInventoryEvents.DropBagItemBefore += DropBagItemBefore;
+            //CharacterInventoryEvents.DropBagItemAfter += DropBagItemAfter;
+            ItemContainerEvents.RefreshWeightAfter += ScaleBag;
+            _instances.StashPackNet.DroppingStashPack += ScaleRotateFreezeFallingPack;
+            //_instances.StashPackNet.StashPackLinkChanged += (args) => FreezeIfNotFrozen(args.bagUID);
+            //ItemEvents.OnReceiveItemParentChangeRequestAfter += OnReceiveItemParentChangeRequestAfter;
+        }
+
+
+        private void DisableScaleRotation()
+        {
+            NetworkLevelLoaderEvents.MidLoadLevelBefore -= SizeBagsForNewLevel;
+            CharacterInventoryEvents.DropBagItemBefore -= DropBagItemBefore;
+            //CharacterInventoryEvents.DropBagItemAfter -= DropBagItemAfter;
+            ItemContainerEvents.RefreshWeightAfter -= ScaleBag;
+            //ItemEvents.OnReceiveItemParentChangeRequestAfter -= OnReceiveItemParentChangeRequestAfter;
+            _instances.StashPackNet.DroppingStashPack -= ScaleRotateFreezeFallingPack;
+            //_instances.StashPackNet.StashPackLinkChanged -= (args) => FreezeIfNotFrozen(args.bagUID);
+        }
+
+        private void SizeBagsForNewLevel(NetworkLevelLoader networkLevelLoader)
+        {
+            Logger.LogDebug($"{nameof(BagDisplayActions)}::{nameof(SizeBagsForNewLevel)}: Sizing bags after level load of scene {networkLevelLoader.TargetScene}.");
+            _instances.UnityPlugin.StartCoroutine(
+                AfterLevelLoadedCoroutine(networkLevelLoader, () =>
+                {
+                if (!_instances.TryGetStashPackWorldData(out var spData))
+                    return;
+                var stashPacks = spData.GetAllStashPacks()?.Where(p => !p.StashBag.IsEquipped && !p.StashBag.IsInContainer);
+
+                foreach (var p in stashPacks)
+                {
+                    BagVisualizer.ScaleBag(p.StashBag);
+                    BagVisualizer.RemoveLanternSlot(p.StashBag);
+                    if (!PhotonNetwork.isNonMasterClientInRoom)
+                        BagVisualizer.FreezeBag(p.StashBag);
+                }
+                }));
         }
 
         private void SetBagInteractionActionText(InteractionDisplay interactionDisplay, InputDisplay bagDisplay, InteractionTriggerBase interactionTrigger)
@@ -41,30 +94,6 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             }
         }
 
-        private void RemoveLanternSlot(Bag bag)
-        {
-            var m_loadedVisualField = typeof(Bag).GetField("m_loadedVisual", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            var loadedVisual = m_loadedVisualField.GetValue(bag) as ItemVisual;
-
-            if (loadedVisual == null)
-            {
-                return;
-            }
-
-            var bagSlotVisuals = loadedVisual.GetComponentsInChildren<BagSlotVisual>();
-            if (bagSlotVisuals != null)
-            {
-                var lanternSlots = bagSlotVisuals.Where(sv => sv.AuthorizedTypes.Contains(Item.BagCategorySlotType.Lantern)).ToList();
-                for (var i = 0; i < lanternSlots.Count; i++)
-                {
-                    Logger.LogTrace($"{nameof(BagDisplayActions)}::{nameof(RemoveLanternSlot)}: " +
-                        $"Destroying Lantern Slot {lanternSlots[i].name} of bag {bag.DisplayName} ({bag.UID})");
-                    UnityEngine.Object.Destroy(lanternSlots[i]);
-                }
-            }
-        }
-
         private bool ShowStashPanel(Character character, Bag bag)
         {
             if (bag.IsUsable())
@@ -76,37 +105,6 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             }
             return true;
         }
-
-        private void ToggleBagScaleRotation(bool isDisabled)
-        {
-            if (!isDisabled)
-            {
-                EnableScaleRotation();
-            }
-            else
-            {
-                DisableScaleRotation();
-            }
-        }
-        private void EnableScaleRotation()
-        {
-            CharacterInventoryEvents.DropBagItemBefore += DropBagItemBefore;
-            CharacterInventoryEvents.DropBagItemAfter += DropBagItemAfter;
-            ItemContainerEvents.RefreshWeightAfter += ScaleBag;
-            _instances.StashPackNet.DroppingStashPack += ScaleRotateFreezeOthersStashPack;
-            _instances.StashPackNet.StashPackLinkChanged += (args) => FreezeIfNotFrozen(args.bagUID);
-            //ItemEvents.OnReceiveItemParentChangeRequestAfter += OnReceiveItemParentChangeRequestAfter;
-        }
-
-        private void DisableScaleRotation()
-        {
-            CharacterInventoryEvents.DropBagItemBefore -= DropBagItemBefore;
-            CharacterInventoryEvents.DropBagItemAfter -= DropBagItemAfter;
-            ItemContainerEvents.RefreshWeightAfter -= ScaleBag;
-            //ItemEvents.OnReceiveItemParentChangeRequestAfter -= OnReceiveItemParentChangeRequestAfter;
-            _instances.StashPackNet.DroppingStashPack -= ScaleRotateFreezeOthersStashPack;
-            _instances.StashPackNet.StashPackLinkChanged -= (args) => FreezeIfNotFrozen(args.bagUID);
-        }
         //private void OnReceiveItemParentChangeRequestAfter(Bag bag, string[] _arg2)
         //{
         //    if (!BagVisualizer.IsBagScaled(bag) && IsBagLinked(bag))
@@ -117,22 +115,27 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
         //    }
         //}
 
-        private void ScaleRotateFreezeOthersStashPack((string characterUID, string bagUID) args)
+        private void ScaleRotateFreezeFallingPack((string characterUID, string bagUID) args)
         {
-            DoAfterBagLoaded(args.bagUID, (bag) =>
-            {
-                if (!BagVisualizer.IsBagScaled(bag) && IsBagLinked(bag))
-                {
-                    RemoveLanternSlot(bag);
-                    BagVisualizer.ScaleBag(bag);
-                    if (!PhotonNetwork.isNonMasterClientInRoom)
-                    {
-                        BagVisualizer.StandBagUp(bag);
-                        _instances.UnityPlugin.StartCoroutine(AfterBagLandedCoroutine(bag, () => BagVisualizer.FreezeBag(bag)));
-                    }
-                }
-            });
+            _instances.TryGetStashPackWorldData(out var stashPackWorldData);
+            var bag = stashPackWorldData.GetStashPack(args.bagUID)?.StashBag;
 
+            //All Clients need to remove lantern slot and scale
+            if (bag != null)
+            {
+                BagVisualizer.RemoveLanternSlot(bag);
+                BagVisualizer.ScaleBag(bag);
+            }
+
+            //Only master needs to continully stand up the bag and freeze it wehn it falls.
+            if (!PhotonNetwork.isNonMasterClientInRoom)
+            {
+                _instances.UnityPlugin.StartCoroutine(
+                    WhileBagFallingCoroutine(args.bagUID
+                    , (b) => BagVisualizer.StandBagUp(b)
+                    , (b) => BagVisualizer.FreezeBag(b)
+                    ));
+            }
         }
 
         private void ScaleBag(Bag bag)
@@ -165,7 +168,10 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 }));
             }
         }
-
+        /// <summary>
+        /// TODO: Test if this is ever necessary. More of a failsafe, but probably not really that important to freeze a bag.
+        /// </summary>
+        /// <param name="bagUID"></param>
         private void FreezeIfNotFrozen(string bagUID)
         {
             _instances.TryGetStashPackWorldData(out var stashPackWorldData);

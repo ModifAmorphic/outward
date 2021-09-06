@@ -12,5 +12,12 @@ namespace ModifAmorphic.Outward.StashPacks.Patch
         {
             LobbySystemEvents.RaisePlayerSystemHasBeenDestroyedAfter(_uid);
         }
+
+        [HarmonyPatch(nameof(LobbySystem.OnLeftRoom), MethodType.Normal)]
+        [HarmonyPostfix]
+        private static void OnLeftRoom()
+        {
+            LobbySystemEvents.RaiseOnLeftRoomAfter();
+        }
     }
 }

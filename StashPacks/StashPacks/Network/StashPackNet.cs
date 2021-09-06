@@ -28,9 +28,10 @@ namespace ModifAmorphic.Outward.StashPacks.Network
 
         #region overrides
 
-        public override void OnPhotonPlayerConnected(PhotonPlayer _newPlayer) => PlayerConnected?.Invoke(_newPlayer);
-
-        public override void OnLeftRoom() => LeftRoom?.Invoke();
+        //public override void OnLeftRoom()
+        //{
+        //    LeftRoom?.Invoke();
+        //}
 
 
         #endregion
@@ -40,8 +41,8 @@ namespace ModifAmorphic.Outward.StashPacks.Network
         public event Action<(string characterUID, string bagUID)> DroppingStashPack;
         public event Action<(string playerUID, string characterUID)> PlayerLeaving;
         public event Action<(string bagUID, string characterUID, bool isLinked)> StashPackLinkChanged;
-        public event Action<PhotonPlayer> PlayerConnected;
-        public event Action LeftRoom;
+        public event Action<PhotonPlayer> OnRequestForLinkedStashPacks;
+        //public event Action LeftRoom;
 
         #endregion
         #region PunRPCs
@@ -53,10 +54,17 @@ namespace ModifAmorphic.Outward.StashPacks.Network
             StashPackLinkChanged?.Invoke((bagUID, characterUID, isLinked));
         }
         [PunRPC]
+        public void ReceivedRequestForLinkedStashPacks(PhotonPlayer requestPlayer)
+        {
+            Logger.LogDebug($"{nameof(StashPackNet)}::{nameof(ReceivedStashPackLinkChanged)}: Received request from {requestPlayer.NickName} ({requestPlayer.ID})" +
+                $"for list of linked StashPacks.");
+            OnRequestForLinkedStashPacks?.Invoke(requestPlayer);
+        }
+        [PunRPC]
         public void ReceivedDroppingStashPack(string characterUID, string bagUID)
         {
             Logger.LogDebug($"{nameof(StashPackNet)}::{nameof(ReceivedDroppingStashPack)}:[CharacterUID: {characterUID}]" +
-               $" Linked StashPack BagUID: {bagUID}.");
+               $" dropping StashPack BagUID: {bagUID}.");
             DroppingStashPack?.Invoke((characterUID, bagUID));
         }
         [PunRPC]
@@ -76,6 +84,7 @@ namespace ModifAmorphic.Outward.StashPacks.Network
 
             OnReceivedHostSettings?.Invoke(hostSettings);
         }
+
         #endregion
 
         public void SendStashPackLinkChanged(string bagUID, string characterUID, bool isLinked)
@@ -88,13 +97,19 @@ namespace ModifAmorphic.Outward.StashPacks.Network
         {
             Logger.LogDebug($"{nameof(StashPackNet)}::{nameof(SendLinkedStashPacks)}: Sending {stashPacks.Count()} linked packs to player {target.NickName}.");
             foreach (var p in stashPacks)
-                this.photonView.RPC(nameof(ReceivedStashPackLinkChanged), target, p.bagUID, p.characterUID);
+                this.photonView.RPC(nameof(ReceivedStashPackLinkChanged), target, p.bagUID, p.characterUID, true);
+        }
+        public void SendRequestForLinkedStashPacks(PhotonPlayer requestPlayer)
+        {
+            Logger.LogDebug($"{nameof(StashPackNet)}::{nameof(SendRequestForLinkedStashPacks)}: I [{requestPlayer.NickName} ({requestPlayer.ID})] am requesting" +
+                $" a list of linked StashPacks from MasterClient.");
+            this.photonView.RPC(nameof(ReceivedRequestForLinkedStashPacks), PhotonTargets.MasterClient, requestPlayer);
         }
         public void SendDroppingStashPack(string characterUID, string bagUID)
         {
             Logger.LogDebug($"{nameof(StashPackNet)}::{nameof(SendDroppingStashPack)}:[CharacterUID: {characterUID}]" +
-               $" Linked StashPack Bag UID: {bagUID}.");
-            this.photonView.RPC(nameof(ReceivedDroppingStashPack), PhotonTargets.Others, characterUID, bagUID);
+               $" Dropping StashPack Bag UID: {bagUID}.");
+            this.photonView.RPC(nameof(ReceivedDroppingStashPack), PhotonTargets.All, characterUID, bagUID);
         }
         public void SendPlayerLeaving(string playerUID, string characterUID)
         {
@@ -102,14 +117,23 @@ namespace ModifAmorphic.Outward.StashPacks.Network
                $" characterUID: {characterUID}.");
             this.photonView.RPC(nameof(ReceivedPlayerLeaving), PhotonTargets.All, playerUID, characterUID);
         }
-        public void BufferHostSettings(StashPackHostSettings settings)
+        public void SendHostSettings(PhotonPlayer player, StashPackHostSettings settings)
         {
-            Logger.LogDebug($"{nameof(StashPackNet)}::{nameof(BufferHostSettings)}: " +
+            Logger.LogDebug($"{nameof(StashPackNet)}::{nameof(SendHostSettings)}: " +
                 $"{nameof(settings.AllScenesEnabled)}: {settings.AllScenesEnabled}, " +
                $"{nameof(settings.DisableBagScalingRotation)}: {settings.DisableBagScalingRotation}");
 
             PhotonNetwork.RemoveRPCs(this.photonView);
-            this.photonView.RPC(nameof(ReceivedHostSettings), PhotonTargets.AllBuffered, settings.Serialize());
+            this.photonView.RPC(nameof(ReceivedHostSettings), player, settings.Serialize());
+        }
+        public void SendHostSettings(StashPackHostSettings settings)
+        {
+            Logger.LogDebug($"{nameof(StashPackNet)}::{nameof(SendHostSettings)}: " +
+                $"{nameof(settings.AllScenesEnabled)}: {settings.AllScenesEnabled}, " +
+               $"{nameof(settings.DisableBagScalingRotation)}: {settings.DisableBagScalingRotation}");
+
+            PhotonNetwork.RemoveRPCs(this.photonView);
+            this.photonView.RPC(nameof(ReceivedHostSettings), PhotonTargets.All, settings.Serialize());
         }
     }
 }

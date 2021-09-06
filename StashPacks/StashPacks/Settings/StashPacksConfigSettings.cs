@@ -58,11 +58,11 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
         public ConfigSetting<LogLevel> LogLevel { get; } = new ConfigSetting<LogLevel>()
         {
             Name = nameof(LogLevel),
-            DefaultValue = Logging.LogLevel.Info,
+            DefaultValue = Logging.LogLevel.Warning,
             Section = AdvancedSection,
             DisplayName = "Minimum level for logging",
             Description = $"The threshold for logging events to the UnityEngine.Debug logger. " +
-        $"{Enum.GetName(typeof(LogLevel), Logging.LogLevel.Debug)} is the default.",
+        $"{Enum.GetName(typeof(LogLevel), Logging.LogLevel.Warning)} is the default.",
             Order = AdvancedTopOrder - 1,
             IsAdvanced = true
         };

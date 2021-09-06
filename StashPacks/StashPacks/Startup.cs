@@ -40,6 +40,8 @@ namespace ModifAmorphic.Outward.StashPacks
         }
         private void ConfigurePatchLogging()
         {
+            LobbySystemEvents.LoggerFactory = LoggerFactory.GetLogger;
+            ConnectPhotonMasterEvents.LoggerFactory = LoggerFactory.GetLogger;
             CharacterSaveInstanceHolderEvents.LoggerFactory = LoggerFactory.GetLogger;
             CharacterEvents.LoggerFactory = LoggerFactory.GetLogger;
             ItemContainerEvents.LoggerFactory = LoggerFactory.GetLogger;
@@ -48,7 +50,6 @@ namespace ModifAmorphic.Outward.StashPacks
             SaveInstanceEvents.LoggerFactory = LoggerFactory.GetLogger;
             CharacterInventoryEvents.LoggerFactory = LoggerFactory.GetLogger;
             ItemEvents.LoggerFactory = LoggerFactory.GetLogger;
-            LobbySystemEvents.LoggerFactory = LoggerFactory.GetLogger;
             BagEvents.LoggerFactory = LoggerFactory.GetLogger;
             InteractionDisplayEvents.LoggerFactory = LoggerFactory.GetLogger;
         }

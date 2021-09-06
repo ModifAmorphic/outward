@@ -18,10 +18,10 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
         {
             CharacterInventoryEvents.DropBagItemBefore += (character, bag) =>
             {
-                if (PhotonNetwork.isNonMasterClientInRoom)
-                {
+                //if (PhotonNetwork.isNonMasterClientInRoom)
+                //{
                     _instances.StashPackNet.SendDroppingStashPack(character.UID, bag.UID);
-                }
+                //}
             };
             CharacterInventoryEvents.DropBagItemAfter += DropBagItemAfter;
         }
@@ -44,23 +44,17 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 
         private void DropBagItemAfter(Character character, Bag bag)
         {
-            if (BagStateService.IsBagDisabled(bag.UID))
-            {
-                Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(DropBagItemAfter)}: Bag {bag.Name} ({bag.UID}) has StashBag functionality disabled.");
-                UnclaimAndClearBag(bag);
-                return;
-            }
-            if (!IsCurrentSceneStashPackEnabled())
-            {
-                Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(DropBagItemAfter)}: Scene is not enabled for StashPacks. Bag {bag.Name} ({bag.UID}) has StashBag functionality disabled.");
-                UnclaimAndClearBag(bag);
-                return;
-            }
-
             DoAfterBagLoaded(bag.UID, (b) => ProcessBagDropAfterLoaded(character, b));
         }
         private void ProcessBagDropAfterLoaded(Character character, Bag bag)
         {
+            if (!IsCurrentSceneStashPackEnabled())
+            {
+                Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(DropBagItemAfter)}: Scene is not enabled for StashPacks. Bag {bag.Name} ({bag.UID}) has StashBag functionality disabled.");
+                _instances.UnityPlugin.StartCoroutine(AfterBagLoadedCoroutine(bag.UID, (b) => UnclaimAndClearBag(b)));
+                return;
+            }
+
             string charUID = character.UID.ToString();
             Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(DropBagItemAfter)}: Character '{charUID}' dropped Bag {bag.Name} ({bag.UID}).");
             var bagStates = _instances.GetBagStateService(charUID);

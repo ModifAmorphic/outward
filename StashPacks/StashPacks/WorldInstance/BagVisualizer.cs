@@ -1,4 +1,6 @@
 ﻿using ModifAmorphic.Outward.StashPacks.Settings;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance
@@ -18,6 +20,31 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance
             bagTransform.eulerAngles = new Vector3(bagVisuals.RotationToWorld.x, flippedY, bagTransform.eulerAngles.z + bagVisuals.RotationToWorld.z);
 
         }
+
+        public static bool RemoveLanternSlot(Bag bag)
+        {
+            var m_loadedVisualField = typeof(Bag).GetField("m_loadedVisual", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            var loadedVisual = m_loadedVisualField.GetValue(bag) as ItemVisual;
+
+            if (loadedVisual == null)
+            {
+                return true;
+            }
+            var destroyedLantern = false;
+            var bagSlotVisuals = loadedVisual.GetComponentsInChildren<BagSlotVisual>();
+            if (bagSlotVisuals != null)
+            {
+                var lanternSlots = bagSlotVisuals.Where(sv => sv.AuthorizedTypes.Contains(Item.BagCategorySlotType.Lantern)).ToList();
+                for (var i = 0; i < lanternSlots.Count; i++)
+                {
+                    Object.Destroy(lanternSlots[i]);
+                    destroyedLantern = true;
+                }
+            }
+            return destroyedLantern;
+        }
+
         public static void StandBagUp(Bag bag)
         {
             var bagTransform = bag.gameObject?.transform;
@@ -49,8 +76,9 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance
         }
         public static void FreezeBag(Bag bag)
         {
-            var rigidBody = bag.GetComponent<Rigidbody>();
-            rigidBody.constraints = RigidbodyConstraints.FreezeAll; //RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
+            var rigidBody = bag?.GetComponent<Rigidbody>();
+            if (rigidBody != null)
+                rigidBody.constraints = RigidbodyConstraints.FreezeAll;
         }
         public static void ThawBag(Bag bag)
         {

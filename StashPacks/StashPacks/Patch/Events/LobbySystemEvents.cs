@@ -9,7 +9,7 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
         public static Func<IModifLogger> LoggerFactory { get; set; }
 
         public static event Action<string> PlayerSystemHasBeenDestroyedAfter;
-
+        public static event Action OnLeftRoomAfter;
         public static void RaisePlayerSystemHasBeenDestroyedAfter(string playerUID)
         {
             try
@@ -23,6 +23,22 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
                 if (Logger == null)
                 {
                     UnityEngine.Debug.LogError($"Exception in {nameof(LobbySystemEvents)}::{nameof(RaisePlayerSystemHasBeenDestroyedAfter)}:\n{ex}");
+                }
+            }
+        }
+        public static void RaiseOnLeftRoomAfter()
+        {
+            try
+            {
+                Logger.LogTrace($"{nameof(LobbySystemEvents)}::{nameof(RaiseOnLeftRoomAfter)}: I left.");
+                OnLeftRoomAfter?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                Logger?.LogException($"Exception in {nameof(LobbySystemEvents)}::{nameof(RaiseOnLeftRoomAfter)}.", ex);
+                if (Logger == null)
+                {
+                    UnityEngine.Debug.LogError($"Exception in {nameof(LobbySystemEvents)}::{nameof(RaiseOnLeftRoomAfter)}:\n{ex}");
                 }
             }
         }

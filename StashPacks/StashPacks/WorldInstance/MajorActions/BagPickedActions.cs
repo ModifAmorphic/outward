@@ -3,14 +3,17 @@ using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.State;
 using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 {
     internal class BagPickedActions : MajorBagActions
     {
+        private ConcurrentDictionary<string, byte> _takingBags = new ConcurrentDictionary<string, byte>();
 
         public BagPickedActions(InstanceFactory instances, Func<IModifLogger> getLogger) : base(instances, getLogger)
         {
@@ -21,6 +24,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             //ItemEvents.PerformEquipBefore += BagPickedUp;
             CharacterEvents.HandleBackpackBefore += TryHandleBackpackBefore;
             CharacterInventoryEvents.GetMostRelevantContainerAfter += GetMostRelevantContainer;
+            SceneManager.sceneLoaded += (s, l) => _takingBags = new ConcurrentDictionary<string, byte>();
         }
 
         private ItemContainer GetMostRelevantContainer(Bag bag, ItemContainer pouchContainer, ItemContainer defaultContainer)
@@ -37,9 +41,15 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
         {
             try
             {
+                var bag = character.Interactable?.ItemToPreview as Bag;
+                if (bag != null && _takingBags.ContainsKey(bag.UID))
+                {
+                    Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(TryHandleBackpackBefore)}: Bag {bag.Name} ({bag.UID}) is already being picked up.");
+                    return false;
+                }
                 if (!IsCurrentSceneStashPackEnabled())
                 {
-                    var bag = character.Interactable?.ItemToPreview as Bag;
+                    
                     if (bag != null)
                     {
                         Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(TryHandleBackpackBefore)}: Current Scene is not StashPack Enabled. Disabling stashpack functionality for bag {bag.Name} ({bag.UID}).");
@@ -58,11 +68,24 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             }
             return true;
         }
+
         private bool TakeBag(Character character, Bag bag)
         {
+            string bagUID = bag.UID;
+
+            if (_takingBags.ContainsKey(bagUID))
+            {
+                Logger.LogTrace($"{nameof(BagPickedActions)}::{nameof(TakeBag)}: Bag {bag.Name} ({bag.UID}) is already being taken.");
+                return true;
+            }
+
+            _ = _takingBags.TryAdd(bagUID, new byte());
+            Logger.LogTrace($"{nameof(BagPickedActions)}::{nameof(TakeBag)}: Marked Bag {bag.Name} ({bag.UID}) as being taken.");
+
             if (!_instances.TryGetItemManager(out var itemManager))
             {
                 Logger.LogError($"{nameof(BagPickedActions)}::{nameof(TakeBag)}: Unable to get ItemManager. Special pickup processing canceled for {bag.Name} ({bag.UID}).");
+                _takingBags.TryRemove(bagUID, out var _);
                 return false;
             }
             if (bag.HasContents())
@@ -81,8 +104,6 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 }
                 bag.Container.RemoveAllSilver();
             }
-
-            string bagUID = bag.UID;
             int bagItemID = bag.ItemID;
             if (!PhotonNetwork.isNonMasterClientInRoom)
             {
@@ -100,6 +121,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 var bagPrefab = ResourcesPrefabManager.Instance.GetItemPrefab(bagItemID);
                 character.Inventory.GenerateItem(bagPrefab, 1, false);
                 character.Inventory.NotifyItemTake(bagPrefab, 1);
+                _takingBags.TryRemove(bagUID, out var _);
             }));
             _instances.StashPackNet.SendStashPackLinkChanged(bagUID, character.UID, false);
             return true;
@@ -122,8 +144,9 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 Logger.LogWarning($"{nameof(BagPickedActions)}::{nameof(HandleBackpackBefore)}: Expected a bag.  Item being picked up by character '{character.UID}' is not a bag.");
                 return true;
             }
+            
             string charUID = character.UID.ToString();
-            Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(HandleBackpackBefore)}: Character '{charUID}' Bag {bag.Name} ({bag.UID}) is being picked up.");
+            Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(HandleBackpackBefore)}:  '{charUID}' Bag {bag.Name} ({bag.UID}) is being picked up.");
 
             var bagStates = _instances.GetBagStateService(charUID);
             if (!character.IsLocalPlayer)

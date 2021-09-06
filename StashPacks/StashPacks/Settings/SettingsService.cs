@@ -71,7 +71,7 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
                 if (!PhotonNetwork.isNonMasterClientInRoom)
                 {
                     hostSettings.AllScenesEnabled = v.NewValue;
-                    stashPackNet.BufferHostSettings(hostSettings);
+                    stashPackNet.SendHostSettings(hostSettings);
                 }
             };
             configSettings.DisableBagScalingRotation.ValueChanged += (s, v) =>
@@ -79,10 +79,10 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
                 if (!PhotonNetwork.isNonMasterClientInRoom)
                 {
                     hostSettings.DisableBagScalingRotation = v.NewValue;
-                    stashPackNet.BufferHostSettings(hostSettings);
+                    stashPackNet.SendHostSettings(hostSettings);
                 }
             };
-            stashPackNet.BufferHostSettings(hostSettings);
+            stashPackNet.SendHostSettings(hostSettings);
             return hostSettings;
         }
         private bool MeetsMinimumVersion(string minimumVersion)

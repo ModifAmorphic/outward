@@ -73,10 +73,6 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             {
                 Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(DisableHostBagIfInHomeArea)}: Character '{character.UID}' is hosting the game" +
                     $" and is in '{bag.Name}' ({bag.UID}) home area {GetBagAreaEnum(bag).GetName()}. StashBag functionalty disabled for bag.");
-                //var stashUID = StashPacksConstants.PermenantStashUids[GetCurrentAreaEnum()].StashUID;
-                //var stash = (ItemContainer)ItemManager.Instance.GetItem(stashUID);
-                //var m_container_field = typeof(Bag).GetField("m_container", BindingFlags.Instance | BindingFlags.NonPublic);
-                //m_container_field.SetValue(bag, (ItemContainerStatic)stash);
 
                 UnclaimAndClearBag(bag);
                 return true;
@@ -168,129 +164,287 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             bag.PreviousOwnerUID = string.Empty;
             bag.EmptyContents();
             bag.Container.AllowOverCapacity = false;
+            Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(UnclaimClearOtherBags)}: Removed character's ({previousOwnerUID}) claim from bag {bag.Name} ({bag.UID}) and emptied its contents.");
             NetworkSyncBag(bag);
             _instances.StashPackNet.SendStashPackLinkChanged(bag.UID, previousOwnerUID, false);
-            Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(UnclaimClearOtherBags)}: Removed character's ({previousOwnerUID}) claim from bag {bag.Name} ({bag.UID}) and emptied its contents.");
+        }
+
+        #region Coroutines
+        protected IEnumerator AfterLevelLoadedCoroutine(NetworkLevelLoader networkLevelLoader, Action action)
+        {
+            const int maxWaits = 1000;
+            const float waitTime = .25f;
+
+            var waits = 0;
+
+            while (!networkLevelLoader.IsOverallLoadingDone && waits++ < maxWaits)
+            {
+                yield return new WaitForSeconds(waitTime);
+            }
+            if (waits < maxWaits)
+            {
+                Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterLevelLoadedCoroutine)}: Level Scene {networkLevelLoader.TargetScene} finished loading." +
+                    $" Invoking action {action.Method.Name}.");
+                try
+                {
+                    action.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogException($"{nameof(MajorBagActions)}::{nameof(AfterLevelLoadedCoroutine)}:" +
+                        $" Unexpected exception invoking Action {action.Method.Name}.", ex);
+                }
+            }
+            else
+            {
+                Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterLevelLoadedCoroutine)}: Timed out after waiting {waits} times for Level Scene {networkLevelLoader.TargetScene} to finish loading." +
+                    $" Action not invoked: {action.Method.Name}.");
+            }
         }
         protected IEnumerator AfterPlayerLeftCoroutine(string playerUID, Action action)
         {
             var waits = 0;
+            const int maxWaits = 30;
+            const float waitTime = 1f;
+
             while (Global.Lobby.PlayersInLobby.Any(p => p.UID == playerUID)
-                && waits++ < 30)
+                && waits++ < maxWaits)
             {
                 Logger.LogTrace($"{nameof(MajorBagActions)}::{nameof(AfterPlayerLeftCoroutine)}: Waited {waits} times for " +
                     $"playerUID {playerUID} to leave the game." +
                     $"\n\tGlobal.Lobby.PlayersInLobby {Global.Lobby.PlayersInLobby.Count}.");
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(waitTime);
             }
             if (!Global.Lobby.PlayersInLobby.Any(p => p.UID == playerUID))
             {
                 Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterPlayerLeftCoroutine)}: playerUID {playerUID} left the game." +
                     $" Invoking action {action.Method.Name}." +
                     $"\n\tGlobal.Lobby.PlayersInLobby {Global.Lobby.PlayersInLobby.Count}.");
-                action.Invoke();
+                try
+                {
+                    action.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogException($"{nameof(MajorBagActions)}::{nameof(AfterPlayerLeftCoroutine)}:" +
+                        $" Unexpected exception invoking Action {action.Method.Name} for playerUID '{playerUID}'.", ex);
+                }
             }
             else
             {
-                Logger.LogWarning($"{nameof(MajorBagActions)}::{nameof(AfterPlayerLeftCoroutine)}: Coroutine timed out " +
-                    $"waiting for PhotonPlayerID {playerUID} to leave game.");
+                Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterBagLoadedCoroutine)}: Timed out after waiting {waits} times for PhotonPlayerID {playerUID} to leave game." +
+                        $" Action not invoked: {action.Method.Name}.");
             }
         }
         protected IEnumerator AfterBagLoadedCoroutine(string bagUID, Action<Bag> action)
         {
-            if (_instances.TryGetItemManager(out var itemManager))
-            {
-                var worldBag = itemManager.GetItem(bagUID);
+            const int maxWaits = 240;
+            const float waitTime = .25f;
 
-                while (!itemManager.IsAllItemSynced || worldBag == null || string.IsNullOrWhiteSpace(worldBag.PreviousOwnerUID))
-                {
-                    worldBag = itemManager.GetItem(bagUID);
-                    yield return new WaitForSeconds(.5f);
-                }
-                Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterBagLoadedCoroutine)}: Bag '{worldBag.Name}' ({worldBag.UID}) finished" +
-                    $" loading into world. Invoking action {action.Method.Name}.");
-                action.Invoke((Bag)worldBag);
-            }
-            else
+            if (!_instances.TryGetItemManager(out var itemManager))
+                yield break;
+
+            var worldBag = itemManager.GetItem(bagUID);
+            int waits = 0;
+
+            while ((!itemManager.IsAllItemSynced || worldBag == null || string.IsNullOrWhiteSpace(worldBag.PreviousOwnerUID) || !worldBag.FullyInitialized || !worldBag.IsWorldDetectable)
+                && waits++ < maxWaits)
             {
-                Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterBagLoadedCoroutine)}: Unexpected error. Unable " +
-                    $"to retrieve {nameof(ItemManager)} instance. StashPack functionality may not work correctly for " +
-                    $"bag '{bagUID}'");
+                if (worldBag == null)
+                    worldBag = itemManager.GetItem(bagUID);
+                yield return new WaitForSeconds(waitTime);
             }
+            Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterBagLoadedCoroutine)}: Bag '{worldBag.Name}' ({worldBag.UID}) finished" +
+                $" loading into world. Invoking action {action.Method.Name}.");
+            try
+            {
+                if (waits >= maxWaits)
+                    Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterBagLoadedCoroutine)}: Timed out after waiting {waits} times for Bag '{bagUID}' to load." +
+                        $" Action not invoked: {action.Method.Name}.");
+                else if (worldBag is Bag)
+                    action.Invoke(worldBag as Bag);
+                else
+                    Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterBagLoadedCoroutine)}: Unexpected error. Item with " +
+                            $"UID '{bagUID}' is not a Bag. Not invoking action {action.Method.Name}.");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(MajorBagActions)}::{nameof(AfterBagLoadedCoroutine)}:" +
+                    $" Unexpected exception invoking Action {action.Method.Name} for Bag '{worldBag?.Name}' ({worldBag?.UID})", ex);
+            }
+        }
+
+        protected IEnumerator WhileBagFallingCoroutine(string bagUID, Action<Bag> fallingAction, Action<Bag> landedAction = null)
+        {
+            const int maxWaits = 75;
+            const float waitTime = .1f;
+
+            if (!_instances.TryGetItemManager(out var itemManager))
+                yield break;
+
+            var bag = itemManager.GetItem(bagUID) as Bag;
+            var rigidBody = bag?.GetComponent<Rigidbody>();
+
+            var bagFound = bag != null;
+            var bagDestroyed = false;
+
+            var waits = 0;
+            while ((bag == null || rigidBody == null
+                || rigidBody?.velocity.magnitude > 0f
+                || rigidBody?.velocity.x > 0f || rigidBody?.velocity.y > 0f || rigidBody?.velocity.z > 0f)
+                && waits++ < maxWaits)
+            {
+
+                if (bag == null)
+                {
+                    if (bagFound)
+                    {
+                        bagDestroyed = true;
+                        break;
+                    }
+
+                    bag = itemManager.GetItem(bagUID) as Bag;
+                }
+                if (bag != null)
+                {
+                    rigidBody = bag?.GetComponent<Rigidbody>();
+                    try
+                    {
+                        bagFound = true;
+                        fallingAction.Invoke(bag);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogException($"{nameof(MajorBagActions)}::{nameof(WhileBagFallingCoroutine)}:" +
+                            $" Unexpected exception invoking {nameof(fallingAction)} Action {fallingAction.Method.Name} for Bag '{bag?.Name}' ({bag?.UID})", ex);
+                    }
+                }
+
+                Logger.LogTrace($"{nameof(MajorBagActions)}::{nameof(WhileBagFallingCoroutine)}: Bag '{bag?.Name}' ({bagUID}) Velocity " +
+                    $"({rigidBody?.velocity.magnitude}, {rigidBody?.velocity.x}, {rigidBody?.velocity.y}, {rigidBody?.velocity.z}). Waited {waits} times.");
+                yield return new WaitForSeconds(waitTime);
+            }
+
+            try
+            {
+                if (landedAction != null && !bagDestroyed && waits < maxWaits)
+                {
+                    Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(WhileBagFallingCoroutine)}: Bag '{bag.Name}' ({bag.UID}) finished" +
+                            $" falling. Invoking action {landedAction.Method.Name}");
+                    landedAction.Invoke(bag);
+                }
+                else if (waits >= maxWaits)
+                    if (landedAction != null)
+                        Logger.LogError($"{nameof(MajorBagActions)}::{nameof(WhileBagFallingCoroutine)}: Timed out after waiting {waits} times for Bag '{bagUID}' to land." +
+                            $" Landed Action not invoked: {landedAction.Method.Name}.");
+                    else
+                        Logger.LogWarning($"{nameof(MajorBagActions)}::{nameof(WhileBagFallingCoroutine)}: Timed out after waiting {waits} times for Bag '{bagUID}' to land.");
+                else
+                    Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(WhileBagFallingCoroutine)}: Bag '{bag.Name}' ({bag.UID}) finished" +
+                            $" falling.");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(MajorBagActions)}::{nameof(WhileBagFallingCoroutine)}:" +
+                    $" Unexpected exception invoking {nameof(landedAction)} Action {landedAction.Method.Name} for Bag '{bag?.Name}' ({bag?.UID})", ex);
+            }
+
         }
 
         protected IEnumerator AfterBagLandedCoroutine(Bag bag, Action action)
         {
-            yield return new WaitForSeconds(.2f);
+            const int maxWaits = 75;
+            const float waitTime = .3f;
 
-            if (_instances.TryGetItemManager(out var itemManager))
+            if (!_instances.TryGetItemManager(out var itemManager))
+                yield break;
+
+            yield return new WaitForSeconds(waitTime);
+
+            var bagUID = bag.UID;
+            var worldBag = itemManager.GetItem(bagUID);
+            var rigidBody = worldBag?.GetComponent<Rigidbody>();
+            var waits = 0;
+            var bagFound = worldBag != null;
+            var bagDestroyed = false;
+
+            while ((worldBag == null || rigidBody == null
+                || rigidBody.velocity.magnitude > 0f
+                || rigidBody.velocity.x > 0f || rigidBody.velocity.y > 0f || rigidBody.velocity.z > 0f)
+                && waits++ < maxWaits)
             {
-                var worldBag = itemManager.GetItem(bag.UID);
-                var rigidBody = worldBag.GetComponent<Rigidbody>();
-                var waits = 0;
-
-                while ((worldBag == null || rigidBody == null
-                    || rigidBody.velocity.magnitude > 0f
-                    || rigidBody.velocity.x > 0f || rigidBody.velocity.y > 0f || rigidBody.velocity.z > 0f)
-                    && waits < 75)
+                if (worldBag == null)
                 {
-
-                    worldBag = itemManager.GetItem(bag.UID);
-                    rigidBody = worldBag.GetComponent<Rigidbody>();
-                    if (worldBag != null && !_instances.HostSettings.DisableBagScalingRotation)
+                    if (bagFound)
                     {
-                        BagVisualizer.StandBagUp(bag);
+                        bagDestroyed = true;
+                        break;
                     }
-
-                    waits++;
-                    Logger.LogTrace($"{nameof(MajorBagActions)}::{nameof(AfterBagLandedCoroutine)}: Bag '{bag.Name}' ({bag.UID}) Velocity " +
-                        $"({rigidBody.velocity.magnitude}, {rigidBody.velocity.x}, {rigidBody.velocity.y}, {rigidBody.velocity.z}). Waited {waits} times.");
-                    yield return new WaitForSeconds(.2f);
+                    worldBag = itemManager.GetItem(bagUID);
                 }
-                Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterBagLandedCoroutine)}: Bag '{bag.Name}' ({bag.UID}) finished" +
-                    $" moving. Invoking action {action.Method.Name}.");
-                action.Invoke();
-            }
-            else
-            {
-                Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterBagLandedCoroutine)}: Unexpected error. Unable " +
-                    $"to retrieve {nameof(ItemManager)} instance. StashPack functionality may not work correctly for " +
-                    $"bag '{bag.Name}' ({bag.UID})");
-            }
-        }
-        protected IEnumerator AfterBagDestroyedCoroutine(string bagUID, Action action)
-        {
-            yield return new WaitForSeconds(.2f);
+                if (worldBag != null)
+                    rigidBody = worldBag.GetComponent<Rigidbody>();
 
-            if (_instances.TryGetItemManager(out var itemManager))
+                Logger.LogTrace($"{nameof(MajorBagActions)}::{nameof(AfterBagLandedCoroutine)}: Bag '{bag.Name}' ({bag.UID}) Velocity " +
+                    $"({rigidBody?.velocity.magnitude}, {rigidBody?.velocity.x}, {rigidBody?.velocity.y}, {rigidBody?.velocity.z}). Waited {waits} times.");
+                yield return new WaitForSeconds(waitTime);
+            }
+            try
             {
-                var bag = itemManager.GetItem(bagUID);
-                var waits = 0;
-
-                while (bag != null && waits < 300)
+                if (!bagDestroyed && waits < maxWaits)
                 {
-                    bag = itemManager.GetItem(bagUID);
-                    waits++;
-                    yield return new WaitForSeconds(.1f);
-                }
-                if (waits < 300)
-                {
-                    Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterBagDestroyedCoroutine)}: Bag '{bagUID}' destroyed." +
-                        $" Invoking action {action.Method.Name}.");
+                    Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterBagLandedCoroutine)}: Bag '{bag.Name}' ({bag.UID}) finished" +
+                                    $" moving. Invoking action {action.Method.Name}.");
                     action.Invoke();
                 }
-                else
-                {
-                    Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterBagDestroyedCoroutine)}: Bag '{bagUID}' not destroyed." +
+                else if (waits >= maxWaits)
+                    Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterBagLandedCoroutine)}: Timed out after waiting {waits} times for Bag '{bagUID}' to land." +
                         $" Action not invoked: {action.Method.Name}.");
+                else
+                    Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterBagLandedCoroutine)}: Bag '{bagUID}' was destroyed. " +
+                        $" Action {action.Method.Name} NOT invoked.");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(MajorBagActions)}::{nameof(AfterBagLandedCoroutine)}:" +
+                    $" Unexpected exception invoking Action {action.Method.Name} for Bag '{bag?.Name}' ({bag?.UID})", ex);
+            }
+        }
+
+        protected IEnumerator AfterBagDestroyedCoroutine(string bagUID, Action action)
+        {
+            const int maxWaits = 300;
+            const float waitTime = .1f;
+
+            if (!_instances.TryGetItemManager(out var itemManager))
+                yield break;
+
+            var waits = 0;
+
+            while (itemManager.GetItem(bagUID) != null && waits++ < maxWaits)
+            {
+                yield return new WaitForSeconds(waitTime);
+            }
+            if (waits < maxWaits)
+            {
+                Logger.LogDebug($"{nameof(MajorBagActions)}::{nameof(AfterBagDestroyedCoroutine)}: Bag '{bagUID}' destroyed." +
+                    $" Invoking action {action.Method.Name}.");
+                try
+                {
+                    action.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogException($"{nameof(MajorBagActions)}::{nameof(AfterBagDestroyedCoroutine)}:" +
+                        $" Unexpected exception invoking Action {action.Method.Name} for Bag '{bagUID}'.", ex);
                 }
             }
             else
             {
-                Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterBagLandedCoroutine)}: Unexpected error. Unable " +
-                    $"to retrieve {nameof(ItemManager)} instance. StashPack functionality may not work correctly for " +
-                    $"bag '{bagUID}'");
+                Logger.LogError($"{nameof(MajorBagActions)}::{nameof(AfterBagDestroyedCoroutine)}: Timed out after waiting {waits} times for Bag '{bagUID}' to be destroyed." +
+                    $" Action not invoked: {action.Method.Name}.");
             }
         }
+        #endregion
     }
 }

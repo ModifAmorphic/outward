@@ -23,22 +23,31 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             SaveInstanceEvents.SaveBefore += SaveBefore;
             //SplitScreenManagerEvents.ReceivedPlayerHasLeftAfter += (photonPlayer, playerUID) => ReceivedPlayerHasLeftAfter(playerUID);
             LobbySystemEvents.PlayerSystemHasBeenDestroyedAfter += ReceivedPlayerHasLeftAfter;
-            _instances.StashPackNet.PlayerConnected += PlayerConnected;
-            _instances.StashPackNet.LeftRoom += LeftRoom;
+            ConnectPhotonMasterEvents.OnPhotonPlayerConnectedAfter += SendPlayerHostSettings;
+            _instances.StashPackNet.OnRequestForLinkedStashPacks += SendPlayerLinkedStashPacks;
+            LobbySystemEvents.OnLeftRoomAfter += ResetForLocal;
         }
 
-        private void LeftRoom()
+        private void ResetForLocal()
         {
             _instances.ResetFactory();
             _instances.ResetHostSettings();
         }
 
-        private void PlayerConnected(PhotonPlayer player)
+        private void SendPlayerHostSettings(PhotonPlayer player)
         {
             if (!PhotonNetwork.isNonMasterClientInRoom)
-                _instances.StashPackNet.SendLinkedStashPacks(player, BagStateService.GetLinkedBags());
+            {
+                _instances.StashPackNet.SendHostSettings(player, _instances.HostSettings);
+            }
         }
-
+        private void SendPlayerLinkedStashPacks(PhotonPlayer player)
+        {
+            if (!PhotonNetwork.isNonMasterClientInRoom)
+            {
+                _instances.StashPackNet.SendLinkedStashPacks(player, BagStateService.GetLinkedBags());
+            }
+        }
         private void ReceivedPlayerHasLeftAfter(string playerUID)
         {
             var player = GetPlayerSystem(playerUID);

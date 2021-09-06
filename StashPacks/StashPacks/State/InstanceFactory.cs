@@ -75,7 +75,7 @@ namespace ModifAmorphic.Outward.StashPacks.State
         }
         public void ResetHostSettings()
         {
-            StashPackNet.BufferHostSettings(_localHostSettings);
+            StashPackNet.SendHostSettings(_localHostSettings);
         }
         public void ResetFactory()
         {

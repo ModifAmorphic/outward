@@ -187,14 +187,13 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             var syncPlans = GenerateSyncPlans(uniqueOwnedPacks);
             ExecuteAllPlans(syncPlans);
             SaveBagStates(uniqueOwnedPacks);
+            if (PhotonNetwork.isNonMasterClientInRoom)
+                _instances.StashPackNet.SendRequestForLinkedStashPacks(PhotonNetwork.player);
 
-            //foreach(var p in uniqueOwnedPacks.Values.SelectMany(b => b))
-            foreach (var p in stashPacks.Where(sb => !sb.StashBag.IsInContainer && !sb.StashBag.IsEquipped))
+            foreach (var p in stashPacks)
             {
-                BagVisualizer.ScaleBag(p.StashBag);
-                BagVisualizer.FreezeBag(p.StashBag);
+                BagVisualizer.RemoveLanternSlot(p.StashBag);
             }
-
         }
         private void ExecuteAllPlans(IEnumerable<ContainerSyncPlan> syncPlans)
         {
