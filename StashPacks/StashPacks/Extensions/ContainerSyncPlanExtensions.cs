@@ -11,11 +11,6 @@ namespace ModifAmorphic.Outward.StashPacks.Extensions
         }
         public static bool HasDifferentSilverAmount(this ContainerSyncPlan syncPlan)
         {
-            UnityEngine.Debug.Log($"HasDifferentSilverAmount:\n" +
-                $"  syncPlan.SaveDataBefore {(syncPlan.SaveDataBefore == null ? "is null." : "is not null.")}\n" +
-                $"    SyncData: {syncPlan?.SaveDataBefore?.SyncData}\n" +
-                $"  syncPlan.SaveDataAfter {(syncPlan.SaveDataAfter == null ? "is null." : "is not null.")}\n" +
-                $"    SyncData: {syncPlan?.SaveDataAfter?.SyncData}");
             return syncPlan.SaveDataBefore.GetContainerSilver() != syncPlan.SaveDataAfter.GetContainerSilver();
         }
 

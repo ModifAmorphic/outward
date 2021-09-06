@@ -95,6 +95,9 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
                 $"\tItems to Modify: {syncPlan.ModifiedItems.Count()}";
             Logger.LogInfo(logSummary);
 
+            if (Logger.LogLevel <= LogLevel.Info)
+                return;
+
             var logSyncPlan = $"Sync Plan Detail for {areaName} {syncPlan.ContainerType.GetName()}\n";
             if (syncPlan.SaveDataAfter != null)
             {
@@ -125,7 +128,7 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
                                $"     After: {syncPlan.ModifiedItems[uid].SyncData}\n";
             }
 
-            Logger.LogInfo(logSyncPlan);
+            Logger.LogDebug(logSyncPlan);
         }
     }
 }
