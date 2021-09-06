@@ -1,5 +1,5 @@
-﻿using ModifAmorphic.Outward.StashPacks.Extensions;
-using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.SaveData.Data;
 using ModifAmorphic.Outward.StashPacks.Settings;
@@ -12,7 +12,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using ModifAmorphic.Outward.Extensions;
 
 namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 {
@@ -34,11 +33,49 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
         }
         public override void SubscribeToEvents()
         {
-            
-            //TODO: Not sure if this happens for remote players.
+            NetworkLevelLoaderEvents.BaseLoadLevelBefore += BaseLoadLevelBefore;
             NetworkLevelLoaderEvents.MidLoadLevelBefore += MidLoadLevelBefore;
             ItemManagerEvents.IsAllItemSyncedAfter += AfterIsAllItemSynced;
             //EnvironmentSaveEvents.ApplyDataBefore += envSave => ApplyDataBefore(ref envSave);
+        }
+
+        private void BaseLoadLevelBefore(NetworkLevelLoader networkLevelLoader, bool willTriggerSave)
+        {
+            if (willTriggerSave)
+            {
+                if (!IsCurrentSceneStashPackEnabled())
+                {
+                    Logger.LogDebug($"{nameof(LevelLoadingActions)}::{nameof(BaseLoadLevelBefore)}: Current Scene is not StashPack Enabled. Not clearing packs.");
+                    return;
+                }
+                if (PhotonNetwork.isNonMasterClientInRoom)
+                {
+                    Logger.LogDebug($"{nameof(LevelLoadingActions)}::{nameof(BaseLoadLevelBefore)}: Client is not master client. Not clearing packs.");
+                    return;
+                }
+
+                if (!_instances.TryGetStashPackWorldData(out var stashPackWorldData)
+                    || !_instances.TryGetItemManager(out var itemManager))
+                {
+                    Logger.LogError($"{nameof(LevelLoadingActions)}::{nameof(BaseLoadLevelBefore)}: Could not retrieve world data instances.");
+                    return;
+                }
+                var stashPacks = stashPackWorldData.GetDeployedStashPacks();
+
+                foreach (var bag in stashPacks.Select(p => p.StashBag))
+                {
+                    if (!IsPlayerCharacterInGame(bag.PreviousOwnerUID))
+                    {
+                        UnclaimAndClearBag(bag);
+                        Logger.LogDebug($"{nameof(LevelLoadingActions)}::{nameof(BaseLoadLevelBefore)}: Unclaimed StashPack Bag '{bag.Name}' ({bag.UID}) owned by character {bag.PreviousOwnerUID} no longer in game.");
+                    }
+                    else
+                    {
+                        Logger.LogDebug($"{nameof(LevelLoadingActions)}::{nameof(BaseLoadLevelBefore)}: Emptied contents of StashPack Bag '{bag.Name}' ({bag.UID}) owned by character {bag.PreviousOwnerUID}.");
+                        bag.EmptyContents();
+                    }
+                }
+            }
         }
 
         private void ApplyDataBefore(ref EnvironmentSave envSave)
@@ -52,12 +89,12 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 
             foreach (var uid in stashPackSaves.Keys)
             {
-                int removed = envSave.ItemList.RemoveAll(i => 
+                int removed = envSave.ItemList.RemoveAll(i =>
                                     i.GetHierarchyData().ParentUID == uid + StashPacksConstants.BagUidSuffix
                                 );
                 Logger.LogDebug($"{nameof(LevelLoadingActions)}::{nameof(ApplyDataBefore)}: Removed {removed} items from StashPack Bag '{uid}'.");
             }
-            
+
             foreach (var kvp in stashPackSaves)
             {
                 var stashIndex = envSave.ItemList.FindIndex(i => kvp.Key == i.Identifier.ToString());
@@ -71,7 +108,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             {
                 _packProcessingEnabled = true;
             }
-            
+
         }
 
         private void ClearFlags()
@@ -87,7 +124,9 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             //also, even if triggered by a level load, don't start until the base game
             //has had a chance to sync all items.
             if (!_packProcessingEnabled || !baseResult || !IsCurrentSceneStashPackEnabled())
+            {
                 return baseResult;
+            }
 
             try
             {
@@ -136,8 +175,8 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 Logger.LogError($"{nameof(LevelLoadingActions)}::{nameof(UpdateAreaStashPacks)}: Could not retrieve a {nameof(StashPackWorldData)} instance.");
                 return;
             }
-            var stashPacks = stashPackWorldData.GetAllStashPacks();
-            if (stashPacks == null)
+            var stashPacks = stashPackWorldData.GetAllStashPacks()?.Where(p => !p.StashBag.IsEquipped && !p.StashBag.IsInContainer);
+            if (stashPacks == null || !stashPacks.Any())
             {
                 Logger.LogDebug($"{nameof(LevelLoadingActions)}::{nameof(UpdateAreaStashPacks)}: No {nameof(StashPack)} found in world.");
                 return;
@@ -148,12 +187,13 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             var syncPlans = GenerateSyncPlans(uniqueOwnedPacks);
             ExecuteAllPlans(syncPlans);
             SaveBagStates(uniqueOwnedPacks);
+            if (PhotonNetwork.isNonMasterClientInRoom)
+                _instances.StashPackNet.SendRequestForLinkedStashPacks(PhotonNetwork.player);
 
-            foreach(var p in uniqueOwnedPacks.Values.SelectMany(b => b))
+            foreach (var p in stashPacks)
             {
-                BagVisualizer.BagLoaded(p.StashBag);
+                BagVisualizer.RemoveLanternSlot(p.StashBag);
             }
-
         }
         private void ExecuteAllPlans(IEnumerable<ContainerSyncPlan> syncPlans)
         {
@@ -177,7 +217,8 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             {
                 foreach (var pack in characterPacks[characterUID])
                 {
-                    DoAfterBagLoaded(pack.StashBag, () => SaveStateEnableTracking(characterUID, pack.StashBag.UID));
+                    _instances.StashPackNet.SendStashPackLinkChanged(pack.StashBag.UID, characterUID, true);
+                    DoAfterBagLoaded(pack.StashBag.UID, (Bag b) => SaveStateEnableTracking(characterUID, pack.StashBag.UID));
                 }
             }
         }
@@ -205,8 +246,8 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             foreach (var pack in stashPacks)
             {
                 var characterUID = pack.StashBag.PreviousOwnerUID;
-                
-                
+
+
                 var bagUID = pack.StashBag.UID;
                 var hasPrevOwner = !string.IsNullOrWhiteSpace(characterUID);
 
@@ -217,7 +258,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                         $" Skipping bag.");
                     continue;
                 }
-                if (!pack.StashBag.IsUpdateable() && pack.StashBag.HasContents())
+                if (!pack.StashBag.IsUsable() && pack.StashBag.HasContents())
                 {
                     Logger.LogDebug($"{nameof(LevelLoadingActions)}::{nameof(GetActivePacksDisableOthers)}: Bag '{pack.StashBag.Name}' ({bagUID}) either has no previous owner, is equipped or in another container and contains items." +
                         $" Disabling Local StashPack functionality and treating like regular BackPack.");
@@ -234,7 +275,9 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 {
                     var character = SplitScreenManager.Instance.LocalPlayers.First(p => p.AssignedCharacter.UID.ToString() == characterUID).AssignedCharacter;
                     if (DisableHostBagIfInHomeArea(character, pack.StashBag))
+                    {
                         continue;
+                    }
                 }
                 if (!IsLocalPlayerCharacter(characterUID) && IsPlayerCharacterInGame(characterUID))
                 {
@@ -256,7 +299,10 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                             $" but is not in game. Removing {nameof(Bag.PreviousOwnerUID)}.");
                         pack.StashBag.PreviousOwnerUID = string.Empty;
                         if (!filteredPacks.ContainsKey(string.Empty))
+                        {
                             filteredPacks.Add(string.Empty, new List<StashPack>());
+                        }
+
                         filteredPacks[string.Empty].Add(pack);
                     }
                     else
@@ -268,12 +314,14 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 }
 
                 if (!filteredPacks.ContainsKey(characterUID))
+                {
                     filteredPacks.Add(characterUID, new List<StashPack>());
+                }
 
                 filteredPacks[characterUID].Add(pack);
             }
             Logger.LogDebug($"{nameof(LevelLoadingActions)}::{nameof(GetActivePacksDisableOthers)}: Filtered {stashPacks.Count()} StashPacks down to {filteredPacks.Values.Select(p => p.Count).Sum()}.");
-            
+
             return filteredPacks;
         }
         /// <summary>
@@ -290,7 +338,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             {
                 { string.Empty, new List<StashPack>() }
             };
-            
+
             //Add packs that are already unclaimed to the return collection
             if (charactersStashPacks.TryGetValue(string.Empty, out var unclaimedPacks))
             {
@@ -300,10 +348,12 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             foreach (var characterUID in charactersStashPacks.Keys.Where(k => !string.IsNullOrEmpty(k)))
             {
                 if (!returnPacks.ContainsKey(characterUID))
+                {
                     returnPacks.Add(characterUID, new List<StashPack>());
+                }
 
                 var packs = charactersStashPacks[characterUID];
-                
+
                 //Add all the packs that don't have dupes
                 var uniquePacks = packs
                         .GroupBy(p => p.HomeArea)
@@ -342,7 +392,10 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             }
             var totalDupes = 0;
             if (returnPacks.TryGetValue(string.Empty, out var allDupes))
+            {
                 totalDupes = allDupes.Count;
+            }
+
             Logger.LogDebug($"{nameof(LevelLoadingActions)}::{nameof(GenerateSyncPlans)}: Removed ownership of {totalDupes} duplicate bags out of {charactersStashPacks.Count} total stashpacks for all characters.");
             return returnPacks;
         }
@@ -370,7 +423,10 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                     Logger.LogError($"{nameof(LevelLoadingActions)}::{nameof(GenerateSyncPlans)}: Could not retrieve a {nameof(StashSaveData)} instance. " +
                         $" A Sync Plan will not be generated for any of character's ({characterUID}) bags. Disabling StashPack functionality for all character's bags.");
                     foreach (var p in packs)
+                    {
                         BagStateService.DisableBag(p.StashBag.UID);
+                    }
+
                     continue;
                 }
                 foreach (var pack in packs)

@@ -30,7 +30,9 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
             {
                 Logger?.LogException($"Exception in {nameof(ItemContainerEvents)}::{nameof(RaiseRefreshWeightAfter)}.", ex);
                 if (Logger == null)
+                {
                     UnityEngine.Debug.LogError($"Exception in {nameof(ItemContainerEvents)}::{nameof(RaiseRefreshWeightAfter)}:\n{ex}");
+                }
             }
         }
 

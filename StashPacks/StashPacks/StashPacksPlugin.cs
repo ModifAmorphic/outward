@@ -4,6 +4,7 @@ using System;
 
 namespace ModifAmorphic.Outward.StashPacks
 {
+    [BepInIncompatibility("com.sinai.sharedstashes")]
     [BepInDependency("com.bepis.bepinex.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("io.mefino.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.sinai.SideLoader", BepInDependency.DependencyFlags.HardDependency)]
@@ -15,16 +16,16 @@ namespace ModifAmorphic.Outward.StashPacks
             var harmony = new Harmony(ModInfo.ModId);
             try
             {
-                UnityEngine.Debug.Log($"[{ModInfo.ModName}] - Patching...");
+                UnityEngine.Debug.Log($"[{ModInfo.ModName}][Info] - Patching...");
                 harmony.PatchAll();
 
                 var startup = new Startup();
-                UnityEngine.Debug.Log($"[{ModInfo.ModName}] - Starting...");
+                UnityEngine.Debug.Log($"[{ModInfo.ModName}][Info] - Starting...");
                 startup.Start(this);
             }
             catch (Exception ex)
             {
-                UnityEngine.Debug.LogError($"Failed to enable {ModInfo.ModId} {ModInfo.ModName}. Error: {ex}");
+                UnityEngine.Debug.LogError($"[{ModInfo.ModName}][Error] Failed to enable {ModInfo.ModId} {ModInfo.ModName}. Exception: {ex}");
                 harmony.UnpatchSelf();
                 throw;
             }

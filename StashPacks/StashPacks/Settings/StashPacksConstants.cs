@@ -39,8 +39,8 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
                 { AreaManager.AreaEnum.Monsoon, new StashBagVisual() },
                 { AreaManager.AreaEnum.Berg, new StashBagVisual() },
                 { AreaManager.AreaEnum.Levant, new StashBagVisual() },
-                { AreaManager.AreaEnum.Harmattan, new StashBagVisual() 
-                { 
+                { AreaManager.AreaEnum.Harmattan, new StashBagVisual()
+                {
                     Scale = new UnityEngine.Vector3(2f, 2f, 2f)
                 } },
                 { AreaManager.AreaEnum.NewSirocco, new StashBagVisual()

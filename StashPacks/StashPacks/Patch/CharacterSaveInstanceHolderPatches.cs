@@ -12,13 +12,7 @@ namespace ModifAmorphic.Outward.StashPacks.Patch
         {
             CharacterSaveInstanceHolderEvents.RaisePlayerSaveLoadedAfter(__instance, _character);
         }
-        //[HarmonyPatch(nameof(CharacterSaveInstanceHolder.Save))]
-        //[HarmonyPrefix]
-        //public static bool SavePrefix(CharacterSaveInstanceHolder __instance)
-        //{
-        //    CharacterSaveInstanceHolderEvents.RaiseSaveBefore(__instance);
-        //    return true;
-        //}
+
         [HarmonyPatch(nameof(CharacterSaveInstanceHolder.Save))]
         [HarmonyPostfix]
         public static void SavePostfix(CharacterSaveInstanceHolder __instance)

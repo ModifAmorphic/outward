@@ -1,5 +1,5 @@
-﻿using ModifAmorphic.Outward.StashPacks.Extensions;
-using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.SaveData.Data;
 using ModifAmorphic.Outward.StashPacks.Sync.Models;
 using System;
@@ -39,7 +39,9 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
             {
                 var modIndex = envSave.ItemList.FindIndex(i => i.Identifier.ToString() == modItem.Key);
                 if (modIndex > -1)
+                {
                     envSave.ItemList[modIndex] = modItem.Value;
+                }
                 else
                 {
                     modItem.Value.TryGetItemID(out var itemId);

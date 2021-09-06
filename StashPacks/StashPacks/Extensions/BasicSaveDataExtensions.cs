@@ -13,8 +13,10 @@ namespace ModifAmorphic.Outward.StashPacks.Extensions
         /// <param name="basicSaveData">The IEnumerable of BasicSaveData potentially containing the item with the matched <paramref name="UID"/>.</param>
         /// <param name="UID">The UID to search for in this <paramref name="basicSaveData"/> collection.</param>
         /// <returns>A BasicSaveData reference to the matched <paramref name="UID"/> if found, otherwise the default of the BasicSaveData type.</returns>
-        public static BasicSaveData GetItemSaveData(this IEnumerable<BasicSaveData> basicSaveData, string UID) =>
-            basicSaveData.FirstOrDefault(i => i.Identifier.ToString() == UID);
+        public static BasicSaveData GetItemSaveData(this IEnumerable<BasicSaveData> basicSaveData, string UID)
+        {
+            return basicSaveData.FirstOrDefault(i => i.Identifier.ToString() == UID);
+        }
 
         /// <summary>
         /// Finds and returns a IEnumerable of references to instances within this collection who's Hierarchy element contains the parent container's UID and ItemId.
@@ -23,9 +25,11 @@ namespace ModifAmorphic.Outward.StashPacks.Extensions
         /// <param name="containerUID">The parent Hierachy UID of items to find.</param>
         /// <param name="containerItemId">The parent Hierachy ItemId of items to find.</param>
         /// <returns>A collection of BasicSaveData references from this IEnumerable BasicSaveData collection.</returns>
-        public static IEnumerable<BasicSaveData> GetContainerItems(this IEnumerable<BasicSaveData> basicSaveData, string containerUID, int containerItemId) =>
-            basicSaveData.Where(i =>
-                                i.SyncData.Contains($"<Hierarchy>1{containerUID};{containerItemId}</Hierarchy>"));
+        public static IEnumerable<BasicSaveData> GetContainerItems(this IEnumerable<BasicSaveData> basicSaveData, string containerUID, int containerItemId)
+        {
+            return basicSaveData.Where(i =>
+i.SyncData.Contains($"<Hierarchy>1{containerUID};{containerItemId}</Hierarchy>"));
+        }
 
 
         /// <summary>
@@ -40,7 +44,10 @@ namespace ModifAmorphic.Outward.StashPacks.Extensions
 
             if (ownerIdMatch.Success && ownerIdMatch.Groups.Count > 1
                 && int.TryParse(ownerIdMatch.Groups[1].Value, out itemID))
+            {
                 return true;
+            }
+
             itemID = 0;
             return false;
         }
@@ -79,9 +86,13 @@ namespace ModifAmorphic.Outward.StashPacks.Extensions
 
             var silverMatch = Match.Empty;
             if (saveData.SyncData.Contains("TreasureChestContainedSilver"))
+            {
                 silverMatch = Regex.Match(saveData.SyncData, tchestRegex);
+            }
             else if (saveData.SyncData.Contains("BagSilver"))
+            {
                 silverMatch = Regex.Match(saveData.SyncData, bagRegex);
+            }
 
             if (silverMatch.Success && int.TryParse(silverMatch.Value, out var silver))
             {
@@ -103,9 +114,13 @@ namespace ModifAmorphic.Outward.StashPacks.Extensions
         {
             var updatedSilverSyncData = saveData.SyncData;
             if (saveData.SyncData.Contains("TreasureChestContainedSilver"))
+            {
                 updatedSilverSyncData = Regex.Replace(saveData.SyncData, @"(?<=TreasureChestContainedSilver/)[\d+]*(?=;)", silver.ToString());
+            }
             else if (saveData.SyncData.Contains("BagSilver"))
+            {
                 updatedSilverSyncData = Regex.Replace(saveData.SyncData, @"(?<=BagSilver/)[\d+]*(?=;)", silver.ToString());
+            }
 
             return new BasicSaveData(saveData.Identifier, updatedSilverSyncData);
         }
@@ -120,7 +135,9 @@ namespace ModifAmorphic.Outward.StashPacks.Extensions
         {
             var hierarchyMatch = Regex.Match(basicSaveData.SyncData, @"<Hierarchy>1(.+?);(\d+)</Hierarchy>");
             if (!hierarchyMatch.Success || hierarchyMatch.Groups.Count < 2)
+            {
                 return default;
+            }
 
             //string parentUid = hierarchyMatch.Groups[1].Value.Replace("_Content", "");
             int.TryParse(hierarchyMatch.Groups[2].Value, out var itemId);
@@ -134,10 +151,12 @@ namespace ModifAmorphic.Outward.StashPacks.Extensions
         /// <param name="parentUID">The parent container's UID. If the Parent UID is that of a <see cref="Bag"/>, then <paramref name="parentUID"/> should end with "_Content".</param>
         /// <param name="parentItemId">The parent container's ItemId.</param>
         /// <returns></returns>
-        public static BasicSaveData ToUpdatedHierachy(this BasicSaveData saveData, string parentUID, int parentItemId) =>
-            new BasicSaveData(saveData.Identifier,
-                saveData.SyncData.Replace(
-                    saveData.GetHierarchyData().HierachyXml, $"<Hierarchy>1{parentUID};{parentItemId}</Hierarchy>")
-                );
+        public static BasicSaveData ToUpdatedHierachy(this BasicSaveData saveData, string parentUID, int parentItemId)
+        {
+            return new BasicSaveData(saveData.Identifier,
+saveData.SyncData.Replace(
+saveData.GetHierarchyData().HierachyXml, $"<Hierarchy>1{parentUID};{parentItemId}</Hierarchy>")
+);
+        }
     }
 }

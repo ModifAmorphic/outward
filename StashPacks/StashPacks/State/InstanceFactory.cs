@@ -1,5 +1,7 @@
 ﻿using BepInEx;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.StashPacks.Extensions;
+using ModifAmorphic.Outward.StashPacks.Network;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.SaveData.Data;
 using ModifAmorphic.Outward.StashPacks.Settings;
@@ -21,8 +23,16 @@ namespace ModifAmorphic.Outward.StashPacks.State
         private readonly BaseUnityPlugin _unityPlugin;
         public BaseUnityPlugin UnityPlugin => _unityPlugin;
 
-        private readonly StashPacksSettings _stashPacksSettings;
-        public StashPacksSettings StashPacksSettings => _stashPacksSettings;
+        private readonly StashPacksConfigSettings _stashPacksSettings;
+        public StashPacksConfigSettings StashPacksSettings => _stashPacksSettings;
+
+
+        private readonly StashPackHostSettings _localHostSettings;
+        private StashPackHostSettings _hostSettings;
+        public StashPackHostSettings HostSettings => _hostSettings;
+
+        private readonly StashPackNet _stashPackNet;
+        public StashPackNet StashPackNet => _stashPackNet;
 
         private ItemManager _itemManager;
 
@@ -39,19 +49,17 @@ namespace ModifAmorphic.Outward.StashPacks.State
 
         private readonly ConcurrentDictionary<string, ConcurrentDictionary<Type, object>> _characterSingletons = new ConcurrentDictionary<string, ConcurrentDictionary<Type, object>>();
 
-        /// <summary>
-        /// Actions that will be executed when a SaveInstance.Save prefix event is triggered. Indexed by CharacterUID.
-        /// </summary>
-        //private readonly ConcurrentDictionary<string, EventStashSaveExecuter> _stashSaveExecuters = new ConcurrentDictionary<string, EventStashSaveExecuter>();
-
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
-        public InstanceFactory(BaseUnityPlugin unityPlugin, StashPacksSettings stashPackSettings, Func<IModifLogger> getLogger)
+        public InstanceFactory(BaseUnityPlugin unityPlugin, StashPacksConfigSettings stashPackSettings, StashPackHostSettings localHostSettings, StashPackNet stashPackNet, Func<IModifLogger> getLogger)
         {
             _unityPlugin = unityPlugin;
             _getLogger = getLogger;
             _stashPacksSettings = stashPackSettings;
+            _localHostSettings = localHostSettings;
+            _hostSettings = localHostSettings.Clone();
+            _stashPackNet = stashPackNet;
             RoutePatchEvents();
         }
 
@@ -60,27 +68,43 @@ namespace ModifAmorphic.Outward.StashPacks.State
         {
             //Remove a character's stash saveExecuter once a save is complete so a new one is created next time.
             //SaveInstanceEvents.SaveAfter += (saveInstance => _stashSaveExecuters.TryRemove(saveInstance.CharSave.CharacterUID, out _));
-            SceneManager.sceneLoaded += (s, l) =>
-            {
-                Logger.LogDebug("New scene loaded. Disposing of scene singletons.");
-                foreach (var instance in _singletons.Values)
-                    if (instance is IDisposable disposable)
-                        disposable.Dispose();
-                _singletons.Clear();
-
-                foreach (var charInstances in _characterSingletons.Values)
-                    foreach (var instance in charInstances.Values)
-                        if (instance is IDisposable disposable)
-                            disposable.Dispose();
-
-                _characterSingletons.Clear();
-
-                BagStateService.ClearDisabledBags();
-
-            };
+            SceneManager.sceneLoaded += (s, l) => ResetFactory();
             ItemManagerEvents.AwakeAfter += (itemManager => _itemManager = itemManager);
             AreaManagerEvents.AwakeAfter += (areaManager => _areaManager = areaManager);
+            StashPackNet.OnReceivedHostSettings += (hostSettings) => _hostSettings.SetChangedValues(hostSettings);
+        }
+        public void ResetHostSettings()
+        {
+            StashPackNet.SendHostSettings(_localHostSettings);
+        }
+        public void ResetFactory()
+        {
+            Logger.LogDebug("New scene loaded. Disposing of scene singletons.");
+            foreach (var instance in _singletons.Values)
+            {
+                if (instance is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
 
+            _singletons.Clear();
+
+            foreach (var charInstances in _characterSingletons.Values)
+            {
+                foreach (var instance in charInstances.Values)
+                {
+                    if (instance is IDisposable disposable)
+                    {
+                        disposable.Dispose();
+                    }
+                }
+            }
+
+            _characterSingletons.Clear();
+
+            BagStateService.ClearDisabledBags();
+            BagStateService.ClearLinkedBags();
         }
         #endregion
         public bool TryGetItemManager(out ItemManager itemManager)
@@ -93,7 +117,9 @@ namespace ModifAmorphic.Outward.StashPacks.State
             stashSaveData = null;
             var characterSaveInstanceHolder = SaveManager.Instance.CharacterSaves.FirstOrDefault(cs => cs.CharacterUID == characterUID);
             if (characterSaveInstanceHolder != default)
+            {
                 stashSaveData = new StashSaveData(_areaManager, characterSaveInstanceHolder, StashIds, _getLogger);
+            }
 
             return stashSaveData != null;
         }
@@ -101,7 +127,10 @@ namespace ModifAmorphic.Outward.StashPacks.State
         {
             stashPackWorldData = null;
             if (_itemManager != null)
+            {
                 stashPackWorldData = new StashPackWorldData(_itemManager, _unityPlugin, AreaStashPackItemIds, _getLogger);
+            }
+
             return stashPackWorldData != null;
         }
         public SyncPlanner GetSyncPlanner()
@@ -137,8 +166,9 @@ namespace ModifAmorphic.Outward.StashPacks.State
             var characterInstances = _characterSingletons.GetOrAdd(characterUID, new ConcurrentDictionary<Type, object>());
 
             if (!characterInstances.ContainsKey(typeof(StashSaveExecuter)))
+            {
                 characterInstances.TryAdd(typeof(StashSaveExecuter), new StashSaveExecuter(stashSaveData, _getLogger));
-
+            }
 
             return (StashSaveExecuter)_characterSingletons[characterUID][typeof(StashSaveExecuter)];
         }

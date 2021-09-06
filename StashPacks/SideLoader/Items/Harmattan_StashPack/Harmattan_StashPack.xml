@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SL_Bag xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <Target_ItemID>5300190</Target_ItemID>
+  <Target_ItemID>5300050</Target_ItemID>
   <New_ItemID>-1301008</New_ItemID>
   <Name>Harmattan Stash Pack</Name>
-  <Description>Someone has managed to haul the entirety of your possessions from Harmattan and drop them right here on the floor.
+  <Description>This backpack allows for tranfering of items to and from an owner's home Stash. In reality it is less a backpack and more a small hole torn through the ethereal plane.
 
-&lt;color=#ff5043&gt;Equipping this backpack disconnects it from the stash.&lt;/color&gt;</Description>
+&lt;color=#ff5043&gt;Taking this backpack disconnects it from the Stash.&lt;/color&gt;</Description>
   <LegacyItemID>-1</LegacyItemID>
   <IsPickable>true</IsPickable>
   <IsUsable>false</IsUsable>
@@ -25,8 +25,8 @@
     <string>Item</string>
   </Tags>
   <StatsHolder xsi:type="SL_EquipmentStats">
-    <BaseValue>100</BaseValue>
-    <RawWeight>4</RawWeight>
+    <BaseValue>500</BaseValue>
+    <RawWeight>0.1</RawWeight>
     <MaxDurability>-1</MaxDurability>
     <Damage_Resistance>
       <float>0</float>
@@ -60,7 +60,7 @@
     <Pouch_Bonus>0</Pouch_Bonus>
     <Heat_Protection>0</Heat_Protection>
     <Cold_Protection>0</Cold_Protection>
-    <Corruption_Protection>10</Corruption_Protection>
+    <Corruption_Protection>0</Corruption_Protection>
     <Health_Regen>0</Health_Regen>
     <Cooldown_Reduction>-0</Cooldown_Reduction>
     <BarrierProtection>0</BarrierProtection>
@@ -106,5 +106,5 @@
   <RequiredPlayerType>Normal</RequiredPlayerType>
   <Capacity>0</Capacity>
   <Restrict_Dodge>false</Restrict_Dodge>
-  <InventoryProtection>2</InventoryProtection>
+  <InventoryProtection>0</InventoryProtection>
 </SL_Bag>

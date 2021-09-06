@@ -13,10 +13,6 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
         /// </summary>
         public static event Action<SaveInstance> SaveBefore;
 
-        /// <summary>
-        /// Triggers after a new save has been written to disk.
-        /// </summary>
-        //public static event Action<SaveInstance> SaveAfter;
 
         public static void RaiseSaveBefore(SaveInstance saveInstance)
         {
@@ -29,22 +25,10 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
             {
                 Logger?.LogException($"Exception in {nameof(SaveInstanceEvents)}::{nameof(RaiseSaveBefore)}.", ex);
                 if (Logger == null)
+                {
                     UnityEngine.Debug.LogError($"Exception in {nameof(SaveInstanceEvents)}::{nameof(RaiseSaveBefore)}:\n{ex}");
+                }
             }
         }
-        //public static void RaiseSaveAfter(SaveInstance saveInstance)
-        //{
-        //    try
-        //    {
-        //        Logger?.LogTrace($"{nameof(SaveInstanceEvents)}::{nameof(RaiseSaveAfter)}: triggered for path '{saveInstance.SavePath}'");
-        //        SaveAfter?.Invoke(saveInstance);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Logger?.LogException($"Exception in {nameof(SaveInstanceEvents)}::{nameof(RaiseSaveAfter)}.", ex);
-        //        if (Logger == null)
-        //            UnityEngine.Debug.LogError($"Exception in {nameof(SaveInstanceEvents)}::{nameof(RaiseSaveAfter)}:\n{ex}");
-        //    }
-        //}
     }
 }

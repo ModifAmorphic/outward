@@ -1,10 +1,9 @@
-﻿using ModifAmorphic.Outward.StashPacks.Extensions;
-using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.SaveData.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ModifAmorphic.Outward.Extensions;
 
 namespace ModifAmorphic.Outward.StashPacks.SaveData.Data
 {
@@ -25,8 +24,10 @@ namespace ModifAmorphic.Outward.StashPacks.SaveData.Data
         public StashSaveData(AreaManager areaManager
             , CharacterSaveInstanceHolder characterSaveInstanceHolder
             , IReadOnlyDictionary<AreaManager.AreaEnum, (string StashUID, int ItemId)> areaStashes
-            , Func<IModifLogger> getLogger) =>
-                (_areaManager, _areaStashes, _characterSaveInstanceHolder, _getLogger) = (areaManager, areaStashes, characterSaveInstanceHolder, getLogger);
+            , Func<IModifLogger> getLogger)
+        {
+            (_areaManager, _areaStashes, _characterSaveInstanceHolder, _getLogger) = (areaManager, areaStashes, characterSaveInstanceHolder, getLogger);
+        }
 
         /// <summary>
         /// Loads the Scene <see cref="EnvironmentSave"/> from the <see cref="StashSaveData.SaveFilePath"/> of this instance.
@@ -40,7 +41,9 @@ namespace ModifAmorphic.Outward.StashPacks.SaveData.Data
                 AreaName = sceneName
             };
             if (envSave.LoadFromFile(SaveFilePath))
+            {
                 return envSave;
+            }
 
             return null;
         }
@@ -118,7 +121,9 @@ namespace ModifAmorphic.Outward.StashPacks.SaveData.Data
             {
                 var stashSave = GetStashSave(area);
                 if (stashSave != null)
+                {
                     stashSaves.Add(stashSave);
+                }
             }
             return stashSaves.Any() ? stashSaves : null;
         }

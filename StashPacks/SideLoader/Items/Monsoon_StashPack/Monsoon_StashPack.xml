@@ -3,9 +3,9 @@
   <Target_ItemID>5300050</Target_ItemID>
   <New_ItemID>-1301002</New_ItemID>
   <Name>Monsoon Stash Pack</Name>
-  <Description>Someone has managed to haul the entirety of your possessions from Monsoon and drop them right here on the floor.
+  <Description>This backpack allows for tranfering of items to and from an owner's home Stash. In reality it is less a backpack and more a small hole torn through the ethereal plane.
 
-&lt;color=#ff5043&gt;Equipping this backpack disconnects it from the stash.&lt;/color&gt;</Description>
+&lt;color=#ff5043&gt;Taking this backpack disconnects it from the Stash.&lt;/color&gt;</Description>
   <LegacyItemID>-1</LegacyItemID>
   <IsPickable>true</IsPickable>
   <IsUsable>false</IsUsable>
@@ -25,8 +25,8 @@
     <string>Item</string>
   </Tags>
   <StatsHolder xsi:type="SL_EquipmentStats">
-    <BaseValue>300</BaseValue>
-    <RawWeight>4</RawWeight>
+    <BaseValue>500</BaseValue>
+    <RawWeight>0.1</RawWeight>
     <MaxDurability>-1</MaxDurability>
     <Damage_Resistance>
       <float>0</float>

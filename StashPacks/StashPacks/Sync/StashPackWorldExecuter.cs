@@ -1,9 +1,8 @@
-﻿using ModifAmorphic.Outward.StashPacks.Extensions;
-using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Sync.Models;
 using System;
 using System.Linq;
-using ModifAmorphic.Outward.Extensions;
 
 namespace ModifAmorphic.Outward.StashPacks.Sync
 {
@@ -15,7 +14,10 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
-        public StashPackWorldExecuter(ItemManager itemManager, Func<IModifLogger> getLogger) => (_itemManager, _getLogger) = (itemManager, getLogger);
+        public StashPackWorldExecuter(ItemManager itemManager, Func<IModifLogger> getLogger)
+        {
+            (_itemManager, _getLogger) = (itemManager, getLogger);
+        }
 
         public void ExecutePlan(ContainerSyncPlan syncPlan)
         {
@@ -31,7 +33,9 @@ namespace ModifAmorphic.Outward.StashPacks.Sync
                 {
                     var removeItem = bag.Container.GetItem(uid);
                     if (removeItem != null)
+                    {
                         bag.Container.RemoveItem(removeItem);
+                    }
                 }
 
                 var upserts = syncPlan.AddedItems.Values.ToList();

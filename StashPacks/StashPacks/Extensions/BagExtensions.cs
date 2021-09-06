@@ -1,5 +1,4 @@
-﻿using ModifAmorphic.Outward.StashPacks.SaveData.Models;
-using ModifAmorphic.Outward.StashPacks.Settings;
+﻿using ModifAmorphic.Outward.StashPacks.Settings;
 using ModifAmorphic.Outward.StashPacks.State;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,11 +40,22 @@ namespace ModifAmorphic.Outward.StashPacks.Extensions
                 ItemsSaveData = bag.Container.GetContainedItems().Select(i => new BasicSaveData(i.UID, i.ToSaveData())).ToList()
             };
         }
-        public static bool IsUpdateable(this Bag bag)
+        public static bool IsUsable(this Bag bag)
         {
-            return (!bag.IsInContainer
-                && !string.IsNullOrEmpty(bag.PreviousOwnerUID)
-                && !bag.IsEquipped);
+            return (bag.IsOnGround()
+                && !string.IsNullOrEmpty(bag.PreviousOwnerUID));
+        }
+        public static bool IsOnGround(this Bag bag)
+        {
+            return (!bag.IsInContainer && !bag.IsEquipped);
+        }
+        public static bool IsOwned(this Bag bag)
+        {
+            return !string.IsNullOrWhiteSpace(bag.PreviousOwnerUID);
+        }
+        public static bool IsOwnedBy(this Bag bag, string characterUID)
+        {
+            return bag.PreviousOwnerUID.Equals(characterUID, System.StringComparison.OrdinalIgnoreCase);
         }
     }
 }

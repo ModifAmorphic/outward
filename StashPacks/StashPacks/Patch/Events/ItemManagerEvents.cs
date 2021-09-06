@@ -16,16 +16,20 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
             var baseResult = result;
             try
             {
-                result = IsAllItemSyncedAfter?.Invoke(itemManager, baseResult)?? baseResult;
+                result = IsAllItemSyncedAfter?.Invoke(itemManager, baseResult) ?? baseResult;
                 if (baseResult != result)
+                {
                     Logger?.LogTrace($"{nameof(ItemManagerEvents)}::{nameof(RaiseIsAllItemSyncedAfter)} triggered. Base result was changed from {baseResult} to {result}.");
+                }
             }
             catch (Exception ex)
             {
                 result = baseResult;
                 Logger?.LogException($"Exception in {nameof(ItemManagerEvents)}::{nameof(RaiseIsAllItemSyncedAfter)}.", ex);
                 if (Logger == null)
+                {
                     UnityEngine.Debug.LogError($"Exception in {nameof(ItemManagerEvents)}::{nameof(RaiseIsAllItemSyncedAfter)}:\n{ex}");
+                }
             }
         }
 
@@ -39,7 +43,9 @@ namespace ModifAmorphic.Outward.StashPacks.Patch.Events
             {
                 Logger?.LogException($"Exception in {nameof(ItemManagerEvents)}::{nameof(RaiseAwakeAfter)}.", ex);
                 if (Logger == null)
+                {
                     UnityEngine.Debug.LogError($"Exception in {nameof(ItemManagerEvents)}::{nameof(RaiseAwakeAfter)}:\n{ex}");
+                }
             }
         }
     }
