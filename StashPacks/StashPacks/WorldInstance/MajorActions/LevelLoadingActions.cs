@@ -246,11 +246,8 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             foreach (var pack in stashPacks)
             {
                 var characterUID = pack.StashBag.PreviousOwnerUID;
-
-
                 var bagUID = pack.StashBag.UID;
                 var hasPrevOwner = !string.IsNullOrWhiteSpace(characterUID);
-
 
                 if ((pack.StashBag.IsInContainer || pack.StashBag.IsEquipped) && pack.StashBag.HasContents())
                 {
@@ -275,9 +272,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 {
                     var character = SplitScreenManager.Instance.LocalPlayers.First(p => p.AssignedCharacter.UID.ToString() == characterUID).AssignedCharacter;
                     if (DisableHostBagIfInHomeArea(character, pack.StashBag))
-                    {
                         continue;
-                    }
                 }
                 if (!IsLocalPlayerCharacter(characterUID) && IsPlayerCharacterInGame(characterUID))
                 {
@@ -297,7 +292,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                     {
                         Logger.LogDebug($"{nameof(LevelLoadingActions)}::{nameof(GetActivePacksDisableOthers)}: Player Character '{characterUID}' owns bag '{pack.StashBag.Name}' ({bagUID})" +
                             $" but is not in game. Removing {nameof(Bag.PreviousOwnerUID)}.");
-                        pack.StashBag.PreviousOwnerUID = string.Empty;
+                        UnclaimAndClearBag(pack.StashBag);
                         if (!filteredPacks.ContainsKey(string.Empty))
                         {
                             filteredPacks.Add(string.Empty, new List<StashPack>());

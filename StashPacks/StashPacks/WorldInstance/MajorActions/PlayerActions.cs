@@ -51,13 +51,12 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
         private void ReceivedPlayerHasLeftAfter(string playerUID)
         {
             var player = GetPlayerSystem(playerUID);
-            if (player == null || player.IsHostPlayer())
+            if (player != null && player.IsHostPlayer())
             {
                 return;
             }
 
-            Logger.LogTrace($"{nameof(PlayerActions)}::{nameof(ReceivedPlayerHasLeftAfter)}: playerUID {playerUID} is leaving the game.");
-            Logger.LogTrace($"{nameof(PlayerActions)}::{nameof(ReceivedPlayerHasLeftAfter)}: Starting coroutine. Waiting for playerUID '{playerUID}' to leave before cleaning up stash packs.");
+            Logger.LogDebug($"{nameof(PlayerActions)}::{nameof(ReceivedPlayerHasLeftAfter)}: Starting coroutine. Waiting for playerUID '{playerUID}' to leave before cleaning up stash packs.");
             _instances.UnityPlugin.StartCoroutine(
                 AfterPlayerLeftCoroutine(playerUID, () => CheckForAbandonedPacks()));
 
