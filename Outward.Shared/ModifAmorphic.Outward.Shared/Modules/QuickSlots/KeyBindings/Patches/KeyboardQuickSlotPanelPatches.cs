@@ -12,15 +12,13 @@ namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
         private static int _quickslotsToAdd;
         private static int _exQuickslotStartId;
 
-        private static Func<IModifLogger> _getLogger;
-        private static IModifLogger Logger => _getLogger?.Invoke() ?? new NullLogger();
-        private static void LoggerEvents_LoggerLoaded(object sender, Func<IModifLogger> getLogger) => _getLogger = getLogger;
+        [PatchLogger]
+        private static IModifLogger Logger { get; set; } = new NullLogger();
         private static void QuickSlotExtenderEvents_SlotsChanged(object sender, QuickSlotExtendedArgs e) => (_quickslotsToAdd, _exQuickslotStartId) = (e.ExtendedQuickSlots.Count(), e.StartId);
 
         [EventSubscription]
         public static void SubscribeToEvents()
         {
-            LoggerEvents.LoggerReady += LoggerEvents_LoggerLoaded;
             QuickSlotExtenderEvents.SlotsChanged += QuickSlotExtenderEvents_SlotsChanged;
         }
 

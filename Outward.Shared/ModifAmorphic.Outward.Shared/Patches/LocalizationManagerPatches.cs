@@ -11,21 +11,16 @@ namespace ModifAmorphic.Outward.Patches
     [HarmonyPatch(typeof(LocalizationManager))]
     public static class LocalizationManagerPatches
     {
-        private static Func<IModifLogger> _getLogger;
-        private static IModifLogger Logger => _getLogger?.Invoke() ?? new NullLogger();
-        private static void LoggerEvents_LoggerLoaded(object sender, Func<IModifLogger> getLogger) => _getLogger = getLogger;
+        [PatchLogger]
+        private static IModifLogger Logger { get; set; } = new NullLogger();
 
         public static event Action<Dictionary<int, ItemLocalization>> LoadItemLocalizationAfter;
 
-        [EventSubscription]
-        public static void SubscribeToEvents()
-        {
-            LoggerEvents.LoggerReady += LoggerEvents_LoggerLoaded;
-        }
-
         [HarmonyPatch("LoadItemLocalization")]
         [HarmonyPostfix]
+#pragma warning disable IDE0051 // Remove unused private members
         private static void LoadItemLocalizationPostfix(ref Dictionary<int, ItemLocalization> ___m_itemLocalization)
+#pragma warning restore IDE0051 // Remove unused private members
         {
             LoadItemLocalizationAfter?.Invoke(___m_itemLocalization);
         }

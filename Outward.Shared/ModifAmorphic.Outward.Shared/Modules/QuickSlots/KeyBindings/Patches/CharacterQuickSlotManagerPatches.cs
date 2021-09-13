@@ -15,15 +15,14 @@ namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
     internal static class CharacterQuickSlotManagerPatches
     {
         private static int _quickslotsToAdd;
-        private static Func<IModifLogger> _getLogger;
-        private static IModifLogger Logger => _getLogger?.Invoke() ?? new NullLogger();
-        private static void LoggerEvents_LoggerLoaded(object sender, Func<IModifLogger> getLogger) => _getLogger = getLogger;
+        [PatchLogger]
+        private static IModifLogger Logger { get; set; } = new NullLogger();
         private static void QuickSlotExtenderEvents_SlotsChanged(object sender, QuickSlotExtendedArgs e) => (_quickslotsToAdd) = (e.ExtendedQuickSlots.Count());
 
         [EventSubscription]
         public static void SubscribeToEvents()
         {
-            LoggerEvents.LoggerReady += LoggerEvents_LoggerLoaded;
+            //LoggerEvents.LoggerConfigured += LoggerEvents_LoggerLoaded;
             QuickSlotExtenderEvents.SlotsChanged += QuickSlotExtenderEvents_SlotsChanged;
         }
 

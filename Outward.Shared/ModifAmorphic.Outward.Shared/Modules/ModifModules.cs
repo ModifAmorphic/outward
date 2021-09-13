@@ -20,28 +20,19 @@ namespace ModifAmorphic.Outward.Modules
         public static QuickSlotExtender GetQuickSlotExtenderModule(string modId)
         {
             return ModuleService.GetModule(modId, () => 
-                new QuickSlotExtender(ModuleService.GetLoggerFactory(modId)));
+                new QuickSlotExtender(() => LoggerFactory.GetLogger(modId)));
         }
         public static CharacterInstances GetCharacterInstancesModule(string modId)
         {
             return ModuleService.GetModule<CharacterInstances>(modId, () =>
-                new CharacterInstances(ModuleService.GetLoggerFactory(modId)));
+                new CharacterInstances(() => LoggerFactory.GetLogger(modId)));
         }
-        public static PreFabricator GetPreFabricatorModule(string modId, ServicesProvider servicesProvider)
+        public static PreFabricator GetPreFabricatorModule(string modId)
         {
             return ModuleService.GetModule<PreFabricator>(modId, () =>
-                new PreFabricator(modId, servicesProvider));
+                new PreFabricator(modId, 
+                    () => ResourcesPrefabManager.Instance, 
+                    () => LoggerFactory.GetLogger(modId)));
         }
-
-        public static void ConfigureLogging(string modId, Func<IModifLogger> loggerFactory)
-        {
-            ModuleService.ConfigureLogging(modId, loggerFactory);
-        }
-        public static void ConfigureLogging(string modId, string loggerName, LogLevel logLevel)
-        {
-            ModuleService.ConfigureLogging(modId, () => new Logger(logLevel, loggerName));
-        }
-
-        
     }
 }
