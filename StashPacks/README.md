@@ -38,10 +38,12 @@ StashPacks works by retrieving the contents of a stash whenever a stashpack is d
 - By default, stash packs are only usable in towns. There is a configuration option to enable them in all areas. Don't forget most areas outside towns reset after 7 days though!
 - Duplicate dropped stashpacks will not work for the same player. This just means if you have the same bag dropped more than once, only the last bag you dropped will be linked to its home stash.
 - If you "cheat" a stashpack into the game, make sure you pick it up before using. Stashpacks only work if they've been "owned" before.
-- In multipleyer, the host controls a couple settings for compatibilty. The Enabling/Disabling of stashpack functionality outside of towns and the scaling and rotation of bags.
+- In multiplayer, the host controls a couple settings for compatibilty. The Enabling/Disabling of stashpack functionality outside of towns and the scaling and rotation of bags.
 
 
 # Change Logs
+## Latest Release ${PACKAGE_VERSION}
+- 
 
 ## Initial Release 1.0.1
 - Initial release.

@@ -331,14 +331,6 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             }
 
             var itemCoroutines = _instances.GetCoroutine<ItemCoroutines>();
-            bool isBagReady()
-            {
-                var worldBag = itemManager.GetItem(bagUID);
-                return worldBag != null &&
-                    !string.IsNullOrWhiteSpace(worldBag.PreviousOwnerUID) &&
-                    worldBag.FullyInitialized &&
-                    worldBag.IsWorldDetectable;
-            }
             _instances.UnityPlugin.StartCoroutine(
                 itemCoroutines.InvokeAfter(hasBagLanded, action, timeoutSeconds, ticTime)
             );

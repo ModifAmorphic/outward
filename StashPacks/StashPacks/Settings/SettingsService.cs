@@ -52,8 +52,8 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
             #region Advanced Section
             //Logging Level
             _configService.BindConfigSetting(settings.LogLevel,
-                (SettingValueChangedArgs<LogLevel> args) => LoggerFactory.ConfigureLogging(ModInfo.ModName, settings.LogLevel.Value));
-            LoggerFactory.ConfigureLogging(ModInfo.ModName, settings.LogLevel.Value);
+                (SettingValueChangedArgs<LogLevel> args) => LoggerFactory.ConfigureLogger(ModInfo.ModId, ModInfo.ModName, settings.LogLevel.Value));
+            LoggerFactory.ConfigureLogger(ModInfo.ModId, ModInfo.ModName, settings.LogLevel.Value);
             //The Version the config was originally created with
             _configService.BindConfigSetting(settings.ConfigVersion, null);
 

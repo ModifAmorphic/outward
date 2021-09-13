@@ -14,14 +14,12 @@ namespace ModifAmorphic.Outward.StashPacks
 {
     public class Startup
     {
-        private IModifLogger Logger => LoggerFactory.GetLogger();
-
         public Startup() { }
         public void Start(ServicesProvider services)
         {
             var settingsService = new SettingsService(services.GetService<BaseUnityPlugin>(), ModInfo.MinimumConfigVersion);
             services.AddSingleton(settingsService.ConfigureSettings());
-            services.AddFactory(LoggerFactory.GetLogger);
+            services.AddFactory(() => LoggerFactory.GetLogger(ModInfo.ModId));
 
             Internal.ManifestFiles.RemoveOtherVersions(services.GetService<IModifLogger>());
 
