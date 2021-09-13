@@ -15,7 +15,7 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
     [HarmonyPatch(typeof(QuickSlotPanel))]
     internal static class QuickSlotPanelPatches
     {
-        private static IModifLogger _logger;
+        private static IModifLogger _logger => LoggerFactory.GetLogger(ModInfo.ModId);
         private static readonly HashSet<UID> _characterHasBarsAligned = new HashSet<UID>();
         private static readonly HashSet<UID> _characterHasQsCentered = new HashSet<UID>();
         private static readonly HashSet<UID> _characterHasQsDefault = new HashSet<UID>();
@@ -70,7 +70,6 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
         [EventSubscription]
         public static void SubscribeToEvents()
         {
-            ExtraSlotsConfigEvents.LoggerSettingsChanged += (object sender, ExtraSlotsSettings e) => _logger = new ModifAmorphicLogging.Logger(e.LogLevel.Value, ModInfo.ModName);
             ExtraSlotsConfigEvents.UiSettingsChanged += (object sender, ExtraSlotsSettings e) =>
             {
                 _logger?.LogDebug($"{nameof(QuickSlotPanelPatches)} - UI config change notification received.");
