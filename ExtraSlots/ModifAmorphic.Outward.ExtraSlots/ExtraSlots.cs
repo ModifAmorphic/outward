@@ -28,6 +28,7 @@ namespace ModifAmorphic.Outward.ExtraSlots
             EventSubscriberService.RegisterSubscriptions();
 #endif
             configService.Configure();
+            Internal.ManifestFiles.RemoveOtherVersions(_logger);
             _logger.LogDebug($"{ModInfo.ModName} {ModInfo.ModVersion} configured.");
 
             plugin.Config.ConfigReloaded += (object sender, EventArgs e) => configService.Configure();

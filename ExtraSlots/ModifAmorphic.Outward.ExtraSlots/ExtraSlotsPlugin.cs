@@ -3,9 +3,9 @@ using HarmonyLib;
 
 namespace ModifAmorphic.Outward.ExtraSlots
 {
+    [BepInDependency("com.sinai.SideLoader", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("com.bepis.bepinex.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("io.mefino.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
-    //[BepInDependency("modifamorphic.outward.shared", BepInDependency.DependencyFlags.HardDependency)]
     [BepInPlugin(ModInfo.ModId, ModInfo.ModName, ModInfo.ModVersion)]
     public class ExtraSlotsPlugin : BaseUnityPlugin
     {
