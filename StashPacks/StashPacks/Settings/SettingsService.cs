@@ -18,6 +18,9 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
 #endif
         public SettingsService(BaseUnityPlugin plugin, string minConfigVersion)
         {
+#if DEBUG
+            _logger.LogTrace($"SettingsService() plugin is {(plugin == null ? "null" : "not null")}. minConfigVersion: {minConfigVersion}");
+#endif
             (_configManagerService, _configService, _minConfigVersion) = (new ConfigManagerService(plugin), new ConfigSettingsService(plugin), minConfigVersion);
         }
 
@@ -49,8 +52,8 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
             #region Advanced Section
             //Logging Level
             _configService.BindConfigSetting(settings.LogLevel,
-                (SettingValueChangedArgs<LogLevel> args) => LoggerFactory.SetLogLevel(settings.LogLevel.Value));
-            LoggerFactory.SetLogLevel(settings.LogLevel.Value);
+                (SettingValueChangedArgs<LogLevel> args) => LoggerFactory.ConfigureLogging(ModInfo.ModName, settings.LogLevel.Value));
+            LoggerFactory.ConfigureLogging(ModInfo.ModName, settings.LogLevel.Value);
             //The Version the config was originally created with
             _configService.BindConfigSetting(settings.ConfigVersion, null);
 

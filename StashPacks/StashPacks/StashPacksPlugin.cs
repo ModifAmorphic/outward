@@ -21,7 +21,8 @@ namespace ModifAmorphic.Outward.StashPacks
 
                 var startup = new Startup();
                 UnityEngine.Debug.Log($"[{ModInfo.ModName}][Info] - Starting...");
-                startup.Start(this);
+                var servicesProvider = new ServicesProvider(this);
+                startup.Start(servicesProvider);
             }
             catch (Exception ex)
             {
