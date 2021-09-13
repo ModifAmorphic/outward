@@ -5,9 +5,8 @@ using System;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using ModifAmorphicLogging = ModifAmorphic.Outward.Logging;
 
-namespace ModifAmorphic.Outward.KeyBindings.Patches
+namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
 { 
     /// <summary>
     /// This class is responsible for adding extra quickslots to the character's QuickSlotManager.

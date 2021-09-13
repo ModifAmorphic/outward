@@ -3,14 +3,14 @@ using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Logging;
 using System;
 
-namespace ModifAmorphic.Outward.SkillSchools.Patches
+namespace ModifAmorphic.Outward.Modules.Character
 {
-    [HarmonyPatch(typeof(SkillTreeHolder))]
-    internal static class SkillTreeHolderPatches
+    [HarmonyPatch(typeof(CharacterManager))]
+    internal static class CharacterManagerPatches
     {
         private static Func<IModifLogger> _getLogger;
         private static IModifLogger Logger => _getLogger?.Invoke() ?? new NullLogger();
-        public static event Action<SkillTreeHolder> AwakeAfter;
+        public static event Action<CharacterManager> AwakeAfter;
 
 
         [EventSubscription]
@@ -21,7 +21,7 @@ namespace ModifAmorphic.Outward.SkillSchools.Patches
 
         [HarmonyPatch("Awake", MethodType.Normal)]
         [HarmonyPostfix]
-        private static void AwakePostfix(SkillTreeHolder __instance)
+        private static void AwakePostfix(CharacterManager __instance)
         {
             AwakeAfter?.Invoke(__instance);
         }

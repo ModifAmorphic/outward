@@ -2,7 +2,6 @@
 using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Models;
 #if DEBUG
 using Rewired;
 #endif
@@ -10,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ModifAmorphic.Outward.KeyBindings.Patches
+namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
 {
     [HarmonyPatch]
     internal static class LocalCharacterControlPatches

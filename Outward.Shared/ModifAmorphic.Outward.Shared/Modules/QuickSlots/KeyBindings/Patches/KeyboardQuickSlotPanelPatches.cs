@@ -3,9 +3,8 @@ using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Logging;
 using System;
 using System.Linq;
-using ModifAmorphicLogging = ModifAmorphic.Outward.Logging;
 
-namespace ModifAmorphic.Outward.KeyBindings.Patches
+namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
 {
     [HarmonyPatch(typeof(KeyboardQuickSlotPanel), "InitializeQuickSlotDisplays")]
     internal static class KeyboardQuickSlotPanelPatches

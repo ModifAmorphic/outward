@@ -3,7 +3,7 @@ using ModifAmorphic.Outward.Logging;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.KeyBindings
+namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
 {
     internal class MoreQuickslotsLocalizationListener : ILocalizeListener
     {

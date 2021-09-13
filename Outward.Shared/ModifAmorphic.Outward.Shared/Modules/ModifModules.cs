@@ -1,10 +1,8 @@
-﻿using HarmonyLib;
-using ModifAmorphic.Outward.Events;
-using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Modules.Instances;
+﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.Modules.Character;
 using ModifAmorphic.Outward.Modules.Items;
+using ModifAmorphic.Outward.Modules.QuickSlots;
 using System;
-using System.Collections.Concurrent;
 
 namespace ModifAmorphic.Outward.Modules
 {
