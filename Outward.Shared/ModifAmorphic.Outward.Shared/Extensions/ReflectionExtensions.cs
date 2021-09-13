@@ -24,5 +24,16 @@ namespace ModifAmorphic.Outward.Extensions
                     );
             }
         }
+
+        public static V GetPrivateField<T, V>(this T parent, string fieldName)
+        {
+            var field = typeof(T).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+            return (V)field.GetValue(parent);
+        }
+        public static void SetPrivateField<T,V>(this T parent, string fieldName, V value)
+        {
+            var field = typeof(T).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+            field.SetValue(parent, value);
+        }
     }
 }

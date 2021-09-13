@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.Modules.Instances;
+using ModifAmorphic.Outward.Modules.Items;
 using System;
 using System.Collections.Concurrent;
 
@@ -21,6 +23,16 @@ namespace ModifAmorphic.Outward.Modules
         {
             return ModuleService.GetModule(modId, () => 
                 new QuickSlotExtender(ModuleService.GetLoggerFactory(modId)));
+        }
+        public static CharacterInstances GetCharacterInstancesModule(string modId)
+        {
+            return ModuleService.GetModule<CharacterInstances>(modId, () =>
+                new CharacterInstances(ModuleService.GetLoggerFactory(modId)));
+        }
+        public static PreFabricator GetPreFabricatorModule(string modId, ServicesProvider servicesProvider)
+        {
+            return ModuleService.GetModule<PreFabricator>(modId, () =>
+                new PreFabricator(modId, servicesProvider));
         }
 
         public static void ConfigureLogging(string modId, Func<IModifLogger> loggerFactory)
