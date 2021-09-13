@@ -8,7 +8,7 @@ namespace ModifAmorphic.Outward.Logging
     internal class PatchLogger : IModifLogger
     {
 
-        public string LoggerName => DebugLoggerInfo.ModName;
+        public string LoggerName => "ModifAmorphic-PatchLogger";
 
         public LogLevel LogLevel => LogLevel.Warning;
 
