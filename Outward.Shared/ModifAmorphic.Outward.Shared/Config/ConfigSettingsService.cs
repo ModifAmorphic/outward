@@ -11,7 +11,7 @@ namespace ModifAmorphic.Outward.Config
     public class ConfigSettingsService
     {
 #if DEBUG
-        private readonly Logger _logger = new Logger(LogLevel.Trace, DebugLoggerInfo.ModName);
+        private readonly IModifLogger _logger = LoggerFactory.ConfigureLogger(DebugLoggerInfo.ModId, DebugLoggerInfo.ModName, DebugLoggerInfo.DebugLogLevel);
 #endif
         public ConfigFile Config { get; }
         private readonly ConfigManagerService _configManagerService;
@@ -20,9 +20,7 @@ namespace ModifAmorphic.Outward.Config
         {
             (Config, _configManagerService) = (unityPlugin.Config, new ConfigManagerService(unityPlugin));
 #if DEBUG
-            _logger.LogDebug($"[{DebugLoggerInfo.ModName}] - {nameof(ConfigSettingsService)}: Bound to ConfigFile {Config.ConfigFilePath}."
-                
-            );
+            _logger.LogDebug($"{nameof(ConfigSettingsService)}: Bound to ConfigFile {Config.ConfigFilePath}.");
 #endif
         }
 
@@ -42,7 +40,7 @@ namespace ModifAmorphic.Outward.Config
             configEntry.SettingChanged += (object sender, EventArgs e) => configSetting.Value = configSetting.BoundConfigEntry.Value;
             configSetting.Value = configSetting.BoundConfigEntry.Value;
 #if DEBUG
-            _logger.LogDebug($"[{DebugLoggerInfo.ModName}] - Bound ConfigSetting: {configSetting.Name} to ConfigEntry {configEntry.Definition.Key} with value {configEntry.Value}");
+            _logger.LogDebug($"Bound ConfigSetting: {configSetting.Name} to ConfigEntry {configEntry.Definition.Key} with value {configEntry.Value}");
 #endif
             configSetting.SuppressValueChangedEvents = bindRaisesChangeEvent;
             return configSetting;
@@ -96,7 +94,7 @@ namespace ModifAmorphic.Outward.Config
             //type doesn't really matter at all unless you try to get or bind to it again as a different type.
             //They're all strings in the end...
 #if DEBUG
-            _logger.LogDebug($"[{DebugLoggerInfo.ModName}] {nameof(PeekConfigEntry)} - Peeking for ConfigEntry<string> {configSetting.Name} in section {configSetting.ToConfigDefinition().Section}." +
+            _logger.LogDebug($"{nameof(PeekConfigEntry)} - Peeking for ConfigEntry<string> {configSetting.Name} in section {configSetting.ToConfigDefinition().Section}." +
                 $" Using DefaultValue of '{defaultValue}'.");
 #endif
 
@@ -105,7 +103,7 @@ namespace ModifAmorphic.Outward.Config
                 tempEntry = Config.Bind(configSetting.ToConfigDefinition(), defaultValue, configSetting.ToConfigDescription());
             }
 #if DEBUG
-            _logger.LogDebug($"[{DebugLoggerInfo.ModName}] {nameof(PeekConfigEntry)} - Got temporary ConfigEntry<string> {tempEntry.Definition.Key} with value of '{tempEntry.Value}'");
+            _logger.LogDebug($"{nameof(PeekConfigEntry)} - Got temporary ConfigEntry<string> {tempEntry.Definition.Key} with value of '{tempEntry.Value}'");
 #endif
             //Now that we have it, remove it so ConfigFile doesn't save this temporary entry
             Config.Clear();
@@ -120,7 +118,7 @@ namespace ModifAmorphic.Outward.Config
             {
                 peekedEntry = Config.Bind(configSetting.ToConfigDefinition(), configSetting.DefaultValue, configSetting.ToConfigDescription());
 #if DEBUG
-                _logger.LogDebug($"[{DebugLoggerInfo.ModName}] {nameof(PeekConfigEntry)} - Found {configSetting.Name} in section {configSetting.ToConfigDefinition().Section}. Getting typed ConfigEntry<{typeof(T).Name}>.");
+                _logger.LogDebug($"{nameof(PeekConfigEntry)} - Found {configSetting.Name} in section {configSetting.ToConfigDefinition().Section}. Getting typed ConfigEntry<{typeof(T).Name}>.");
 #endif
                 Config.Clear();
                 Config.Reload();

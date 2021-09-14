@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ModifAmorphic.Outward.Events
+namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
 {
     static class QuickSlotExtenderEvents
     {

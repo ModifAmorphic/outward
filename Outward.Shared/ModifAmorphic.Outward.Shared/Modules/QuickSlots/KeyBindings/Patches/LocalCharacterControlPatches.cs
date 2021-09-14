@@ -2,7 +2,6 @@
 using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Models;
 #if DEBUG
 using Rewired;
 #endif
@@ -10,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ModifAmorphic.Outward.KeyBindings.Patches
+namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
 {
     [HarmonyPatch]
     internal static class LocalCharacterControlPatches
@@ -19,16 +18,16 @@ namespace ModifAmorphic.Outward.KeyBindings.Patches
         //private static SortedDictionary<int, string> _exQuickSlots = new SortedDictionary<int, string>();
         private static IEnumerable<ExtendedQuickSlot> _exQuickSlots = new List<ExtendedQuickSlot>();
 
-        private static Func<IModifLogger> _getLogger;
-        private static IModifLogger Logger => _getLogger?.Invoke()?? new NullLogger();
-        private static void LoggerEvents_LoggerLoaded(object sender, Func<IModifLogger> getLogger) => _getLogger = getLogger;
+        [PatchLogger]
+        private static IModifLogger Logger { get; set; } = new NullLogger();
 
         private static void QuickSlotExtenderEvents_SlotsChanged(object sender, QuickSlotExtendedArgs e) => _exQuickSlots = e.ExtendedQuickSlots;
+
 
         [EventSubscription]
         public static void SubscribeToEvents()
         {
-            LoggerEvents.LoggerReady += LoggerEvents_LoggerLoaded;
+            //LoggerEvents.LoggerConfigured += LoggerEvents_LoggerLoaded;
             QuickSlotExtenderEvents.SlotsChanged += QuickSlotExtenderEvents_SlotsChanged;
         }
 

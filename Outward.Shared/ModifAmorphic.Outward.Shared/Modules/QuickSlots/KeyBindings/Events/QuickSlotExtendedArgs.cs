@@ -1,7 +1,6 @@
-﻿using ModifAmorphic.Outward.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace ModifAmorphic.Outward.Events
+namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
 {
     class QuickSlotExtendedArgs //: EventArgs
     {

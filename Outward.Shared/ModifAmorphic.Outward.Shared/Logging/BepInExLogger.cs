@@ -1,33 +1,27 @@
-﻿using System;
+﻿using BepInEx.Logging;
+using ModifAmorphic.Outward.Extensions;
+using System;
 
 namespace ModifAmorphic.Outward.Logging
 {
-    public class Logger : IModifLogger
+    public class BepInExLogger : IModifLogger
     {
         public LogLevel LogLevel { get; set; }
         public string LoggerName { get; }
-        public Logger(LogLevel logLevel, string loggerName)
+
+        private readonly ManualLogSource _bepInExLogger;
+        public BepInExLogger(LogLevel logLevel, string loggerName)
         {
             this.LogLevel = logLevel;
             this.LoggerName = loggerName;
+            _bepInExLogger = BepInEx.Logging.Logger.CreateLogSource(loggerName);
         }
         public void Log(LogLevel logLevel, string message)
         {
-            string logMsg = $"[{this.LoggerName}][{Enum.GetName(typeof(LogLevel), logLevel)}] - {message}";
+            //string logMsg = $"[{this.LoggerName}][{Enum.GetName(typeof(LogLevel), logLevel)}] - {message}";
             if (logLevel <= this.LogLevel)
             {
-                switch (logLevel)
-                {
-                    case Logging.LogLevel.Error:
-                        UnityEngine.Debug.LogError(logMsg);
-                        break;
-                    case Logging.LogLevel.Warning:
-                        UnityEngine.Debug.LogWarning(logMsg);
-                        break;
-                    default:
-                        UnityEngine.Debug.Log(logMsg);
-                        break;
-                }
+                _bepInExLogger.Log(logLevel.ToBepLogLevel(), message);
             }
         }
         public void LogTrace(string message)
