@@ -98,15 +98,19 @@ namespace ModifAmorphic.Outward.ExtraSlots.Config
 
             //Logging Level
             _configService.BindConfigSetting(esSettings.LogLevel,
-                (SettingValueChangedArgs<LogLevel> args) => ExtraSlotsConfigEvents.RaiseLoggerSettingsChanged(this, esSettings));
+                (SettingValueChangedArgs<LogLevel> args) =>
+                {
+                    //ExtraSlotsConfigEvents.RaiseLoggerSettingsChanged(this, esSettings);
+                    LoggerFactory.ConfigureLogger(ModInfo.ModId, ModInfo.ModName, args.NewValue);
+                });
 
             //The Version the config was originally created with
             _configService.BindConfigSetting(esSettings.ConfigVersion, null);
-
             #endregion
 
             //Raise all Events and refresh the ConfigurationManager
-            ExtraSlotsConfigEvents.RaiseLoggerSettingsChanged(this, esSettings);
+            //ExtraSlotsConfigEvents.RaiseLoggerSettingsChanged(this, esSettings);
+            LoggerFactory.ConfigureLogger(ModInfo.ModId, ModInfo.ModName, esSettings.LogLevel.Value);
             ExtraSlotsConfigEvents.RaiseMainSettingsChanged(this, esSettings);
             ExtraSlotsConfigEvents.RaiseUiSettingsChanged(this, esSettings);
             ExtraSlotsConfigEvents.RaiseAdvancedSettingsChanged(this, esSettings);
