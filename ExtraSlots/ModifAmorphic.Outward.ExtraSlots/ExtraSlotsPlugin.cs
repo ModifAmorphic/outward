@@ -1,5 +1,7 @@
 ﻿using BepInEx;
 using HarmonyLib;
+using ModifAmorphic.Outward.Logging;
+using System;
 
 namespace ModifAmorphic.Outward.ExtraSlots
 {
@@ -9,21 +11,23 @@ namespace ModifAmorphic.Outward.ExtraSlots
     [BepInPlugin(ModInfo.ModId, ModInfo.ModName, ModInfo.ModVersion)]
     public class ExtraSlotsPlugin : BaseUnityPlugin
     {
-
         internal void Awake()
         {
+            IModifLogger logger = null;
             var harmony = new Harmony(ModInfo.ModId);
             try
             {
-                UnityEngine.Debug.Log($"[{ModInfo.ModName}] - Starting...");
+                logger = LoggerFactory.ConfigureLogger(ModInfo.ModId, ModInfo.ModName, LogLevel.Info);
+                logger.LogInfo($"Patching...");
                 harmony.PatchAll();
 
                 var extraSlots = new ExtraSlots();
+                logger.LogInfo($"Starting {ModInfo.ModName} {ModInfo.ModVersion}...");
                 extraSlots.Start(this);
             }
-            catch
+            catch (Exception ex)
             {
-                UnityEngine.Debug.LogError($"Failed to enable {ModInfo.ModId} {ModInfo.ModName}.");
+                logger?.LogException($"Failed to enable {ModInfo.ModId} {ModInfo.ModName} {ModInfo.ModVersion}.", ex);
                 harmony.UnpatchSelf();
                 throw;
             }

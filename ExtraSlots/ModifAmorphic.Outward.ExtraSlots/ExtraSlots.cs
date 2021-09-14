@@ -22,12 +22,11 @@ namespace ModifAmorphic.Outward.ExtraSlots
 #if DEBUG
             LoggerFactory.ConfigureLogger(ModInfo.ModId, ModInfo.ModName, LogLevel.Trace);
             _logger.LogDebug($"Registering Event Subscriptions.");
-            EventSubscriberService.RegisterSubscriptions(new Logger(LogLevel.Trace, ModInfo.ModName));
+            EventSubscriberService.RegisterSubscriptions(_logger);
 #else
             EventSubscriberService.RegisterSubscriptions();
 #endif
             configService.Configure();
-            Internal.ManifestFiles.RemoveOtherVersions(_logger);
             _logger.LogDebug($"{ModInfo.ModName} {ModInfo.ModVersion} configured.");
 
             plugin.Config.ConfigReloaded += (object sender, EventArgs e) => configService.Configure();
