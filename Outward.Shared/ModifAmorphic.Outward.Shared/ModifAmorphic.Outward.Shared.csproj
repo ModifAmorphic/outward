@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>ModifAmorphic.Outward.v0_0_0_3</AssemblyName>
+    <AssemblyName>ModifAmorphic.Outward.v0_0_0_6</AssemblyName>
     <RootNamespace>ModifAmorphic.Outward</RootNamespace>
     <Authors>ModifAmorphic.Outward</Authors>
     <Product>ModifAmorphic.Outward</Product>
@@ -42,6 +42,10 @@
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Modules\Save\Patches\" />
   </ItemGroup>
 
 </Project>

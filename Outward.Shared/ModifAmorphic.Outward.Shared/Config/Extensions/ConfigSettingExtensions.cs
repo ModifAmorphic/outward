@@ -6,6 +6,9 @@ namespace ModifAmorphic.Outward.Config.Extensions
 {
     public static class ConfigSettingExtensions
     {
+#if DEBUG
+        private static readonly Logging.IModifLogger _logger = Logging.LoggerFactory.ConfigureLogger(DebugLoggerInfo.ModId, DebugLoggerInfo.ModName, DebugLoggerInfo.DebugLogLevel);
+#endif
         public static ConfigDefinition ToConfigDefinition<T>(this ConfigSetting<T> configSetting)
         {
             return new ConfigDefinition(
@@ -32,7 +35,7 @@ namespace ModifAmorphic.Outward.Config.Extensions
             configSetting.IsVisible = false;
             configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes().Browsable = configSetting.IsVisible;
 #if DEBUG
-            UnityEngine.Debug.Log($"[{DebugLoggerInfo.ModName}] - Hid ConfigSetting {configSetting.Name}. " +
+            _logger.LogDebug($"Hid ConfigSetting {configSetting.Name}. " +
                 $"IsVisible = {configSetting.IsVisible}. " +
                 $"Browsable = {configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes().Browsable}.");
 #endif
@@ -44,7 +47,7 @@ namespace ModifAmorphic.Outward.Config.Extensions
             configSetting.IsVisible = true;
             configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes().Browsable = configSetting.IsVisible;
 #if DEBUG
-            UnityEngine.Debug.Log($"[{DebugLoggerInfo.ModName}] - Showed ConfigSetting {configSetting.Name}. " +
+            _logger.LogDebug($"Showed ConfigSetting {configSetting.Name}. " +
                 $"IsVisible = {configSetting.IsVisible}. " +
                 $"Browsable = {configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes().Browsable}.");
 #endif

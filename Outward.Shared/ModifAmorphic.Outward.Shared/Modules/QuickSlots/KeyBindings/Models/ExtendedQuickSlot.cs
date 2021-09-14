@@ -1,4 +1,4 @@
-﻿namespace ModifAmorphic.Outward.Models
+﻿namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
 {
     internal class ExtendedQuickSlot
     {

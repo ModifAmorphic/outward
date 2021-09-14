@@ -81,12 +81,12 @@ namespace ModifAmorphic.Outward
 #if DEBUG
             Logger.LogTrace($"{nameof(ServicesProvider)}::{nameof(TryGetService)}<T>: Type: {typeof(T).Name}");
 #endif
-            service = default(T);
+            service = default;
             if (!_serviceFactories.TryGetValue(typeof(T), out var serviceDelegate))
                 return false;
 
             service = (T)serviceDelegate.DynamicInvoke();
-            return !EqualityComparer<T>.Default.Equals(service, default(T));
+            return !EqualityComparer<T>.Default.Equals(service, default);
         }
         
         //Exists so TryGetService can log trace events without creating an infinite loop.

@@ -1,11 +1,10 @@
 ﻿using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.SkillSchools.Patches;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace ModifAmorphic.Outward.Modules.Instances
+namespace ModifAmorphic.Outward.Modules.Character
 {
     public class CharacterInstances : IModifModule
     {

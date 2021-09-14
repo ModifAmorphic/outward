@@ -10,24 +10,39 @@ namespace ModifAmorphic.Outward.Modules
 {
     internal class ModuleService
     {
-        readonly ConcurrentDictionary<string, Harmony> _modPatchers = new ConcurrentDictionary<string, Harmony>();
+        Harmony _patcher = null;
+        //readonly ConcurrentDictionary<string, Harmony> _modPatchers = new ConcurrentDictionary<string, Harmony>();
+        /// <summary>
+        /// Collection of classes which have been patched by Harmony
+        /// </summary>
         readonly ConcurrentDictionary<Type, byte> _patchedTypes = new ConcurrentDictionary<Type, byte>();
+        /// <summary>
+        /// Collection of Classes who have had their EventSubscription invoked. Typically Static Patch classes
+        /// </summary>
         readonly ConcurrentDictionary<Type, byte> _subscriberTypes = new ConcurrentDictionary<Type, byte>();
-        readonly ConcurrentDictionary<Type, IModifModule> _instances = new ConcurrentDictionary<Type, IModifModule>();
-        readonly ConcurrentDictionary<string, Func<IModifLogger>> _loggerFactories = new ConcurrentDictionary<string, Func<IModifLogger>>();
-        readonly IModifLogger _nullLogger = new NullLogger();
+        /// <summary>
+        /// Collection of modules for each ModId.
+        /// </summary>
+        readonly ConcurrentDictionary<string, ConcurrentDictionary<Type, IModifModule>> _instances = new ConcurrentDictionary<string, ConcurrentDictionary<Type, IModifModule>>();
 
         internal T GetModule<T>(string modId, Func<T> factory) where T : class, IModifModule
         {
-            return _instances.GetOrAdd(typeof(T), (x) => {
-                var instance = factory.Invoke();
-                ConfigureSubscriptions(instance, GetLoggerFactory(modId));
-                //Raise the logger again in case the logger was configured before anyone had a chance to react.
-                LoggerEvents.RaiseLoggerReady(this, GetLoggerFactory(modId));
-                ApplyPatches(instance, modId);
-                return instance;
-              }
-            ) as T;
+            var instances = _instances.GetOrAdd(modId, new ConcurrentDictionary<Type, IModifModule>());
+            return instances.GetOrAdd(typeof(T), (x) => CreateModule(modId, factory)) as T;
+        }
+
+        private IModifModule CreateModule<T>(string modId, Func<T> factory) where T : class, IModifModule
+        {
+            var module = factory.Invoke();
+            LoggerEvents.LoggerCreated += (args) =>
+            {
+                if (args.ModId == modId)
+                    ConfigurePatchLoggers<T>(modId, module, () => LoggerFactory.GetLogger(modId));
+            };
+            ConfigurePatchLoggers<T>(modId, module, () => LoggerFactory.GetLogger(modId));
+            ApplyPatches(module);
+            ConfigureSubscriptions(module, () => LoggerFactory.GetLogger(modId));
+            return module;
         }
         internal IModifModule ConfigureSubscriptions(IModifModule module, Func<IModifLogger> getLogger)
         {
@@ -41,32 +56,27 @@ namespace ModifAmorphic.Outward.Modules
             }
             return module;
         }
-        internal Func<IModifLogger> GetLoggerFactory(string modId)
+        private void ConfigurePatchLoggers<T>(string modId, IModifModule module, Func<IModifLogger> loggerFactory)
         {
-            _loggerFactories.TryGetValue(modId, out var getLogger);
-            return getLogger?? (() => _nullLogger);
+            foreach (var t in module.PatchDependencies)
+                PatchLoggerRegisterService.AddPatchLogger(t, modId, loggerFactory);
         }
-        internal void ConfigureLogging(string modId, Func<IModifLogger> loggerFactory)
-        {
-            _loggerFactories.TryAdd(modId, loggerFactory);
-            LoggerEvents.RaiseLoggerReady(this, _loggerFactories[modId]);
-        }
-        private IModifModule ApplyPatches(IModifModule module, string modId)
+        private IModifModule ApplyPatches(IModifModule module)
         {
             foreach (var t in module.PatchDependencies)
             {
                 if (!_patchedTypes.ContainsKey(t))
                 {
                     _patchedTypes.TryAdd(t, default);
-                    var patcher = GetModPatcher(modId);
-                    patcher.PatchAll(t);
+                    GetModPatcher().PatchAll(t);
                 }
             }
             return module;
         }
-        private Harmony GetModPatcher(string modId)
+
+        private Harmony GetModPatcher()
         {
-            return _modPatchers.GetOrAdd(modId, (x) => new Harmony(modId));
+            return _patcher ?? (_patcher = new Harmony("modifamorphic.outward")); //_modPatchers.GetOrAdd(modId, (x) => new Harmony("modifamorphic.outward"));
         }
         
     }
