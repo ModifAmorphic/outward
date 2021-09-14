@@ -14,7 +14,7 @@ namespace ModifAmorphic.Outward.StashPacks.Settings
         private readonly string _minConfigVersion;
 
 #if DEBUG
-        private readonly Logger _logger = new Logger(LogLevel.Trace, ModInfo.ModName);
+        private readonly IModifLogger _logger = LoggerFactory.GetLogger(ModInfo.ModId);
 #endif
         public SettingsService(BaseUnityPlugin plugin, string minConfigVersion)
         {

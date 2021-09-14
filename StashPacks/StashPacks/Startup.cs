@@ -21,8 +21,6 @@ namespace ModifAmorphic.Outward.StashPacks
             services.AddSingleton(settingsService.ConfigureSettings());
             services.AddFactory(() => LoggerFactory.GetLogger(ModInfo.ModId));
 
-            Internal.ManifestFiles.RemoveOtherVersions(services.GetService<IModifLogger>());
-
             services.ConfigureStashPackNet();
             BagStateService.ConfigureNet(services.GetService<StashPackNet>());
 

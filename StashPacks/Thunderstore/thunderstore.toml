@@ -5,7 +5,7 @@ schemaVersion = "0.0.1"
 namespace = "ModifAmorphic"
 name = "StashPacks"
 versionNumber = "${PACKAGE_VERSION}"
-description = "Access your stash from any game, anywhere!"
+description = "Links stashes to backpacks. Access a stash from anywhere, even in multiplayer games."
 websiteUrl = "https://github.com/ModifAmorphic/outward/tree/mods/stash-packs/StashPacks"
 containsNsfwContent = false
 
