@@ -23,8 +23,9 @@ namespace ModifAmorphic.Outward.Config
         {
             var buildSettingList = _reflectedConfigManager.GetType().GetMethod("BuildSettingList");
 #if DEBUG
-            (new Logger(LogLevel.Debug, DebugLoggerInfo.ModName)).LogDebug(
-                $"[{DebugLoggerInfo.ModName}] - Refreshing ConfigurationManager " +
+            var _logger = LoggerFactory.ConfigureLogger(DebugLoggerInfo.ModId, DebugLoggerInfo.ModName, DebugLoggerInfo.DebugLogLevel);
+            _logger.LogDebug(
+                $"Refreshing ConfigurationManager " +
                 $"Reflected ConfigurationManager found? {_reflectedConfigManager != null}. " +
                 $"BuildSettingList method found? {buildSettingList != null}.");
 #endif

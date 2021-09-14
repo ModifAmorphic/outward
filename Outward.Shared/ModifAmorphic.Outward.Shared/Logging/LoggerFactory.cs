@@ -1,4 +1,5 @@
 ﻿using ModifAmorphic.Outward.Events;
+using ModifAmorphic.Outward.Extensions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -17,27 +18,35 @@ namespace ModifAmorphic.Outward.Logging
 #if DEBUG
             (new Logger(LogLevel.Debug, DebugLoggerInfo.ModName)).LogDebug(
                 $"{nameof(LoggerFactory)}::{nameof(ConfigureLogger)}: Configuring named logger " +
-                $" '{loggerName}'. There are {_loggers.Count} {nameof(IModifLogger)} already configured.");
+                $" '{loggerName}' with modId '{modId}'. There are {_loggers.Count} {nameof(IModifLogger)} already configured. " +
+                $"A logger for '{modId}' {(_loggers.ContainsKey(modId) ? "exists and will be configured" : "will be created")}" +
+                $" with a log level of '{logLevel.GetName()}'.");
 #endif
             return _loggers.AddOrUpdate(modId, 
                 CreateLogger(modId, loggerName, logLevel),
-                (k, v) => UpdateLogLevel(modId, (Logger)v, logLevel));
+                (k, v) => UpdateLogLevel(modId, v, logLevel));
         }
         public static IModifLogger GetLogger(string modId)
         {
             return _loggers.TryGetValue(modId, out var logger) ? logger : new Logger(LogLevel.Warning, modId);
         }
-        private static Logger CreateLogger(string modId, string loggerName, LogLevel logLevel)
+        private static IModifLogger CreateLogger(string modId, string loggerName, LogLevel logLevel)
         {
-            var logger = new Logger(logLevel, loggerName);
+            var logger = new BepInExLogger(logLevel, loggerName);
             LoggerEvents.RaiseLoggerCreated(modId, logger);
             return logger;
         }
-        private static Logger UpdateLogLevel(string modId, Logger logger, LogLevel logLevel)
+        private static IModifLogger UpdateLogLevel(string modId, IModifLogger logger, LogLevel logLevel)
         {
             if (logger.LogLevel != logLevel)
             {
-                logger.LogLevel = logLevel;
+                if (logger is BepInExLogger bepInExLogger)
+                    bepInExLogger.LogLevel = logLevel;
+                else if (logger is Logger modifLogger)
+                    modifLogger.LogLevel = logLevel;
+                else
+                    throw new ArgumentException($"'{nameof(logger)}' Argument's base type was unexpected. Supported base types are '{typeof(Logger).FullName}' or '{typeof(BepInExLogger).FullName}'."
+                        , nameof(logger));
                 LoggerEvents.RaiseLoggerConfigured(modId, logger);
             }
             return logger;

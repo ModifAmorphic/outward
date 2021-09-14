@@ -7,6 +7,9 @@ namespace ModifAmorphic.Outward.Events
 {
     internal static class PatchLoggerRegisterService
     {
+#if DEBUG
+        private readonly static IModifLogger _logger = LoggerFactory.ConfigureLogger(DebugLoggerInfo.ModId, DebugLoggerInfo.ModName, DebugLoggerInfo.DebugLogLevel);
+#endif
         private static readonly object lockRegistration = new object();
         public static void AddPatchLogger(Type classType, string modId, Func<IModifLogger> loggerFactory)
         {
@@ -15,7 +18,7 @@ namespace ModifAmorphic.Outward.Events
                 if (!classType.IsClass)
                     throw new ArgumentException($"{nameof(classType)} must be a class.", nameof(classType));
 #if DEBUG
-                UnityEngine.Debug.Log($"[{DebugLoggerInfo.ModName}][Trace] - {nameof(PatchLoggerRegisterService)}::{nameof(AddPatchLogger)}:" +
+                _logger.LogDebug($"{nameof(PatchLoggerRegisterService)}::{nameof(AddPatchLogger)}:" +
                     $" Adding patch logger factory with loggerName: {modId} for type {classType.Name}.");
 #endif
 
@@ -27,7 +30,7 @@ namespace ModifAmorphic.Outward.Events
                 foreach (var p in patchLoggerProps)
                 {
 #if DEBUG
-                    UnityEngine.Debug.Log($"[{DebugLoggerInfo.ModName}][Trace] - {nameof(PatchLoggerRegisterService)}::{nameof(AddPatchLogger)}:" +
+                    _logger.LogTrace($"{nameof(PatchLoggerRegisterService)}::{nameof(AddPatchLogger)}:" +
                         $" Property p.GetValue(null) as PatchLogger is {(p.GetValue(null) as PatchLogger == null ? "null" : "not null")}." +
                         $" propery name is {p?.Name}");
 #endif
@@ -43,7 +46,7 @@ namespace ModifAmorphic.Outward.Events
                 foreach (var f in patchLoggerFields)
                 {
 #if DEBUG
-                    UnityEngine.Debug.Log($"[{DebugLoggerInfo.ModName}][Trace] -{nameof(PatchLoggerRegisterService)}::{nameof(AddPatchLogger)}:" +
+                    _logger.LogTrace($"{nameof(PatchLoggerRegisterService)}::{nameof(AddPatchLogger)}:" +
                         $" Field f.GetValue(null) as PatchLogger is {(f.GetValue(null) as PatchLogger == null ? "null" : "not null")}." +
                         $" propery name is {f?.Name}");
 #endif
