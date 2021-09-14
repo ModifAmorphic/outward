@@ -5,16 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ModifAmorphic.Outward.KeyBindings.Patches
+namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
 {
     [HarmonyPatch(typeof(LocalizationManager), "Awake")]
     internal static class LocalizationManagerPatches
     {
         static readonly List<ILocalizeListener> _customLocalizationListeners = new List<ILocalizeListener>();
 
-        private static Func<IModifLogger> _getLogger;
-        private static IModifLogger Logger => _getLogger?.Invoke() ?? new NullLogger();
-        private static void LoggerEvents_LoggerLoaded(object sender, Func<IModifLogger> getLogger) => _getLogger = getLogger;
+        [PatchLogger]
+        private static IModifLogger Logger { get; set; } = new NullLogger();
 
         private static void QuickSlotExtenderEvents_SlotsChanged(object sender, QuickSlotExtendedArgs e)
         {
@@ -26,7 +25,7 @@ namespace ModifAmorphic.Outward.KeyBindings.Patches
         [EventSubscription]
         public static void SubscribeToEvents()
         {
-            LoggerEvents.LoggerReady += LoggerEvents_LoggerLoaded;
+            //LoggerEvents.LoggerConfigured += LoggerEvents_LoggerLoaded;
             QuickSlotExtenderEvents.SlotsChanged += QuickSlotExtenderEvents_SlotsChanged;
         }
 

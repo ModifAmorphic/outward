@@ -31,11 +31,11 @@ namespace ModifAmorphic.Outward.Modules.Items
         private readonly Dictionary<int, ItemLocalization> _itemLocalizations = new Dictionary<int, ItemLocalization>();
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal PreFabricator(string modId, ServicesProvider services)
+        internal PreFabricator(string modId, Func<ResourcesPrefabManager> prefabManagerFactory, Func<IModifLogger> loggerFactory)
         {
             this._modId = modId;
-            this._loggerFactory = services.GetService<IModifLogger>;
-            this._prefabManagerFactory = services.GetService<ResourcesPrefabManager>;
+            this._loggerFactory = loggerFactory;
+            this._prefabManagerFactory = prefabManagerFactory;
             LocalizationManagerPatches.LoadItemLocalizationAfter += (itemLocalizations) =>
                     RegisterItemLocalizations(_itemLocalizations, itemLocalizations);
         }

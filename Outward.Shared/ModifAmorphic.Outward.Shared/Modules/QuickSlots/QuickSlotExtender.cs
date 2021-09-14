@@ -1,15 +1,12 @@
-﻿using ModifAmorphic.Outward.Events;
-using ModifAmorphic.Outward.KeyBindings.Patches;
-using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Models;
-using ModifAmorphic.Outward;
+﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings;
 using SideLoader;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace ModifAmorphic.Outward.Modules
+namespace ModifAmorphic.Outward.Modules.QuickSlots
 {
     public class QuickSlotExtender : IModifModule
     {

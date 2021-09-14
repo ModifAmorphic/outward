@@ -5,10 +5,16 @@ namespace ModifAmorphic.Outward.Events
 {
     internal static class LoggerEvents
     {
-        public static event EventHandler<Func<IModifLogger>> LoggerReady;
-        public static void RaiseLoggerReady(object sender, Func<IModifLogger> loggerFactory)
+        public static event Action<(string ModId, IModifLogger Logger)> LoggerCreated;
+        public static void RaiseLoggerCreated(string modId, IModifLogger logger)
         {
-            LoggerReady?.Invoke(sender, loggerFactory);
+            LoggerCreated?.Invoke((modId, logger));
+        }
+
+        public static event Action<(string ModId, IModifLogger Logger)> LoggerConfigured;
+        public static void RaiseLoggerConfigured(string modId, IModifLogger logger)
+        {
+            LoggerConfigured?.Invoke((modId, logger));
         }
     }
 }

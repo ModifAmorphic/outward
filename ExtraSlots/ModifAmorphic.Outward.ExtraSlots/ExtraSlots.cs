@@ -11,19 +11,18 @@ namespace ModifAmorphic.Outward.ExtraSlots
     internal class ExtraSlots
     {
 
-        private IModifLogger _logger;
+        private IModifLogger _logger => LoggerFactory.GetLogger(ModInfo.ModId);
         private ExtraSlotsSettings _extraSlotsSettings = new ExtraSlotsSettings();
 
         public void Start(BaseUnityPlugin plugin)
         {
             ExtraSlotsConfigEvents.ExtraSlotsSettingsChanged += (object sender, ExtraSlotsSettings extraSlotsSettings) => _extraSlotsSettings = extraSlotsSettings;
-            ExtraSlotsConfigEvents.LoggerSettingsChanged += (object sender, ExtraSlotsSettings extraSlotsSettings) => _logger = new Logger(extraSlotsSettings.LogLevel.Value, ModInfo.ModName);
 
             var configService = new SettingsService(plugin, ModInfo.MinimumConfigVersion);
 #if DEBUG
-            _logger = new Logger(LogLevel.Trace, ModInfo.ModName);
+            LoggerFactory.ConfigureLogger(ModInfo.ModId, ModInfo.ModName, LogLevel.Trace);
             _logger.LogDebug($"Registering Event Subscriptions.");
-            EventSubscriberService.RegisterSubscriptions(new Logger(LogLevel.Trace, ModInfo.ModName));
+            EventSubscriberService.RegisterSubscriptions(_logger);
 #else
             EventSubscriberService.RegisterSubscriptions();
 #endif
@@ -32,9 +31,8 @@ namespace ModifAmorphic.Outward.ExtraSlots
 
             plugin.Config.ConfigReloaded += (object sender, EventArgs e) => configService.Configure();
 
-            ModifModules.ConfigureLogging(ModInfo.ModId, () => _logger);
+            var quickSlotExtender = ModifModules.GetQuickSlotExtenderModule(ModInfo.ModId);
             _logger.LogInfo($"Extending Quickslots by {_extraSlotsSettings.ExtraQuickSlots.Value}.");
-            var quickSlotExtender = ModifModules.GetQuickSlotExtenderModule(ModInfo.ModId); 
             quickSlotExtender.ExtendQuickSlots(_extraSlotsSettings.ExtraQuickSlots.Value, _extraSlotsSettings.ExtraQuickSlotMenuText.Value);
 
         }
