@@ -37,7 +37,10 @@ Extra QuickSlots enables additional Keyboard QuickSlots and repositioning of the
 &nbsp;
 # Change Logs
 ## Latest Version ${PACKAGE_VERSION}
-- Minor changes for release.
+- Repositioning of stability bar should now work consistently without requiring a restart.
+- Quickslot bar absolute positioning now uses the left bottom corner instead of the center X position.
+- Updated internal logging to BepInEx logger.
+- Other Minor changes for release.
 
 ## Beta Version 0.4.0
 - Beta release of Extra QuickSlots!

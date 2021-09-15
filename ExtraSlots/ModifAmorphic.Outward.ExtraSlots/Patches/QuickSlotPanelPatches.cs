@@ -20,50 +20,50 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
         private static readonly HashSet<UID> _characterHasQsCentered = new HashSet<UID>();
         private static readonly HashSet<UID> _characterHasQsDefault = new HashSet<UID>();
         private static ExtraSlotsSettings _esSettings;
+        private static Vector3? _originalQsKeyboardPos = null;
         private static Vector3? _originalQsBarPos = null;
-        private static Vector3? _originalQsBarParentPos = null;
         private static Vector3? _originalStabilityBarPos = null;
         private static bool _qsBarNeedsAlignmentNextUpdate = false;
 
         private static void SaveOriginalQsBarPosition(QuickSlotPanel quickSlotPanel)
         {
-            if (_originalQsBarPos == null)
+            if (_originalQsKeyboardPos == null)
             {
-                _originalQsBarPos = new Vector3(quickSlotPanel.transform.position.x, quickSlotPanel.transform.position.y, quickSlotPanel.transform.position.z);
-                _originalQsBarParentPos = UIQuery.GetParentRectTransform(quickSlotPanel.transform).transform.position;
+                _originalQsKeyboardPos = new Vector3(quickSlotPanel.RectTransform.position.x, quickSlotPanel.RectTransform.position.y, quickSlotPanel.RectTransform.position.z);
+                _originalQsBarPos = UIQuery.GetQuickslotRectTransform(quickSlotPanel.CharacterUI).position;
             }
         }
         private static void SaveOriginalStabilityBarPosition(QuickSlotPanel quickSlotPanel)
         {
             if (_originalStabilityBarPos == null)
             {
-                var stabilityDisplay = UIQuery.GetCharacterStabilityDisplay(quickSlotPanel.LocalCharacter).transform;
+                var stabilityDisplay = UIQuery.GetCharacterStabilityRect(quickSlotPanel.CharacterUI);
                 _originalStabilityBarPos = new Vector3(stabilityDisplay.position.x, stabilityDisplay.position.y, stabilityDisplay.position.z);
             }
         }
         private static void MoveQsBarToOriginalPosition(UIElement quickSlotPanel)
         {
             _logger.LogTrace("Moving Quickslot Bar back to Original Position.");
-            if (_originalQsBarPos != null)
+            if (_originalQsKeyboardPos != null)
             {
                 _ = _characterHasQsCentered.RemoveWhere(c => c == quickSlotPanel.LocalCharacter.UID);
-                var qsParentRectTransform = UIQuery.GetParentRectTransform(quickSlotPanel.transform);
-                TransformMover.SetPosition(qsParentRectTransform.transform, _originalQsBarParentPos.Value);
-                TransformMover.SetPosition(quickSlotPanel.transform, _originalQsBarPos.Value);
+                var qsQsBarRectTransform = UIQuery.GetQuickslotRectTransform(quickSlotPanel.CharacterUI);
+                TransformMover.SetPosition(qsQsBarRectTransform.transform, _originalQsBarPos.Value);
+                TransformMover.SetPosition(quickSlotPanel.transform, _originalQsKeyboardPos.Value);
                 _ = _characterHasQsDefault.Add(quickSlotPanel.LocalCharacter.UID);
             }
         }
-        private static void MoveStabilityBarToOriginalPosition(UIElement stabilityBar)
+        private static void MoveStabilityBarToOriginalPosition(RectTransform stabilityBar)
         {
             if (_originalStabilityBarPos != null)
             {
                 _logger.LogTrace("Moving Stability Bar back to Original Position.\n" +
                     $"\tOriginal Position: ({_originalStabilityBarPos.Value.x},{_originalStabilityBarPos.Value.y}, {_originalStabilityBarPos.Value.z})\n" +
-                    $"\tCurrent Position: ({stabilityBar.transform.position.x},{stabilityBar.transform.position.y}, {stabilityBar.transform.position.z})");
-                TransformMover.SetPosition(stabilityBar.transform, _originalStabilityBarPos.Value);
+                    $"\tCurrent Position: ({stabilityBar.position.x},{stabilityBar.position.y}, {stabilityBar.position.z})");
+                TransformMover.SetPosition(stabilityBar, _originalStabilityBarPos.Value);
                 _logger.LogTrace("Moved Stability Bar back to Original Position.\n" +
                     $"\tOriginal Position: ({_originalStabilityBarPos.Value.x},{_originalStabilityBarPos.Value.y}, {_originalStabilityBarPos.Value.z})\n" +
-                    $"\tCurrent Position: ({stabilityBar.transform.position.x},{stabilityBar.transform.position.y}, {stabilityBar.transform.position.z})");
+                    $"\tCurrent Position: ({stabilityBar.position.x},{stabilityBar.position.y}, {stabilityBar.position.z})");
             }
         }
 
@@ -99,7 +99,7 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
                     _characterHasQsCentered.Add(__instance.LocalCharacter.UID);
                 }
             }
-            else if (_originalQsBarPos != null && !_characterHasQsDefault.Contains(__instance.LocalCharacter.UID))
+            else if (_originalQsKeyboardPos != null && !_characterHasQsDefault.Contains(__instance.LocalCharacter.UID))
             {
                 MoveQsBarToOriginalPosition(__instance);
             }
@@ -126,19 +126,17 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
             try
             {
                 var characterUID = quickSlotPanel.LocalCharacter.UID;
-
+                var keyboardRect = quickSlotPanel.RectTransform;
                 if (!_characterHasBarsAligned.Contains(characterUID) || _qsBarNeedsAlignmentNextUpdate)
                 {
-                    var stabilityDisplay = UIQuery.GetCharacterStabilityDisplay(quickSlotPanel.LocalCharacter);
+                    var stabilityRect = UIQuery.GetCharacterStabilityRect(quickSlotPanel.CharacterUI);
                     //Reset everything back to original before aligning.
-                    MoveStabilityBarToOriginalPosition(stabilityDisplay);
+                    MoveStabilityBarToOriginalPosition(stabilityRect);
                     MoveQsBarToOriginalPosition(quickSlotPanel);
                     _characterHasBarsAligned.RemoveWhere(c => c == characterUID);
 
-                    var stabilityRect = (RectTransform)stabilityDisplay.transform;
-                    var qsParentRectTransform = UIQuery.GetParentRectTransform(quickSlotPanel.transform);
-
-                    var rectMover = new TransformMover(_logger);
+                    var qsBarRectTransform = UIQuery.GetQuickslotRectTransform(quickSlotPanel.CharacterUI);
+                    //var qsRectTransform = UIQuery.GetQuickslotRectTransform(quickSlotPanel.CharacterUI);
 
                     switch (_esSettings.QuickSlotBarAlignmentOption.Value)
                     {
@@ -150,14 +148,14 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
                         case QuickSlotBarAlignmentOptions.MoveQuickSlotAboveStability:
                             {
                                 _logger.LogInfo("Moving QuickSlot Bar above Stability Bar.");
-                                rectMover
-                                    .MoveAbove(stabilityRect, qsParentRectTransform, _esSettings.MoveQuickSlotBarUp_Y_Offset.Value);
+                                TransformMover
+                                    .MoveAbove(stabilityRect, keyboardRect, _esSettings.MoveQuickSlotBarUp_Y_Offset.Value);
                                 break;
                             }
                         case QuickSlotBarAlignmentOptions.MoveStabilityAboveQuickSlot:
                             {
                                 _logger.LogInfo("Moving Stability Bar above QuickSlot Bar.");
-                                rectMover
+                                TransformMover
                                     .MoveAbove(quickSlotPanel.RectTransform, stabilityRect, _esSettings.MoveStabilityBarUp_Y_Offset.Value);
                                 break;
                             }
@@ -166,13 +164,13 @@ namespace ModifAmorphic.Outward.ExtraSlots.Patches
                                 _logger.LogInfo("Setting Absolution Positions of Quickslot and Stability bars.");
                                 //For the quickslot bar, move the parent transform on the Y access and the actual quickslot bar on the X.
                                 // This is done because the parent stretches the entire screen horizontal.
-                                TransformMover.SetPosition(qsParentRectTransform
-                                    , new Vector3(qsParentRectTransform.position.x, _esSettings.QuickSlotBarAbsolute_Y.Value, qsParentRectTransform.position.z));
-                                TransformMover.SetPosition(quickSlotPanel.transform
-                                    , new Vector3(_esSettings.QuickSlotBarAbsolute_X.Value, quickSlotPanel.transform.position.y, quickSlotPanel.transform.position.z));
+                                TransformMover.SetPosition(qsBarRectTransform
+                                    , new Vector3(qsBarRectTransform.position.x, _esSettings.QuickSlotBarAbsolute_Y.Value, qsBarRectTransform.position.z));
+                                TransformMover.SetRectPosition(keyboardRect
+                                    , new Vector3(_esSettings.QuickSlotBarAbsolute_X.Value, keyboardRect.position.y, keyboardRect.position.z));
 
-                                TransformMover.SetPosition(stabilityDisplay.transform
-                                    , new Vector3(_esSettings.StabilityBarAbsolute_X.Value, _esSettings.StabilityBarAbsolute_Y.Value, stabilityDisplay.transform.position.z));
+                                TransformMover.SetPosition(stabilityRect
+                                    , new Vector3(_esSettings.StabilityBarAbsolute_X.Value, _esSettings.StabilityBarAbsolute_Y.Value, stabilityRect.position.z));
                                 break;
                             }
                         default:

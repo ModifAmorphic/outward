@@ -4,22 +4,36 @@ using UnityEngine;
 
 namespace ModifAmorphic.Outward.ExtraSlots.Display
 {
-    internal class TransformMover
+    internal static class TransformMover
     {
-        private readonly IModifLogger _logger;
+        private static IModifLogger _logger => LoggerFactory.GetLogger(ModInfo.ModId);
 
-        public TransformMover(IModifLogger logger)
-        {
-            this._logger = logger;
-        }
         public static void SetPosition(Transform transform, Vector3 newPosition)
         {
+            var before = new Vector3(transform.position.x, transform.position.y, transform.position.z);
             transform.position = new Vector3(newPosition.x, newPosition.y, newPosition.z);
+            _logger.LogTrace($"{nameof(SetPosition)}: Set position of transform {transform.name}" +
+                $"\n\tBefore  - [x={before.x} ; y={before.y}; z={before.z}]" +
+                $"\n\tDesired - [x={newPosition.x} ; y={newPosition.y}; z={newPosition.z}]" + 
+                $"\n\tAfter   - [x={transform.position.x} ; y={transform.position.y}; z={transform.position.z}]");
         }
-        public void MoveAbove(RectTransform refRectTransform, RectTransform targetRectTransform, float yOffset)
+        public static void SetRectPosition(RectTransform transform, Vector3 leftCornerPosition)
+        {
+            //Offset the X position by half, because we're using the left corner as a reference and transform.X is the middle.
+            //Without this offset, a X position of zero would position the quickbar where half of it is off the left side of the screen
+            var offsetX = leftCornerPosition.x + (transform.rect.width / 2f);
+
+            var before = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+            transform.position = new Vector3(offsetX, leftCornerPosition.y, leftCornerPosition.z);
+            _logger.LogTrace($"{nameof(SetPosition)}: Set position of transform {transform.name}" +
+                $"\n\tBefore  - [x={before.x} ; y={before.y}; z={before.z}]" +
+                $"\n\tDesired - [x={leftCornerPosition.x} ; y={leftCornerPosition.y}; z={leftCornerPosition.z}]" +
+                $"\n\tAfter   - [x={transform.position.x} ; y={transform.position.y}; z={transform.position.z}]");
+        }
+        public static void MoveAbove(RectTransform refRectTransform, RectTransform targetRectTransform, float yOffset)
         {
             var refCorners = new Vector3[4];
-            refRectTransform.GetWorldCorners(refCorners = new Vector3[4]);
+            refRectTransform.GetWorldCorners(refCorners);
 
             var targetCorners = new Vector3[4];
             targetRectTransform.GetWorldCorners(targetCorners);
@@ -34,7 +48,7 @@ namespace ModifAmorphic.Outward.ExtraSlots.Display
             targetRectTransform.position = new Vector3(targetRectTransform.position.x, targetRectTransform.position.y + moveDistance, targetRectTransform.position.z);
             //Log result of transform
             var targetCornersAfter = new Vector3[4];
-            targetRectTransform.GetWorldCorners(targetCornersAfter = new Vector3[4]);
+            targetRectTransform.GetWorldCorners(targetCornersAfter);
             _logger.LogTrace($"After {nameof(TransformMover)}.{nameof(MoveAbove)}(): Reference Rect {refRectTransform.name}- Upper Left Corner Pos [x={refCorners[1].x} ; y={refCorners[1].y}; z={refCorners[1].z}]" +
                                 $"\n\tTarget Rect {targetRectTransform.name} - Lower Left Corner Pos [x={targetCornersAfter[0].x} ; y={targetCornersAfter[0].y}; z={targetCornersAfter[0].z}]");
         }
