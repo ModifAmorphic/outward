@@ -44,9 +44,11 @@ StashPacks works by retrieving the contents of a stash whenever a stashpack is d
 # Change Logs
 ## Latest Release ${PACKAGE_VERSION}
 - Fixed bug where taking a pack before it fully synced could cause it to stop working as a stash pack.
-- Corrected a few typos.
 - Lots of fine tuning, internal rework of timed events around bags dropping, syncing and being picked up.
 - Fixed issue with error being logged when main host left the game.
+- Corrected a few typos.
+- *Internal* - Using BepInEx logger.
+- *Internal* - ModifAmorphic.Outward.dll dependency packaged inside mod dll instead of a separate file.
 
 ## Initial Release 1.0.1
 - Initial release.
