@@ -8,6 +8,7 @@ using System.Text;
 using UnityEngine;
 using ModifAmorphic.Outward.Extensions;
 using System.Reflection;
+using System.Collections.Concurrent;
 
 namespace ModifAmorphic.Outward.Modules.Items
 {
@@ -20,15 +21,18 @@ namespace ModifAmorphic.Outward.Modules.Items
         private ResourcesPrefabManager PrefabManager => _prefabManagerFactory.Invoke();
 
         public HashSet<Type> PatchDependencies => new HashSet<Type>() {
-            typeof(LocalizationManagerPatches)
+            typeof(LocalizationManagerPatches),
+            typeof(ItemPatches)
         };
 
         public HashSet<Type> EventSubscriptions => new HashSet<Type>() {
-            typeof(LocalizationManagerPatches)
+            typeof(LocalizationManagerPatches),
+            typeof(ItemPatches)
         };
 
         private Transform _parentTransform;
         private readonly Dictionary<int, ItemLocalization> _itemLocalizations = new Dictionary<int, ItemLocalization>();
+        private readonly ConcurrentDictionary<int, Sprite> _itemIcons = new ConcurrentDictionary<int, Sprite>();
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         internal PreFabricator(string modId, Func<ResourcesPrefabManager> prefabManagerFactory, Func<IModifLogger> loggerFactory)
@@ -38,6 +42,13 @@ namespace ModifAmorphic.Outward.Modules.Items
             this._prefabManagerFactory = prefabManagerFactory;
             LocalizationManagerPatches.LoadItemLocalizationAfter += (itemLocalizations) =>
                     RegisterItemLocalizations(_itemLocalizations, itemLocalizations);
+            ItemPatches.GetItemIconBefore += SetCustomItemIcon;
+        }
+
+        private void SetCustomItemIcon(Item item)
+        {
+            if (item.TryGetCustomIcon(out var icon))
+                item.SetCustomIcon(icon);
         }
 
         public Item CreatePrefab(int baseItemID, int newItemID, string name, string description)
@@ -64,6 +75,7 @@ namespace ModifAmorphic.Outward.Modules.Items
 
             return prefab;
         }
+
         private Transform GetParentTransform()
         {
             if (_parentTransform == null)
