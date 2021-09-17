@@ -92,7 +92,10 @@ namespace ModifAmorphic.Outward.Extensions
         public static bool TryGetCustomIcon(this Item item, out Sprite icon)
         {
             if (item is Skill)
-                throw new ArgumentException("Getting or Setting Icons for Skills is currently not supported.", nameof(item));
+            {
+                icon = default;
+                return false;
+            }
 
             return _itemIcons.TryGetValue(item.ItemID, out icon);
         }
