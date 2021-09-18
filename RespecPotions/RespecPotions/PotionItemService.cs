@@ -105,9 +105,10 @@ namespace ModifAmorphic.Outward.RespecPotions
 
                 foreach (int schoolIndex in skillSchools.Keys)
                 {
-                    var potionName = "Forget " + skillSchools[schoolIndex].Name;
-                    var potionDesc = $"Consuming this potion will cause you to forget all of your {skillSchools[schoolIndex].Name} training.";
-                    var potionPrefab = _preFabricator.CreatePrefab(basePrefab, ModInfo.ItemStartID - schoolIndex, potionName, potionDesc);
+                    var potionName = RespecConstants.PotionNameFormat.Replace("{SchoolName}", skillSchools[schoolIndex].Name);
+                    var potionDesc = RespecConstants.PotionDescFormat.Replace("{SchoolName}", skillSchools[schoolIndex].Name);
+
+                    var potionPrefab = _preFabricator.CreatePrefab(basePrefab, RespecConstants.ItemStartID - schoolIndex, potionName, potionDesc);
 
                     var iconFileName = RespecConstants.CustomSchoolIcons.TryGetValue(skillSchools[schoolIndex].Name, out var iFile) ? iFile : RespecConstants.CustomSchoolIcons["Default"];
 

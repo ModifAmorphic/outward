@@ -2,20 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RunPostBuildEvent>Always</RunPostBuildEvent>
-    <AssemblyName>ModifAmorphic.Outward.RespecPotions</AssemblyName>
-    <RootNamespace>ModifAmorphic.Outward.RespecPotions</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Costura.Fody" Version="5.6.0">
-      <PrivateAssets>all</PrivateAssets>
-      <!--<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>-->
+    <PackageReference Include="ModifAmorphic.Outward" Version="0.4.7">
+      <PrivateAssets></PrivateAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\outward-shared\outward\Outward.Shared\ModifAmorphic.Outward.Shared\ModifAmorphic.Outward.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,10 +27,6 @@
       <HintPath>..\..\outward-shared-assemblies\BepInEx.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="SideLoader">
-      <HintPath>..\..\outward-shared-assemblies\SideLoader.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.dll</HintPath>
       <Private>false</Private>
@@ -48,5 +36,4 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
-
 </Project>

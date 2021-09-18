@@ -6,6 +6,9 @@ namespace ModifAmorphic.Outward.RespecPotions.Settings
 {
     internal static class RespecConstants
     {
+
+        public const int ItemStartID = -13010000;
+
         public readonly static List<(string SceneName, string VendorPath)> VendorPaths = new List<(string SceneName, string VendorPath)>()
         {
             { ("Harmattan", "/Interactions/NPCs/NPC_Minor/MarketTradersHighPrices/UNPC_DLC_Market_Alchemy/NPC/MerchantSettings") },
@@ -21,6 +24,9 @@ namespace ModifAmorphic.Outward.RespecPotions.Settings
         };
 
         public static string IconPath = Path.Combine("icons", "ForgetPotions");
+        public const string PotionNameFormat = "Forget {SchoolName}";
+        public const string PotionDescFormat = "Consuming this potion will cause you to forget all of your {SchoolName} training.";
+
         /// <summary>
         /// Dictionary collection of Icon File Names, indexed by School Name.
         /// Dictionary string = SchoolName,

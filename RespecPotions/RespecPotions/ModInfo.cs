@@ -10,7 +10,5 @@
         public const string ModVersion = "0.0.1";
 #endif
         public const string MinimumConfigVersion = "0.0.1";
-
-        public const int ItemStartID = -13010000;
     }
 }
