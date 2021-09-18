@@ -47,6 +47,8 @@ StashPacks works by retrieving the contents of a stash whenever a stashpack is d
 - Lots of fine tuning, internal rework of timed events around bags dropping, syncing and being picked up.
 - Fixed issue with error being logged when main host left the game.
 - Corrected a few typos.
+- Removed Dependency on Mefino-Outward_Config_Manager.
+- Fixed bug with ConfigurationManager install being required. A ConfigurationManager is now truly optional.
 - *Internal* - Using BepInEx logger.
 - *Internal* - ModifAmorphic.Outward.dll dependency packaged inside mod dll instead of a separate file.
 
