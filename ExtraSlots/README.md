@@ -37,6 +37,10 @@ Extra QuickSlots enables additional Keyboard QuickSlots and repositioning of the
 &nbsp;
 # Change Logs
 ## Latest Version ${PACKAGE_VERSION}
+- Removed Dependency on Mefino-Outward_Config_Manager.
+- Fixed bug with ConfigurationManager install being required. A ConfigurationManager is now truly optional.
+
+## Version 1.0.1
 - Repositioning of stability bar should now work consistently without requiring a restart.
 - Quickslot bar absolute positioning now uses the left bottom corner instead of the center X position.
 - Updated internal logging to BepInEx logger.
@@ -47,24 +51,4 @@ Extra QuickSlots enables additional Keyboard QuickSlots and repositioning of the
 - Implemented minumum versions into config. Config to be recreated from scratch if minimum version is not met.
   - Noticed issues when updating from older versions of this mod caused by my inability to name anything correctly the first, second or third time. Decided on a clean start for Beta.
 - Reworked to get rid of the "sidecar" shared mod that was loading alongside with ExtraSlots with its own configuration.
-
-## Alpha Version 0.3.7
-- Settings in ConfigurationManager use friendly display names instead of their internal variable / config names.
-- Stability and Quickslot Bar positioning settings no longer advanced and show/hide depending on alignment setting selected.
-- New Absolute Positoning option added to alignment options.
- - The QuickSlot* and Stability Bars will be moved to the bottom right corner the first time this new Alignment option is set.
-   - *If the "Center QuickSlot bar" option is enabled, the X Position setting of the QuickSlot will be effectively ignored. Disable centering if you want to control the X position.
-- *Internal* - Rewrite of how config settings and the configuration handler are managed. Again...
-
-## Alpha Version 0.2.0
-- Fix for infinite load issue when the  __"16 gamepad quickslots"__ setting was enabled in [Vheos Mod Pack](https://github.com/Vheos777/OutwardMods).
-- UI Config changes.
-  - Changing any UI setting should now be applied without restarting.
-  - ExtraSlotsAlignmentOption renamed to __QuickSlotBarAlignmentOption__
-  - Additional UI Options for offsetting Quickslot and Stability bars. (requires "Advance settings" to be enabled for now).
-- All settings, except ExtraQuickSlots, should now be applied without requiring a restart.
-- Lots of internal code cleanup
-
-## Alpha Version 0.1.0
-- Initial Release of Extra Quickslots
 
