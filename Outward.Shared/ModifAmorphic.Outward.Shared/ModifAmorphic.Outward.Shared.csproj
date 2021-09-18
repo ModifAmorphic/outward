@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>ModifAmorphic.Outward.v0_0_0_6</AssemblyName>
+    <AssemblyName>ModifAmorphic.Outward.Shared.v0_0_0_6</AssemblyName>
     <RootNamespace>ModifAmorphic.Outward</RootNamespace>
     <Authors>ModifAmorphic.Outward</Authors>
     <Product>ModifAmorphic.Outward</Product>
@@ -41,6 +41,9 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
   </ItemGroup>
 
