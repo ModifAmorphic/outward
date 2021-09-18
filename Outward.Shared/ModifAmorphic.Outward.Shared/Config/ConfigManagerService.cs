@@ -15,12 +15,18 @@ namespace ModifAmorphic.Outward.Config
             _reflectedConfigManager = _unityPlugin.GetComponent("ConfigurationManager.ConfigurationManager");
             if (_reflectedConfigManager == null)
             {
-                throw new MissingMemberException(typeof(BaseUnityPlugin).Name, "ConfigurationManager.ConfigurationManager");
+#if DEBUG
+                var _logger = LoggerFactory.ConfigureLogger(DebugLoggerInfo.ModId, DebugLoggerInfo.ModName, DebugLoggerInfo.DebugLogLevel);
+                _logger.LogWarning("ConfigurationManager.ConfigurationManager Component not found. Refreshing will be disabled.\n" + new MissingMemberException(typeof(BaseUnityPlugin).Name, "ConfigurationManager.ConfigurationManager"));
+#endif
             }
         }
 
         public void RefreshConfigManager()
         {
+            if (_reflectedConfigManager == null)
+                return;
+
             var buildSettingList = _reflectedConfigManager.GetType().GetMethod("BuildSettingList");
 #if DEBUG
             var _logger = LoggerFactory.ConfigureLogger(DebugLoggerInfo.ModId, DebugLoggerInfo.ModName, DebugLoggerInfo.DebugLogLevel);
