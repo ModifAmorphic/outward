@@ -29,25 +29,25 @@ namespace ModifAmorphic.Outward.RespecPotions.Settings
 
         /// <summary>
         /// Dictionary collection of Icon File Names, indexed by School Name.
-        /// Dictionary string = SchoolName,
+        /// Dictionary string = SkillSchool.name,
         ///            string = IconFileName
         /// </summary>
         public readonly static Dictionary<string, string> CustomSchoolIcons = new Dictionary<string, string>()
         {
             {  "Default", "Default.png" },
-            {  "Mercenary", "Mercenary.png" },
-            {  "Rogue Engineer", "Rogue Engineer.png" },
-            {  "Kazite Spellblade", "Kazite Spellblade.png" },
-            {  "Cabal Hermit", "Cabal Hermit.png" },
-            {  "Rune Sage", "Rune Sage.png" },
-            {  "Wild Hunter", "Wild Hunter.png" },
-            {  "Philosopher", "Philosopher.png" },
-            {  "Warrior Monk", "Warrior Monk.png" },
-            //{  "The Speedster", "The Speedster.png" },
-            //{  "Hex Mage", "Hex Mage.png" },
-            //{  "Primal Ritualist", "Primal Ritualist.png" },
-            //{  "Weapon Master", "Weapon Master.png" },
-            //{  "Specialist", "Specialist.png" }
+            {  "AbrassarMercenary", "Mercenary.png" },
+            {  "AbrassarRogue", "Rogue Engineer.png" },
+            {  "ChersoneseEto", "Kazite Spellblade.png" },
+            {  "ChersoneseHermit", "Cabal Hermit.png" },
+            {  "EmmerkarSage", "Rune Sage.png" },
+            {  "EmmerkarHunter", "Wild Hunter.png" },
+            {  "HallowedMarshPhilosopher", "Philosopher.png" },
+            {  "HallowedMarshWarriorMonk", "Warrior Monk.png" },
+            {  "HarmattanSpeedster", "The Speedster.png" },
+            {  "HarmattanHexMage", "Hex Mage.png" },
+            {  "CalderaThePrimalRitualist", "Primal Ritualist.png" },
+            {  "CalderaWeaponMaster", "Weapon Master.png" },
+            {  "CalderaSpecialist", "Specialist.png" }
         };
     }
 }

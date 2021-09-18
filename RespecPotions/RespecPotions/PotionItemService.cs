@@ -98,8 +98,6 @@ namespace ModifAmorphic.Outward.RespecPotions
                 characterInstances.TryGetSkillSchools(out var skillSchools);
 
                 var prefabItems = new List<Item>();
-                //var prefabManager = _services.GetService<ResourcesPrefabManager>();
-                //var prefabricator = _services.GetService<PreFabricator>();
 
                 var basePrefab = _resourcesPrefabManager.GetItemPrefab(4300220);
 
@@ -110,7 +108,7 @@ namespace ModifAmorphic.Outward.RespecPotions
 
                     var potionPrefab = _preFabricator.CreatePrefab(basePrefab, RespecConstants.ItemStartID - schoolIndex, potionName, potionDesc);
 
-                    var iconFileName = RespecConstants.CustomSchoolIcons.TryGetValue(skillSchools[schoolIndex].Name, out var iFile) ? iFile : RespecConstants.CustomSchoolIcons["Default"];
+                    var iconFileName = GetIconFilePath(skillSchools[schoolIndex].name, iconDir);
 
                     Logger.LogDebug($"{nameof(PotionItemService)}::{nameof(AddForgetPotionPrefabs)}: Created '{potionPrefab.Name}' prefab with ItemID {potionPrefab.ItemID}.");
                     potionPrefab.ClearEffects()
@@ -133,6 +131,15 @@ namespace ModifAmorphic.Outward.RespecPotions
                 Logger.LogException($"{nameof(PotionItemService)}::{nameof(AddForgetPotionPrefabs)}: Exception adding Potion Prefabs.", ex);
                 coroutineStarted = false;
             }
+        }
+        private string GetIconFilePath(string schoolname, string iconDirectory)
+        {
+            if (RespecConstants.CustomSchoolIcons.TryGetValue(schoolname, out var iFile) && File.Exists(Path.Combine(iconDirectory, iFile)))
+                return Path.Combine(iconDirectory, iFile);
+
+            string otherIcon = Path.Combine(iconDirectory, schoolname + ".png");
+            
+            return File.Exists(otherIcon) ? otherIcon : RespecConstants.CustomSchoolIcons["Default"];
         }
     }
 }
