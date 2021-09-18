@@ -41,13 +41,13 @@ namespace ModifAmorphic.Outward.ExtraSlots.Events
             MainSettingsChanged?.Invoke(sender, extraSlotsSettings);
         }
 
-        public static event EventHandler<ExtraSlotsSettings> LoggerSettingsChanged;
-        public static void RaiseLoggerSettingsChanged(object sender, ExtraSlotsSettings extraSlotsSettings)
-        {
-#if DEBUG
-            UnityEngine.Debug.Log($"[{ModInfo.ModName}] - Triggering {nameof(LoggerSettingsChanged)} Event. {nameof(LoggerSettingsChanged)} null? {LoggerSettingsChanged == null}");
-#endif
-            LoggerSettingsChanged?.Invoke(sender, extraSlotsSettings);
-        }
+//        public static event EventHandler<ExtraSlotsSettings> LoggerSettingsChanged;
+//        public static void RaiseLoggerSettingsChanged(object sender, ExtraSlotsSettings extraSlotsSettings)
+//        {
+//#if DEBUG
+//            UnityEngine.Debug.Log($"[{ModInfo.ModName}] - Triggering {nameof(LoggerSettingsChanged)} Event. {nameof(LoggerSettingsChanged)} null? {LoggerSettingsChanged == null}");
+//#endif
+//            LoggerSettingsChanged?.Invoke(sender, extraSlotsSettings);
+//        }
     }
 }

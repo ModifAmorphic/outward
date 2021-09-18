@@ -1,11 +1,10 @@
 # Summary
 Extra QuickSlots enables additional Keyboard QuickSlots and repositioning of the QuickSlot and Stability Bars.
-## *** The Latest Beta version of this mod will reset all config settings back to their defaults! ***
 
 1. Set the amount of extra keyboard Quick Slots.
 2. Restart the game.
 3. Set the positions of both bars.
-\
+
 &nbsp;
 - - - -
 # Configuration Instructions
@@ -34,9 +33,14 @@ Extra QuickSlots enables additional Keyboard QuickSlots and repositioning of the
   - For instructions, see the [Thunderstore](https://outward.fandom.com/wiki/Installing_Mods#Thunderstore) of the Outward Wiki
 - Install SideLoader by sinai-dev [Thunderstore](https://outward.thunderstore.io/package/sinai-dev/SideLoader/)
 - Install Outward Config Manager by Mefino [Thunderstore](https://outward.thunderstore.io/package/Mefino/Outward_Config_Manager/)
-\
+
 &nbsp;
 # Change Logs
+## Latest Version ${PACKAGE_VERSION}
+- Repositioning of stability bar should now work consistently without requiring a restart.
+- Quickslot bar absolute positioning now uses the left bottom corner instead of the center X position.
+- Updated internal logging to BepInEx logger.
+- Other Minor changes for release.
 
 ## Beta Version 0.4.0
 - Beta release of Extra QuickSlots!
