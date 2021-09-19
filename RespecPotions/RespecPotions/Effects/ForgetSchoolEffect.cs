@@ -5,31 +5,12 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.RespecPotions
+namespace ModifAmorphic.Outward.RespecPotions.Effects
 {
     public class ForgetSchoolEffect : Effect
     {
-        public float AffectQuantity = 10f;
-        public float AffectQuantityOnAI = -99999f;
-        public bool IsModifier;
-        public bool InformSourceCharacter;
         [SerializeField]
         public int SchoolIndex;
-
-        protected override KeyValuePair<string, System.Type>[] GenerateSignature()
-        {
-            return new KeyValuePair<string, System.Type>[1]
-            {
-                new KeyValuePair<string, System.Type>("Value", typeof (float))
-            };
-        }
-
-        public override void SetValue(string[] _data)
-        {
-            if (_data != null && _data.Length < 1)
-                return;
-            int.TryParse(_data[0], out this.SchoolIndex);
-        }
 
         protected override void ActivateLocally(Character _affectedCharacter, object[] _infos)
         {
@@ -47,7 +28,9 @@ namespace ModifAmorphic.Outward.RespecPotions
                 var breakthroughs = skills.Count(s => s.IsBreakthrough);
 
                 if (breakthroughs > 0 && schoolService.TryRefundBreakthroughs(_affectedCharacter.UID, breakthroughs, out breakThroughsReclaimed))
-                { }
+                { 
+                    //TODO Alert about breakthrough being refunded
+                }
             }
             
         }

@@ -7,6 +7,7 @@ using ModifAmorphic.Outward.Models;
 using ModifAmorphic.Outward.Modules.Character;
 using ModifAmorphic.Outward.Modules.Items;
 using ModifAmorphic.Outward.Modules.Merchants;
+using ModifAmorphic.Outward.RespecPotions.Effects;
 using ModifAmorphic.Outward.RespecPotions.Settings;
 using System;
 using System.Collections;
@@ -115,6 +116,11 @@ namespace ModifAmorphic.Outward.RespecPotions
                         .ConfigureCustomIcon(Path.Combine(iconDir, iconFileName))
                         .AddEffect<ForgetSchoolEffect>()
                         .SchoolIndex = schoolIndex;
+                    potionPrefab.AddEffect<AutoKnock>();
+                    potionPrefab.AddEffect<BurnHealthEffect>()
+                        .AffectQuantity = .75f;
+                    potionPrefab.AddEffect<BurnStaminaEffect>()
+                        .AffectQuantity = .99f;
 
                     var itemStats = potionPrefab.gameObject.GetOrAddComponent<ItemStats>();
                     itemStats.SetBaseValue(_settings.PotionValue.Value);
