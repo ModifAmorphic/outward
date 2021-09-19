@@ -24,7 +24,7 @@ namespace ModifAmorphic.Outward.Config
 #endif
         }
 
-        public ConfigSetting<T> BindConfigSetting<T>(ConfigSetting<T> configSetting, Action<SettingValueChangedArgs<T>> onValueChange = null, bool bindRaisesChangeEvent = false)
+        public ConfigSetting<T> BindConfigSetting<T>(ConfigSetting<T> configSetting, Action<SettingValueChangedArgs<T>> onValueChange = null, bool bindRaisesChangeEvent = false, bool suppressValueChanveEvents = false)
         {
             //This TryGetEntry is pretty much a useless check because Bind does it anyway even though
             //the documentation suggests otherwise.
@@ -33,7 +33,7 @@ namespace ModifAmorphic.Outward.Config
             {
                 configEntry = Config.Bind(configSetting.ToConfigDefinition(), configSetting.DefaultValue, configSetting.ToConfigDescription());
             }
-            configSetting.SuppressValueChangedEvents = !bindRaisesChangeEvent;
+            configSetting.SuppressValueChangedEvents = suppressValueChanveEvents;
             configSetting.BoundConfigEntry = configEntry;
             configSetting.IsVisible = configEntry.Description.ConfigurationManagerAttributes().Browsable ?? true;
             configSetting.ValueChanged += (object sender, SettingValueChangedArgs<T> e) => onValueChange?.Invoke(e);
@@ -42,7 +42,10 @@ namespace ModifAmorphic.Outward.Config
 #if DEBUG
             _logger.LogDebug($"Bound ConfigSetting: {configSetting.Name} to ConfigEntry {configEntry.Definition.Key} with value {configEntry.Value}");
 #endif
-            configSetting.SuppressValueChangedEvents = bindRaisesChangeEvent;
+            if (bindRaisesChangeEvent)
+                onValueChange?.Invoke(new SettingValueChangedArgs<T>() { 
+                    NewValue = configSetting.BoundConfigEntry.Value
+                });
             return configSetting;
         }
 

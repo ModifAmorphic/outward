@@ -59,7 +59,7 @@ namespace ModifAmorphic.Outward.Modules
         private void ConfigurePatchLoggers<T>(string modId, IModifModule module, Func<IModifLogger> loggerFactory)
         {
             foreach (var t in module.PatchDependencies)
-                PatchLoggerRegisterService.AddPatchLogger(t, modId, loggerFactory);
+                PatchLoggerRegisterService.AddOrUpdatePatchLogger(t, modId, loggerFactory);
         }
         private IModifModule ApplyPatches(IModifModule module)
         {
