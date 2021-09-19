@@ -1,5 +1,5 @@
 # Summary
-Respec Potions! Undo poor life choices with a nominal fee and the tilt of a bottle. 
+Respec Potions! Undo poor life choices with the tilt of a bottle (and a nominal fee). 
 &nbsp;
 - - - -
 &nbsp;

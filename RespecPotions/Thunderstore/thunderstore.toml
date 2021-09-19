@@ -5,7 +5,7 @@ schemaVersion = "0.0.1"
 namespace = "ModifAmorphic"
 name = "RespecPotions"
 versionNumber = "${PACKAGE_VERSION}"
-description = "Respec Potions"
+description = "Blackout Potions! Undo poor life choices with the tilt of a bottle (and a nominal fee)."
 websiteUrl = "https://github.com/ModifAmorphic/outward/tree/mods/respec-potions/RespecPotions"
 containsNsfwContent = false
 

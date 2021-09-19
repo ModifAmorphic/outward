@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModifAmorphic.Outward.RespecPotions", "RespecPotions\ModifAmorphic.Outward.RespecPotions.csproj", "{79695EE3-5826-4A01-BA36-C2D3E5DA304C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModifAmorphic.Outward.RespecPotions", "RespecPotions\ModifAmorphic.Outward.RespecPotions.csproj", "{79695EE3-5826-4A01-BA36-C2D3E5DA304C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

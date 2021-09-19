@@ -41,6 +41,9 @@ namespace ModifAmorphic.Outward.RespecPotions.Effects
             if (_affectedCharacter.Stats.CurrentHealth == 1)
                 affectAmount = -_affectedCharacter.Stats.CurrentHealth;
 
+            Logging.LoggerFactory.GetLogger(ModInfo.ModId).LogTrace($"HEalth Burn - MaxHealth: {_affectedCharacter.Stats.MaxHealth}, " +
+                $"CurrentHealth: {_affectedCharacter.Stats.CurrentHealth}, BurntHealth: {_affectedCharacter.Stats.BurntHealth}, affectAmount={affectAmount}");
+
             _affectedCharacter.Stats.RestoreBurntHealth(affectAmount, false);
         }
     }

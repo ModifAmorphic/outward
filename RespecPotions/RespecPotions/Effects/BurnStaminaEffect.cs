@@ -37,6 +37,9 @@ namespace ModifAmorphic.Outward.RespecPotions.Effects
             if (affectAmount * -1f >= _affectedCharacter.Stats.CurrentStamina)
                 affectAmount = -_affectedCharacter.Stats.CurrentStamina + 1f;
 
+            Logging.LoggerFactory.GetLogger(ModInfo.ModId).LogTrace($"Stamina Burn - MaxStamina: {_affectedCharacter.Stats.MaxStamina}, " +
+                $"CurrentStamina: {_affectedCharacter.Stats.CurrentStamina}, BurntStamina: {_affectedCharacter.Stats.BurntStamina}, affectAmount={affectAmount}");
+
             _affectedCharacter.Stats.RestoreBurntStamina(affectAmount, false);
         }
     }
