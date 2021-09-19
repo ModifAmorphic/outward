@@ -205,7 +205,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             const float waitTime = .25f;
 
             var levelCoroutine = _instances.GetCoroutine<LevelCoroutines>();
-            levelCoroutine.AfterLevelLoaded(networkLevelLoader, action, timeoutSeconds, waitTime);
+            levelCoroutine.InvokeAfterLevelLoaded(networkLevelLoader, action, timeoutSeconds, waitTime);
         }
         protected void DoAfterPlayerLeftCoroutine(string playerUID, Action action)
         {
@@ -218,42 +218,23 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
         }
         protected void DoAfterBagLoaded(Bag bag, Action<Item> action)
         {
-            const int timeoutSeconds = 30;
-            const float waitTime = .2f;
-
-            _instances.TryGetItemManager(out var itemManager);
-            var bagUID = bag.UID.ToString();
-            var itemCoroutines = _instances.GetCoroutine<ItemCoroutines>();
-            Item getBagItem(string uid) => itemManager.GetItem(uid);
-            bool isBagReady()
-            {
-                var worldBag = getBagItem(bagUID);
-                return worldBag != null &&
-                    !string.IsNullOrWhiteSpace(worldBag.PreviousOwnerUID) &&
-                    worldBag.FullyInitialized &&
-                    worldBag.IsWorldDetectable;
-            }
-            bool cancelIf() => getBagItem(bagUID) == null;
-
-            itemCoroutines.InvokeAfterItemLoaded(bagUID, isBagReady, action, timeoutSeconds, waitTime, cancelIf);
+            DoAfterBagLoaded(bag.UID.ToString(), action);
         }
         protected void DoAfterBagLoaded(string bagUID, Action<Item> action)
         {
             const int timeoutSeconds = 30;
             const float waitTime = .2f;
 
-            _instances.TryGetItemManager(out var itemManager);
-
             var itemCoroutines = _instances.GetCoroutine<ItemCoroutines>();
-            bool isBagReady()
+            bool isBagReady(Item bagItem)
             {
-                var worldBag = itemManager.GetItem(bagUID);
-                return worldBag != null &&
-                    !string.IsNullOrWhiteSpace(worldBag.PreviousOwnerUID) &&
-                    worldBag.FullyInitialized &&
-                    worldBag.IsWorldDetectable;
+                return !string.IsNullOrWhiteSpace(bagItem.PreviousOwnerUID) &&
+               bagItem.FullyInitialized &&
+               bagItem.IsWorldDetectable;
             }
-            itemCoroutines.InvokeAfterItemLoaded(bagUID, isBagReady, action, timeoutSeconds, waitTime);
+            bool cancelIf(Item bagItem) => bagItem == null;
+
+            itemCoroutines.InvokeAfterItemLoaded(bagUID, isBagReady, action, timeoutSeconds, waitTime, cancelIf);
         }
         protected void DoAfterBagTracked(Bag bag, BagStateService bagStateService, Action action)
         {
@@ -342,7 +323,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             const float waitTime = .1f;
 
             var itemCoroutines = _instances.GetCoroutine<ItemCoroutines>();
-            itemCoroutines.StartAfterItemDestroyed(bagUID, action, timeoutSeconds, waitTime);
+            itemCoroutines.InvokeAfterItemDestroyed(bagUID, action, timeoutSeconds, waitTime);
         }
         #endregion
     }
