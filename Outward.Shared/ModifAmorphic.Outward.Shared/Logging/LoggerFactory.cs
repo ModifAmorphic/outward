@@ -40,10 +40,10 @@ namespace ModifAmorphic.Outward.Logging
         {
             if (logger.LogLevel != logLevel)
             {
-                if (logger is BepInExLogger bepInExLogger)
-                    bepInExLogger.LogLevel = logLevel;
-                else if (logger is Logger modifLogger)
-                    modifLogger.LogLevel = logLevel;
+                if (logger is BepInExLogger)
+                    ((BepInExLogger)logger).LogLevel = logLevel;
+                else if (logger is Logger)
+                    ((Logger)logger).LogLevel = logLevel;
                 else
                     throw new ArgumentException($"'{nameof(logger)}' Argument's base type was unexpected. Supported base types are '{typeof(Logger).FullName}' or '{typeof(BepInExLogger).FullName}'."
                         , nameof(logger));

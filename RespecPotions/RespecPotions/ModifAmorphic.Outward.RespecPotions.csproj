@@ -2,12 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>ModifAmorphic.Outward.Shared.v0_0_0_7</AssemblyName>
-    <RootNamespace>ModifAmorphic.Outward</RootNamespace>
-    <Authors>ModifAmorphic.Outward</Authors>
-    <Product>ModifAmorphic.Outward</Product>
-    <PackageId>ModifAmorphic.Outward</PackageId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ModifAmorphic.Outward" Version="0.4.8">
+      <PrivateAssets></PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="0Harmony">
@@ -26,14 +27,6 @@
       <HintPath>..\..\outward-shared-assemblies\BepInEx.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="Rewired_Core">
-      <HintPath>..\..\outward-shared-assemblies\Rewired_Core.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="SideLoader">
-      <HintPath>..\..\outward-shared-assemblies\SideLoader.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.dll</HintPath>
       <Private>false</Private>
@@ -42,13 +35,5 @@
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="UnityEngine.ImageConversionModule">
-      <HintPath>..\..\outward-shared-assemblies\UnityEngine.ImageConversionModule.dll</HintPath>
-    </Reference>
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Modules\Save\Patches\" />
-  </ItemGroup>
-
 </Project>

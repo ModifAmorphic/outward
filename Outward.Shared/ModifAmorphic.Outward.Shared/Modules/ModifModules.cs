@@ -1,6 +1,7 @@
 ﻿using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Character;
 using ModifAmorphic.Outward.Modules.Items;
+using ModifAmorphic.Outward.Modules.Merchants;
 using ModifAmorphic.Outward.Modules.QuickSlots;
 using System;
 
@@ -33,6 +34,11 @@ namespace ModifAmorphic.Outward.Modules
                 new PreFabricator(modId, 
                     () => ResourcesPrefabManager.Instance, 
                     () => LoggerFactory.GetLogger(modId)));
+        }
+        public static MerchantModule GetMerchantModule(string modId)
+        {
+            return ModuleService.GetModule<MerchantModule>(modId, () =>
+                new MerchantModule(() => LoggerFactory.GetLogger(modId)));
         }
     }
 }
