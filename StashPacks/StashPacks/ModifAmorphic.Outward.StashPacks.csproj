@@ -10,7 +10,7 @@
       <PrivateAssets>all</PrivateAssets>
       --><!--<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>--><!--
     </PackageReference>-->
-    <PackageReference Include="ModifAmorphic.Outward" Version="0.4.9">
+    <PackageReference Include="ModifAmorphic.Outward" Version="0.4.10">
     </PackageReference>
   </ItemGroup>
 
