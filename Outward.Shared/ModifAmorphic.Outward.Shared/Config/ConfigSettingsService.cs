@@ -24,7 +24,7 @@ namespace ModifAmorphic.Outward.Config
 #endif
         }
 
-        public ConfigSetting<T> BindConfigSetting<T>(ConfigSetting<T> configSetting, Action<SettingValueChangedArgs<T>> onValueChange = null, bool bindRaisesChangeEvent = false, bool suppressValueChanveEvents = false)
+        public ConfigSetting<T> BindConfigSetting<T>(ConfigSetting<T> configSetting, Action<SettingValueChangedArgs<T>> onValueChange = null, bool bindRaisesChangeEvent = false, bool suppressValueChangeEvents = false)
         {
             //This TryGetEntry is pretty much a useless check because Bind does it anyway even though
             //the documentation suggests otherwise.
@@ -33,12 +33,15 @@ namespace ModifAmorphic.Outward.Config
             {
                 configEntry = Config.Bind(configSetting.ToConfigDefinition(), configSetting.DefaultValue, configSetting.ToConfigDescription());
             }
-            configSetting.SuppressValueChangedEvents = suppressValueChanveEvents;
+            //Surpress all change events binding is complete.
+            configSetting.SuppressValueChangedEvents = true;
             configSetting.BoundConfigEntry = configEntry;
             configSetting.IsVisible = configEntry.Description.ConfigurationManagerAttributes().Browsable ?? true;
             configSetting.ValueChanged += (object sender, SettingValueChangedArgs<T> e) => onValueChange?.Invoke(e);
             configEntry.SettingChanged += (object sender, EventArgs e) => configSetting.Value = configSetting.BoundConfigEntry.Value;
             configSetting.Value = configSetting.BoundConfigEntry.Value;
+            //after binding, set this to the desired value being passed in
+            configSetting.SuppressValueChangedEvents = suppressValueChangeEvents;
 #if DEBUG
             _logger.LogDebug($"Bound ConfigSetting: {configSetting.Name} to ConfigEntry {configEntry.Definition.Key} with value {configEntry.Value}");
 #endif
@@ -154,7 +157,7 @@ namespace ModifAmorphic.Outward.Config
         /// <param name="configSetting">The ConfigSetting to hide.</param>
         public void HideSettingAndRefresh<T>(ConfigSetting<T> configSetting)
         {
-            if (configSetting.IsVisible || (configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes().Browsable ?? true))
+            if (configSetting.IsVisible || (configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes()?.Browsable ?? true))
             {
                 configSetting.Hide();
                 _configManagerService.RefreshConfigManager();
@@ -167,7 +170,7 @@ namespace ModifAmorphic.Outward.Config
         /// <param name="configSetting">The ConfigSetting to show.</param>
         public void ShowSettingAndRefresh<T>(ConfigSetting<T> configSetting)
         {
-            if (!configSetting.IsVisible || !(configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes().Browsable ?? true))
+            if (!configSetting.IsVisible || !(configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes()?.Browsable ?? true))
             {
                 configSetting.Show();
                 _configManagerService.RefreshConfigManager();

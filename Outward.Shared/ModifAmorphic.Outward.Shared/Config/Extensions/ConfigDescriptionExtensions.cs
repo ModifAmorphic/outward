@@ -10,5 +10,12 @@ namespace ModifAmorphic.Outward.Config.Extensions
             return configDescription.Tags.FirstOrDefault(t =>
                 t.GetType() == typeof(ConfigurationManagerAttributes)) as ConfigurationManagerAttributes;
         }
+        public static bool TryGetConfigurationManagerAttributes(this ConfigDescription configDescription, out ConfigurationManagerAttributes configurationManagerAttributes)
+        {
+            configurationManagerAttributes = configDescription.Tags.FirstOrDefault(t =>
+                t.GetType() == typeof(ConfigurationManagerAttributes)) as ConfigurationManagerAttributes;
+
+            return configurationManagerAttributes != default;
+        }
     }
 }
