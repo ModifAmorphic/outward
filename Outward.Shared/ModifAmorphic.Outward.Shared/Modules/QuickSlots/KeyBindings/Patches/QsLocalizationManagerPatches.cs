@@ -8,7 +8,7 @@ using System.Linq;
 namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
 {
     [HarmonyPatch(typeof(LocalizationManager), "Awake")]
-    internal static class LocalizationManagerPatches
+    internal static class QsLocalizationManagerPatches
     {
         static readonly List<ILocalizeListener> _customLocalizationListeners = new List<ILocalizeListener>();
 

@@ -80,11 +80,10 @@ namespace ModifAmorphic.Outward.Modules.Items
         {
             if (_parentTransform == null)
             {
-                var parentTransform = new GameObject(_modId.Replace(".", "_") + "_prefabs").transform;
-                UnityEngine.Object.DontDestroyOnLoad(parentTransform.gameObject);
-                parentTransform.hideFlags |= HideFlags.HideAndDontSave;
-                parentTransform.gameObject.SetActive(false);
-                _parentTransform = parentTransform;
+                _parentTransform = new GameObject(_modId.Replace(".", "_") + "_item_prefabs").transform;
+                UnityEngine.Object.DontDestroyOnLoad(_parentTransform.gameObject);
+                _parentTransform.hideFlags |= HideFlags.HideAndDontSave;
+                _parentTransform.gameObject.SetActive(false);
             }
             return _parentTransform;
         }

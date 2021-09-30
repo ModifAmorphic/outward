@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Events;
+using ModifAmorphic.Outward.Localization;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.Patches;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -69,6 +71,11 @@ namespace ModifAmorphic.Outward.Modules
                 {
                     _patchedTypes.TryAdd(t, default);
                     GetModPatcher().PatchAll(t);
+                    if (t == typeof(LocalizationManagerPatches))
+                    {
+                        //wake up!
+                        LocalizationService.Init();
+                    }
                 }
             }
             return module;
