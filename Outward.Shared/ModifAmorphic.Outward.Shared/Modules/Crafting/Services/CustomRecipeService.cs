@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Modules.Crafting
+namespace ModifAmorphic.Outward.Modules.Crafting.Services
 {
-    class CustomRecipeService
+    internal class CustomRecipeService
     {
         private readonly Func<RecipeManager> _recipeManagerFactory;
         private RecipeManager _recipeManager => _recipeManagerFactory.Invoke();

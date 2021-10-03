@@ -1,6 +1,7 @@
 ﻿using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Character;
 using ModifAmorphic.Outward.Modules.Crafting;
+using ModifAmorphic.Outward.Modules.Crafting.Services;
 using ModifAmorphic.Outward.Modules.Items;
 using ModifAmorphic.Outward.Modules.Merchants;
 using ModifAmorphic.Outward.Modules.QuickSlots;
@@ -41,6 +42,7 @@ namespace ModifAmorphic.Outward.Modules
             return ModuleService.GetModule<ItemVisualizer>(modId, () =>
                 new ItemVisualizer(
                     () => ResourcesPrefabManager.Instance,
+                    () => ItemManager.Instance,
                     () => LoggerFactory.GetLogger(modId)));
         }
         public static MerchantModule GetMerchantModule(string modId)
@@ -58,6 +60,7 @@ namespace ModifAmorphic.Outward.Modules
                     new CustomRecipeService(
                         () => RecipeManager.Instance,
                         () => LoggerFactory.GetLogger(modId)),
+                    new CustomCraftingService(() => LoggerFactory.GetLogger(modId)),
                     () => LoggerFactory.GetLogger(modId)));
         }
     }

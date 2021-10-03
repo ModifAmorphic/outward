@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.Modules.Crafting
+namespace ModifAmorphic.Outward.Modules.Crafting.Services
 {
     internal class CraftingMenuService
     {
@@ -48,7 +48,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             menuTabs[menuTabs.Length - 1] = newMenuTab;
             characterUI.SetPrivateField("m_menuTabs", menuTabs);
             
-            Logger.LogDebug($"Resized m_menuTabs to {menuTabs.Length}");
+            Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(AddMenuTab)}: Resized m_menuTabs to {menuTabs.Length}");
             
             //activate the new menu gameobject
             newUiMenuTabGo.SetActive(isActive);
@@ -90,13 +90,19 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             CopyFields(craftMenu, craftMenuTemplate);
 
             UnityEngine.Object.DestroyImmediate(craftMenu);
+            
+            //remove clones that would otherwise be duplicated when the menu Awakes.
+            RemoveMenuClones(craftMenuTemplateGo);
 
+            //replace the Built in RecipeResultDisplay with the custom one.
+            ReplaceRecipeResultDisplay(craftMenuTemplateGo);
             //activate everything to trigger the awakes.
             try
             {
-                Logger.LogDebug($"Activating {craftMenuTemplateGo.name} and all its children. Current activeSelf: {craftMenuTemplateGo.activeSelf}");
+                
+                //Logger.LogDebug($"Activating {craftMenuTemplateGo.name} and all its children. Current activeSelf: {craftMenuTemplateGo.activeSelf}");
                 //var activeChanges = craftMenuTemplateGo.SetActiveRecursive(true);
-                Logger.LogDebug($"Activating parent: {menuParentXform.gameObject.name}.");
+                Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(AddCustomMenu)}: Activating menu parent: {menuParentXform.gameObject.name}.");
                 menuParentXform.gameObject.SetActive(true);
 
                 //Set everything back to the way it was.
@@ -109,7 +115,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             }
             catch (Exception ex)
             {
-                Logger.LogException($"CraftingMenuPatches_AwakeAfter() activate / deactive cycle error.", ex);
+                Logger.LogException($"{nameof(CraftingMenuService)}::{nameof(AddCustomMenu)}: CraftingMenuPatches_AwakeAfter() activate / deactive cycle error.", ex);
             }
             //reset the parent Active status back to whatever it was before
             menuParentXform.gameObject.SetActive(isActive);
@@ -141,7 +147,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
             TagSourceManager.Instance.SetPrivateField("m_craftingStationIngredientTags", m_craftingStationIngredientTags);
             
-            Logger.LogDebug($"Expanded m_craftingStationIngredientTags by {expandBy}.");
+            Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(AddIngredientTags)}: Expanded m_craftingStationIngredientTags by {expandBy}.");
 
             return addedTagIds;
 
@@ -150,9 +156,11 @@ namespace ModifAmorphic.Outward.Modules.Crafting
         {
             return AddIngredientTags(1)[0];
         }
-        private void CopyFields(CraftingMenu source, CraftingMenu target)
+        private void CopyFields<T>(T source, T target)
         {
-            var sourceFields = typeof(CraftingMenu).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.FlattenHierarchy);
+            var sourceFields = typeof(T).GetFields(System.Reflection.BindingFlags.Public 
+                | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance 
+                | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.FlattenHierarchy);
 
             for (int i = 0; i < sourceFields.Length; i++)
             {
@@ -169,6 +177,39 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                 }
                 Logger.LogTrace($"{sourceFields[i].Name} set to '{value?.GetType()}' value: '{value}'");
             }
+        }
+        private void RemoveMenuClones(GameObject menu)
+        {
+            const string clonedSelectorPath = "Content/Ingredients/IngredientSelector(Clone)";
+            const string clonedFreeRecipePath = "LeftPanel/Scroll View/Viewport/Content/_freeRecipe";
+
+            //Remove these because they will be readded in awakeinit
+            var clonedSelector = menu.transform.Find(clonedSelectorPath);
+            while (clonedSelector?.gameObject != null)
+            {
+                UnityEngine.Object.DestroyImmediate(clonedSelector.gameObject);
+                clonedSelector = menu.transform.Find(clonedSelectorPath);
+            }
+            var clonedFreeRecipe = menu.transform.Find(clonedFreeRecipePath);
+            while (clonedFreeRecipe?.gameObject != null)
+            {
+                UnityEngine.Object.DestroyImmediate(clonedFreeRecipe.gameObject);
+                clonedFreeRecipe = menu.transform.Find(clonedFreeRecipePath);
+            }
+        }
+        private void ReplaceRecipeResultDisplay(GameObject menu)
+        {
+            const string recipeDisplayPath = "Content/CraftingResult/ItemDisplayGrid";
+            var displayGrid = menu.transform.Find(recipeDisplayPath).gameObject;
+
+            var existingDisplay = displayGrid.GetComponent<RecipeResultDisplay>();
+            var customDisplay = displayGrid.AddComponent<CustomRecipeResultDisplay>();
+            customDisplay.SetLoggerFactory(_loggerFactory);
+            CopyFields(existingDisplay, customDisplay);
+            UnityEngine.Object.Destroy(existingDisplay);
+
+            var craftingMenu = menu.GetComponent<CustomCraftingMenu>();
+            craftingMenu.SetPrivateField<CraftingMenu, RecipeResultDisplay>("m_recipeResultDisplay", customDisplay);
         }
     }
 }

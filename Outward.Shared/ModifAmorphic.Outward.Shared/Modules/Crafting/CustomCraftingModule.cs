@@ -1,6 +1,7 @@
 ﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Models;
+using ModifAmorphic.Outward.Modules.Crafting.Services;
 using ModifAmorphic.Outward.Patches;
 using System;
 using System.Collections.Concurrent;
@@ -18,6 +19,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
         private readonly CraftingMenuService _menuTabService;
         private readonly CustomRecipeService _customRecipeService;
+        private readonly CustomCraftingService _craftingService;
 
         private readonly ConcurrentDictionary<Type, CraftingMenuMetadata> _craftingMenus =
            new ConcurrentDictionary<Type, CraftingMenuMetadata>();
@@ -40,9 +42,9 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             typeof(LocalizationManagerPatches)
         };
 
-        internal CustomCraftingModule(CraftingMenuService menuTabService, CustomRecipeService customRecipeService, Func<IModifLogger> loggerFactory)
+        internal CustomCraftingModule(CraftingMenuService menuTabService, CustomRecipeService customRecipeService, CustomCraftingService craftingService, Func<IModifLogger> loggerFactory)
         {
-            (_menuTabService, _customRecipeService, _loggerFactory) = (menuTabService, customRecipeService, loggerFactory);
+            (_menuTabService, _customRecipeService, _craftingService, _loggerFactory) = (menuTabService, customRecipeService, craftingService, loggerFactory);
             CharacterUIPatches.AwakeBefore += CharacterUIPatches_AwakeBefore;
             CraftingMenuPatches.AwakeInitAfter += CraftingMenuPatches_AwakeInitAfter;
         }
@@ -53,12 +55,12 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             if (craftingMenu is CustomCraftingMenu)
                 return;
 
-            AddCustomCrafters(craftingMenu);
+            AddCustomCraftingMenus(craftingMenu);
         }
 
         private void CharacterUIPatches_AwakeBefore(CharacterUI characterUI)
         {
-            AddCraftingMenus(characterUI);
+            AddCraftingTabFooter(characterUI);
         }
 
         /// <summary>
@@ -116,6 +118,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                 });
             TryAddRecipes();
         }
+        public void RegisterCustomCrafter<T>(ICustomCrafter crafter)  where T : CustomCraftingMenu => _craftingService.AddOrUpdateCrafter<T>(crafter);
         private void TryAddRecipes()
         {
             //get only recipes for crafting stations where the Custom CraftingType is known - basically, the addition of the custom crafting menu is
@@ -136,7 +139,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                 _customRecipeService.AddRecipes(recipes);
             }
         }
-        private void AddCraftingMenus(CharacterUI characterUI)
+        private void AddCraftingTabFooter(CharacterUI characterUI)
         {
             var menuTypes = characterUI.GetPrivateField<CharacterUI, Type[]>("MenuTypes");
             
@@ -163,7 +166,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
             characterUI.SetPrivateField("m_menus", m_menus);
         }
-        private void AddCustomCrafters(CraftingMenu baseCraftingMenu)
+        private void AddCustomCraftingMenus(CraftingMenu baseCraftingMenu)
         {
             foreach (var kvp in _craftingMenus)
             {
@@ -175,7 +178,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                 if (customMenu.PermanentCraftingStationType == null)
                 {
                     customMenu.CustomCraftingType = _craftingStationTypes[menuType];
-                    Logger.LogDebug($"{nameof(CustomCraftingModule)}::{nameof(AddCustomCrafters)}(): " +
+                    Logger.LogDebug($"{nameof(CustomCraftingModule)}::{nameof(AddCustomCraftingMenus)}(): " +
                         $"Set {nameof(CustomCraftingMenu.CustomCraftingType)} to {_craftingStationTypes[menuType]} for" +
                         $"type {menuType}");
                 }

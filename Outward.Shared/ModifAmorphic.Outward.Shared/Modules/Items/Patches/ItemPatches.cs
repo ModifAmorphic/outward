@@ -15,7 +15,6 @@ namespace ModifAmorphic.Outward.Modules.Items
 
         public static event Action<Item> GetItemIconBefore;
 
-        public static event Func<(Item item, Transform itemVisual, bool special), Transform> GetItemVisualBefore;
 
         [HarmonyPatch(nameof(Item.ItemIcon), MethodType.Getter)]
         [HarmonyPrefix]
@@ -27,20 +26,55 @@ namespace ModifAmorphic.Outward.Modules.Items
             GetItemIconBefore?.Invoke(__instance);
         }
 
+
+        //public static event Func<(Item item, Transform itemVisual, bool special), Transform> GetItemVisualBefore;
+        public static event Action<(Item item, bool special)> GetItemVisualBefore;
         [HarmonyPatch(nameof(Item.GetItemVisual), MethodType.Normal)]
         [HarmonyPatch(new Type[] { typeof(bool) })]
         [HarmonyPrefix]
-        private static bool GetItemVisualPrefix(Item __instance, bool _special, ref Transform __result)
+        //private static void GetItemVisualPrefix(ref Item __instance, bool _special, ref Transform __result)
+        private static void GetItemVisualPrefix(ref Item __instance, bool _special)
         {
-#if DEBUG
-            //Logger.LogTrace($"{nameof(ItemPatches)}::{nameof(ItemIconPrefix)}: Triggered for Item {__instance.DisplayName} ({__instance.ItemID}).");
-#endif
-            var itemVisual = GetItemVisualBefore?.Invoke((__instance, __result, _special));
-            if (itemVisual != null)
+            try
             {
-                __result = itemVisual;
-                return false;
+                //ignore prefabs.
+                if (!string.IsNullOrEmpty(__instance?.UID)) 
+                {
+                    Logger.LogTrace($"{nameof(ItemPatches)}::{nameof(GetItemVisualPrefix)}(): Invoking {nameof(GetItemVisualBefore)}() for item " +
+                        $"{__instance?.DisplayName} ({__instance?.UID}).");
+                    GetItemVisualBefore?.Invoke((__instance, _special));
+                }
             }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(ItemPatches)}::{nameof(GetItemVisualPrefix)}(): Exception Invoking {nameof(GetItemVisualBefore)}().", ex);
+            }
+        }
+
+        public static event Func<Item, bool> LoadVisualsOverride;
+        //[HarmonyPatch("LoadVisuals", MethodType.Normal)]
+        //[HarmonyPrefix]
+        private static bool LoadVisualsPrefix(ref Item __instance)
+        {
+            try
+            {
+                if (!(__instance is Armor || __instance is Weapon))
+                    return true;
+
+                Logger.LogTrace($"{nameof(ItemPatches)}::{nameof(LoadVisualsPrefix)}(): Invoked on Item UID '{__instance?.UID}', '{__instance?.DisplayName}' of type {__instance?.GetType()}. Invoking {nameof(LoadVisualsOverride)}()");
+
+                if ((LoadVisualsOverride?.Invoke(__instance) ?? false))
+                {
+                    Logger.LogTrace($"{nameof(ItemPatches)}::{nameof(LoadVisualsPrefix)}(): {nameof(LoadVisualsOverride)}() result: was true. Returning false to override base method.");
+                    return false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(ItemPatches)}::{nameof(LoadVisualsPrefix)}(): Exception Invoking {nameof(LoadVisualsOverride)}().", ex);
+            }
+            Logger.LogTrace($"{nameof(ItemPatches)}::{nameof(LoadVisualsPrefix)}(): {nameof(LoadVisualsOverride)}() result: was false. Returning true and continuing base method invocation.");
             return true;
         }
     }

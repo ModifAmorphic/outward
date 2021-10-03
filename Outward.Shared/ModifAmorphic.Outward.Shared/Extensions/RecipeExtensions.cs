@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModifAmorphic.Outward.Modules.Crafting;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ namespace ModifAmorphic.Outward.Extensions
         /// Sets the RecipeID by calling the <see cref="Recipe.SetRecipeID(int)"/> on the <paramref name="recipe"/> instance.
         /// </summary>
         /// <returns>The <paramref name="recipe"/>.</returns>
-        public static Recipe SetRecipeIDEx(this Recipe recipe, int recipeID)
+        public static T SetRecipeIDEx<T>(this T recipe, int recipeID) where T : Recipe
         {
             recipe.SetRecipeID(recipeID);
             return recipe;
@@ -20,12 +21,12 @@ namespace ModifAmorphic.Outward.Extensions
         /// Sets the CraftingType by calling the <see cref="Recipe.SetCraftingType(Recipe.CraftingType)"/> on the <paramref name="recipe"/> instance.
         /// </summary>
         /// <returns>The <paramref name="recipe"/>.</returns>
-        public static Recipe SetCraftingTypeEx(this Recipe recipe, Recipe.CraftingType craftingType)
+        public static T SetCraftingTypeEx<T>(this T recipe, Recipe.CraftingType craftingType) where T : Recipe
         {
             recipe.SetCraftingType(craftingType);
             return recipe;
         }
-        public static Recipe AddIngredient(this Recipe recipe, Item ingredient)
+        public static T AddIngredient<T>(this T recipe, Item ingredient) where T : Recipe
         {
             var ingredients = recipe.Ingredients?.ToList() ?? new List<RecipeIngredient>();
             ingredients.Add(new RecipeIngredient()
@@ -38,14 +39,14 @@ namespace ModifAmorphic.Outward.Extensions
 
             return recipe;
         }
-        public static Recipe AddIngredient(this Recipe recipe, Item ingredient, int quantity)
+        public static T AddIngredient<T>(this T recipe, Item ingredient, int quantity) where T : Recipe
         {
             for (int i = 0; i < quantity; i++)
                 recipe.AddIngredient(ingredient);
 
             return recipe;
         }
-        public static Recipe AddIngredient(this Recipe recipe, TagSourceSelector ingredientTypeSelector)
+        public static T AddIngredient<T>(this T recipe, TagSourceSelector ingredientTypeSelector) where T : Recipe
         {
             var ingredients = recipe.Ingredients?.ToList() ?? new List<RecipeIngredient>();
             ingredients.Add(new RecipeIngredient()
@@ -58,18 +59,18 @@ namespace ModifAmorphic.Outward.Extensions
 
             return recipe;
         }
-        public static Recipe SetUID(this Recipe recipe, UID uid)
+        public static T SetUID<T>(this T recipe, UID uid) where T : Recipe
         {
-            recipe.SetPrivateField("m_uid", uid);
+            recipe.SetPrivateField<Recipe, UID>("m_uid", uid);
             return recipe;
         }
-        public static Recipe SetUID(this Recipe recipe, string uid)
+        public static T SetUID<T>(this T recipe, string uid) where T : Recipe
         {
             recipe.SetUID(new UID(uid));
             return recipe;
         }
 
-        public static Recipe AddResult(this Recipe recipe, int itemID, int quantity = 1)
+        public static T AddResult<T>(this T recipe, int itemID, int quantity = 1) where T : Recipe
         {
             var itemIds = recipe.Results?.Select(r => r.ItemID).ToList() ?? new List<int>();
             var quantities = recipe.Results?.Select(r => r.Quantity).ToList() ?? new List<int>();
@@ -81,7 +82,17 @@ namespace ModifAmorphic.Outward.Extensions
 
             return recipe;
         }
-        public static Recipe SetNames(this Recipe recipe, string recipeName)
+
+        public static T AddDynamicResult<T>(this T recipe, IDynamicResultService service, int itemID, int quantity = 1) where T : CustomRecipe
+        {
+            var result = new DynamicCraftingResult(service, itemID, quantity);
+
+            recipe.SetRecipeResult(result);
+
+            return recipe;
+        }
+
+        public static T SetNames<T>(this T recipe, string recipeName) where T : Recipe
         {
             if (recipe.RecipeID == default)
                 throw new InvalidOperationException($"The {nameof(recipe)} instance's RecipeID has not been set. A Recipe's object " +
@@ -89,7 +100,7 @@ namespace ModifAmorphic.Outward.Extensions
                     $"or provide the objectName.");
             return recipe.SetNames(recipeName, recipe.RecipeID + "_" + recipeName.Replace(" ", "_"));
         }
-        public static Recipe SetNames(this Recipe recipe, string recipeName, string objectName)
+        public static T SetNames<T>(this T recipe, string recipeName, string objectName) where T : Recipe
         {
             recipe.SetRecipeName(recipeName);
             recipe.name = objectName;

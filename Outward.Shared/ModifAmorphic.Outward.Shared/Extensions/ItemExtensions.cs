@@ -99,5 +99,50 @@ namespace ModifAmorphic.Outward.Extensions
 
             return _itemIcons.TryGetValue(item.ItemID, out icon);
         }
+        public static string GetSpecialVisualPrefabDefaultPath(this Item item)
+        {
+            return item.GetPrivateField<Item, string>("m_specialVisualPrefabDefaultPath");
+        }
+        public static Item SetSpecialVisualPrefabDefaultPath(this Item item, string path)
+        {
+            item.SetPrivateField<Item, string>("m_specialVisualPrefabDefaultPath", path);
+            return item;
+        }
+        public static string GetSpecialVisualPrefabFemalePath(this Item item)
+        {
+            return item.GetPrivateField<Item, string>("m_specialVisualPrefabFemalePath");
+        }
+        public static Item SetSpecialVisualPrefabFemalePath(this Item item, string path)
+        {
+            item.SetPrivateField<Item, string>("m_specialVisualPrefabFemalePath", path);
+            return item;
+        }
+        public static string GetVisualPrefabName(this Item item)
+        {
+            return item.GetPrivateField<Item, string>("m_visualPrefabName");
+        }
+        public static Item SetVisualPrefabName(this Item item, string path)
+        {
+            item.SetPrivateField<Item, string>("m_visualPrefabName", path);
+            return item;
+        }
+        public static string GetVisualPrefabPath(this Item item)
+        {
+            return item.GetPrivateField<Item, string>("m_visualPrefabPath");
+        }
+        public static Item SetVisualPrefabPath(this Item item, string path)
+        {
+            item.SetPrivateField<Item, string>("m_visualPrefabPath", path);
+            return item;
+        }
+        public static ItemVisual GetLoadedVisual(this Item item)
+        {
+            return item.GetPrivateField<Item, ItemVisual>("m_loadedVisual");
+        }
+        public static Item SetLoadedVisual(this Item item, ItemVisual itemVisual)
+        {
+            item.SetPrivateField<Item, ItemVisual>("m_loadedVisual", itemVisual);
+            return item;
+        }
     }
 }
