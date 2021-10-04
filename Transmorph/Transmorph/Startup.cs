@@ -1,11 +1,15 @@
 ﻿using BepInEx;
+using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules;
 using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Modules.Items;
+using ModifAmorphic.Outward.Transmorph.Extensions;
 using ModifAmorphic.Outward.Transmorph.Menu;
 using ModifAmorphic.Outward.Transmorph.Settings;
+using ModifAmorphic.Outward.Transmorph.Transmog;
+using ModifAmorphic.Outward.Transmorph.Transmog.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -37,43 +41,109 @@ namespace ModifAmorphic.Outward.Transmorph
                                 services.GetService<ItemVisualizer>(),
                                 services.GetService<TransmorphConfigSettings>(),
                                 services.GetService<IModifLogger>
+                ))
+                .AddSingleton(new ArmorResultService(services.GetService<IModifLogger>))
+                .AddSingleton(new WeaponResultService(services.GetService<IModifLogger>))
+                .AddSingleton(new TransmogCrafter(services.GetService<ItemVisualizer>(),
+                                services.GetService<IModifLogger>)
+                )
+                .AddSingleton(new TmogRecipeService(services.GetService<BaseUnityPlugin>(),
+                                services.GetService<ArmorResultService>(),
+                                services.GetService<WeaponResultService>(),
+                                services.GetService<TransmorphConfigSettings>(),
+                                services.GetService<IModifLogger>
                 ));
-            services.GetService<CustomCraftingModule>().RegisterCraftingMenu<CookingMenu>("Cooking");
-            services.GetService<CustomCraftingModule>().RegisterCraftingMenu<AlchemyMenu>("Alchemy");
-            services.GetService<CustomCraftingModule>().RegisterCraftingMenu<TransmorphMenu>("Transmorph");
-            services.GetService<CustomCraftingModule>().RegisterCraftingMenu<FashionMenu>("Fashion");
-            services.GetService<Transmorpher>().SetTransmorph(3100080, "zsMOujD2ykSsRZvKVu3ifQ");
 
-            RecipeManagerPatches.LoadCraftingRecipeAfter += (r) => AddRecipe(services.GetService<CustomCraftingModule>());
+            var craftingModule = services.GetService<CustomCraftingModule>();
+            craftingModule.RegisterCraftingMenu<CookingMenu>("Cooking");
+            craftingModule.RegisterCraftingMenu<AlchemyMenu>("Alchemy");
+            craftingModule.RegisterCraftingMenu<AdvancedCraftingMenu>("Transmorph");
+            craftingModule.RegisterCraftingMenu<TransmogrifyMenu>("Fashion");
 
-            //services.ConfigureStashPackNet();
-            //BagStateService.ConfigureNet(services.GetService<StashPackNet>());
+            craftingModule.RegisterCustomCrafter<TransmogrifyMenu>(services.GetService<TransmogCrafter>());
 
-            //services.AddSingleton(
-            //    settingsService.ConfigureHostSettings(
-            //        services.GetService<StashPacksConfigSettings>(),
-            //        services.GetService<StashPackNet>())
-            //    );
+            TransmogRecipeManagerPatches.LoadCraftingRecipeAfter += (r) => 
+            LoadTransmogRecipes(
+                services.GetService<BaseUnityPlugin>(),
+                services.GetService<TmogRecipeService>(),
+                craftingModule,
+                services.GetService<IModifLogger>);
+            
 
-            //services.AddSingleton(new PlayerCoroutines(
-            //    services.GetService<BaseUnityPlugin>(),
-            //    services.GetServiceFactory<IModifLogger>()));
-            //services.AddSingleton(new LevelCoroutines(
-            //    services.GetService<BaseUnityPlugin>(),
-            //    services.GetServiceFactory<IModifLogger>()));
-            //services.AddSingleton(new ItemCoroutines(
-            //    services.GetService<BaseUnityPlugin>(),
-            //    () => ItemManager.Instance,
-            //    services.GetServiceFactory<IModifLogger>()));
+            //services.GetService<Transmorpher>().SetTransmorph(3100080, "zsMOujD2ykSsRZvKVu3ifQ");
+            //services.GetService<Transmorpher>().SetTransmorph(2110120, "boOT8O9W_UmYEEXPlvd2uA");
 
-            //var instanceFactory = new InstanceFactory(services);
+            TransmogRecipeManagerPatches.LoadCraftingRecipeAfter += (r) => AddAdvancedCraftingRecipes(
+                services.GetService<BaseUnityPlugin>(),
+                craftingModule,
+                services.GetService<IModifLogger>);
 
-            //var actionInstances = new ActionInstanceManager(instanceFactory, services.GetService<IModifLogger>);
-            //actionInstances.StartActions();
+            TestUIDs(services.GetService<IModifLogger>());
 
         }
+        private void TestUIDs(IModifLogger logger)
+        {
+            var random = new System.Random();
+            for (int i = 0; i < 50; i++)
+            {
+                var visualMap = new ItemVisualMap() { ItemID = random.Next(-99999999, 99999999), VisualItemID = random.Next(-99999999, 99999999) };
 
-        private void AddRecipe(CustomCraftingModule craftingModule)
+                var morgUID = visualMap.ToUID();
+                logger.LogDebug($"{nameof(TestUIDs)}: VisualMap: {{ItemID = {visualMap.ItemID}, VisualItemID = {visualMap.VisualItemID}}}\n" +
+                    $"Generated UID: {morgUID}. Decoded UID (GUID): {UID.Decode(morgUID)}");
+
+                logger.LogDebug($"{nameof(TestUIDs)}: Generated UID: {morgUID}. UID IsTransMorg? {morgUID.IsTransmorg()}");
+
+                var decodedVisualItemID = morgUID.ToItemVisualMap();
+                logger.LogDebug($"{nameof(TestUIDs)}: Generated UID: {morgUID}\n" +
+                    $"VisualItemID = {decodedVisualItemID}");
+
+                morgUID.TryGetVisualItemID(out var tryVisualItemID);
+                logger.LogDebug($"{nameof(TestUIDs)}: Generated UID: {morgUID}\n" +
+                    $"VisualItemID = {tryVisualItemID}");
+            }
+
+        }
+        private void LoadTransmogRecipes(BaseUnityPlugin plugin, TmogRecipeService transmogrifier, CustomCraftingModule craftingModule, Func<IModifLogger> loggerFactory)
+        {
+
+            var allRecipes = new List<Transmog.Recipes.TransmogRecipe>()
+            {
+                transmogrifier.GetTransmogArmorRecipe(3000035), //Brigand Armor
+                transmogrifier.GetTransmogArmorRecipe(3100080), //Blue Sand Armor
+                transmogrifier.GetTransmogArmorRecipe(3100081), //Blue Sand Helm
+                transmogrifier.GetTransmogWeaponRecipe(2000031), //Radiant Wolf Sword
+                transmogrifier.GetTransmogWeaponRecipe(2000150),   //Brand
+                transmogrifier.GetTransmogWeaponRecipe(2110215),   //Meteoric  Greataxe
+                transmogrifier.GetTransmogArmorRecipe(3100060),   //Palladium Armor 
+                transmogrifier.GetTransmogArmorRecipe(3100191),   //Master Kazite Oni Mask  
+            };
+
+            var recipes = new List<Transmog.Recipes.TransmogRecipe>();
+            foreach (var r in allRecipes)
+            {
+                if (!transmogrifier.GetRecipeExists(r.Results[0].ItemID))
+                {
+                    craftingModule.RegisterRecipe<TransmogrifyMenu>(r);
+                    recipes.Add(r);
+                }
+            }
+
+            var levelRoutine = new LevelCoroutines(plugin, loggerFactory);
+            levelRoutine.InvokeAfterLevelAndPlayersLoaded(NetworkLevelLoader.Instance, () =>
+            {
+                foreach (var r in recipes)
+                {
+                    var character = SplitScreenManager.Instance.LocalPlayers[0].AssignedCharacter;
+                    if (!character.Inventory.RecipeKnowledge.IsRecipeLearned(r.UID))
+                    {
+                        character.Inventory.RecipeKnowledge.LearnRecipe(r);
+                    }
+                }
+            }, 500, 1);
+
+        }
+        private void AddAdvancedCraftingRecipes(BaseUnityPlugin plugin, CustomCraftingModule craftingModule, Func<IModifLogger> loggerFactory)
         {
             var armorRecipe = ScriptableObject.CreateInstance<Recipe>()
                 .SetRecipeIDEx(-130310000)
@@ -91,69 +161,33 @@ namespace ModifAmorphic.Outward.Transmorph
                 .AddIngredient(ResourcesPrefabManager.Instance.GetItemPrefab("3000011") ?? ResourcesPrefabManager.Instance.GenerateItem("3000010"))
                 .AddResult(3100081);
 
+            var recipes = new List<Recipe>()
+            {
+                armorRecipe,
+                helmRecipe
+            };
+
             foreach (var ingredient in armorRecipe.Ingredients)
             {
                 ingredient.AddedIngredient.hideFlags = HideFlags.HideAndDontSave;
                 UnityEngine.Object.DontDestroyOnLoad(ingredient.AddedIngredient.gameObject);
             }
 
-            craftingModule.RegisterRecipe<FashionMenu>(armorRecipe);
-            craftingModule.RegisterRecipe<FashionMenu>(helmRecipe);
-        }
-        private void AddRecipePoc(RecipeManager recipeManager)
-        {
-            _services.GetService<IModifLogger>().LogDebug($"TagSourceManager.Instance {(TagSourceManager.Instance == null ? "IS" : "IS NOT")} null.");
-            var m_craftingStationIngredientTags = TagSourceManager.Instance.GetPrivateField<TagSourceManager, TagSourceSelector[]>("m_craftingStationIngredientTags");
+            craftingModule.RegisterRecipe<AdvancedCraftingMenu>(armorRecipe);
+            craftingModule.RegisterRecipe<AdvancedCraftingMenu>(helmRecipe);
 
-            int expand = Enum.GetValues(typeof(Recipe.CraftingType)).Length - m_craftingStationIngredientTags.Length + 1;
-            Array.Resize(ref m_craftingStationIngredientTags, m_craftingStationIngredientTags.Length + expand);
-
-            m_craftingStationIngredientTags[m_craftingStationIngredientTags.Length - 1] = m_craftingStationIngredientTags[2];
-            TagSourceManager.Instance.SetPrivateField("m_craftingStationIngredientTags", m_craftingStationIngredientTags);
-            _services.GetService<IModifLogger>().LogDebug($"Expanded m_craftingStationIngredientTags by {expand}." +
-                $" Added new tag with index of {m_craftingStationIngredientTags.Length - 1}.");
-
-            var ingredients = new RecipeIngredient[2]
+            var levelRoutine = new LevelCoroutines(plugin, loggerFactory);
+            levelRoutine.InvokeAfterLevelAndPlayersLoaded(NetworkLevelLoader.Instance, () =>
+            {
+                foreach (var r in recipes)
                 {
-                    new RecipeIngredient()
+                    var character = SplitScreenManager.Instance.LocalPlayers[0].AssignedCharacter;
+                    if (!character.Inventory.RecipeKnowledge.IsRecipeLearned(r.UID))
                     {
-                        ActionType = RecipeIngredient.ActionTypes.AddSpecificIngredient,
-                        AddedIngredient = ResourcesPrefabManager.Instance.GetItemPrefab("6400110") ?? ResourcesPrefabManager.Instance.GenerateItem("6400110")
-                    },
-                    new RecipeIngredient()
-                    {
-                        ActionType = RecipeIngredient.ActionTypes.AddSpecificIngredient,
-                        AddedIngredient = ResourcesPrefabManager.Instance.GetItemPrefab("3000010") ?? ResourcesPrefabManager.Instance.GenerateItem("3000010")
+                        character.Inventory.RecipeKnowledge.LearnRecipe(r);
                     }
-                };
-            foreach(var i in ingredients)
-            {
-                i.AddedIngredient.hideFlags = HideFlags.HideAndDontSave;
-                UnityEngine.Object.DontDestroyOnLoad(i.AddedIngredient.gameObject);
-            }
-            
-            var recipe = ScriptableObject.CreateInstance<Recipe>();
-            recipe.SetCraftingType(TransmorphConstants.FashionRecipeType); //Recipe.CraftingType.Survival
-            recipe.SetRecipeID(-130310000);
-            recipe.SetRecipeName("Blue Sand Armor Transmog");
-            recipe.name = recipe.RecipeID + "_" + "Blue Sand Armor Transmog".Replace(" ", "_");
-            recipe.SetRecipeIngredients(ingredients);
-            recipe.SetRecipeResults(new int[1] { 3100080 }, new int[] { 1 });
-            recipe.SetPrivateField<Recipe, UID>("m_uid", new UID("D_AK74Pm6U23iSwrH13ORA"));
-
-            //services.GetService<PreFabricator>().CreatePrefab(5700339, -130310000, "Transmog - Blue Sand Armor", "Transmog");
-
-
-            var m_recipes = recipeManager.GetPrivateField<RecipeManager, Dictionary<string, Recipe>>("m_recipes");
-            var m_recipeUIDsPerUstensils = recipeManager.GetPrivateField<RecipeManager, Dictionary<Recipe.CraftingType, List<UID>>>("m_recipeUIDsPerUstensils");
-
-            m_recipes.Add(recipe.UID, recipe);
-            if (m_recipeUIDsPerUstensils.TryGetValue(recipe.CraftingStationType, out var recipeUIDs))
-                recipeUIDs.Add(recipe.UID);
-            else
-            {
-                m_recipeUIDsPerUstensils.Add(recipe.CraftingStationType, new List<UID>() { recipe.UID });
-            }
+                }
+            }, 500, 1);
         }
     }
 }

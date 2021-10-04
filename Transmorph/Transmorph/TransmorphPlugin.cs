@@ -12,7 +12,8 @@ namespace ModifAmorphic.Outward.Transmorph
     [BepInPlugin(ModInfo.ModId, ModInfo.ModName, ModInfo.ModVersion)]
     public class TransmorphPlugin : BaseUnityPlugin
     {
-        ServicesProvider _servicesProvider;
+        internal static ServicesProvider Services => _servicesProvider;
+        private static ServicesProvider _servicesProvider;
         internal void Awake()
         {
             IModifLogger logger = null;
@@ -23,7 +24,8 @@ namespace ModifAmorphic.Outward.Transmorph
                 logger = LoggerFactory.ConfigureLogger(ModInfo.ModId, ModInfo.ModName, LogLevel.Info);
                 logger.LogInfo($"Patching...");
 
-                harmony.PatchAll(typeof(RecipeManagerPatches));
+                harmony.PatchAll(typeof(TransmogRecipeManagerPatches));
+                //harmony.PatchAll(typeof(TransmogCraftingMenuPatches));
                 //harmony.PatchAll(typeof(CharacterUIPatches));
                 //harmony.PatchAll(typeof(CraftingMenuPatches));
                 //harmony.PatchAll(typeof(SplitScreenManagerPatches));

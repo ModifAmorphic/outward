@@ -33,16 +33,16 @@ namespace ModifAmorphic.Outward.Transmorph
         }
         
         private Transform _parentTransform;
-        public void SetTransmorph(Transmorph transmorph)
-        {
-            _itemVisualizer.RegisterItemVisual(transmorph.SourceItemID, transmorph.ItemUID);
+        //public void SetTransmorph(Transmorph transmorph)
+        //{
+        //    _itemVisualizer.RegisterItemVisual(transmorph.SourceItemID, transmorph.ItemUID);
 
-            var sourceItem = _resourcesPrefabManager.GetItemPrefab(transmorph.SourceItemID);
-        }
-        public void SetTransmorph(int itemID, string targetUID)
-        {
-            _itemVisualizer.RegisterItemVisual(itemID, targetUID);
-        }
+        //    var sourceItem = _resourcesPrefabManager.GetItemPrefab(transmorph.SourceItemID);
+        //}
+        //public void SetTransmorph(int itemID, string targetUID)
+        //{
+        //    _itemVisualizer.RegisterItemVisual(itemID, targetUID);
+        //}
 
         public void SaveTransmorph(Item sourceItem, Item targetItem)
         {

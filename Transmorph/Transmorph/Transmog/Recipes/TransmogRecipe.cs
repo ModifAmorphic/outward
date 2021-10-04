@@ -1,0 +1,14 @@
+﻿using ModifAmorphic.Outward.Modules.Crafting;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using UnityEngine;
+
+namespace ModifAmorphic.Outward.Transmorph.Transmog.Recipes
+{
+    internal class TransmogRecipe : CustomRecipe
+    {
+        [SerializeField]
+        public int VisualItemID;
+    }
+}

@@ -36,10 +36,8 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
             }
 
             #region Main Section
-            //Prefer pick up stashpack to pouch over bag
-            //_configService.BindConfigSetting(settings.PreferPickupToPouch, null);
+           
 
-            //Allow crafting from items in stash packs
             #endregion
 
             #region Advanced Section
@@ -54,33 +52,7 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
 
             return settings;
         }
-        //public StashPackHostSettings ConfigureHostSettings(TransmorphConfigSettings configSettings, StashPackNet stashPackNet)
-        //{
-        //    var hostSettings = new StashPackHostSettings()
-        //    {
-        //        AllScenesEnabled = configSettings.AllScenesEnabled.Value,
-        //        DisableBagScalingRotation = configSettings.DisableBagScalingRotation.Value
-        //    };
-
-        //    configSettings.AllScenesEnabled.ValueChanged += (s, v) =>
-        //    {
-        //        if (!PhotonNetwork.isNonMasterClientInRoom)
-        //        {
-        //            hostSettings.AllScenesEnabled = v.NewValue;
-        //            stashPackNet.SendHostSettings(hostSettings);
-        //        }
-        //    };
-        //    configSettings.DisableBagScalingRotation.ValueChanged += (s, v) =>
-        //    {
-        //        if (!PhotonNetwork.isNonMasterClientInRoom)
-        //        {
-        //            hostSettings.DisableBagScalingRotation = v.NewValue;
-        //            stashPackNet.SendHostSettings(hostSettings);
-        //        }
-        //    };
-        //    stashPackNet.SendHostSettings(hostSettings);
-        //    return hostSettings;
-        //}
+        
         private bool MeetsMinimumVersion(string minimumVersion)
         {
             var configVersionValue = _configService.PeekSavedConfigValue(new TransmorphConfigSettings().ConfigVersion);

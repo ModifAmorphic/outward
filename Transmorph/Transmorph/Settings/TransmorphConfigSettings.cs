@@ -6,48 +6,27 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
 {
     internal class TransmorphConfigSettings
     {
-        const string MainSection = "Transmorph Settings";
+        const string MainSection = ModInfo.ModName + " Settings";
         const int MainTopOrder = int.MaxValue;
 
-        public ConfigSetting<string> UnlockScope { get; } = new ConfigSetting<string>()
+        public ConfigSetting<string> SomeStringSetting { get; } = new ConfigSetting<string>()
         {
-            Name = nameof(UnlockScope),
+            Name = nameof(SomeStringSetting),
             DefaultValue = "default",
             Section = MainSection,
-            DisplayName = "Unlock at",
-            Description = $"When picking up a StashPack, prefer that the bag is placed in the pouch first.",
+            DisplayName = "SomeStringSetting Friendly Name",
+            Description = $"This is Some String Setting Example",
             Order = MainTopOrder - 1,
             IsAdvanced = false
         };
-        public ConfigSetting<bool> CraftingFromStashPackItems { get; } = new ConfigSetting<bool>()
+        public ConfigSetting<bool> SomeBoolSetting { get; } = new ConfigSetting<bool>()
         {
-            Name = nameof(CraftingFromStashPackItems),
-            DefaultValue = true,
+            Name = nameof(SomeBoolSetting),
+            DefaultValue = false,
             Section = MainSection,
-            DisplayName = "Use StashPack Inventory for Crafting",
-            Description = $"Enables crafting from any owned StashPacks that are on the ground and linked to their home Stash.",
+            DisplayName = "SomeBoolSetting Friendly Name",
+            Description = $"Life story of SomeBoolSetting.",
             Order = MainTopOrder - 2,
-            IsAdvanced = false
-        };
-        public ConfigSetting<bool> AllScenesEnabled { get; } = new ConfigSetting<bool>()
-        {
-            Name = nameof(AllScenesEnabled),
-            DefaultValue = false,
-            Section = MainSection,
-            DisplayName = "Enable StashPacks for All Scenes",
-            Description = $"Enables StashPack functionality for all scenes. Normally only Scenes with Stashes are enabled.",
-            Order = MainTopOrder - 3,
-            IsAdvanced = false
-        };
-
-        public ConfigSetting<bool> DisableBagScalingRotation { get; } = new ConfigSetting<bool>()
-        {
-            Name = nameof(DisableBagScalingRotation),
-            DefaultValue = false,
-            Section = MainSection,
-            DisplayName = "Disable Scaling & Rotation of StashPacks",
-            Description = $"Disables scaling of StashPacks to larger than a regular bag and rotating them so they land standing up.",
-            Order = MainTopOrder - 4,
             IsAdvanced = false
         };
 
@@ -73,7 +52,7 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
             DefaultValue = ModInfo.ModVersion,
             Section = AdvancedSection,
             DisplayName = "Created with version",
-            Description = $"The version of StashPacks this configuration file was created for.  **Warning - Changing this could result in resetting all config values.**",
+            Description = $"The version of {ModInfo.ModName} this configuration file was created for.  **Warning - Changing this could result in resetting all config values.**",
             Order = AdvancedTopOrder - 2,
             IsAdvanced = true
         };

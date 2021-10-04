@@ -1,22 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace ModifAmorphic.Outward.Transmorph.Settings
 {
     internal static class TransmorphConstants
     {
-        public static Recipe.CraftingType FashionRecipeType = (Recipe.CraftingType)(5);
+        public const int TransmogRecipeStartID = -1303000000;
+        public const int TransmogPrefix = -1356830026;
+        public const int TransmogSecondaryItemID = 6300030;
+        
+        public static byte[] TransmorgBytePrefix = BitConverter.GetBytes(TransmogPrefix);
 
-        public static ReadOnlyDictionary<AreaManager.AreaEnum, (string StashUID, int ItemId)> PermenantStashUids = new ReadOnlyDictionary<AreaManager.AreaEnum, (string StashUID, int ItemId)>(
-            new Dictionary<AreaManager.AreaEnum, (string StashUID, int ItemId)>()
-            {
-                { AreaManager.AreaEnum.CierzoVillage, ("ImqRiGAT80aE2WtUHfdcMw", 1000000) },
-                { AreaManager.AreaEnum.Monsoon, ("ImqRiGAT80aE2WtUHfdcMw", 1000000) },
-                { AreaManager.AreaEnum.Berg, ("ImqRiGAT80aE2WtUHfdcMw", 1000000) },
-                { AreaManager.AreaEnum.Levant, ("ZbPXNsPvlUeQVJRks3zBzg", 1000000) },
-                { AreaManager.AreaEnum.Harmattan, ("ImqRiGAT80aE2WtUHfdcMw", 1000000) },
-                { AreaManager.AreaEnum.NewSirocco, ("IqUugGqBBkaOcQdRmhnMng", 1000000) }
-            });
+        static TransmorphConstants()
+        {
+        }
+        public static TagSourceSelector TransmogTagSelector = new TagSourceSelector(
+            new Tag("Axfc-kYcGEOguAqCUHh_fg", "transmog"));
 
         /// <summary>
         /// Key Value Collection of Stash Backpacs for area's with stashes. Key = ItemId.

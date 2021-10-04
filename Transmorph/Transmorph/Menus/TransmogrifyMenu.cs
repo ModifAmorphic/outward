@@ -7,17 +7,13 @@ using System.Text;
 
 namespace ModifAmorphic.Outward.Transmorph.Menu
 {
-    internal class FashionMenu : CustomCraftingMenu
+    internal class TransmogrifyMenu : CustomCraftingMenu
     {
-
         public new bool IsSurvivalCrafting => true;
-        public FashionMenu() => 
+        public TransmogrifyMenu() => 
             (LoggerFactory) = 
             (
                 () => Logging.LoggerFactory.GetLogger(ModInfo.ModId)
             );
-
-        
-
     }
 }
