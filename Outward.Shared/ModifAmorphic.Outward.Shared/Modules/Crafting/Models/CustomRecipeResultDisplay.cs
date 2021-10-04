@@ -18,12 +18,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             get => this.GetPrivateField<RecipeResultDisplay, ItemReferenceQuantity>("m_result");
             set => this.SetPrivateField<RecipeResultDisplay, ItemReferenceQuantity>("m_result", value);
         }
-        
-        //public override void SetReferencedItem(Item _item)
-        //{
-        //    SetCustomRecipeResult(_result);
-        //    base.SetReferencedItem(_result.RefItem);
-        //}
 
         public void SetCustomRecipeResult(ItemReferenceQuantity _result)
         {

@@ -211,21 +211,13 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                 var menuTypes = characterUI.GetPrivateField<CharacterUI, Type[]>("MenuTypes");
                 var m_menus = characterUI.GetPrivateField<CharacterUI, MenuPanel[]>("m_menus");
                 
-
-                //var removeAt = Array.FindIndex(menuTabs, m => m.TabName == menuMetaData.TabName);
-                //menuTabs[removeAt] = null;
-
                 var removeMenu = Array.FindIndex(m_menus, m => m is T);
                 m_menus[removeMenu] = null;
                 menuTypes[menuMetaData.MenuScreenNo] = null;
 
                 menuTabs = menuTabs.Where(t => t.TabName != menuMetaData.TabName).ToArray();
-                //m_menus = m_menus.Where(m => !(m is T)).ToArray();
-                //menuTypes = menuTypes.Where(t => t != typeof(T)).ToArray();
 
                 characterUI.SetPrivateField<CharacterUI, MenuTab[]>("m_menuTabs", menuTabs);
-                //characterUI.SetPrivateField<CharacterUI, Type[]>("MenuTypes", menuTypes);
-                //characterUI.SetPrivateField<CharacterUI, MenuPanel[]>("m_menus", m_menus);
 
                 UnityEngine.Object.Destroy(menuMetaData.MenuFooter);
                 UnityEngine.Object.Destroy(menuMetaData.MenuDisplay);

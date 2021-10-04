@@ -25,21 +25,5 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                 Logger.LogException($"{nameof(CharacterUIPatches)}::{nameof(AwakePrefix)}(): Exception Invoking {nameof(AwakeBefore)}({nameof(CharacterUI)}).", ex);
             }
         }
-
-        //public static event Action<CharacterUI> StartAfter;
-        //[HarmonyPatch("Start", MethodType.Normal)]
-        //[HarmonyPostfix]
-        //private static void StartPostfix(CharacterUI __instance)
-        //{
-        //    StartAfter?.Invoke(__instance);
-        //}
-
-        //public static event Action<CharacterUI> ShowGameplayPanelBefore;
-        //[HarmonyPatch(nameof(CharacterUI.ShowGameplayPanel), MethodType.Normal)]
-        //[HarmonyPrefix]
-        //private static void ShowGameplayPanelPostfix(CharacterUI __instance)
-        //{
-        //    ShowGameplayPanelBefore?.Invoke(__instance);
-        //}
     }
 }
