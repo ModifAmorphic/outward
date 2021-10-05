@@ -1,5 +1,4 @@
 ﻿using ModifAmorphic.Outward.Extensions;
-using ModifAmorphic.Outward.Transmorph.Recipes;
 using ModifAmorphic.Outward.Transmorph.Transmog.Recipes;
 using System;
 using System.Collections.Generic;

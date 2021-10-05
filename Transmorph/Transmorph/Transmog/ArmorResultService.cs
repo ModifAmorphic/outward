@@ -25,20 +25,20 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
             if (!(recipe is TransmogArmorRecipe armorRecipe))
                 return;
 
-            var sourceArmor = ingredients.FirstOrDefault(i => i?.ItemPrefab is Armor)?.ItemPrefab as Armor;
+            var armorTarget = ingredients.FirstOrDefault(i => i?.ItemPrefab is Armor)?.ItemPrefab as Armor;
             var visualArmor = craftingResult.RefItem as Armor;
 
-            if (sourceArmor == null
+            if (armorTarget == null
                 || visualArmor == null
-                || sourceArmor.EquipSlot != visualArmor.EquipSlot)
+                || armorTarget.EquipSlot != visualArmor.EquipSlot)
             {
                 Logger.LogWarning($"{nameof(ArmorResultService)}::{nameof(CalculateResult)}: Failed to Calculate result for " +
-                    $"Dynamic Result ItemID {craftingResult.ItemID} and recipe {recipe.Name}. No Armor type found in list of {ingredients.Count()} ingredients.");
-                
+                    $"Dynamic Result ItemID {craftingResult.ItemID} and recipe {recipe.Name}. No Armor matching equipment slot {armorTarget.EquipSlot} found in list of {ingredients.Count()} ingredients.");
+                craftingResult.SetDynamicItemID(-1);
                 return;
             }
 
-            craftingResult.SetDynamicItemID(sourceArmor.ItemID);
+            craftingResult.SetDynamicItemID(armorTarget.ItemID);
             var resultArmor = craftingResult.DynamicRefItem as Armor;
             Logger.LogDebug($"{nameof(ArmorResultService)}::{nameof(CalculateResult)}: Calculated Result " +
                 $"is a {resultArmor?.DisplayName} ({craftingResult.ItemID}) {resultArmor?.EquipSlot} transmogrified to look like" +

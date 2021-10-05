@@ -25,6 +25,8 @@ namespace ModifAmorphic.Outward.Transmorph
                 logger.LogInfo($"Patching...");
 
                 harmony.PatchAll(typeof(TransmogRecipeManagerPatches));
+                harmony.PatchAll(typeof(TmogCharacterEquipmentPatches));
+
                 //harmony.PatchAll(typeof(TransmogCraftingMenuPatches));
                 //harmony.PatchAll(typeof(CharacterUIPatches));
                 //harmony.PatchAll(typeof(CraftingMenuPatches));

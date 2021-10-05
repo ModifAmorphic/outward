@@ -11,8 +11,9 @@ namespace ModifAmorphic.Outward.Transmorph.Menu
     {
         public new bool IsSurvivalCrafting => true;
         public TransmogrifyMenu() => 
-            (LoggerFactory) = 
+            (InventoryFilterTag, LoggerFactory) = 
             (
+                new Tag("70", "Item"),
                 () => Logging.LoggerFactory.GetLogger(ModInfo.ModId)
             );
     }

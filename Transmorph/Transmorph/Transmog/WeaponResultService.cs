@@ -19,27 +19,28 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 
         public void CalculateResult(DynamicCraftingResult craftingResult, Recipe recipe, IEnumerable<CompatibleIngredient> ingredients)
         {
-            Logger.LogDebug($"{nameof(ArmorResultService)}::{nameof(CalculateResult)}: Calculating Result for " +
+            Logger.LogDebug($"{nameof(WeaponResultService)}::{nameof(CalculateResult)}: Calculating Result for " +
                 $"Dynamic Result ItemID {craftingResult.ItemID} and recipe {recipe.Name}. " +
                 $"recipe is TransmogWeaponRecipe? {recipe is TransmogWeaponRecipe}");
             if (!(recipe is TransmogWeaponRecipe weaponRecipe))
                 return;
 
-            var sourceWeapon = ingredients.FirstOrDefault(i => i?.ItemPrefab is Weapon)?.ItemPrefab as Weapon;
+            
+            var weaponTarget = ingredients?.FirstOrDefault(i => i?.ItemPrefab is Weapon)?.ItemPrefab as Weapon;
             var visualWeapon = craftingResult.RefItem as Weapon;
 
-            if (sourceWeapon == null 
+            if (weaponTarget == null 
                 || visualWeapon == null
-                || sourceWeapon.Type != visualWeapon.Type)
+                || weaponTarget.Type != visualWeapon.Type)
             {
                 Logger.LogWarning($"{nameof(WeaponResultService)}::{nameof(CalculateResult)}: Failed to Calculate result for " +
-                    $"Dynamic Result ItemID {craftingResult.ItemID} and recipe {recipe.Name}. No Weapon type found in list of {ingredients.Count()} ingredients.");
+                    $"Dynamic Result ItemID {craftingResult.ItemID} and recipe {recipe.Name}. No Weapon type '{weaponTarget?.Type}' found in list of {ingredients.Count()} ingredients.");
+                craftingResult.SetDynamicItemID(-1);
                 return;
             }
-
-            craftingResult.SetDynamicItemID(sourceWeapon.ItemID);
+            craftingResult.SetDynamicItemID(weaponTarget.ItemID);
             var resultWeapon = craftingResult.DynamicRefItem as Weapon;
-            Logger.LogDebug($"{nameof(ArmorResultService)}::{nameof(CalculateResult)}: Calculated Result " +
+            Logger.LogDebug($"{nameof(WeaponResultService)}::{nameof(CalculateResult)}: Calculated Result " +
                 $"is a {resultWeapon?.DisplayName} ({craftingResult.ItemID}) {resultWeapon?.Type} transmogrified to look like" +
                 $" a {visualWeapon.DisplayName} ({visualWeapon.ItemID}) {visualWeapon.Type}.");
         }

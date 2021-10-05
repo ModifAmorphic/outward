@@ -36,12 +36,14 @@ namespace ModifAmorphic.Outward.Transmorph
                 .AddSingleton(ModifModules.GetPreFabricatorModule(ModInfo.ModId))
                 .AddSingleton(ModifModules.GetItemVisualizerModule(ModInfo.ModId))
                 .AddSingleton(ModifModules.GetCustomCraftingModule(ModInfo.ModId))
+                .AddSingleton(new ModifCoroutine(services.GetService<IModifLogger>))
                 .AddSingleton(new Transmorpher(services.GetService<BaseUnityPlugin>(),
                                 services.GetService<CustomCraftingModule>(),
                                 services.GetService<ItemVisualizer>(),
                                 services.GetService<TransmorphConfigSettings>(),
                                 services.GetService<IModifLogger>
                 ))
+                .AddSingleton(new IngredientMatcher(services.GetService<IModifLogger>))
                 .AddSingleton(new ArmorResultService(services.GetService<IModifLogger>))
                 .AddSingleton(new WeaponResultService(services.GetService<IModifLogger>))
                 .AddSingleton(new TransmogCrafter(services.GetService<ItemVisualizer>(),
@@ -50,6 +52,8 @@ namespace ModifAmorphic.Outward.Transmorph
                 .AddSingleton(new TmogRecipeService(services.GetService<BaseUnityPlugin>(),
                                 services.GetService<ArmorResultService>(),
                                 services.GetService<WeaponResultService>(),
+                                services.GetService<CustomCraftingModule>(),
+                                services.GetService<ModifCoroutine>(),
                                 services.GetService<TransmorphConfigSettings>(),
                                 services.GetService<IModifLogger>
                 ));
@@ -60,27 +64,26 @@ namespace ModifAmorphic.Outward.Transmorph
             craftingModule.RegisterCraftingMenu<AdvancedCraftingMenu>("Transmorph");
             craftingModule.RegisterCraftingMenu<TransmogrifyMenu>("Fashion");
 
+            craftingModule.RegisterCompatibleIngredientMatcher<TransmogrifyMenu>(services.GetService<IngredientMatcher>());
             craftingModule.RegisterCustomCrafter<TransmogrifyMenu>(services.GetService<TransmogCrafter>());
 
-            TransmogRecipeManagerPatches.LoadCraftingRecipeAfter += (r) => 
-            LoadTransmogRecipes(
+            TransmogRecipeManagerPatches.LoadCraftingRecipeAfter += (r) =>
+            LoadStartingTransmogRecipes(
                 services.GetService<BaseUnityPlugin>(),
                 services.GetService<TmogRecipeService>(),
                 craftingModule,
                 services.GetService<IModifLogger>);
-            
 
-            //services.GetService<Transmorpher>().SetTransmorph(3100080, "zsMOujD2ykSsRZvKVu3ifQ");
-            //services.GetService<Transmorpher>().SetTransmorph(2110120, "boOT8O9W_UmYEEXPlvd2uA");
 
             TransmogRecipeManagerPatches.LoadCraftingRecipeAfter += (r) => AddAdvancedCraftingRecipes(
                 services.GetService<BaseUnityPlugin>(),
                 craftingModule,
                 services.GetService<IModifLogger>);
 
-            TestUIDs(services.GetService<IModifLogger>());
+            //TestUIDs(services.GetService<IModifLogger>());
 
         }
+
         private void TestUIDs(IModifLogger logger)
         {
             var random = new System.Random();
@@ -104,29 +107,12 @@ namespace ModifAmorphic.Outward.Transmorph
             }
 
         }
-        private void LoadTransmogRecipes(BaseUnityPlugin plugin, TmogRecipeService transmogrifier, CustomCraftingModule craftingModule, Func<IModifLogger> loggerFactory)
+        private void LoadStartingTransmogRecipes(BaseUnityPlugin plugin, TmogRecipeService transmogrifier, CustomCraftingModule craftingModule, Func<IModifLogger> loggerFactory)
         {
-
-            var allRecipes = new List<Transmog.Recipes.TransmogRecipe>()
-            {
-                transmogrifier.GetTransmogArmorRecipe(3000035), //Brigand Armor
-                transmogrifier.GetTransmogArmorRecipe(3100080), //Blue Sand Armor
-                transmogrifier.GetTransmogArmorRecipe(3100081), //Blue Sand Helm
-                transmogrifier.GetTransmogWeaponRecipe(2000031), //Radiant Wolf Sword
-                transmogrifier.GetTransmogWeaponRecipe(2000150),   //Brand
-                transmogrifier.GetTransmogWeaponRecipe(2110215),   //Meteoric  Greataxe
-                transmogrifier.GetTransmogArmorRecipe(3100060),   //Palladium Armor 
-                transmogrifier.GetTransmogArmorRecipe(3100191),   //Master Kazite Oni Mask  
-            };
-
             var recipes = new List<Transmog.Recipes.TransmogRecipe>();
-            foreach (var r in allRecipes)
+            foreach ((var itemID, var type) in TransmorphConstants.StartingTransmogItemIDs)
             {
-                if (!transmogrifier.GetRecipeExists(r.Results[0].ItemID))
-                {
-                    craftingModule.RegisterRecipe<TransmogrifyMenu>(r);
-                    recipes.Add(r);
-                }
+                recipes.Add(transmogrifier.AddOrGetRecipe(itemID));                
             }
 
             var levelRoutine = new LevelCoroutines(plugin, loggerFactory);
@@ -140,7 +126,7 @@ namespace ModifAmorphic.Outward.Transmorph
                         character.Inventory.RecipeKnowledge.LearnRecipe(r);
                     }
                 }
-            }, 500, 1);
+            }, 5000, 1);
 
         }
         private void AddAdvancedCraftingRecipes(BaseUnityPlugin plugin, CustomCraftingModule craftingModule, Func<IModifLogger> loggerFactory)
