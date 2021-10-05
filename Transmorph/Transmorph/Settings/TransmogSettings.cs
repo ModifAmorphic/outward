@@ -4,17 +4,17 @@ using System.Collections.ObjectModel;
 
 namespace ModifAmorphic.Outward.Transmorph.Settings
 {
-    internal static class TransmorphConstants
+    internal class TransmogSettings
     {
-        public const int TransmogRecipeStartID = -1303000000;
-        public const int TransmogTagWeaponStartUID = -1302990000;
-        public const int TransmogTagArmorStartUID = -1302500000;
-        public const int TransmogPrefix = -1356830026;
-        public const int TransmogSecondaryItemID = 6300030;
+        public const int RecipeStartID = -1303000000;
+        public const int WeaponTagStartUID = -1302990000;
+        public const int ArmorTagStartUID = -1302500000;
+        public const int ItemPrefixUID = -1356830026;
+        public const int RecipeSecondaryItemID = 6300030;
 
-        public static byte[] TransmorgBytePrefix = BitConverter.GetBytes(TransmogPrefix);
+        public static byte[] BytePrefixUID = BitConverter.GetBytes(ItemPrefixUID);
 
-        public static TagSourceSelector TransmogTagSelector = new TagSourceSelector(
+        public static TagSourceSelector TagSelector = new TagSourceSelector(
             new Tag("Axfc-kYcGEOguAqCUHh_fg", "transmog"));
 
 

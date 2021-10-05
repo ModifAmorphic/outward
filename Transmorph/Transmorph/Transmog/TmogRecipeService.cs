@@ -135,7 +135,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
             return recipe
                 .SetNames("Transmog - " + transmogSource.DisplayName)
                 .AddIngredient(new TagSourceSelector(transmogSource.Tags[0]))
-                .AddIngredient(ResourcesPrefabManager.Instance.GetItemPrefab(TransmorphConstants.TransmogSecondaryItemID) ?? ResourcesPrefabManager.Instance.GenerateItem(TransmorphConstants.TransmogSecondaryItemID.ToString()))
+                .AddIngredient(ResourcesPrefabManager.Instance.GetItemPrefab(TransmogSettings.RecipeSecondaryItemID) ?? ResourcesPrefabManager.Instance.GenerateItem(TransmogSettings.RecipeSecondaryItemID.ToString()))
                 .SetVisualItemID(visualItemID)
                 .AddResult(visualItemID);
         }
@@ -148,7 +148,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
                 .SetVisualItemID(transmogSource.ItemID)
                 .SetNames("Transmog - " + transmogSource.DisplayName)
                 .AddIngredient(new TagSourceSelector(transmogTag))
-                .AddIngredient(ResourcesPrefabManager.Instance.GetItemPrefab(TransmorphConstants.TransmogSecondaryItemID) ?? ResourcesPrefabManager.Instance.GenerateItem(TransmorphConstants.TransmogSecondaryItemID.ToString()))
+                .AddIngredient(ResourcesPrefabManager.Instance.GetItemPrefab(TransmogSettings.RecipeSecondaryItemID) ?? ResourcesPrefabManager.Instance.GenerateItem(TransmogSettings.RecipeSecondaryItemID.ToString()))
                 .AddDynamicResult(resultService, transmogSource.ItemID, 1);
 
             return recipe;
@@ -156,7 +156,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 
         public int GetRecipeID(int itemID)
         {
-            return TransmorphConstants.TransmogRecipeStartID - itemID;
+            return TransmogSettings.RecipeStartID - itemID;
         }
         public TransmogRecipe AddOrGetRecipe(int visualItemID)
         {

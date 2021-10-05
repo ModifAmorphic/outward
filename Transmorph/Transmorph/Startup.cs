@@ -110,7 +110,7 @@ namespace ModifAmorphic.Outward.Transmorph
         private void LoadStartingTransmogRecipes(BaseUnityPlugin plugin, TmogRecipeService transmogrifier, CustomCraftingModule craftingModule, Func<IModifLogger> loggerFactory)
         {
             var recipes = new List<Transmog.Recipes.TransmogRecipe>();
-            foreach ((var itemID, var type) in TransmorphConstants.StartingTransmogItemIDs)
+            foreach ((var itemID, var type) in TransmogSettings.StartingTransmogItemIDs)
             {
                 recipes.Add(transmogrifier.AddOrGetRecipe(itemID));                
             }

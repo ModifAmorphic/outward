@@ -13,7 +13,7 @@ namespace ModifAmorphic.Outward.Transmorph.Extensions
         {
             var guid = UID.Decode(uid.Value);
             return guid.ToByteArray().Take(4)
-                       .SequenceEqual(TransmorphConstants.TransmorgBytePrefix);
+                       .SequenceEqual(TransmogSettings.BytePrefixUID);
         }
         public static int ToItemVisualMap(this UID uid)
         {
@@ -34,7 +34,7 @@ namespace ModifAmorphic.Outward.Transmorph.Extensions
             var uidBytes = UID.Decode(uid.Value).ToByteArray();
 
             if (!uidBytes.Take(4)
-                         .SequenceEqual(TransmorphConstants.TransmorgBytePrefix))
+                         .SequenceEqual(TransmogSettings.BytePrefixUID))
             {
                 visualItemID = default;
                 return false;
@@ -63,7 +63,7 @@ namespace ModifAmorphic.Outward.Transmorph.Extensions
 
 
             var guidBytes = new byte[16];
-            Array.Copy(TransmorphConstants.TransmorgBytePrefix, 0, guidBytes, 0, 4);
+            Array.Copy(TransmogSettings.BytePrefixUID, 0, guidBytes, 0, 4);
             Array.Copy(randomBytes, 0, guidBytes, 4, 8);
             //Array.Copy(itemBytes, 0, guidBytes, 8, 4);
             Array.Copy(visualBytes, 0, guidBytes, 12, 4);

@@ -12,7 +12,7 @@ namespace ModifAmorphic.Outward.Transmorph.Extensions
         public static Tag ToWeaponTag(this Weapon.WeaponType weaponType)
         {
             var tag = new Tag(
-                (TransmorphConstants.TransmogTagWeaponStartUID - (int)weaponType).ToString(), 
+                (TransmogSettings.WeaponTagStartUID - (int)weaponType).ToString(), 
                 "TransmogWeapon");
             tag.SetTagType(Tag.TagTypes.Weapons);
             return tag;
@@ -20,7 +20,7 @@ namespace ModifAmorphic.Outward.Transmorph.Extensions
         public static Tag ToArmorTag(this EquipmentSlot.EquipmentSlotIDs equipmentSlot)
         {
             var tag = new Tag(
-                (TransmorphConstants.TransmogTagArmorStartUID - (int)equipmentSlot).ToString(),
+                (TransmogSettings.ArmorTagStartUID - (int)equipmentSlot).ToString(),
                 "TransmogArmor");
             tag.SetTagType(Tag.TagTypes.Armor);
             return tag;
@@ -32,7 +32,7 @@ namespace ModifAmorphic.Outward.Transmorph.Extensions
                     || !int.TryParse(tag.UID, out var uid))
                 return false;
 
-            var typeNo = (uid - TransmorphConstants.TransmogTagWeaponStartUID) * (-1);
+            var typeNo = (uid - TransmogSettings.WeaponTagStartUID) * (-1);
             if (!Enum.IsDefined(typeof(Weapon.WeaponType), typeNo))
                 return false;
 
@@ -46,7 +46,7 @@ namespace ModifAmorphic.Outward.Transmorph.Extensions
                     || !int.TryParse(tag.UID, out var uid))
                 return false;
 
-            var slotNo = (uid - TransmorphConstants.TransmogTagArmorStartUID) * (-1);
+            var slotNo = (uid - TransmogSettings.ArmorTagStartUID) * (-1);
             if (!Enum.IsDefined(typeof(EquipmentSlot.EquipmentSlotIDs), slotNo))
                 return false;
 
