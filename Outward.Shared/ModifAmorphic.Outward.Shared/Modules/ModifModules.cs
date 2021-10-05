@@ -1,5 +1,5 @@
 ﻿using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Modules.Character;
+using ModifAmorphic.Outward.Modules.CharacterMods;
 using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Modules.Crafting.Services;
 using ModifAmorphic.Outward.Modules.Items;

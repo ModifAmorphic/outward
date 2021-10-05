@@ -1,6 +1,8 @@
 ﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Models;
+using ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients;
+using ModifAmorphic.Outward.Modules.Crafting.Patches;
 using ModifAmorphic.Outward.Modules.Crafting.Services;
 using ModifAmorphic.Outward.Patches;
 using System;
@@ -33,6 +35,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
         public HashSet<Type> PatchDependencies => new HashSet<Type>() {
             typeof(CharacterUIPatches),
             typeof(CraftingMenuPatches),
+            typeof(CompatibleIngredientPatches),
             typeof(LocalizationManagerPatches)
         };
 
@@ -119,6 +122,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             TryAddRecipes();
         }
         public void RegisterCustomCrafter<T>(ICustomCrafter crafter)  where T : CustomCraftingMenu => _craftingService.AddOrUpdateCrafter<T>(crafter);
+        public void RegisterCompatibleIngredientMatcher<T>(ICompatibleIngredientMatcher matcher) where T : CustomCraftingMenu 
+            => _craftingService.AddOrUpdateCompatibleIngredientMatcher<T>(matcher);
         private void TryAddRecipes()
         {
             //get only recipes for crafting stations where the Custom CraftingType is known - basically, the addition of the custom crafting menu is

@@ -38,7 +38,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
             dynamicResult.CalculateResult(craftingMenu.GetSelectedRecipe(), ingredients);
 
-            base.SetReferencedItem(dynamicResult.RefItem);;
+            base.SetReferencedItem(dynamicResult.RefItem);
         }
         public void SetLoggerFactory(Func<IModifLogger> loggerFactory) => _loggerFactory = loggerFactory;
     }

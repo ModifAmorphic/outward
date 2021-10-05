@@ -2,7 +2,7 @@
 using ModifAmorphic.Outward.Logging;
 using System;
 
-namespace ModifAmorphic.Outward.Modules.Crafting
+namespace ModifAmorphic.Outward.Modules.Crafting.Patches
 {
     [HarmonyPatch(typeof(CraftingMenu))]
     internal static class CraftingMenuPatches
@@ -36,8 +36,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             {
                 Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(GenerateResultPrefix)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Invoking {nameof(GenerateResultOverride)}()");
 
-                if (__instance is CustomCraftingMenu 
-                    && (GenerateResultOverride ?.Invoke((__instance, _result, resultMultiplier)) ?? false))
+                if (__instance is CustomCraftingMenu
+                    && (GenerateResultOverride?.Invoke((__instance, _result, resultMultiplier)) ?? false))
                 {
                     Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(GenerateResultPrefix)}(): {nameof(GenerateResultOverride)}() result: was true. Returning false to override base method.");
                     return false;
@@ -96,7 +96,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             }
         }
 
-        public static event Func<CraftingMenu, bool> RefreshAvailableIngredientsOverridden;
+        public static event Func<CustomCraftingMenu, bool> RefreshAvailableIngredientsOverridden;
         [HarmonyPatch("RefreshAvailableIngredients", MethodType.Normal)]
         [HarmonyPrefix]
         private static bool RefreshAvailableIngredientsPrefix(CraftingMenu __instance)
@@ -104,7 +104,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             try
             {
                 Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAvailableIngredientsPrefix)}(): Invoked on CraftingMenu type {__instance?.GetType()}.");
-                if (__instance is CustomCraftingMenu && (RefreshAvailableIngredientsOverridden?.Invoke(__instance) ?? false))
+                if (__instance is CustomCraftingMenu menu
+                    && (RefreshAvailableIngredientsOverridden?.Invoke(menu) ?? false))
                 {
                     Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAvailableIngredientsPrefix)}(): {nameof(RefreshAvailableIngredientsOverridden)}() result: was true. Returning false to override base method.");
                     return false;
@@ -117,5 +118,28 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             }
             return true;
         }
+
+        //[HarmonyPatch("RefreshAutoIngredients")]
+        //[HarmonyPostfix]
+        //private static void RefreshAutoIngredients(CraftingMenu __instance, Recipe _recipe, System.Collections.Generic.IList<int>[] _allMatches, System.Collections.Generic.IList<int> _bestIngredientsMatch)
+        //{
+        //    try
+        //    {
+        //        if (!(__instance is CustomCraftingMenu menu))
+        //        {
+        //            //Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredients)}(): Menu is not a {nameof(CustomCraftingMenu)}. Not invoking {nameof(IngredientSelectorHasChangedAfter)}.");
+        //            return;
+        //        }
+        //        Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredients)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Invoking " +
+        //            $"_allMatches: {_allMatches?.Length}. _bestIngredientsMatch: {_bestIngredientsMatch?.Count})");
+        //        menu.RefreshAutoIngredients_allMatches = _allMatches;
+        //        menu.RefreshAutoIngredients_bestIngredientsMatch = _bestIngredientsMatch;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredients)}(): Exception Invoking {nameof(IngredientSelectorHasChangedAfter)}().", ex);
+
+        //    }
+        //}
     }
 }

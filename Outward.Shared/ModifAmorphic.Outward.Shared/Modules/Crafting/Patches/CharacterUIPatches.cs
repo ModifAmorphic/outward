@@ -2,7 +2,7 @@
 using ModifAmorphic.Outward.Logging;
 using System;
 
-namespace ModifAmorphic.Outward.Modules.Crafting
+namespace ModifAmorphic.Outward.Modules.Crafting.Patches
 {
     [HarmonyPatch(typeof(CharacterUI))]
     internal static class CharacterUIPatches

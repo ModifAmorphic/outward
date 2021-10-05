@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace ModifAmorphic.Outward.Modules.Character
+namespace ModifAmorphic.Outward.Modules.CharacterMods
 {
     public class CharacterInstances : IModifModule
     {

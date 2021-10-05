@@ -1,5 +1,6 @@
 ﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.Modules.Crafting.Patches;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,6 +52,17 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				_customCraftingType = value;
             } 
 		}
+
+		private Tag _inventoryFilterTag;
+		/// <summary>
+		/// Used to filter out items from inventory for crafting recipes. Uses this tag and the crafting ingredient tag. Defaults to
+		/// the crafting station, but can be set in an inherited class to any tag.
+		/// </summary>
+		public Tag InventoryFilterTag
+        {
+			get => _inventoryFilterTag;
+			protected set => _inventoryFilterTag = value;
+        }
 
 		protected Dictionary<Recipe.CraftingType, Sprite> _craftingBackgrounds = new Dictionary<Recipe.CraftingType, Sprite>();
 
@@ -197,7 +209,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
 		public CustomCraftingMenu()
         {
-            CraftingMenuPatches.RefreshAvailableIngredientsOverridden += RefreshAvailableIngredientsOverride;
+            //CraftingMenuPatches.RefreshAvailableIngredientsOverridden += RefreshAvailableIngredientsOverride;
 			//CraftingMenuPatches.SetCraftButtonEnableBefore += RefreshResult;
 
 			CraftingMenuPatches.OnRecipeSelectedAfter += (args) => RefreshResult();
@@ -207,10 +219,17 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
         private void RefreshResult()
         {
-			if (!CanCustomCraft())
-				return;
+			try
+			{
+				if (!CanCustomCraft())
+					return;
 
-			((CustomRecipeResultDisplay)_recipeResultDisplay).SetCustomRecipeResult(GetSelectedRecipe().Results[0]);
+				((CustomRecipeResultDisplay)_recipeResultDisplay).SetCustomRecipeResult(GetSelectedRecipe().Results[0]);
+			}
+			catch (Exception ex)
+            {
+				Logger.LogException($"CustomCraftingMenu::RefreshResult() Exception.\n", ex);
+			}
         }
 
 		public bool CanCustomCraft()
@@ -224,31 +243,31 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				&& ingredients.Any()
 				&& _recipeResultDisplay is CustomRecipeResultDisplay))
             {
-				Logger.LogTrace($"{nameof(CustomCraftingMenu)}::{nameof(CanCustomCraft)}: Result: false\n" +
-					$"\trecipe != null? {recipe != null}\n" +
-					$"\trecipe.Results.Any()? {recipe?.Results?.Any()}\n" +
-					$"\tingredients != null? {ingredients != null}\n" +
-					$"\tingredients.Any()? {ingredients?.Any()}\n" +
-					$"\t_recipeResultDisplay is CustomRecipeResultDisplay? { _recipeResultDisplay is CustomRecipeResultDisplay}");
+				//Logger.LogTrace($"{nameof(CustomCraftingMenu)}::{nameof(CanCustomCraft)}: Result: false\n" +
+				//	$"\trecipe != null? {recipe != null}\n" +
+				//	$"\trecipe.Results.Any()? {recipe?.Results?.Any()}\n" +
+				//	$"\tingredients != null? {ingredients != null}\n" +
+				//	$"\tingredients.Any()? {ingredients?.Any()}\n" +
+				//	$"\t_recipeResultDisplay is CustomRecipeResultDisplay? { _recipeResultDisplay is CustomRecipeResultDisplay}");
 				return false;
             }
 			return true;
 		}
         public bool IsCustomCraftingStation() => PermanentCraftingStationType == null && CustomCraftingType != default;
-        private bool RefreshAvailableIngredientsOverride(CraftingMenu craftingMenu)
-        {
-			if (!(craftingMenu is CustomCraftingMenu))
-				return false;
+  //      private bool RefreshAvailableIngredientsOverride(CraftingMenu craftingMenu)
+  //      {
+		//	if (!(craftingMenu is CustomCraftingMenu))
+		//		return false;
 
-			_availableIngredients.Values.ForEach(i => i.Clear());
+		//	_availableIngredients.Values.ForEach(i => i.Clear());
 
-			Tag craftingIngredient = TagSourceManager.GetCraftingIngredient(GetRecipeCraftingType());
-			var availableIngredients = _availableIngredients;
-			base.LocalCharacter.Inventory.InventoryIngredients(craftingIngredient, ref availableIngredients);
-			_availableIngredients = availableIngredients;
+		//	Tag craftingIngredient = TagSourceManager.GetCraftingIngredient(GetRecipeCraftingType());
+		//	var availableIngredients = _availableIngredients;
+		//	base.LocalCharacter.Inventory.InventoryIngredients(craftingIngredient, ref availableIngredients);
+		//	_availableIngredients = availableIngredients;
 
-			return true;
-		}
+		//	return true;
+		//}
 		public Recipe.CraftingType GetRecipeCraftingType()
         {
 			//Priority order, Permanent > Custom > builtin m_craftingStationType
@@ -294,7 +313,9 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			base.StartInit();
 			//Reset it back to the original.
 			_craftingStationType = craftingStationType;
-        }
+			if (!_inventoryFilterTag.IsSet)
+				_inventoryFilterTag = TagSourceManager.GetCraftingIngredient(GetRecipeCraftingType());
+		}
 
 		private bool showRecurseCheck = false;
 		public override void Show()
@@ -813,5 +834,5 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                 Logger.LogException($"CustomCraftingMenu::OnHide() Exception.\n", ex);
             }
         }
-    }
+	}
 }
