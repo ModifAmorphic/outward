@@ -118,28 +118,5 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
             }
             return true;
         }
-
-        //[HarmonyPatch("RefreshAutoIngredients")]
-        //[HarmonyPostfix]
-        //private static void RefreshAutoIngredients(CraftingMenu __instance, Recipe _recipe, System.Collections.Generic.IList<int>[] _allMatches, System.Collections.Generic.IList<int> _bestIngredientsMatch)
-        //{
-        //    try
-        //    {
-        //        if (!(__instance is CustomCraftingMenu menu))
-        //        {
-        //            //Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredients)}(): Menu is not a {nameof(CustomCraftingMenu)}. Not invoking {nameof(IngredientSelectorHasChangedAfter)}.");
-        //            return;
-        //        }
-        //        Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredients)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Invoking " +
-        //            $"_allMatches: {_allMatches?.Length}. _bestIngredientsMatch: {_bestIngredientsMatch?.Count})");
-        //        menu.RefreshAutoIngredients_allMatches = _allMatches;
-        //        menu.RefreshAutoIngredients_bestIngredientsMatch = _bestIngredientsMatch;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredients)}(): Exception Invoking {nameof(IngredientSelectorHasChangedAfter)}().", ex);
-
-        //    }
-        //}
     }
 }

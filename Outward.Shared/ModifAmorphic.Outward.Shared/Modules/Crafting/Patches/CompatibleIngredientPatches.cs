@@ -13,13 +13,11 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
         [PatchLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
 
-        public delegate bool MatchRecipeStep(RecipeIngredient ingredient, out bool isMatch);
-
-        public static event MatchRecipeStep MatchRecipeStepOverride;
         [HarmonyPatch(nameof(CompatibleIngredient.MatchRecipeStep), MethodType.Normal)]
         [HarmonyPrefix]
         private static bool MatchRecipeStepPrefix(CompatibleIngredient __instance, RecipeIngredient _recipeStep, ref bool __result)
         {
+            string logMethod = nameof(CustomCompatibleIngredient) + "." + nameof(CustomCompatibleIngredient.MatchRecipeStepOverride);
             try
             {
                 if (!(__instance is CustomCompatibleIngredient customIngredient))
@@ -27,18 +25,19 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
                 
                 //Logger.LogTrace($"{nameof(CompatibleIngredientPatches)}::{nameof(MatchRecipeStepPrefix)}(): Invoked for RecipeIngredient {_recipeStep}. Invoking {nameof(MatchRecipeStepOverride)}().");
                 var origResult = __result;
+                
                 if (customIngredient.MatchRecipeStepOverride(_recipeStep, out __result))
                 {
-                    Logger.LogTrace($"{nameof(CompatibleIngredientPatches)}::{nameof(MatchRecipeStepPrefix)}(): Was overridden by {nameof(MatchRecipeStepOverride)}() and had its result set to {__result}.");
+                    Logger.LogTrace($"{nameof(CompatibleIngredientPatches)}::{nameof(MatchRecipeStepPrefix)}(): Was overridden by {logMethod}() and had its result set to {__result}.");
                     return false;
                 }
                 __result = origResult;
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(CompatibleIngredientPatches)}::{nameof(MatchRecipeStepPrefix)}(): Exception Invoking {nameof(MatchRecipeStepOverride)}().", ex);
+                Logger.LogException($"{nameof(CompatibleIngredientPatches)}::{nameof(MatchRecipeStepPrefix)}(): Exception Invoking {logMethod}().", ex);
             }
-            Logger.LogTrace($"{nameof(CompatibleIngredientPatches)}::{nameof(MatchRecipeStepPrefix)}(): was not overridden by {nameof(MatchRecipeStepOverride)}(). Allowing base method invocation to continue.");
+            Logger.LogTrace($"{nameof(CompatibleIngredientPatches)}::{nameof(MatchRecipeStepPrefix)}(): was not overridden by {logMethod}(). Allowing base method invocation to continue.");
             return true;
         }
     }
