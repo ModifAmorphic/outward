@@ -11,7 +11,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
         public string TabName { get; set; }
         public string TabDisplayName { get; set; }
         public string TabButtonName { get; set; }
-        public int TabOrderNo { get; set; }
+        public string OrderAfterTab { get; set; } = "btnCrafting";
         public string MenuName { get; set; }
         public string FooterName { get; set; }
         public int MenuScreenNo { get; set; } = -1;

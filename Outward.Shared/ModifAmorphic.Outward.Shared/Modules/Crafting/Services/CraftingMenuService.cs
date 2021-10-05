@@ -17,10 +17,11 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
         public CraftingMenuService(Func<IModifLogger> loggerFactory) =>
             (_loggerFactory) = (loggerFactory);
 
-        public GameObject AddMenuTab(CharacterUI characterUI, string tabName, string tabDisplayName, string buttonName, int menuId, int orderNo)
+        public GameObject AddMenuTab(CharacterUI characterUI, string tabName, string tabDisplayName, string buttonName, int menuId, string orderAfterBtn)
         {
             var menuTabs = characterUI.GetPrivateField<CharacterUI, MenuTab[]>("m_menuTabs");
-            //var section = characterUI.transform.Find("Canvas/GameplayPanels/Menus/CharacterMenus/MainPanel/Content/TopPanel/Sections");
+            
+
             //Get the existing crafting tab and clone it
             var craftingTabGo = menuTabs.First(t => t.TabName == "PlayerMenu_Tab_Crafting").Tab.gameObject;
             var isActive = craftingTabGo.activeSelf;
@@ -32,10 +33,9 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             //Destroy the UIMenuTab and replace it
             UnityEngine.Object.DestroyImmediate(newUiMenuTabGo.GetComponent<UIMenuTab>());
             newUiMenuTabGo.name = buttonName;
-            //newUiMenuTabGo.transform.parent = section;
-            newUiMenuTabGo.transform.SetSiblingIndex(craftingTabGo.transform.GetSiblingIndex() + 1 + orderNo);
-            var newUiMenuTab = newUiMenuTabGo.AddComponent<UIMenuTab>();
 
+            var newUiMenuTab = newUiMenuTabGo.AddComponent<UIMenuTab>();
+            newUiMenuTab.transform.SetAsLastSibling();
             //Add new tab to the CharacterUI m_menuTabs array
             newUiMenuTab.LinkedMenuID = (CharacterUI.MenuScreens)menuId;
             var newMenuTab = new MenuTab()
@@ -44,16 +44,59 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                 TabName = tabName
             };
             LocalizationService.RegisterLocalization(tabName, tabDisplayName);
+
             Array.Resize(ref menuTabs, menuTabs.Length + 1);
             menuTabs[menuTabs.Length - 1] = newMenuTab;
             characterUI.SetPrivateField("m_menuTabs", menuTabs);
             
             Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(AddMenuTab)}: Resized m_menuTabs to {menuTabs.Length}");
-            
+
             //activate the new menu gameobject
             newUiMenuTabGo.SetActive(isActive);
 
+            SetTabOrder(buttonName, orderAfterBtn, characterUI);
+
             return newUiMenuTabGo;
+        }
+        private void SetTabOrder(string targetBtn, string orderAfterBtn, CharacterUI characterUI)
+        {
+            var section = characterUI.transform.Find("Canvas/GameplayPanels/Menus/CharacterMenus/MainPanel/Content/TopPanel/Sections");
+            var targetTab = section.GetComponentsInChildren<UIMenuTab>()
+                                        .First(m => m.name == targetBtn);
+            var orderedTabs = section.GetComponentsInChildren<UIMenuTab>()
+                                        .Where(m => m.name != targetBtn)
+                                        .OrderBy(m => m.transform.GetSiblingIndex())
+                                        .ToArray();
+            int endIndex = orderedTabs.Last().transform.GetSiblingIndex();
+
+            int shiftIndex = 1;
+            int iteration = 0;
+            for (int i = orderedTabs.Length - 1; i >= 0; i--)
+            {
+                if (orderedTabs[i].name == orderAfterBtn)
+                {
+                    targetTab.transform.SetSiblingIndex(endIndex + shiftIndex - iteration);
+                    Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(SetTabOrder)}: {targetTab.name}: SetSiblingIndex({(endIndex + shiftIndex - iteration)}). GetSiblingIndex(): {targetTab.transform.GetSiblingIndex()}");
+                    shiftIndex = 0;
+                }
+
+                orderedTabs[i].transform.SetSiblingIndex(endIndex + shiftIndex - iteration);
+                Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(SetTabOrder)}: {orderedTabs[i].name}: {orderedTabs[i].transform.GetSiblingIndex()}");
+
+                iteration++;
+            }
+        }
+        private void DisableTitleLabel(GameObject menu)
+        {
+            const string lblTitlePath = "Content/lblTitle";
+            var lblTitleXform = menu.transform.Find(lblTitlePath);
+            if (lblTitleXform != null)
+            {
+                lblTitleXform.gameObject.SetActive(false);
+                Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(DisableTitleLabel)}: Disabled title label {lblTitleXform.gameObject.name} under menu {menu.name}.");
+            }
+            else
+                Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(DisableTitleLabel)}: Could not find title under menu {menu.name}. Tried to find: {lblTitlePath}.");
         }
         public GameObject AddFooter(CharacterUI characterUI, int menuScreen, string footerName)
         {
@@ -74,44 +117,28 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
         }
         public GameObject AddCustomMenu(CraftingMenu baseCraftingMenu, CraftingMenuMetadata menuMeta)
         {
-            //GetParentTransform().gameObject.SetActive(true);
-            //var templates = new GameObject("menu_templates");
-            //templates.SetActive(false);
-            //templates.transform.SetParent(GetParentTransform());
-
             var menuParentXform = baseCraftingMenu.transform.parent;
             var isActive = menuParentXform.gameObject.activeSelf;
             menuParentXform.gameObject.SetActive(false);
 
-            var craftMenuTemplateGo = GameObject.Instantiate(baseCraftingMenu.gameObject, menuParentXform);
-            craftMenuTemplateGo.name = menuMeta.MenuName;
-            var craftMenu = craftMenuTemplateGo.GetComponent<CraftingMenu>();
-            var craftMenuTemplate = (CraftingMenu)craftMenuTemplateGo.AddComponent(menuMeta.MenuType);
-            CopyFields(craftMenu, craftMenuTemplate);
+            var newMenuGo = GameObject.Instantiate(baseCraftingMenu.gameObject, menuParentXform);
+            newMenuGo.name = menuMeta.MenuName;
+            var craftMenu = newMenuGo.GetComponent<CraftingMenu>();
+            var newMenu = (CraftingMenu)newMenuGo.AddComponent(menuMeta.MenuType);
+            CopyFields(craftMenu, newMenu);
 
             UnityEngine.Object.DestroyImmediate(craftMenu);
             
             //remove clones that would otherwise be duplicated when the menu Awakes.
-            RemoveMenuClones(craftMenuTemplateGo);
+            RemoveMenuClones(newMenuGo);
 
             //replace the Built in RecipeResultDisplay with the custom one.
-            ReplaceRecipeResultDisplay(craftMenuTemplateGo);
+            ReplaceRecipeResultDisplay(newMenuGo);
             //activate everything to trigger the awakes.
             try
             {
-                
-                //Logger.LogDebug($"Activating {craftMenuTemplateGo.name} and all its children. Current activeSelf: {craftMenuTemplateGo.activeSelf}");
-                //var activeChanges = craftMenuTemplateGo.SetActiveRecursive(true);
                 Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(AddCustomMenu)}: Activating menu parent: {menuParentXform.gameObject.name}.");
                 menuParentXform.gameObject.SetActive(true);
-
-                //Set everything back to the way it was.
-                //Logger.LogDebug($"Undoing earlier activations for {craftMenuTemplateGo.name} and its children.");
-                //foreach (var g in activeChanges)
-                //{
-                //    if (g != null)
-                //        g.SetActive(!g.activeSelf);
-                //}
             }
             catch (Exception ex)
             {
@@ -119,8 +146,14 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             }
             //reset the parent Active status back to whatever it was before
             menuParentXform.gameObject.SetActive(isActive);
-
-            return craftMenuTemplateGo;
+            
+            //Disable title label for Alchemy and Cooking menus, otherwise they display "Pocket".
+            if (newMenu is CustomCraftingMenu customMenu)
+                if (customMenu.PermanentCraftingStationType == Recipe.CraftingType.Alchemy
+                    || customMenu.PermanentCraftingStationType == Recipe.CraftingType.Cooking)
+                        DisableTitleLabel(newMenuGo);
+            
+            return newMenuGo;
         }
         public List<int> AddIngredientTags(int tags)
         {
