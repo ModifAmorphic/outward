@@ -10,6 +10,7 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
         public const int WeaponTagStartUID = -1302990000;
         public const int ArmorTagStartUID = -1302500000;
         public const int ItemPrefixUID = -1356830026;
+        public const string ItemStringPrefixUID = "tmogr";
         public const int RecipeSecondaryItemID = 6300030;
 
         public static byte[] BytePrefixUID = BitConverter.GetBytes(ItemPrefixUID);

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Transmorph
+namespace ModifAmorphic.Outward.Transmorph.Patches
 {
     [HarmonyPatch(typeof(SplitPlayer))]
     internal static class SplitPlayerPatches

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Transmorph
+namespace ModifAmorphic.Outward.Transmorph.Patches
 {
     [HarmonyPatch(typeof(CharacterEquipment))]
     internal static class TmogCharacterEquipmentPatches
@@ -20,7 +20,8 @@ namespace ModifAmorphic.Outward.Transmorph
             try
             {
                 Logger.LogTrace($"{nameof(TmogCharacterEquipmentPatches)}::{nameof(EquipItemEquipmentPrefix)}(): Invoked for Equipment Item {_itemToEquip.ItemID} - {_itemToEquip.DisplayName} ({_itemToEquip.UID}). Invoking {nameof(EquipItemBefore)}().");
-                EquipItemBefore?.Invoke((___m_character, __instance, _itemToEquip));
+                if (___m_character.IsLocalPlayer)
+                    EquipItemBefore?.Invoke((___m_character, __instance, _itemToEquip));
             }
             catch (Exception ex)
             {

@@ -7,6 +7,7 @@ using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Modules.Items;
 using ModifAmorphic.Outward.Transmorph.Extensions;
 using ModifAmorphic.Outward.Transmorph.Menu;
+using ModifAmorphic.Outward.Transmorph.Patches;
 using ModifAmorphic.Outward.Transmorph.Settings;
 using ModifAmorphic.Outward.Transmorph.Transmog;
 using ModifAmorphic.Outward.Transmorph.Transmog.Models;
@@ -36,13 +37,17 @@ namespace ModifAmorphic.Outward.Transmorph
                 .AddSingleton(ModifModules.GetPreFabricatorModule(ModInfo.ModId))
                 .AddSingleton(ModifModules.GetItemVisualizerModule(ModInfo.ModId))
                 .AddSingleton(ModifModules.GetCustomCraftingModule(ModInfo.ModId))
-                .AddSingleton(new ModifCoroutine(services.GetService<IModifLogger>))
-                .AddSingleton(new Transmorpher(services.GetService<BaseUnityPlugin>(),
-                                services.GetService<CustomCraftingModule>(),
-                                services.GetService<ItemVisualizer>(),
-                                services.GetService<TransmorphConfigSettings>(),
-                                services.GetService<IModifLogger>
-                ))
+                .AddSingleton(new ModifCoroutine(services.GetService<BaseUnityPlugin>(),
+                                                services.GetService<IModifLogger>))
+                .AddSingleton(new LevelCoroutines(services.GetService<BaseUnityPlugin>(), 
+                                                  services.GetService<IModifLogger>))
+                //.AddSingleton(new Transmorpher(services.GetService<BaseUnityPlugin>(),
+                //                services.GetService<CustomCraftingModule>(),
+                //                services.GetService<ItemVisualizer>(),
+                //                services.GetService<TransmorphConfigSettings>(),
+                //                services.GetService<IModifLogger>
+                //))
+
                 .AddSingleton(new IngredientMatcher(services.GetService<IModifLogger>))
                 .AddSingleton(new ArmorResultService(services.GetService<IModifLogger>))
                 .AddSingleton(new WeaponResultService(services.GetService<IModifLogger>))
@@ -54,6 +59,13 @@ namespace ModifAmorphic.Outward.Transmorph
                                 services.GetService<WeaponResultService>(),
                                 services.GetService<CustomCraftingModule>(),
                                 services.GetService<ModifCoroutine>(),
+                                services.GetService<TransmorphConfigSettings>(),
+                                services.GetService<IModifLogger>
+                ))
+                .AddSingleton(new TransmogItemListener(
+                                services.GetService<ItemVisualizer>(),
+                                services.GetService<LevelCoroutines>(),
+                                () => ItemManager.Instance,
                                 services.GetService<TransmorphConfigSettings>(),
                                 services.GetService<IModifLogger>
                 ));
@@ -97,7 +109,7 @@ namespace ModifAmorphic.Outward.Transmorph
 
                 logger.LogDebug($"{nameof(TestUIDs)}: Generated UID: {morgUID}. UID IsTransMorg? {morgUID.IsTransmorg()}");
 
-                var decodedVisualItemID = morgUID.ToItemVisualMap();
+                var decodedVisualItemID = morgUID.ToVisualItemID();
                 logger.LogDebug($"{nameof(TestUIDs)}: Generated UID: {morgUID}\n" +
                     $"VisualItemID = {decodedVisualItemID}");
 

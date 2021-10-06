@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.Transmorph.Patches;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,6 +27,7 @@ namespace ModifAmorphic.Outward.Transmorph
 
                 harmony.PatchAll(typeof(TransmogRecipeManagerPatches));
                 harmony.PatchAll(typeof(TmogCharacterEquipmentPatches));
+                harmony.PatchAll(typeof(TmogItemManagerPatches));
 
                 //harmony.PatchAll(typeof(TransmogCraftingMenuPatches));
                 //harmony.PatchAll(typeof(CharacterUIPatches));

@@ -15,7 +15,7 @@ namespace ModifAmorphic.Outward.Transmorph.Extensions
             return guid.ToByteArray().Take(4)
                        .SequenceEqual(TransmogSettings.BytePrefixUID);
         }
-        public static int ToItemVisualMap(this UID uid)
+        public static int ToVisualItemID(this UID uid)
         {
             if (!TryGetVisualItemID(uid, out var visualItemID))
                 throw new ArgumentException("UID is not an encoded Transmog! UID must be encoded with a transmog prefix.", nameof(uid));

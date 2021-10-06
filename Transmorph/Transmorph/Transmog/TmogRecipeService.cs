@@ -6,6 +6,7 @@ using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Modules.Items;
 using ModifAmorphic.Outward.Transmorph.Extensions;
 using ModifAmorphic.Outward.Transmorph.Menu;
+using ModifAmorphic.Outward.Transmorph.Patches;
 using ModifAmorphic.Outward.Transmorph.Settings;
 using ModifAmorphic.Outward.Transmorph.Transmog.Recipes;
 using System;
