@@ -27,7 +27,29 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
             }
         }
 
-        public static event Func<(CraftingMenu CraftingMenu, ItemReferenceQuantity Result, int ResultMultiplier), bool> GenerateResultOverride;
+        public static event Action<CustomCraftingMenu> CraftingDoneBefore;
+        [HarmonyPatch("CraftingDone", MethodType.Normal)]
+        [HarmonyPrefix]
+        private static void CraftingDonePrefix(CraftingMenu __instance)
+        {
+            try
+            {
+                if (!(__instance is CustomCraftingMenu customCraftingMenu))
+                {
+                    Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(CraftingDonePrefix)}(): Menu is not a {nameof(CustomCraftingMenu)}. Not invoking {nameof(CraftingDoneBefore)}.");
+                    return;
+                }
+                Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(CraftingDonePrefix)}(): Invoked on CraftingMenu type {customCraftingMenu?.GetType()}. Invoking " +
+                    $"{nameof(CraftingDoneBefore)}({customCraftingMenu?.GetType()})");
+                CraftingDoneBefore?.Invoke(customCraftingMenu);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(CraftingDonePrefix)}(): Exception Invoking {nameof(CraftingDoneBefore)}().", ex);
+            }
+        }
+
+        public static event Func<(CustomCraftingMenu CraftingMenu, ItemReferenceQuantity Result, int ResultMultiplier), bool> GenerateResultOverride;
         [HarmonyPatch("GenerateResult", MethodType.Normal)]
         [HarmonyPrefix]
         private static bool GenerateResultPrefix(CraftingMenu __instance, ItemReferenceQuantity _result, int resultMultiplier)
@@ -36,8 +58,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
             {
                 Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(GenerateResultPrefix)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Invoking {nameof(GenerateResultOverride)}()");
 
-                if (__instance is CustomCraftingMenu
-                    && (GenerateResultOverride?.Invoke((__instance, _result, resultMultiplier)) ?? false))
+                if (__instance is CustomCraftingMenu customCraftingMenu
+                    && (GenerateResultOverride?.Invoke((customCraftingMenu, _result, resultMultiplier)) ?? false))
                 {
                     Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(GenerateResultPrefix)}(): {nameof(GenerateResultOverride)}() result: was true. Returning false to override base method.");
                     return false;

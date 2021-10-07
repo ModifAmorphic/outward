@@ -208,7 +208,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                     value = sourceFields[i].GetValue(source);
                     sourceFields[i].SetValue(target, value, System.Reflection.BindingFlags.FlattenHierarchy, null, null);
                 }
-                Logger.LogTrace($"{sourceFields[i].Name} set to '{value?.GetType()}' value: '{value}'");
+                //Logger.LogTrace($"{sourceFields[i].Name} set to '{value?.GetType()}' value: '{value}'");
             }
         }
         private void RemoveMenuClones(GameObject menu)

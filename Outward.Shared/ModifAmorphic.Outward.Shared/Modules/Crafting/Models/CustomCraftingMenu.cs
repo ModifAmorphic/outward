@@ -64,6 +64,19 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			protected set => _inventoryFilterTag = value;
         }
 
+		private bool _includeEnchantedIngredients = false;
+		/// <summary>
+		/// Whether or not to include items that have been enchanted in the list of available ingredients for recipes. The 
+		/// base game code excludes all enchanted items from results.
+		/// </summary>
+		public bool IncludeEnchantedIngredients
+		{
+			get => _includeEnchantedIngredients;
+			protected set => _includeEnchantedIngredients = value;
+		}
+
+		public Dictionary<int, string> IngredientEnchantData { get; protected set; } = new Dictionary<int, string>();
+
 		protected Dictionary<Recipe.CraftingType, Sprite> _craftingBackgrounds = new Dictionary<Recipe.CraftingType, Sprite>();
 
 		#region Reflected CraftingMenu Fields
@@ -254,20 +267,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			return true;
 		}
         public bool IsCustomCraftingStation() => PermanentCraftingStationType == null && CustomCraftingType != default;
-  //      private bool RefreshAvailableIngredientsOverride(CraftingMenu craftingMenu)
-  //      {
-		//	if (!(craftingMenu is CustomCraftingMenu))
-		//		return false;
 
-		//	_availableIngredients.Values.ForEach(i => i.Clear());
-
-		//	Tag craftingIngredient = TagSourceManager.GetCraftingIngredient(GetRecipeCraftingType());
-		//	var availableIngredients = _availableIngredients;
-		//	base.LocalCharacter.Inventory.InventoryIngredients(craftingIngredient, ref availableIngredients);
-		//	_availableIngredients = availableIngredients;
-
-		//	return true;
-		//}
 		public Recipe.CraftingType GetRecipeCraftingType()
         {
 			//Priority order, Permanent > Custom > builtin m_craftingStationType
@@ -822,17 +822,5 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 		}
 #endif
 		#endregion
-		protected override void OnHide()
-        {
-            Logger.LogDebug($"CustomCraftingMenu::OnHide()");
-            try
-            {
-                base.OnHide();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException($"CustomCraftingMenu::OnHide() Exception.\n", ex);
-            }
-        }
 	}
 }

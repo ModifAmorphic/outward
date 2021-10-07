@@ -218,7 +218,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                 {
                     customMenu.CustomCraftingType = _craftingStationTypes[menuType];
                     Logger.LogDebug($"{nameof(CustomCraftingModule)}::{nameof(AddCustomCraftingMenus)}(): " +
-                        $"Set {nameof(CustomCraftingMenu.CustomCraftingType)} to {_craftingStationTypes[menuType]} for" +
+                        $"Set {nameof(CustomCraftingMenu.CustomCraftingType)} to {_craftingStationTypes[menuType]} for " +
                         $"type {menuType}");
                 }
                 // Avoids key not found exceptions if there is a custom crafting station with no actual recipes.

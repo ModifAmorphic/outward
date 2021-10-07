@@ -10,6 +10,8 @@ namespace ModifAmorphic.Outward.Modules.Items
     [HarmonyPatch(typeof(ItemManager))]
     public static class ItemManagerPatches
     {
+        public delegate bool GetVisualsByItem(Item input, out ItemVisual output);
+
         [PatchLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
 
@@ -17,7 +19,7 @@ namespace ModifAmorphic.Outward.Modules.Items
         [HarmonyPatch(nameof(ItemManager.GetSpecialVisuals), MethodType.Normal)]
         [HarmonyPrefix]
         [HarmonyPatch(new Type[] { typeof(Item) })]
-        public static bool GetSpecialVisualsPrefix(Item _item, ref ItemVisual __result)
+        public static bool GetSpecialVisualsPrefix(ref Item _item, ref ItemVisual __result)
         {
             try
             {
@@ -39,13 +41,13 @@ namespace ModifAmorphic.Outward.Modules.Items
             return true;
         }
 
-        public delegate bool GetVisualsByItem(Item input, out ItemVisual output);
+        
 
         public static event GetVisualsByItem GetVisualsByItemOverride;
         [HarmonyPatch(nameof(ItemManager.GetVisuals), MethodType.Normal)]
         [HarmonyPrefix]
         [HarmonyPatch(new Type[] { typeof(Item) })]
-        private static bool GetVisualsByItemPrefix(Item _item, ref ItemVisual __result)
+        private static bool GetVisualsByItemPrefix(ref Item _item, ref ItemVisual __result)
         {
             try
             {
@@ -65,6 +67,29 @@ namespace ModifAmorphic.Outward.Modules.Items
             }
             Logger.LogTrace($"{nameof(ItemManagerPatches)}::{nameof(GetVisualsByItemPrefix)}(): {nameof(GetVisualsByItemOverride)}() result: was false. Returning true and continuing base method invocation.");
             return true;
+        }
+
+        //public delegate bool PutBackVisual(ref int itemID, ref ItemVisual visuals);
+        //public static event PutBackVisual PutBackVisualOverride;
+        [HarmonyPatch(nameof(ItemManager.PutBackVisual), MethodType.Normal)]
+        [HarmonyPrefix]
+        [HarmonyPatch(new Type[] { typeof(int), typeof(ItemVisual) })]
+        public static void PutBackVisualItemIDFix(ref int _itemID, ref ItemVisual _visuals)
+        {
+            try
+            {
+                int nameItemID = _visuals.GetItemIDFromName();
+                Logger.LogTrace($"{nameof(ItemManagerPatches)}::{nameof(PutBackVisualItemIDFix)}(): Invoked for ItemID {_itemID} and visual ItemVisual: {_visuals}. GetItemIDFromName(): {nameItemID}.");
+                if (nameItemID != _itemID)
+                {
+                    _itemID = nameItemID;
+                    Logger.LogTrace($"{nameof(ItemManagerPatches)}::{nameof(PutBackVisualItemIDFix)}(): ItemID set to {_itemID}.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(ItemManagerPatches)}::{nameof(PutBackVisualItemIDFix)}(): Exception Fixing ItemID for _itemID {_itemID}, _visuals {_visuals}.", ex);
+            }
         }
     }
 }

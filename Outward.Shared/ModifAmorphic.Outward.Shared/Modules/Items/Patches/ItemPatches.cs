@@ -15,22 +15,22 @@ namespace ModifAmorphic.Outward.Modules.Items
 
         public static event Action<Item> GetItemIconBefore;
 
-        [HarmonyPatch(nameof(Item.ItemIcon), MethodType.Getter)]
-        [HarmonyPrefix]
-        private static void ItemIconPrefix(Item __instance)
-        {
-#if DEBUG
-            //Logger.LogTrace($"{nameof(ItemPatches)}::{nameof(ItemIconPrefix)}: Triggered for Item {__instance.DisplayName} ({__instance.ItemID}).");
-#endif
-            
-            try
-            {
-                GetItemIconBefore?.Invoke(__instance);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException($"{nameof(ItemPatches)}::{nameof(ItemIconPrefix)}(): Exception Invoking {nameof(GetItemIconBefore)}().", ex);
-            }
-        }
+        //        [HarmonyPatch(nameof(Item.ItemIcon), MethodType.Getter)]
+        //        [HarmonyPrefix]
+        //        private static void ItemIconPrefix(Item __instance)
+        //        {
+        //#if DEBUG
+        //            //Logger.LogTrace($"{nameof(ItemPatches)}::{nameof(ItemIconPrefix)}: Triggered for Item {__instance.DisplayName} ({__instance.ItemID}).");
+        //#endif
+
+        //            try
+        //            {
+        //                GetItemIconBefore?.Invoke(__instance);
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                Logger.LogException($"{nameof(ItemPatches)}::{nameof(ItemIconPrefix)}(): Exception Invoking {nameof(GetItemIconBefore)}().", ex);
+        //            }
+        //        }
     }
 }

@@ -5,6 +5,7 @@ using ModifAmorphic.Outward.Modules.Crafting.Patches;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ModifAmorphic.Outward.Modules.Crafting.Services
@@ -23,44 +24,80 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
         public CustomCraftingService(Func<IModifLogger> loggerFactory)
         {
             _loggerFactory = loggerFactory;
-            CraftingMenuPatches.GenerateResultOverride += GenerateResultOverride;
+            CraftingMenuPatches.GenerateResultOverride += TryGenerateResultOverride;
             CraftingMenuPatches.RefreshAvailableIngredientsOverridden += RefreshAvailableIngredientsOverride;
+            CraftingMenuPatches.CraftingDoneBefore += StashIngredientEnchantData;
         }
 
-
-        private bool GenerateResultOverride((CraftingMenu CraftingMenu, ItemReferenceQuantity Result, int ResultMultiplier) arg)
+        private void StashIngredientEnchantData(CustomCraftingMenu menu)
         {
-            (var craftingMenu, var result, var resultMultiplier) = (arg.CraftingMenu, arg.Result, arg.ResultMultiplier);
+            var compatibles = menu.GetSelectedIngredients();
+            var consumedUids = compatibles.SelectMany(c => c.GetConsumedItems(false, out _))
+                                        .Select(c => c.Key);
+            menu.IngredientEnchantData.Clear();
+            foreach (var uid in consumedUids)
+            {
+                var original = ItemManager.Instance.GetItem(uid);
 
-            Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(GenerateResultOverride)}(): " +
-               $"result == null ? {result == null}; craftingMenu is CustomCraftingMenu? {craftingMenu is CustomCraftingMenu};");
+                if (original is Equipment origEq && origEq.IsEnchanted)
+                {
+                    var enchantData = origEq.GetEnchantmentData();
+                    Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(StashIngredientEnchantData)}(): " +
+                        $"Original item {origEq.ItemID} - '{origEq.DisplayName}' ({origEq.UID}) contained {origEq.ActiveEnchantmentIDs.Count} enchantments. Stashing Enchantment data.\n" +
+                        $"\tData: {enchantData}");
+                    menu.IngredientEnchantData.AddOrUpdate(origEq.ItemID, enchantData);
+                }
+            }
+        }
+        private bool TryGenerateResultOverride((CustomCraftingMenu CraftingMenu, ItemReferenceQuantity Result, int ResultMultiplier) arg)
+        {
+            try
+            {
+                return GenerateResultOverride(arg.CraftingMenu, arg.Result, arg.ResultMultiplier);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{arg.CraftingMenu?.GetType()}::{nameof(TryGenerateResultOverride)}(): " +
+                        $"Error in GenerateResultOverride(). Could not craft item. Ingredients have likely been lost!", ex);
+                return true;
+            }
+        }
+        private bool GenerateResultOverride(CustomCraftingMenu craftingMenu, ItemReferenceQuantity result, int resultMultiplier)
+        {
 
-            if (result == null || !(craftingMenu is CustomCraftingMenu customCraftingMenu)
+            if (result == null
                 || ResourcesPrefabManager.Instance.IsWaterItem(result.RefItem.ItemID)
-                || !_customCrafters.TryGetValue(customCraftingMenu.GetType(), out var crafter))
+                || !_customCrafters.TryGetValue(craftingMenu.GetType(), out var crafter))
                 return false;
 
             var characterInventory = craftingMenu.LocalCharacter.Inventory;
             int quantity = result.Quantity * resultMultiplier;
 
+            var dynamicResult = result as DynamicCraftingResult;
+            
+            dynamicResult?.SetEnchantData(craftingMenu.IngredientEnchantData);
+
             var craftedAny = false;
             for (int i = 0; i < quantity; i++)
             {
                 Logger.LogTrace($"{nameof(CustomCraftingService)}::{nameof(GenerateResultOverride)}(): " +
-                    $"Trying to craft item from recipe {customCraftingMenu.GetSelectedRecipe().Name} and result ItemID {result.ItemID};");
-                if (crafter.TryCraftItem(customCraftingMenu.GetSelectedRecipe(), result, out var craftedItem))
+                    $"Trying to craft item from recipe {craftingMenu.GetSelectedRecipe().Name} and result ItemID {result.ItemID};");
+                if (crafter.TryCraftItem(craftingMenu.GetSelectedRecipe(), result, out var craftedItem))
                 {
                     Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(GenerateResultOverride)}(): " +
-                        $"New item '{craftedItem.Name}' crafted from recipe {customCraftingMenu.GetSelectedRecipe().Name} and result ItemID {result.ItemID};");
+                        $"New item '{craftedItem.Name}' crafted from recipe {craftingMenu.GetSelectedRecipe().Name} and result ItemID {result.ItemID};");
                     craftedAny = true;
                     characterInventory.TakeItem(craftedItem, false);
                     characterInventory.NotifyItemTake(craftedItem, 1);
-                    if (result is DynamicCraftingResult dynamicResult)
-                        dynamicResult.ResetResult();
                 }
             }
 
-            return craftedAny;
+            dynamicResult?.ResetResult();
+            craftingMenu.IngredientEnchantData.Clear();
+
+            //TODO: handle when nothing is crafted. Failure isn't really an option currenly. Returning false
+            //will cause the current result (not dynamic) to be generated.
+            return true;
         }
 
         private bool RefreshAvailableIngredientsOverride(CustomCraftingMenu craftingMenu)
@@ -70,11 +107,12 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
 
             craftingMenu.LocalCharacter.Inventory.InventoryIngredients(craftingMenu.InventoryFilterTag, ref availableIngredients);
 
-            Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(RefreshAvailableIngredientsOverride)}(): " +
+            Logger.LogDebug($"{craftingMenu.GetType()}::{nameof(RefreshAvailableIngredientsOverride)}(): " +
                         $"Retrieved {availableIngredients.Count} items from character inventory for RecipeCraftingType {craftingMenu.GetRecipeCraftingType()} and Tag {craftingMenu.InventoryFilterTag}.");
-            
+
             //If a custom ingredient matcher is found, rebuild the list with CustomCompatibleIngredients with the matcher injected
-            if (_ingredientMatchers.TryGetValue(craftingMenu.GetType(), out var matcher))
+            ICompatibleIngredientMatcher matcher;
+            if (_ingredientMatchers.TryGetValue(craftingMenu.GetType(), out matcher))
             {
                 var tmpIngrds = new DictionaryExt<int, CompatibleIngredient>();
                 for (int i = 0; i < availableIngredients.Keys.Count; i++)
@@ -93,11 +131,36 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                 }
                 availableIngredients = tmpIngrds;
             }
+            if (craftingMenu.IncludeEnchantedIngredients)
+            {
+                AddEnchantingIngredients(craftingMenu.LocalCharacter.Inventory, craftingMenu.InventoryFilterTag, matcher, ref availableIngredients);
+            }
             craftingMenu.SetPrivateField<CraftingMenu, DictionaryExt<int, CompatibleIngredient>>("m_availableIngredients", availableIngredients);
 
             return true;
         }
+        private void AddEnchantingIngredients(CharacterInventory inventory, Tag filterTag, ICompatibleIngredientMatcher matcher, ref DictionaryExt<int, CompatibleIngredient> ingredients)
+        {
+            var allItems = inventory.Pouch.GetContainedItems();
+            if (inventory.HasABag)
+                allItems.AddRange(inventory.EquippedBag.Container.GetContainedItems());
 
+            foreach (var item in allItems)
+            {
+                if (item.HasTag(filterTag) && !(item is WaterContainer) && item.IsEnchanted)
+                {
+                    if (ingredients.ContainsKey(item.ItemID))
+                    {
+                        ingredients[item.ItemID].AddOwnedItem(item);
+                        continue;
+                    }
+                    CompatibleIngredient compatible = matcher == null ?
+                        new CompatibleIngredient(item.ItemID) : new CustomCompatibleIngredient(item.ItemID, matcher, _loggerFactory);
+                    compatible.AddOwnedItem(item);
+                    ingredients.Add(compatible.ItemID, compatible);
+                }
+            }
+        }
         public void AddOrUpdateCrafter<T>(ICustomCrafter customCrafter)  where T : CustomCraftingMenu =>
             _customCrafters.AddOrUpdate(typeof(T), customCrafter, (k, v) => v = customCrafter);
 

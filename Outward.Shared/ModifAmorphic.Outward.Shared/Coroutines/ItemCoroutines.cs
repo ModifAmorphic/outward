@@ -8,14 +8,13 @@ namespace ModifAmorphic.Outward.Coroutines
 {
     public class ItemCoroutines : ModifCoroutine
     {
-        private readonly BaseUnityPlugin _unityPlugin;
         private readonly Func<ItemManager> _itemManagerFactory;
         private ItemManager _itemManager;
         private ItemManager ItemManager => _itemManager ?? (_itemManager = _itemManagerFactory.Invoke());
 
 
-        public ItemCoroutines(BaseUnityPlugin unityPlugin, Func<ItemManager> itemManagerFactory, Func<IModifLogger> getLogger) : base(getLogger) => 
-            (_unityPlugin, _itemManagerFactory) = (unityPlugin, itemManagerFactory);
+        public ItemCoroutines(BaseUnityPlugin unityPlugin, Func<ItemManager> itemManagerFactory, Func<IModifLogger> getLogger) : base(unityPlugin, getLogger) => 
+            (_itemManagerFactory) = (itemManagerFactory);
 
         /// <summary>
         /// Executes the action after no item is returned from ItemManager.GetItem(<paramref name="itemUID"/>)

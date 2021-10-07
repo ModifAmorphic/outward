@@ -9,8 +9,7 @@ namespace ModifAmorphic.Outward.Coroutines
 {
     public class PlayerCoroutines : ModifCoroutine
     {
-        private readonly BaseUnityPlugin _unityPlugin;
-        public PlayerCoroutines(BaseUnityPlugin unityPlugin, Func<IModifLogger> getLogger) : base(getLogger) => _unityPlugin = unityPlugin;
+        public PlayerCoroutines(BaseUnityPlugin unityPlugin, Func<IModifLogger> getLogger) : base(unityPlugin, getLogger) { }
 
         public void InvokeAfterPlayerLeft(string playerUID, Action action, int timeoutSecs, float ticSeconds = DefaultTicSeconds)
         {
