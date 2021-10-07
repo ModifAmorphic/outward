@@ -25,7 +25,6 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
             if (!(recipe is TransmogWeaponRecipe weaponRecipe))
                 return;
 
-            
             var weaponTarget = ingredients?.FirstOrDefault(i => i?.ItemPrefab is Weapon)?.ItemPrefab as Weapon;
             var visualWeapon = craftingResult.RefItem as Weapon;
 

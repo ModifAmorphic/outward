@@ -14,9 +14,9 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 		private readonly Func<IModifLogger> _loggerFactory;
 		private IModifLogger Logger => _loggerFactory.Invoke();
 
-		public IngredientMatcher(Func<IModifLogger> loggerFactory) =>
+        public IngredientMatcher(Func<IModifLogger> loggerFactory) =>
 			(_loggerFactory) = (loggerFactory);
-
+		
 		public bool MatchRecipeStep(CompatibleIngredient potentialIngredient, RecipeIngredient ingredientFilter)
         {
 			var ownedItems = potentialIngredient.GetPrivateField<CompatibleIngredient, List<Item>>("m_ownedItems");
@@ -48,16 +48,16 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 			if (tagType == Tag.TagTypes.Armor && tag.TryGetEquipmentSlot(out var slot))
             {
 				Logger.LogTrace($"{nameof(IngredientMatcher)}::{nameof(MatchRecipeStep)}() Potential Ingredient ItemID: {potentialIngredient.ItemID}. Filter is AddGenericIngredient and TagType is Armor. Matching on " +
-					$"Equipment Slot type {slot}.  Potential Ingredient Type: {firstItem?.GetType()}, Name: {firstItem?.DisplayName}, Slot: {(firstItem as Armor)?.EquipSlot}.");
-				return ownedItems.Any(i => i is Armor armor && armor.EquipSlot == slot);
+					$"Equipment Slot type {slot}.  Potential Ingredient Type: {firstItem?.GetType()}, Name: {firstItem?.DisplayName}, Slot: {(firstItem as Armor)?.EquipSlot}, and any Non Transmog Owned Item UID.");
+				return ownedItems.Any(i => i is Armor armor && armor.EquipSlot == slot && !((UID)armor.UID).IsTransmorg());
 			}
 
 			//If weapon, match on weapon type
 			if (tagType == Tag.TagTypes.Weapons && tag.TryGetWeaponType(out var weaponType))
 			{
 				Logger.LogTrace($"{nameof(IngredientMatcher)}::{nameof(MatchRecipeStep)}() Potential Ingredient ItemID: {potentialIngredient.ItemID}. Filter is AddGenericIngredient and TagType is Weapons. Matching on " +
-					$"Weapon type {weaponType}.  Potential Ingredient Type: {firstItem?.GetType()}, Name: {firstItem?.DisplayName}, Slot: {(firstItem as Weapon)?.Type}.");
-				return ownedItems.Any(i => i is Weapon wep && wep.Type == weaponType);
+					$"Weapon type {weaponType}.  Potential Ingredient Type: {firstItem?.GetType()}, Name: {firstItem?.DisplayName}, Slot: {(firstItem as Weapon)?.Type}, and any Non Transmog Owned Item UID.");
+				return ownedItems.Any(i => i is Weapon wep && wep.Type == weaponType && !((UID)wep.UID).IsTransmorg());
 			}
 
 			return false;

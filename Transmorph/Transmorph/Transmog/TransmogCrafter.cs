@@ -26,7 +26,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
             if (!(recipe is TransmogRecipe tmogRecipe) || !(recipeResult is DynamicCraftingResult dynamicResult)
                 || dynamicResult.DynamicItemID == -1)
             {
-                Logger.LogDebug($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): " +
+                Logger.LogError($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): " +
                         $"Could not craft item. Either recipe was not a Transmog, result was not a Dynamic result or DynamicItemID was not set. " +
                         $"recipe is TransmogRecipe? {recipe is TransmogRecipe}. recipeResult is DynamicCraftingResult? {recipeResult is DynamicCraftingResult} " +
                         $"DynamicItemID: {(recipeResult as DynamicCraftingResult)?.DynamicItemID}");
@@ -35,6 +35,18 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
             }
 
             item = GenerateItemTransmog(new ItemVisualMap() { VisualItemID = tmogRecipe.VisualItemID, ItemID = dynamicResult.DynamicItemID });
+
+            if (item is Equipment tmogEquip)
+            {
+                if (dynamicResult.IngredientEnchantData.TryGetValue(item.ItemID, out var enchantData))
+                {
+                    tmogEquip.ApplyEnchantmentsFromSaveData(enchantData);
+                    Logger.LogDebug($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): " +
+                        $"Ingredient {item.ItemID} was enchanted. " +
+                        $"Adding echantments to new transmog item.\n" +
+                        $"\tEnchantmentData: {enchantData}");
+                }
+            }
 
             Logger.LogInfo($"Crafted new Transmog. Item '{item.DisplayName}' was transmogrified with {dynamicResult.RefItem?.DisplayName} ({tmogRecipe.VisualItemID})'s visuals.");
 
@@ -47,8 +59,6 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 
             if (item == null)
                 return item;
-
-            //item.Tags.Add(TransmorphConstants.TransmogTagSelector.Tag);
 
             var newUID = visualMap.ToUID();
 

@@ -46,10 +46,10 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
             if (item.HolderUID.TryGetVisualItemID(out var visualItemID))
             {
                 _itemVisualizer.RegisterItemVisual(visualItemID, item.UID);
-                return;
-                _visualizations.Enqueue((item.UID, visualItemID));
-                if (!coroutinesStarted)
-                    StartCoroutines();
+                //return;
+                //_visualizations.Enqueue((item.UID, visualItemID));
+                //if (!coroutinesStarted)
+                //    StartCoroutines();
                 
             }
         }
