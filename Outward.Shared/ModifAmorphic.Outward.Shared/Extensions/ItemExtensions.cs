@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Extensions
 {
@@ -44,9 +45,12 @@ namespace ModifAmorphic.Outward.Extensions
         }
 
 
+        //TODO: This doesn't belong here. Rework all this so the extensions don't need a random dictionary stashed in
+        //the extensions class.
+        
         private static readonly ConcurrentDictionary<int, Sprite> _itemIcons = new ConcurrentDictionary<int, Sprite>();
 
-        public static Item ConfigureCustomIcon(this Item item, string iconPath)
+        public static Item ConfigureItemIcon(this Item item, string iconPath)
         {
             if (item is Skill)
                 throw new ArgumentException("Getting or Setting Icons for Skills is currently not supported.", nameof(item));
@@ -75,10 +79,6 @@ namespace ModifAmorphic.Outward.Extensions
 
             return item;
         }
-        public static Item SetCustomIcon(this Item item, Sprite icon)
-        {
-            return item.SetItemIcon(icon);
-        }
         public static Sprite GetCustomIcon(this Item item)
         {
             if (item is Skill)
@@ -99,6 +99,7 @@ namespace ModifAmorphic.Outward.Extensions
 
             return _itemIcons.TryGetValue(item.ItemID, out icon);
         }
+
         public static string GetSpecialVisualPrefabDefaultPath(this Item item)
         {
             return item.GetPrivateField<Item, string>("m_specialVisualPrefabDefaultPath");

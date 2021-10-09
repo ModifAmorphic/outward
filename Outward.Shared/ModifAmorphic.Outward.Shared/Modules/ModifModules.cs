@@ -39,10 +39,14 @@ namespace ModifAmorphic.Outward.Modules
         }
         public static ItemVisualizer GetItemVisualizerModule(string modId)
         {
+            var iconService = new IconService(modId,
+                                              new GameObjectResources.ModifGoService(() => LoggerFactory.GetLogger(modId)),
+                                              () => LoggerFactory.GetLogger(modId));
             return ModuleService.GetModule<ItemVisualizer>(modId, () =>
                 new ItemVisualizer(
                     () => ResourcesPrefabManager.Instance,
                     () => ItemManager.Instance,
+                    iconService,
                     () => LoggerFactory.GetLogger(modId)));
         }
         public static MerchantModule GetMerchantModule(string modId)

@@ -9,6 +9,7 @@ using UnityEngine;
 using ModifAmorphic.Outward.Extensions;
 using System.Reflection;
 using System.Collections.Concurrent;
+using ModifAmorphic.Outward.Modules.Items.Patches;
 
 namespace ModifAmorphic.Outward.Modules.Items
 {
@@ -48,7 +49,7 @@ namespace ModifAmorphic.Outward.Modules.Items
         private void SetCustomItemIcon(Item item)
         {
             if (item.TryGetCustomIcon(out var icon))
-                item.SetCustomIcon(icon);
+                item.SetItemIcon(icon);
         }
 
         public Item CreatePrefab(int baseItemID, int newItemID, string name, string description)

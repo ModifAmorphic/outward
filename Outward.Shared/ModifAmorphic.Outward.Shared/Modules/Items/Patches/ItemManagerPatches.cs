@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.Modules.Items
+namespace ModifAmorphic.Outward.Modules.Items.Patches
 {
     [HarmonyPatch(typeof(ItemManager))]
     public static class ItemManagerPatches

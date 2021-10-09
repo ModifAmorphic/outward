@@ -2,6 +2,7 @@
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Items.Models;
+using ModifAmorphic.Outward.Modules.Items.Patches;
 using ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings;
 using System;
 using System.Collections.Concurrent;
@@ -21,27 +22,57 @@ namespace ModifAmorphic.Outward.Modules.Items
         private readonly Func<ItemManager> _itemManagerFactory;
         private ItemManager ItemManager => _itemManagerFactory.Invoke();
 
+        private readonly IconService _iconService;
+        //private IconService IconService => _iconService;
 
         public HashSet<Type> PatchDependencies => new HashSet<Type>() {
-              typeof(ItemManagerPatches)
+              typeof(ItemManagerPatches),
+              typeof(ItemDisplayPatches)
         };
 
         public HashSet<Type> EventSubscriptions => new HashSet<Type>();
 
         private readonly ConcurrentDictionary<string, int> _itemVisuals = new ConcurrentDictionary<string, int>();
 
+        private class IconAddRemove
+        {
+            public Action<ItemDisplay> GetOrAddIcon;
+            public Action<ItemDisplay> DetachIcon;
+        }
+
+        /// <summary>
+        /// Collection of a specific Item UID's icons and a means to get them.<br />
+        /// <br />
+        /// TKey: <see cref="ConcurrentDictionary{TKey, TValue}"/>
+        /// <list type="number">
+        /// <item>TValue: <see cref="string"/>: UID of the Item Icons are associated with.</item>
+        /// <item>
+        /// <see cref="ConcurrentDictionary{TKey, TValue}"/>: Keyed Collection of an Item's icons.
+        /// <list type="number">
+        /// <item>TKey: <see cref="string"/>: Name the icon was registered under.</item>
+        /// <item>TValue: <see cref="string"/>: Physical file path to the icon's image file.</item>
+        /// </list>
+        /// </item>
+        /// </list>
+        /// </summary>
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _itemIcons
+            = new ConcurrentDictionary<string, ConcurrentDictionary<string, string>>();
+
+        private readonly HashSet<string> _displayIcons = new HashSet<string>();
+
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal ItemVisualizer(Func<ResourcesPrefabManager> prefabManagerFactory, Func<ItemManager> itemManagerFactory, Func<IModifLogger> loggerFactory)
+        internal ItemVisualizer(Func<ResourcesPrefabManager> prefabManagerFactory, Func<ItemManager> itemManagerFactory, IconService iconService, Func<IModifLogger> loggerFactory)
         {
             this._loggerFactory = loggerFactory;
             this._prefabManagerFactory = prefabManagerFactory;
             _itemManagerFactory = itemManagerFactory;
+            _iconService = iconService;
 
             ItemManagerPatches.GetVisualsByItemOverride += GetVisualsByItemOverride;
             ItemManagerPatches.GetSpecialVisualsByItemOverride += GetSpecialVisualsByItemOverride;
+            ItemDisplayPatches.RefreshEnchantedIconAfter += ToggleCustomIcons;
             //VisualSlotPatches.PositionVisualsOverride += PositionVisualsOverride;
         }
-
 
         /// <summary>
         /// Registers a UID to use the source Item IDs visuals.
@@ -55,6 +86,16 @@ namespace ModifAmorphic.Outward.Modules.Items
         }
         public bool IsItemVisualRegistered(string itemUID) => _itemVisuals.ContainsKey(itemUID);
 
+        public void RegisterAdditionalIcon(string itemUID, string iconName, string iconPath)
+        {
+            Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(RegisterItemVisual)}(): Registering new Icon {iconName} to Item UID '{itemUID}'. Icon file path: {iconPath}.");
+            var itemIcons = _itemIcons.GetOrAdd(itemUID, new ConcurrentDictionary<string, string>());
+            _ = itemIcons.TryAdd(iconName, iconPath);
+            if (!_displayIcons.Contains(iconName))
+                _displayIcons.Add(iconName);
+        }
+
+        public bool IsAdditionalIconRegistered(string itemUID, string iconName) => _itemIcons.TryGetValue(itemUID, out var icons) ? icons.ContainsKey(iconName) : false;
         private bool GetVisualsByItemOverride(Item item, out ItemVisual visual)
         {
             if (!_itemVisuals.TryGetValue(item.UID, out var visualItemID))
@@ -140,6 +181,33 @@ namespace ModifAmorphic.Outward.Modules.Items
             //return transform != null;
         }
 
+        private void ToggleCustomIcons(ItemDisplay itemDisplay, Item item)
+        {
+            var registeredItemIcons = new HashSet<string>();
+            Logger.LogTrace($"{nameof(ItemVisualizer)}::{nameof(ToggleCustomIcons)}(): Setting custom icons for Item {item?.ItemID} - {item?.DisplayName} ({item?.UID}) current ItemDisplay {itemDisplay.name}.");
+            
+            if (item != null && !string.IsNullOrEmpty(item.UID) && _itemIcons.TryGetValue(item.UID, out var itemIcons))
+            {
+                foreach (var iconKvp in itemIcons)
+                {
+                    _iconService.GetOrAddIcon(itemDisplay, iconKvp.Key, iconKvp.Value, true);
+                    registeredItemIcons.Add(iconKvp.Key);
+                    Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(ToggleCustomIcons)}(): Added icon {iconKvp.Key} to ItemDisplay {itemDisplay.name}.");
+                }
+            }
+
+            foreach (var iconName in _displayIcons)
+            {
+                if (!registeredItemIcons.Contains(iconName))
+                {
+                    if (_iconService.TryDeactivateIcon(itemDisplay, iconName))
+                    {
+                        Logger.LogTrace($"{nameof(ItemVisualizer)}::{nameof(ToggleCustomIcons)}(): Deactivated icon {iconName} for ItemDisplay {itemDisplay.name}.");
+                    }
+                }
+            }
+        }
+        #region POC Work
         private bool TryUnregisterItemVisual(Item containedItem, out (string UID, int VisualItemID) visualMap)
         {
             if (_itemVisuals.TryRemove(containedItem.UID, out int visualItemID))
@@ -328,5 +396,6 @@ namespace ModifAmorphic.Outward.Modules.Items
 
             return true;
         }
+        #endregion
     }
 }
