@@ -217,10 +217,10 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 		protected Action refreshAutoRecipe => () => this.InvokePrivateMethod<CraftingMenu>("RefreshAutoRecipe");
 		protected Action cancelCrafting => () => this.InvokePrivateMethod<CraftingMenu>("CancelCrafting");
 		protected Action<bool> setCraftButtonEnable => (show) => this.InvokePrivateMethod<CraftingMenu>("SetCraftButtonEnable", show);
-		protected Action refreshFreeRecipeResult => () => this.InvokePrivateMethod<CraftingMenu>("RefreshFreeRecipeResult"); 
-		#endregion
+		protected Action refreshFreeRecipeResult => () => this.InvokePrivateMethod<CraftingMenu>("RefreshFreeRecipeResult");
+        #endregion
 
-		public CustomCraftingMenu()
+        public CustomCraftingMenu()
         {
             //CraftingMenuPatches.RefreshAvailableIngredientsOverridden += RefreshAvailableIngredientsOverride;
 			//CraftingMenuPatches.SetCraftButtonEnableBefore += RefreshResult;
@@ -324,13 +324,13 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             {
 #if !DEBUG
 				Logger.LogDebug($"CustomCraftingMenu::Show(): Type is {this.GetType().Name}");
-				if (PermenantCraftingStationType != null
-					&& PermenantCraftingStationType.Value.IsDefinedValue()
+				if (PermanentCraftingStationType != null
+					&& PermanentCraftingStationType.Value.IsDefinedValue()
 					&& !showRecurseCheck)
 				{
-					Logger.LogDebug($"CustomCraftingMenu::Show() {this.GetType().Name} is a permenant {PermenantCraftingStationType} crafting station.");
+					Logger.LogDebug($"CustomCraftingMenu::Show() {this.GetType().Name} is a permenant {PermanentCraftingStationType} crafting station.");
 					showRecurseCheck = true;
-					Show((Recipe.CraftingType)PermenantCraftingStationType);
+					Show((Recipe.CraftingType)PermanentCraftingStationType);
 					return;
 				}
 				showRecurseCheck = false;
