@@ -1,7 +1,9 @@
-﻿using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Modules.Items;
 using ModifAmorphic.Outward.Transmorph.Extensions;
+using ModifAmorphic.Outward.Transmorph.Settings;
 using ModifAmorphic.Outward.Transmorph.Transmog.Models;
 using ModifAmorphic.Outward.Transmorph.Transmog.Recipes;
 using System;
@@ -47,7 +49,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
                         $"\tEnchantmentData: {enchantData}");
                 }
             }
-
+            
             Logger.LogInfo($"Crafted new Transmog. Item '{item.DisplayName}' was transmogrified with {dynamicResult.RefItem?.DisplayName} ({tmogRecipe.VisualItemID})'s visuals.");
 
             return true;
@@ -69,6 +71,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
             item.SetHolderUID(newUID);
 
             _itemVisualizer.RegisterItemVisual(visualMap.VisualItemID, item.UID);
+            _itemVisualizer.RegisterAdditionalIcon(item.UID, TransmogSettings.IconName, TransmogSettings.IconImageFilePath);
 
             if (PhotonNetwork.isNonMasterClientInRoom)
             {

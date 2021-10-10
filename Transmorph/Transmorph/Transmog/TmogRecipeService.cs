@@ -9,9 +9,11 @@ using ModifAmorphic.Outward.Transmorph.Menu;
 using ModifAmorphic.Outward.Transmorph.Patches;
 using ModifAmorphic.Outward.Transmorph.Settings;
 using ModifAmorphic.Outward.Transmorph.Transmog.Recipes;
+using ModifAmorphic.Outward.Transmorph.Transmog.SaveData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,21 +28,27 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
         private readonly Func<IModifLogger> _getLogger;
 
         private readonly BaseUnityPlugin _baseUnityPlugin;
-        private readonly ModifCoroutine _coroutine;
+        private readonly LevelCoroutines _coroutine;
         private readonly IDynamicResultService _armorResultService;
         private readonly IDynamicResultService _weaponResultService;
         private readonly CustomCraftingModule _craftingModule;
+        private readonly TransmogRecipeData _recipeSaveData;
 
         public TmogRecipeService(BaseUnityPlugin baseUnityPlugin, IDynamicResultService armorResultService, IDynamicResultService weaponResultService,
-                                CustomCraftingModule craftingModule, ModifCoroutine coroutine,
+                                CustomCraftingModule craftingModule, LevelCoroutines coroutine,
+                                TransmogRecipeData recipeSaveData,
                                 TransmorphConfigSettings settings, Func<IModifLogger> getLogger)
         {
-            (_baseUnityPlugin, _armorResultService, _weaponResultService, _craftingModule, _coroutine, _settings, _getLogger) = 
-                (baseUnityPlugin, armorResultService, weaponResultService, craftingModule, coroutine, settings, getLogger);
+            (_baseUnityPlugin, _armorResultService, _weaponResultService, _craftingModule, _coroutine, _recipeSaveData, _settings, _getLogger) = 
+                (baseUnityPlugin, armorResultService, weaponResultService, craftingModule, coroutine, recipeSaveData, settings, getLogger);
 
+            if (!TryHookSideLoaderOnPacksLoaded(LoadRecipesFromSave))
+                TmogRecipeManagerPatches.LoadCraftingRecipeAfter += (r) => LoadRecipesFromSave();
+            TmogNetworkLevelLoaderPatches.MidLoadLevelAfter += (n) => _coroutine.InvokeAfterLevelAndPlayersLoaded(n, LearnCharacterRecipesFromSave, 300, 1);
             TmogCharacterEquipmentPatches.EquipItemBefore += (equipArgs) => CheckAddTmogRecipe(equipArgs.Character.Inventory, equipArgs.Equipment);
         }
 
+        
         private void CheckAddTmogRecipe(CharacterInventory inventory, Equipment equipment)
         {
             if (equipment is Armor || equipment is Weapon)
@@ -50,25 +58,68 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
         }
         private void AddLearnRecipe(CharacterInventory inventory, Equipment equipment)
         {
-            if (!TryGetTransmogRecipe(equipment.ItemID, out var recipe))
-            {
-                if (equipment is Armor)
-                    recipe = GetTransmogArmorRecipe(equipment.ItemID);
-                else if (equipment is Weapon)
-                    recipe = GetTransmogWeaponRecipe(equipment.ItemID);
-                else
-                    throw new ArgumentException($"Equipment Item {equipment?.ItemID} - {equipment?.DisplayName} is not an Armor or Weapon type.", nameof(equipment));
-
-                _craftingModule.RegisterRecipe<TransmogrifyMenu>(recipe);
-                Logger.LogInfo($"Registered new Transmogrify recipe for {equipment.ItemID} - {equipment.DisplayName}. Equipment was a type of " +
-                    $"{((equipment is Armor)? "Armor" : (equipment is Weapon) ? "Weapon" : "Unknown")}");
-            }
-
+            var recipe = AddOrGetRecipe(equipment);
+            TryLearnRecipe(inventory, recipe);
+        }
+        private bool TryLearnRecipe(CharacterInventory inventory, Recipe recipe)
+        {
             if (!inventory.RecipeKnowledge.IsRecipeLearned(recipe.UID))
             {
                 inventory.RecipeKnowledge.LearnRecipe(recipe);
                 Logger.LogInfo($"Character Learned new Transmogrify Recipe {recipe.Name}.");
+                return true;
             }
+            return false;
+        }
+        public TransmogRecipe AddOrGetRecipe(Equipment equipment)
+        {
+            if (!TryGetTransmogRecipe(equipment.ItemID, out var recipe))
+            {
+                if (equipment is Armor armor)
+                    recipe = GetTransmogArmorRecipe(armor);
+                else if (equipment is Weapon weapon)
+                    recipe = GetTransmogWeaponRecipe(weapon);
+                else
+                    throw new ArgumentException($"Equipment Item {equipment?.ItemID} - {equipment?.DisplayName} is not an Armor or Weapon type.", nameof(equipment));
+
+                _recipeSaveData.SaveRecipe(recipe.VisualItemID, recipe.UID);
+                _craftingModule.RegisterRecipe<TransmogrifyMenu>(recipe);
+                Logger.LogInfo($"Registered new Transmogrify recipe for {equipment.ItemID} - {equipment.DisplayName}. Equipment was a type of " +
+                    $"{((equipment is Armor) ? "Armor" : (equipment is Weapon) ? "Weapon" : "Unknown")}");
+            }
+
+            return recipe;
+        }
+        public TransmogRecipe AddOrGetRecipe(int visualItemID, string uid)
+        {
+            if (visualItemID == 0)
+                throw new ArgumentException("0 is not a valid ItemID.", nameof(visualItemID));
+
+            if (string.IsNullOrWhiteSpace(uid))
+                throw new ArgumentException("Must be a valid UID.", nameof(uid));
+
+            //Ensure valid UID.
+            var recipeUid = UID.Decode(uid);
+
+            if (!TryGetTransmogRecipe(recipeUid.ToString(), out var recipe))
+            {
+                var equipment = ResourcesPrefabManager.Instance.GetItemPrefab(visualItemID) ?? ResourcesPrefabManager.Instance.GenerateItem(visualItemID.ToString()) as Equipment;
+                if (equipment is Armor armor)
+                    recipe = GetTransmogArmorRecipe(armor);
+                else if (equipment is Weapon weapon)
+                    recipe = GetTransmogWeaponRecipe(weapon);
+                else
+                    throw new ArgumentException($"Equipment '{equipment?.DisplayName}' for visualItemID {visualItemID} is not an Armor or Weapon type.", nameof(visualItemID));
+
+                recipe.SetUID(recipeUid);
+
+                _recipeSaveData.SaveRecipe(recipe.VisualItemID, recipe.UID);
+                _craftingModule.RegisterRecipe<TransmogrifyMenu>(recipe);
+                Logger.LogInfo($"Registered new Transmogrify recipe for {equipment.ItemID} - {equipment.DisplayName}. Equipment was a type of " +
+                    $"{((equipment is Armor) ? "Armor" : (equipment is Weapon) ? "Weapon" : "Unknown")}");
+            }
+
+            return recipe;
         }
         private static Dictionary<string, Recipe> _recipesRef;
         /// <summary>
@@ -85,21 +136,54 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 
             return _recipesRef.Values.Any(r => r.RecipeID == GetRecipeID(visualItemID));
         }
+        public bool GetRecipeExists(string recipeUID)
+        {
+            if (_recipesRef == null)
+                _recipesRef = RecipeManager.Instance.GetPrivateField<RecipeManager, Dictionary<string, Recipe>>("m_recipes");
+            if (!_recipesRef.Any())
+                throw new InvalidOperationException("Cannot check if a recipe exists before the RecipeManager has loaded recipes.");
+
+            return _recipesRef.ContainsKey(recipeUID);
+        }
+        public bool TryGetTransmogRecipe(string UID, out TransmogRecipe recipe)
+        {
+            if (_recipesRef == null)
+                _recipesRef = RecipeManager.Instance.GetPrivateField<RecipeManager, Dictionary<string, Recipe>>("m_recipes");
+            if (!_recipesRef?.Any() ?? false)
+                throw new InvalidOperationException("Cannot check if a recipe exists before the RecipeManager has loaded recipes.");
+
+            if (_recipesRef.TryGetValue(UID, out var baseRecipe))
+            {
+                //intentional so exception thrown if not a TransmogRecipe
+                recipe = (TransmogRecipe)baseRecipe;
+                return true;
+            }
+            recipe = default;
+            return false;
+        }
+
         public bool TryGetTransmogRecipe(int visualItemID, out TransmogRecipe recipe)
         {
             if (_recipesRef == null)
                 _recipesRef = RecipeManager.Instance.GetPrivateField<RecipeManager, Dictionary<string, Recipe>>("m_recipes");
-            if (!_recipesRef?.Any()??false)
+            if (!_recipesRef?.Any() ?? false)
                 throw new InvalidOperationException("Cannot check if a recipe exists before the RecipeManager has loaded recipes.");
 
-            recipe = _recipesRef.Values.FirstOrDefault(r => r.RecipeID == GetRecipeID(visualItemID)) as TransmogRecipe;
-
+            recipe = (TransmogRecipe)_recipesRef.Values.FirstOrDefault(r => r.RecipeID == GetRecipeID(visualItemID));
             return recipe != default;
         }
         public TransmogArmorRecipe GetTransmogArmorRecipe(int visualItemID)
         {
             var transmogSource = ResourcesPrefabManager.Instance.GetItemPrefab(visualItemID) ?? ResourcesPrefabManager.Instance.GenerateItem(visualItemID.ToString());
             if (transmogSource == null || !(transmogSource is Armor armorSource))
+            {
+                return null;
+            }
+            return GetTransmogArmorRecipe(armorSource);
+        }
+        public TransmogArmorRecipe GetTransmogArmorRecipe(Armor armorSource)
+        {
+            if (armorSource == null)
             {
                 return null;
             }
@@ -116,29 +200,19 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
             {
                 return null;
             }
+            return GetTransmogWeaponRecipe(weaponSource);
+        }
+        public TransmogWeaponRecipe GetTransmogWeaponRecipe(Weapon weaponSource)
+        {
+            if (weaponSource == null)
+            {
+                return null;
+            }
             var weaponTag = weaponSource.Type.ToWeaponTag();
             TagSourceManager.Instance.TryAddTag(weaponTag, true);
 
             return ConfigureTransmogRecipe(weaponSource, weaponTag, ScriptableObject.CreateInstance<TransmogWeaponRecipe>(), _weaponResultService)
                 .SetWeaponType(weaponSource.Type);
-        }
-        private TransmogRecipe GetTransmogRecipe(int visualItemID)
-        {
-            var transmogSource = ResourcesPrefabManager.Instance.GetItemPrefab(visualItemID) ?? ResourcesPrefabManager.Instance.GenerateItem(visualItemID.ToString());
-
-            var tagSource = new TagSourceSelector(transmogSource.Tags[0]);
-            
-
-            var recipe = ScriptableObject.CreateInstance<TransmogArmorRecipe>()
-                .SetRecipeIDEx(GetRecipeID(visualItemID))
-                .SetUID(UID.Generate());
-            
-            return recipe
-                .SetNames("Transmog - " + transmogSource.DisplayName)
-                .AddIngredient(new TagSourceSelector(transmogSource.Tags[0]))
-                .AddIngredient(ResourcesPrefabManager.Instance.GetItemPrefab(TransmogSettings.RecipeSecondaryItemID) ?? ResourcesPrefabManager.Instance.GenerateItem(TransmogSettings.RecipeSecondaryItemID.ToString()))
-                .SetVisualItemID(visualItemID)
-                .AddResult(visualItemID);
         }
 
         public T ConfigureTransmogRecipe<T>(Item transmogSource, Tag transmogTag, T recipe, IDynamicResultService resultService) where T : TransmogRecipe
@@ -159,25 +233,103 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
         {
             return TransmogSettings.RecipeStartID - itemID;
         }
-        public TransmogRecipe AddOrGetRecipe(int visualItemID)
+        
+        public void LoadRecipesFromSave()
         {
-            var prefab = ResourcesPrefabManager.Instance.GetItemPrefab(visualItemID);
-            if (!(prefab is Armor || prefab is Weapon))
+            var saves = _recipeSaveData.GetAllRecipes();
+            foreach(var r in saves)
             {
-                //Logger.LogWarning($"{nameof(TmogRecipeService)}::{nameof(TryAddRecipe)}(): Tried to add a recipe for non Armor or Weapon type ItemID {visualItemID} - {prefab?.DisplayName}.");
-                throw new ArgumentException($"ItemID {visualItemID} - '{prefab?.DisplayName}' must be an Armor or Weapon type.", nameof(visualItemID));
+                try
+                {
+                    AddOrGetRecipe(r.Key, r.Value);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogException($"Could not load recipe {r.Key} - {r.Value} from save!", ex);
+                }
+            }
+        }
+        private void LearnCharacterRecipesFromSave()
+        {
+            var characters = SplitScreenManager.Instance.LocalPlayers.Select(p => p.AssignedCharacter);
+            if (!_settings.AllCharactersLearnRecipes.Value)
+            {
+                var saves = _recipeSaveData.GetAllRecipes();
+                LearnRecipes(characters, saves);
             }
 
-            if (!TryGetTransmogRecipe(visualItemID, out var tmogRecipe))
+            var starterRecipes = TransmogSettings.StartingTransmogRecipes;
+            LearnRecipes(characters, starterRecipes);
+        }
+        private void LearnRecipes(IEnumerable<Character> characters, IEnumerable<KeyValuePair<int, UID>> recipes)
+        {
+            foreach (var r in recipes)
             {
-                tmogRecipe = (prefab is Armor) ?
-                    (TransmogRecipe)GetTransmogArmorRecipe(visualItemID) : GetTransmogWeaponRecipe(visualItemID);
-
-                _craftingModule.RegisterRecipe<TransmogrifyMenu>(tmogRecipe);
-
-                Logger.LogInfo($"Registered new Transmogrify recipe for {visualItemID} - {prefab.DisplayName}.");
+                if (TryGetTransmogRecipe(r.Value, out var recipe))
+                {
+                    if (recipe.VisualItemID != r.Key)
+                    {
+                        Logger.LogError($"Recipe '{recipe.Name}' ({recipe.UID}) VisualItemID {recipe.VisualItemID} does not match ItemID {r.Value} of the saved recipe! This recipe will not be learned");
+                        continue;
+                    }
+                    foreach (var c in characters)
+                    {
+                        TryLearnRecipe(c.Inventory, recipe);
+                    }
+                }
             }
-            return tmogRecipe;
+        }
+        private bool TryHookSideLoaderOnPacksLoaded(Action subscriber)
+        {
+            try
+            {
+                var slAssembly = AppDomain.CurrentDomain.GetAssemblies()
+                    .FirstOrDefault(a => a.GetName().Name.Equals("SideLoader", StringComparison.InvariantCultureIgnoreCase));
+                if (slAssembly == default)
+                    return false;
+                Logger.LogDebug($"TryHookSideLoaderOnPacksLoaded: Got Assembly {slAssembly}");
+
+                var slType = slAssembly.GetTypes()
+                    .FirstOrDefault(t => t.FullName.Equals("SideLoader.SL", StringComparison.InvariantCultureIgnoreCase));
+                if (slType == default)
+                    return false;
+                Logger.LogDebug($"TryHookSideLoaderOnPacksLoaded: Got Type {slType}");
+
+                var onPacksLoaded = slType.GetEvent("OnPacksLoaded", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+                Logger.LogDebug($"TryHookSideLoaderOnPacksLoaded: Got Event {onPacksLoaded}");
+                var eventDelegateType = onPacksLoaded.EventHandlerType;
+                Logger.LogDebug($"TryHookSideLoaderOnPacksLoaded: Got EventHandlerType {eventDelegateType}");
+
+                var mcall = ((Expression<Action>)(() => LoadRecipesFromSave())).Body as MethodCallExpression;
+
+
+                var slDelegate = Delegate.CreateDelegate(eventDelegateType, this, subscriber.Method);
+                Logger.LogDebug($"TryHookSideLoaderOnPacksLoaded: Got Delegate {slDelegate}");
+                onPacksLoaded
+                    .GetAddMethod()
+                    .Invoke(null, new object[] { slDelegate });
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException("Error trying to retrieve SideLoader OnPacksLoaded event.", ex);
+            }
+            return false;
+
+            //foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            //{
+            //    if (asm.GetName().Name.Contains("SideLoader") || asm.FullName.Contains("SideLoader"))
+            //    {
+            //        logger.LogDebug($"{asm.FullName} | {asm.GetName().Name}: types");
+            //        foreach (var type in asm.GetTypes())
+            //        {
+            //            //if (!string.IsNullOrEmpty(nameFilter) && !type.FullName.ContainsIgnoreCase(nameFilter))
+            //            //    continue;
+            //            logger.LogDebug($"{asm.GetName().Name}: {type.FullName} | {type.Name}");
+            //        }
+            //    }
+            //}
         }
     }
 }

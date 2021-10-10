@@ -6,33 +6,33 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
 {
     internal class TransmorphConfigSettings
     {
-        const string MainSection = ModInfo.ModName + " Settings";
-        const int MainTopOrder = int.MaxValue;
+        const string TransmogSection = "Transmogrify Settings";
+        const int TransmogTopOrder = int.MaxValue;
 
         public ConfigSetting<string> SomeStringSetting { get; } = new ConfigSetting<string>()
         {
             Name = nameof(SomeStringSetting),
             DefaultValue = "default",
-            Section = MainSection,
+            Section = TransmogSection,
             DisplayName = "SomeStringSetting Friendly Name",
             Description = $"This is Some String Setting Example",
-            Order = MainTopOrder - 1,
+            Order = TransmogTopOrder - 1,
             IsAdvanced = false
         };
-        public ConfigSetting<bool> SomeBoolSetting { get; } = new ConfigSetting<bool>()
+        public ConfigSetting<bool> AllCharactersLearnRecipes { get; } = new ConfigSetting<bool>()
         {
-            Name = nameof(SomeBoolSetting),
+            Name = nameof(AllCharactersLearnRecipes),
             DefaultValue = false,
-            Section = MainSection,
-            DisplayName = "SomeBoolSetting Friendly Name",
-            Description = $"Life story of SomeBoolSetting.",
-            Order = MainTopOrder - 2,
+            Section = TransmogSection,
+            DisplayName = "Recipes Unlocked for All Characters",
+            Description = $"If enabled, when a transmogrify recipe is unlocked by a character it will be made available to all other existing and future characters.",
+            Order = TransmogTopOrder - 2,
             IsAdvanced = false
         };
 
 
         const string AdvancedSection = "zz--Advanced Settings--zz";
-        const int AdvancedTopOrder = MainTopOrder - 1000;
+        const int AdvancedTopOrder = TransmogTopOrder - 1000;
 
         public ConfigSetting<LogLevel> LogLevel { get; } = new ConfigSetting<LogLevel>()
         {

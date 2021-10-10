@@ -1,6 +1,10 @@
-﻿using System;
+﻿using BepInEx;
+using ModifAmorphic.Outward.Transmorph.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using UnityEngine;
 
 namespace ModifAmorphic.Outward.Transmorph.Settings
 {
@@ -12,6 +16,10 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
         public const int ItemPrefixUID = -1356830026;
         public const string ItemStringPrefixUID = "tmogr";
         public const int RecipeSecondaryItemID = 6300030;
+        public static readonly string IconImageFilePath = Path.Combine(
+                                            Path.GetDirectoryName(TransmorphPlugin.Instance.Info.Location),
+                                            "tex_men_transmogItem.png");
+        public const string IconName = "transmog";
 
         public static byte[] BytePrefixUID = BitConverter.GetBytes(ItemPrefixUID);
 
@@ -19,9 +27,9 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
             new Tag("Axfc-kYcGEOguAqCUHh_fg", "transmog"));
 
 
-        public static List<(int ItemID, Type EquipmentType)> StartingTransmogItemIDs = new List<(int ItemID, Type EquipmentType)>()
+        public static Dictionary<int, UID> StartingTransmogRecipes = new Dictionary<int, UID>()
         {
-                (2000061, typeof(Weapon)),      //Gold Machete
+            { 2000061, "JrwXy-dujEujEGPU3BB9ow" },      //Gold Machete
                 //(2000031, typeof(Weapon)),      //Radiant Wolf Sword
                 //(2000150, typeof(Weapon)),      //Brand
                 //(2110215, typeof(Weapon)),      //Meteoric  Greataxe
@@ -31,5 +39,18 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
                 //(3100060, typeof(Armor)),       //Palladium Armor 
                 //(3100191, typeof(Armor)),       //Master Kazite Oni Mask 
         };
+
+        public event Action AllCharactersLearnRecipesEnabled;
+        private bool _allCharactersLearnRecipes;
+        public bool AllCharactersLearnRecipes {
+            get => _allCharactersLearnRecipes;
+            set
+            {
+                _allCharactersLearnRecipes = value;
+                if (_allCharactersLearnRecipes)
+                    AllCharactersLearnRecipesEnabled?.Invoke();
+            } 
+        }
+        
     }
 }

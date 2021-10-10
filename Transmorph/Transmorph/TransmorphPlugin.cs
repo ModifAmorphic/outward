@@ -10,13 +10,19 @@ namespace ModifAmorphic.Outward.Transmorph
 {
     [BepInDependency("com.bepis.bepinex.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("io.mefino.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("com.sinai.SideLoader", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInPlugin(ModInfo.ModId, ModInfo.ModName, ModInfo.ModVersion)]
     public class TransmorphPlugin : BaseUnityPlugin
     {
         internal static ServicesProvider Services => _servicesProvider;
         private static ServicesProvider _servicesProvider;
+
+        internal static BaseUnityPlugin Instance;
+
         internal void Awake()
         {
+            Instance = this;
+
             IModifLogger logger = null;
 
             var harmony = new Harmony(ModInfo.ModId);
@@ -25,10 +31,12 @@ namespace ModifAmorphic.Outward.Transmorph
                 logger = LoggerFactory.ConfigureLogger(ModInfo.ModId, ModInfo.ModName, LogLevel.Info);
                 logger.LogInfo($"Patching...");
 
-                harmony.PatchAll(typeof(TransmogRecipeManagerPatches));
+                harmony.PatchAll(typeof(TmogNetworkLevelLoaderPatches));
+                harmony.PatchAll(typeof(TmogRecipeManagerPatches));
                 harmony.PatchAll(typeof(TmogCharacterEquipmentPatches));
                 harmony.PatchAll(typeof(TmogItemManagerPatches));
-
+                //harmony.PatchAll(typeof(TmogItemDisplayPatches));
+                
                 //harmony.PatchAll(typeof(TransmogCraftingMenuPatches));
                 //harmony.PatchAll(typeof(CharacterUIPatches));
                 //harmony.PatchAll(typeof(CraftingMenuPatches));
@@ -50,6 +58,10 @@ namespace ModifAmorphic.Outward.Transmorph
         private Modules.Crafting.CustomCraftingModule GetCustomCraftingModule()
         {
             return _servicesProvider.GetService<Modules.Crafting.CustomCraftingModule>();
+        }
+        private Modules.Items.ItemVisualizer GetItemVisualizer()
+        {
+            return _servicesProvider.GetService<Modules.Items.ItemVisualizer>();
         }
     }
 }

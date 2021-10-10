@@ -6,7 +6,7 @@ using System.Text;
 namespace ModifAmorphic.Outward.Transmorph.Patches
 {
     [HarmonyPatch(typeof(RecipeManager))]
-    internal static class TransmogRecipeManagerPatches
+    internal static class TmogRecipeManagerPatches
     {
         public static event Action<RecipeManager> LoadCraftingRecipeAfter;
         [HarmonyPatch("LoadCraftingRecipe", MethodType.Normal)]

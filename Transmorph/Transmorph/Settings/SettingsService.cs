@@ -29,14 +29,11 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
 
             if (!MeetsMinimumVersion(_minConfigVersion))
             {
-#if DEBUG
-                _logger.LogInfo($"Minimum version requirement not met. Minumum version is {_minConfigVersion}. Resetting all settings.");
-#endif
                 _configService.RemoveAllSettings();
             }
 
             #region Main Section
-           
+            _configService.BindConfigSetting(settings.AllCharactersLearnRecipes, null);
 
             #endregion
 
@@ -52,7 +49,17 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
 
             return settings;
         }
-        
+        public TransmogSettings ConfigureTransmogrifySettings(TransmorphConfigSettings settings)
+        {
+            var tmogSettings = new TransmogSettings();
+
+            _configService.BindConfigSetting(settings.AllCharactersLearnRecipes,
+                (SettingValueChangedArgs<bool> args) => tmogSettings.AllCharactersLearnRecipes = args.NewValue, true);
+
+
+            return tmogSettings;
+        }
+
         private bool MeetsMinimumVersion(string minimumVersion)
         {
             var configVersionValue = _configService.PeekSavedConfigValue(new TransmorphConfigSettings().ConfigVersion);

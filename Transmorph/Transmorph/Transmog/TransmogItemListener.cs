@@ -35,7 +35,8 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
                 (itemVisualizer, levelCoroutines, itemManagerFactory, settings, getLogger);
 
             TmogItemManagerPatches.TransmogItemAdded += TryAddVisualization;
-            
+            TmogItemManagerPatches.TransmogItemAdded += TryRegisterIcon;
+
         }
 
         private void TryAddVisualization(Item item)
@@ -52,6 +53,11 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
                 //    StartCoroutines();
                 
             }
+        }
+        private void TryRegisterIcon(Item item)
+        {
+            if (!_itemVisualizer.IsAdditionalIconRegistered(item.UID, TransmogSettings.IconName))
+                _itemVisualizer.RegisterAdditionalIcon(item.UID, TransmogSettings.IconName, TransmogSettings.IconImageFilePath);
         }
         private void StartCoroutines()
         {
