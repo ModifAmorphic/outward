@@ -46,9 +46,63 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
                 TmogRecipeManagerPatches.LoadCraftingRecipeAfter += (r) => LoadRecipesFromSave();
             TmogNetworkLevelLoaderPatches.MidLoadLevelAfter += (n) => _coroutine.InvokeAfterLevelAndPlayersLoaded(n, LearnCharacterRecipesFromSave, 300, 1);
             TmogCharacterEquipmentPatches.EquipItemBefore += (equipArgs) => CheckAddTmogRecipe(equipArgs.Character.Inventory, equipArgs.Equipment);
+            TmogCharacterRecipeKnowledgePatches.LearnRecipeBefore += TryLearnTransmogRecipe;
         }
 
-        
+        private void TryLearnTransmogRecipe(CharacterRecipeKnowledge knowledge, TransmogRecipe recipe)
+        {
+            if (knowledge.IsRecipeLearned(recipe.UID))
+                return;
+
+            var knownUIDs = knowledge.GetPrivateField<CharacterKnowledge, List<string>>("m_learnedItemUIDs");
+            var character = knowledge.GetPrivateField<CharacterKnowledge, Character>("m_character");
+
+            knownUIDs.Add(recipe.UID);
+            if (NetworkLevelLoader.Instance.IsOverallLoadingDone && character.Initialized)
+            {
+                if ((bool)character && (bool)character.CharacterUI)
+                {
+                    string loc = LocalizationManager.Instance.GetLoc("Notification_Item_RecipeLearnt", recipe.RecipeName);
+                    character.CharacterUI.ShowInfoNotification(loc, ItemManager.Instance.RecipeLearntIcon, _itemLayout: true);
+                }
+                //Exclude acheivement tracking since these are so simple to come by
+                //int num = knownUIDs.Count - StartingRecipeCount;
+                //AchievementManager.Instance.SetStat(AchievementManager.AchievementStat.NewRecipeLearned, num);
+                //if (!StoreManager.Instance.CanTrackAchievementProgress && num >= 50)
+                //{
+                //    AchievementManager.Instance.SetAchievementAsCompleted(AchievementManager.Achievement.Encyclopedic_30);
+                //}
+            }
+        }
+
+        #region Event Subscription Targets
+        private void LoadRecipesFromSave()
+        {
+            var saves = _recipeSaveData.GetAllRecipes();
+            foreach (var r in saves)
+            {
+                try
+                {
+                    AddOrGetRecipe(r.Key, r.Value);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogException($"Could not load recipe {r.Key} - {r.Value} from save!", ex);
+                }
+            }
+        }
+        private void LearnCharacterRecipesFromSave()
+        {
+            var characters = SplitScreenManager.Instance.LocalPlayers.Select(p => p.AssignedCharacter);
+            if (!_settings.AllCharactersLearnRecipes.Value)
+            {
+                var saves = _recipeSaveData.GetAllRecipes();
+                LearnRecipes(characters, saves);
+            }
+
+            var starterRecipes = TransmogSettings.StartingTransmogRecipes;
+            LearnRecipes(characters, starterRecipes);
+        }
         private void CheckAddTmogRecipe(CharacterInventory inventory, Equipment equipment)
         {
             if (equipment is Armor || equipment is Weapon)
@@ -71,6 +125,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
             }
             return false;
         }
+        #endregion
         public TransmogRecipe AddOrGetRecipe(Equipment equipment)
         {
             if (!TryGetTransmogRecipe(equipment.ItemID, out var recipe))
@@ -121,6 +176,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 
             return recipe;
         }
+
         private static Dictionary<string, Recipe> _recipesRef;
         /// <summary>
         /// Checks if a transmog recipe for the provided ItemID.
@@ -221,7 +277,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
                 .SetRecipeIDEx(GetRecipeID(transmogSource.ItemID))
                 .SetUID(UID.Generate())
                 .SetVisualItemID(transmogSource.ItemID)
-                .SetNames("Transmog - " + transmogSource.DisplayName)
+                .SetNames("Transmogrify - " + transmogSource.DisplayName)
                 .AddIngredient(new TagSourceSelector(transmogTag))
                 .AddIngredient(ResourcesPrefabManager.Instance.GetItemPrefab(TransmogSettings.RecipeSecondaryItemID) ?? ResourcesPrefabManager.Instance.GenerateItem(TransmogSettings.RecipeSecondaryItemID.ToString()))
                 .AddDynamicResult(resultService, transmogSource.ItemID, 1);
@@ -234,33 +290,6 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
             return TransmogSettings.RecipeStartID - itemID;
         }
         
-        public void LoadRecipesFromSave()
-        {
-            var saves = _recipeSaveData.GetAllRecipes();
-            foreach(var r in saves)
-            {
-                try
-                {
-                    AddOrGetRecipe(r.Key, r.Value);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogException($"Could not load recipe {r.Key} - {r.Value} from save!", ex);
-                }
-            }
-        }
-        private void LearnCharacterRecipesFromSave()
-        {
-            var characters = SplitScreenManager.Instance.LocalPlayers.Select(p => p.AssignedCharacter);
-            if (!_settings.AllCharactersLearnRecipes.Value)
-            {
-                var saves = _recipeSaveData.GetAllRecipes();
-                LearnRecipes(characters, saves);
-            }
-
-            var starterRecipes = TransmogSettings.StartingTransmogRecipes;
-            LearnRecipes(characters, starterRecipes);
-        }
         private void LearnRecipes(IEnumerable<Character> characters, IEnumerable<KeyValuePair<int, UID>> recipes)
         {
             foreach (var r in recipes)

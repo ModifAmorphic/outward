@@ -33,6 +33,7 @@ namespace ModifAmorphic.Outward.Transmorph
 
                 harmony.PatchAll(typeof(TmogNetworkLevelLoaderPatches));
                 harmony.PatchAll(typeof(TmogRecipeManagerPatches));
+                harmony.PatchAll(typeof(TmogCharacterRecipeKnowledgePatches));
                 harmony.PatchAll(typeof(TmogCharacterEquipmentPatches));
                 harmony.PatchAll(typeof(TmogItemManagerPatches));
                 //harmony.PatchAll(typeof(TmogItemDisplayPatches));
