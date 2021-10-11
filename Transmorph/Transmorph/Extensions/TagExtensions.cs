@@ -9,6 +9,10 @@ namespace ModifAmorphic.Outward.Transmorph.Extensions
 {
     public static class TagExtensions
     {
+        public static bool IsRemoverTag(this Tag tag)
+        {
+            return tag == TransmogSettings.RemoveRecipe.TransmogTag;
+        }
         public static Tag ToWeaponTag(this Weapon.WeaponType weaponType)
         {
             var tag = new Tag(

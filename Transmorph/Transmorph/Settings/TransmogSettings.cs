@@ -26,6 +26,21 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
         public static TagSourceSelector TagSelector = new TagSourceSelector(
             new Tag("Axfc-kYcGEOguAqCUHh_fg", "transmog"));
 
+        public static class RemoveRecipe
+        {
+            public static string UID => "APpxHqi-NE2vG_MISt7C0Q";
+            public static int RecipeID => (-1303000000);
+            public static string RecipeName => "Remove Tranmogrify";
+            public static int SecondIngredientID => 4300190;
+            private readonly static Tag transmogTag;
+            public static Tag TransmogTag => transmogTag;
+
+            static RemoveRecipe()
+            {
+                transmogTag = new Tag("-1303000000", "Transmog");
+                transmogTag.SetTagType(Tag.TagTypes.Custom);
+            }
+        }
 
         public static Dictionary<int, UID> StartingTransmogRecipes = new Dictionary<int, UID>()
         {

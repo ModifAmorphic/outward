@@ -9,7 +9,7 @@ namespace ModifAmorphic.Outward.Transmorph.Extensions
 {
     public static class UIDExtensions
     {
-        public static bool IsTransmorg(this UID uid)
+        public static bool IsTransmogrified(this UID uid)
         {
             var guid = UID.Decode(uid.Value);
             return guid.ToByteArray().Take(4)

@@ -25,22 +25,38 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 
         public bool TryCraftItem(Recipe recipe, ItemReferenceQuantity recipeResult, out Item item)
         {
-            if (!(recipe is TransmogRecipe tmogRecipe) || !(recipeResult is DynamicCraftingResult dynamicResult)
+            if (!(recipe is TransmogRecipe || recipe is TransmogRemoverRecipe) 
+                || !(recipeResult is DynamicCraftingResult dynamicResult)
                 || dynamicResult.DynamicItemID == -1)
             {
                 Logger.LogError($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): " +
-                        $"Could not craft item. Either recipe was not a Transmog, result was not a Dynamic result or DynamicItemID was not set. " +
-                        $"recipe is TransmogRecipe? {recipe is TransmogRecipe}. recipeResult is DynamicCraftingResult? {recipeResult is DynamicCraftingResult} " +
+                        $"Could not craft item. Either recipe was not a TransmogRecipe or TransmogRemoverRecipe, result was not a Dynamic result or DynamicItemID was not set. " +
+                        $"recipe is TransmogRecipe? {recipe is TransmogRecipe}. recipe is TransmogRemoverRecipe? {recipe is TransmogRemoverRecipe}. " +
+                        $"recipeResult is DynamicCraftingResult? {recipeResult is DynamicCraftingResult}. " +
                         $"DynamicItemID: {(recipeResult as DynamicCraftingResult)?.DynamicItemID}");
                 item = null;
                 return false;
             }
 
-            item = GenerateItemTransmog(new ItemVisualMap() { VisualItemID = tmogRecipe.VisualItemID, ItemID = dynamicResult.DynamicItemID });
+            if (recipe is TransmogRecipe transmogRecipe)
+            {
+                TryCraftTransmog(transmogRecipe, dynamicResult, out item);
+            }
+            else
+            {
+                TryCraftRemoveTransmog((TransmogRemoverRecipe)recipe, dynamicResult, out item);
+            }
+
+            return true;
+        }
+
+        private bool TryCraftTransmog(TransmogRecipe recipe, DynamicCraftingResult dynamicResult, out Item item)
+        {
+            item = GenerateItemTransmog(new ItemVisualMap() { VisualItemID = recipe.VisualItemID, ItemID = dynamicResult.DynamicItemID });
 
             if (item is Equipment tmogEquip)
             {
-                if (dynamicResult.IngredientEnchantData.TryGetValue(item.ItemID, out var enchantData))
+                if (dynamicResult.IngredientCraftData.IngredientEnchantData.TryGetValue(item.ItemID, out var enchantData))
                 {
                     tmogEquip.ApplyEnchantmentsFromSaveData(enchantData);
                     Logger.LogDebug($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): " +
@@ -49,12 +65,11 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
                         $"\tEnchantmentData: {enchantData}");
                 }
             }
-            
-            Logger.LogInfo($"Crafted new Transmog. Item '{item.DisplayName}' was transmogrified with {dynamicResult.RefItem?.DisplayName} ({tmogRecipe.VisualItemID})'s visuals.");
+
+            Logger.LogInfo($"Crafted new Transmog. Item '{item.DisplayName}' was transmogrified with {dynamicResult.RefItem?.DisplayName} ({recipe.VisualItemID})'s visuals.");
 
             return true;
         }
-
         private Item GenerateItemTransmog(ItemVisualMap visualMap)
         {
             var item = ItemManager.Instance.GenerateItem(visualMap.ItemID);
@@ -72,6 +87,51 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 
             _itemVisualizer.RegisterItemVisual(visualMap.VisualItemID, item.UID);
             _itemVisualizer.RegisterAdditionalIcon(item.UID, TransmogSettings.IconName, TransmogSettings.IconImageFilePath);
+
+            if (PhotonNetwork.isNonMasterClientInRoom)
+            {
+                item.ClientGenerated = true;
+                item.SetKeepAlive();
+            }
+
+            return item;
+        }
+
+        private bool TryCraftRemoveTransmog(TransmogRemoverRecipe recipe, DynamicCraftingResult dynamicResult, out Item item)
+        {
+            item = GenerateItemNoTransmog(dynamicResult.DynamicItemID);
+
+            if (dynamicResult.IngredientCraftData.ConsumedItems.TryGetValue(dynamicResult.DynamicItemID, out var counsumed))
+            {
+                foreach (var uid in counsumed.Keys)
+                {
+                    _itemVisualizer.UnregisterItemVisual(uid);
+                    _itemVisualizer.UnregisterAdditionalIcon(uid, TransmogSettings.IconName);
+                }
+            }
+
+            if (item is Equipment equip)
+            {
+                if (dynamicResult.IngredientCraftData.IngredientEnchantData.TryGetValue(item.ItemID, out var enchantData))
+                {
+                    equip.ApplyEnchantmentsFromSaveData(enchantData);
+                    Logger.LogDebug($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): " +
+                        $"Ingredient {item.ItemID} was enchanted. " +
+                        $"Adding echantments to new transmog item.\n" +
+                        $"\tEnchantmentData: {enchantData}");
+                }
+            }
+
+            Logger.LogInfo($"Crafted new Item '{item.DisplayName}' without Transmogrification.");
+
+            return true;
+        }
+        private Item GenerateItemNoTransmog(int itemID)
+        {
+            var item = ItemManager.Instance.GenerateItem(itemID);
+
+            if (item == null)
+                return item;
 
             if (PhotonNetwork.isNonMasterClientInRoom)
             {

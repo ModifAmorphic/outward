@@ -1,7 +1,9 @@
 ﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients;
 using ModifAmorphic.Outward.Transmorph.Extensions;
+using ModifAmorphic.Outward.Transmorph.Transmog.Recipes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +15,8 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
     {
 		private readonly Func<IModifLogger> _loggerFactory;
 		private IModifLogger Logger => _loggerFactory.Invoke();
+
+        public CustomCraftingMenu ParentCraftingMenu { get; set; }
 
         public IngredientMatcher(Func<IModifLogger> loggerFactory) =>
 			(_loggerFactory) = (loggerFactory);
@@ -41,6 +45,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 			if (tag == Tag.None)
 				return false;
 
+			var tmogRecipe = ParentCraftingMenu.IngredientCraftData.MatchIngredientsRecipe as TransmogRecipe;
 			var tagType = tag.GetTagType();
 
 			var firstItem = ownedItems.FirstOrDefault();
@@ -49,7 +54,8 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
             {
 				Logger.LogTrace($"{nameof(IngredientMatcher)}::{nameof(MatchRecipeStep)}() Potential Ingredient ItemID: {potentialIngredient.ItemID}. Filter is AddGenericIngredient and TagType is Armor. Matching on " +
 					$"Equipment Slot type {slot}.  Potential Ingredient Type: {firstItem?.GetType()}, Name: {firstItem?.DisplayName}, Slot: {(firstItem as Armor)?.EquipSlot}, and any Non Transmog Owned Item UID.");
-				return ownedItems.Any(i => i is Armor armor && armor.EquipSlot == slot && !((UID)armor.UID).IsTransmorg());
+				return ownedItems.Any(i => i is Armor armor && armor.EquipSlot == slot && !((UID)armor.UID).IsTransmogrified() 
+											&& (tmogRecipe == null || i.ItemID != tmogRecipe.VisualItemID));
 			}
 
 			//If weapon, match on weapon type
@@ -57,7 +63,15 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 			{
 				Logger.LogTrace($"{nameof(IngredientMatcher)}::{nameof(MatchRecipeStep)}() Potential Ingredient ItemID: {potentialIngredient.ItemID}. Filter is AddGenericIngredient and TagType is Weapons. Matching on " +
 					$"Weapon type {weaponType}.  Potential Ingredient Type: {firstItem?.GetType()}, Name: {firstItem?.DisplayName}, Slot: {(firstItem as Weapon)?.Type}, and any Non Transmog Owned Item UID.");
-				return ownedItems.Any(i => i is Weapon wep && wep.Type == weaponType && !((UID)wep.UID).IsTransmorg());
+				return ownedItems.Any(i => i is Weapon wep && wep.Type == weaponType && !((UID)wep.UID).IsTransmogrified()
+											&& (tmogRecipe == null || i.ItemID != tmogRecipe.VisualItemID));
+			}
+
+			if (tagType == Tag.TagTypes.Custom && tag.IsRemoverTag())
+            {
+				Logger.LogTrace($"{nameof(IngredientMatcher)}::{nameof(MatchRecipeStep)}() Potential Ingredient ItemID: {potentialIngredient.ItemID}. Filter is AddGenericIngredient and TagType is a Custom IsRemoverTag. Matching on " +
+					$"any owned Tranmogrified Equipment items (m_ownedItems => i is Equipment and i.IsTransmog()).");
+				return ownedItems.Any(i => i is Equipment equip && ((UID)equip.UID).IsTransmogrified());
 			}
 
 			return false;

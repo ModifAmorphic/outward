@@ -48,6 +48,7 @@ namespace ModifAmorphic.Outward.Transmorph
                 //))
 
                 .AddSingleton(new IngredientMatcher(services.GetService<IModifLogger>))
+                .AddSingleton(new RemoverResultService(services.GetService<IModifLogger>))
                 .AddSingleton(new ArmorResultService(services.GetService<IModifLogger>))
                 .AddSingleton(new WeaponResultService(services.GetService<IModifLogger>))
                 .AddSingleton(new TransmogCrafter(services.GetService<ItemVisualizer>(),
@@ -58,9 +59,11 @@ namespace ModifAmorphic.Outward.Transmorph
                                                     services.GetService<IModifLogger>)
                 )
                 .AddSingleton(new TmogRecipeService(services.GetService<BaseUnityPlugin>(),
+                                services.GetService<RemoverResultService>(),
                                 services.GetService<ArmorResultService>(),
                                 services.GetService<WeaponResultService>(),
                                 services.GetService<CustomCraftingModule>(),
+                                services.GetService<PreFabricator>(),
                                 services.GetService<LevelCoroutines>(),
                                 services.GetService<TransmogRecipeData>(),
                                 services.GetService<TransmorphConfigSettings>(),
@@ -77,8 +80,8 @@ namespace ModifAmorphic.Outward.Transmorph
             var craftingModule = services.GetService<CustomCraftingModule>();
             craftingModule.RegisterCraftingMenu<CookingMenu>("Cooking");
             craftingModule.RegisterCraftingMenu<AlchemyMenu>("Alchemy");
-            craftingModule.RegisterCraftingMenu<AdvancedCraftingMenu>("Transmorph");
-            craftingModule.RegisterCraftingMenu<TransmogrifyMenu>("Fashion");
+            craftingModule.RegisterCraftingMenu<AdvancedCraftingMenu>("Advanced");
+            craftingModule.RegisterCraftingMenu<TransmogrifyMenu>("Transmogrify");
 
             craftingModule.RegisterCompatibleIngredientMatcher<TransmogrifyMenu>(services.GetService<IngredientMatcher>());
             craftingModule.RegisterCustomCrafter<TransmogrifyMenu>(services.GetService<TransmogCrafter>());
@@ -98,7 +101,6 @@ namespace ModifAmorphic.Outward.Transmorph
 
             //TestUIDs(services.GetService<IModifLogger>());
         }
-        
         private void TestUIDs(IModifLogger logger)
         {
             var random = new System.Random();
@@ -110,7 +112,7 @@ namespace ModifAmorphic.Outward.Transmorph
                 logger.LogDebug($"{nameof(TestUIDs)}: VisualMap: {{ItemID = {visualMap.ItemID}, VisualItemID = {visualMap.VisualItemID}}}\n" +
                     $"Generated UID: {morgUID}. Decoded UID (GUID): {UID.Decode(morgUID)}");
 
-                logger.LogDebug($"{nameof(TestUIDs)}: Generated UID: {morgUID}. UID IsTransMorg? {morgUID.IsTransmorg()}");
+                logger.LogDebug($"{nameof(TestUIDs)}: Generated UID: {morgUID}. UID IsTransMorg? {morgUID.IsTransmogrified()}");
 
                 var decodedVisualItemID = morgUID.ToVisualItemID();
                 logger.LogDebug($"{nameof(TestUIDs)}: Generated UID: {morgUID}\n" +
@@ -122,28 +124,6 @@ namespace ModifAmorphic.Outward.Transmorph
             }
 
         }
-        //private void LoadStartingTransmogRecipes(BaseUnityPlugin plugin, TmogRecipeService transmogrifier, CustomCraftingModule craftingModule, Func<IModifLogger> loggerFactory)
-        //{
-        //    var recipes = new List<Transmog.Recipes.TransmogRecipe>();
-        //    foreach ((var itemID, var type) in TransmogSettings.StartingTransmogRecipes)
-        //    {
-        //        recipes.Add(transmogrifier.AddOrGetRecipe(itemID));                
-        //    }
-
-        //    var levelRoutine = new LevelCoroutines(plugin, loggerFactory);
-        //    levelRoutine.InvokeAfterLevelAndPlayersLoaded(NetworkLevelLoader.Instance, () =>
-        //    {
-        //        foreach (var r in recipes)
-        //        {
-        //            var character = SplitScreenManager.Instance.LocalPlayers[0].AssignedCharacter;
-        //            if (!character.Inventory.RecipeKnowledge.IsRecipeLearned(r.UID))
-        //            {
-        //                character.Inventory.RecipeKnowledge.LearnRecipe(r);
-        //            }
-        //        }
-        //    }, 5000, 1);
-        
-        //}
         private void AddAdvancedCraftingRecipes(BaseUnityPlugin plugin, CustomCraftingModule craftingModule, Func<IModifLogger> loggerFactory)
         {
             var armorRecipe = ScriptableObject.CreateInstance<Recipe>()

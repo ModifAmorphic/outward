@@ -29,18 +29,25 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 
         private readonly BaseUnityPlugin _baseUnityPlugin;
         private readonly LevelCoroutines _coroutine;
+        private readonly IDynamicResultService _removerResultService;
         private readonly IDynamicResultService _armorResultService;
         private readonly IDynamicResultService _weaponResultService;
         private readonly CustomCraftingModule _craftingModule;
         private readonly TransmogRecipeData _recipeSaveData;
+        private readonly PreFabricator _preFabricator;
 
-        public TmogRecipeService(BaseUnityPlugin baseUnityPlugin, IDynamicResultService armorResultService, IDynamicResultService weaponResultService,
-                                CustomCraftingModule craftingModule, LevelCoroutines coroutine,
+        public TmogRecipeService(BaseUnityPlugin baseUnityPlugin,
+                                IDynamicResultService removerResultService,
+                                IDynamicResultService armorResultService,
+                                IDynamicResultService weaponResultService,
+                                CustomCraftingModule craftingModule,
+                                PreFabricator preFabricator,
+                                LevelCoroutines coroutine,
                                 TransmogRecipeData recipeSaveData,
                                 TransmorphConfigSettings settings, Func<IModifLogger> getLogger)
         {
-            (_baseUnityPlugin, _armorResultService, _weaponResultService, _craftingModule, _coroutine, _recipeSaveData, _settings, _getLogger) = 
-                (baseUnityPlugin, armorResultService, weaponResultService, craftingModule, coroutine, recipeSaveData, settings, getLogger);
+            (_baseUnityPlugin, _removerResultService, _armorResultService, _weaponResultService, _craftingModule, _preFabricator, _coroutine, _recipeSaveData, _settings, _getLogger) = 
+                (baseUnityPlugin, removerResultService, armorResultService, weaponResultService, craftingModule, preFabricator, coroutine, recipeSaveData, settings, getLogger);
 
             if (!TryHookSideLoaderOnPacksLoaded(LoadRecipesFromSave))
                 TmogRecipeManagerPatches.LoadCraftingRecipeAfter += (r) => LoadRecipesFromSave();
@@ -78,6 +85,9 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
         #region Event Subscription Targets
         private void LoadRecipesFromSave()
         {
+
+            AddRemoverRecipe();
+
             var saves = _recipeSaveData.GetAllRecipes();
             foreach (var r in saves)
             {
@@ -91,9 +101,33 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
                 }
             }
         }
+        private void AddRemoverRecipe()
+        {
+            if (!ResourcesPrefabManager.Instance.ContainsItemPrefab("-1303000001"))
+            {
+                var removerFilePath =
+                    System.IO.Path.Combine(System.IO.Path.GetDirectoryName(_baseUnityPlugin.Info.Location), "tex_men_transmogRemoverArmor.png");
+                var removerResult = _preFabricator.CreatePrefab(3000136, -1303000001, "- Remove Transmog", "Recreated Item with Transmogrify removed. Enchantments are preserved.")
+                              .ConfigureItemIcon(removerFilePath);
+                Logger.LogInfo($"Added Transmog Remover Recipe placeholder prefab {removerResult.ItemID} - {removerResult.DisplayName}.");
+            }
+
+            //Add remover recipe
+            if (!GetRecipeExists(TransmogSettings.RemoveRecipe.UID))
+            {
+                _craftingModule.RegisterRecipe<TransmogrifyMenu>(GetRemoverRecipe());
+            }
+        }
         private void LearnCharacterRecipesFromSave()
         {
             var characters = SplitScreenManager.Instance.LocalPlayers.Select(p => p.AssignedCharacter);
+            
+            //learn remover recipe
+            foreach (var c in characters)
+            {
+                TryLearnRecipe(c.Inventory, GetRemoverRecipe());
+            }
+
             if (!_settings.AllCharactersLearnRecipes.Value)
             {
                 var saves = _recipeSaveData.GetAllRecipes();
@@ -270,7 +304,21 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
             return ConfigureTransmogRecipe(weaponSource, weaponTag, ScriptableObject.CreateInstance<TransmogWeaponRecipe>(), _weaponResultService)
                 .SetWeaponType(weaponSource.Type);
         }
+        public TransmogRemoverRecipe GetRemoverRecipe()
+        {
+            var secondaryIngredient = ResourcesPrefabManager.Instance.GetItemPrefab(TransmogSettings.RemoveRecipe.SecondIngredientID) ?? 
+                ResourcesPrefabManager.Instance.GenerateItem(TransmogSettings.RemoveRecipe.SecondIngredientID.ToString());
+            TagSourceManager.Instance.TryAddTag(TransmogSettings.RemoveRecipe.TransmogTag, true);
+            var recipe = ScriptableObject.CreateInstance<TransmogRemoverRecipe>();
+            recipe.SetRecipeIDEx(TransmogSettings.RemoveRecipe.RecipeID)
+                .SetUID(TransmogSettings.RemoveRecipe.UID)
+                .SetNames(TransmogSettings.RemoveRecipe.RecipeName)
+                .AddIngredient(new TagSourceSelector(TransmogSettings.RemoveRecipe.TransmogTag))
+                .AddIngredient(secondaryIngredient)
+                .AddDynamicResult(_removerResultService, -1303000001);
 
+            return recipe;
+        }
         public T ConfigureTransmogRecipe<T>(Item transmogSource, Tag transmogTag, T recipe, IDynamicResultService resultService) where T : TransmogRecipe
         {
             recipe
