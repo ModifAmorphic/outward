@@ -113,7 +113,10 @@ namespace ModifAmorphic.Outward.Modules.Crafting
         /// <param name="recipe">The new <see cref="Recipe"/></param>
         public void RegisterRecipe<T>(Recipe recipe) where T : CustomCraftingMenu
         {
+            ValidateRecipe(recipe);
+
             var recipes = _customRecipes.GetOrAdd(typeof(T), new Dictionary<string, RecipeMetadata>());
+
             if (recipes.ContainsKey(recipe.UID.ToString()))
                 throw new ArgumentException($"A Recipe with UID '{recipe.UID}' is already registered for crafting station type {typeof(T).Name}."
                     , nameof(recipe));
@@ -125,6 +128,35 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                    Recipe = recipe
                 });
             TryAddRecipes();
+        }
+        private void ValidateRecipe(Recipe recipe)
+        {
+            if (recipe.IsFullySetup)
+                return;
+
+            var exPrefix = $"Recipe '{recipe.RecipeID} - {recipe.Name}' IsFullySetup is false.";
+            if (recipe.Results == null || recipe.Results.Length == 0 || recipe.Results[0] == null)
+                throw new ArgumentException($"{exPrefix} The recipe's Results are not configured properly. Either the Results are empty or null.", "recipe");
+
+            if (recipe.Results[0].RefItem == null)
+                throw new ArgumentException($"{exPrefix} Recipe's Results[0].RefItem is null. Ensure ItemID '{recipe.Results[0].ItemID}' of the result has a valid Prefab.", "recipe");
+
+            if (recipe.Ingredients == null || recipe.Ingredients.Length == 0)
+                throw new ArgumentException($"{exPrefix} Recipe's Ingredients are null or empty. Recipe must have ingredients set.", "recipe");
+
+            for (int i = 0; i < recipe.Ingredients.Length; i++)
+            {
+                if ((recipe.Ingredients[i].ActionType == RecipeIngredient.ActionTypes.AddSpecificIngredient && recipe.Ingredients[i].AddedIngredient == null))
+                {
+                    throw new ArgumentException($"{exPrefix} Recipe ingredient Ingredients[{i}] is an AddSpecificIngredient ActionType, but has no AddedIngredient set. " +
+                        $"An AddSpecificIngredient ingredient must have a non null AddedIngredient.", "recipe");
+                }
+                if ((recipe.Ingredients[i].ActionType == RecipeIngredient.ActionTypes.AddGenericIngredient && !recipe.Ingredients[i].AddedIngredientType.IsSet))
+                {
+                    throw new ArgumentException($"{exPrefix} Recipe ingredient Ingredients[{i}] is an AddGenericIngredient ActionType, but it's AddedIngredientType.IsSet property returned false. " +
+                        $"Ensure the Tag is configured properly for this AddGenericIngredient ingredient type.", "recipe");
+                }
+            }
         }
         public void RegisterCustomCrafter<T>(ICustomCrafter crafter)  where T : CustomCraftingMenu => _craftingService.AddOrUpdateCrafter<T>(crafter);
         public void RegisterCompatibleIngredientMatcher<T>(ICompatibleIngredientMatcher matcher) where T : CustomCraftingMenu 

@@ -40,5 +40,24 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
             Logger.LogTrace($"{nameof(CompatibleIngredientPatches)}::{nameof(MatchRecipeStepPrefix)}(): was not overridden by {logMethod}(). Allowing base method invocation to continue.");
             return true;
         }
+
+        [HarmonyPatch(nameof(CompatibleIngredient.GetConsumedItems), MethodType.Normal)]
+        [HarmonyPostfix]
+        private static void GetConsumedItemsPostfix(CompatibleIngredient __instance, bool _useMultipler, int _resultMultiplier, IList<KeyValuePair<string, int>>  __result)
+        {
+            string logMethod = nameof(CustomCompatibleIngredient) + "." + nameof(CustomCompatibleIngredient.CaptureConsumedItems);
+            try
+            {
+                if (!(__instance is CustomCompatibleIngredient customIngredient))
+                    return;
+
+                Logger.LogTrace($"{nameof(CompatibleIngredientPatches)}::{nameof(GetConsumedItemsPostfix)}(): Capturing {__result?.Count} consumed items.");
+                customIngredient.CaptureConsumedItems(__result);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(CompatibleIngredientPatches)}::{nameof(GetConsumedItemsPostfix)}(): Exception Invoking {logMethod}().", ex);
+            }
+        }
     }
 }

@@ -22,8 +22,6 @@ namespace ModifAmorphic.Outward.Modules.Items
         private readonly GameObject _iconsGo;
         private Transform Icons => _iconsGo.transform;
 
-        private readonly ConcurrentDictionary<string, GameObject> _itemIcons;
-
         internal IconService(string modId, ModifGoService modifGoService, Func<IModifLogger> loggerFactory)
         {
             this._modId = modId;

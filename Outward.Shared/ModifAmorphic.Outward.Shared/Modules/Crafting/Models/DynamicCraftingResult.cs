@@ -1,4 +1,5 @@
 ﻿using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.Modules.Crafting.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,8 +16,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
         private Item _dynamicRefItem;
         public Item DynamicRefItem { get => _dynamicRefItem; private set => _dynamicRefItem = value; }
 
-        private readonly Dictionary<int, string> _ingredientEnchantData = new Dictionary<int, string>();
-        public IReadOnlyDictionary<int, string> IngredientEnchantData { get => _ingredientEnchantData; }
+        private IngredientCraftData _ingredientCraftData;
+        public IngredientCraftData IngredientCraftData => _ingredientCraftData;
 
         public DynamicCraftingResult(IDynamicResultService resultService, Item _item) : base(_item) => (_resultService) = (resultService);
 
@@ -28,15 +29,14 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
         public void SetDynamicItemID(int itemID) => _resultService.SetDynamicItemID(this, itemID, ref _dynamicItemID, ref _dynamicRefItem);
         public void CalculateResult(Recipe recipe, IEnumerable<CompatibleIngredient> ingredients) => _resultService.CalculateResult(this, recipe, ingredients);
-        public void SetEnchantData(Dictionary<int, string> ingredientEnchantData)
+        public void SetIngredientData(IngredientCraftData craftData)
         {
-            _ingredientEnchantData.Clear();
-            _ingredientEnchantData.Merge(ingredientEnchantData);
+            _ingredientCraftData = craftData;
         }
         public void ResetResult()
         {
             (_dynamicItemID, _dynamicRefItem) = (-1, null);
-            _ingredientEnchantData.Clear();
+            _ingredientCraftData.Reset();
         }
     }
 }

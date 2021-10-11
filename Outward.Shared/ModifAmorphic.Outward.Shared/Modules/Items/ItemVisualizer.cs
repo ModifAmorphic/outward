@@ -34,12 +34,6 @@ namespace ModifAmorphic.Outward.Modules.Items
 
         private readonly ConcurrentDictionary<string, int> _itemVisuals = new ConcurrentDictionary<string, int>();
 
-        private class IconAddRemove
-        {
-            public Action<ItemDisplay> GetOrAddIcon;
-            public Action<ItemDisplay> DetachIcon;
-        }
-
         /// <summary>
         /// Collection of a specific Item UID's icons and a means to get them.<br />
         /// <br />
@@ -55,7 +49,7 @@ namespace ModifAmorphic.Outward.Modules.Items
         /// </item>
         /// </list>
         /// </summary>
-        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _itemIcons
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _itemsIcons
             = new ConcurrentDictionary<string, ConcurrentDictionary<string, string>>();
 
         private readonly HashSet<string> _displayIcons = new HashSet<string>();
@@ -84,18 +78,33 @@ namespace ModifAmorphic.Outward.Modules.Items
             Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(RegisterItemVisual)}(): Registering target UID '{targetItemUID}' to use ItemID {visualItemID} visuals.");
             _itemVisuals.TryAdd(targetItemUID, visualItemID);
         }
+        public void UnregisterItemVisual(string targetItemUID)
+        {
+            Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(RegisterItemVisual)}(): Unregistering target UID '{targetItemUID}'.");
+            _itemVisuals.TryRemove(targetItemUID, out _);
+        }
         public bool IsItemVisualRegistered(string itemUID) => _itemVisuals.ContainsKey(itemUID);
 
         public void RegisterAdditionalIcon(string itemUID, string iconName, string iconPath)
         {
             Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(RegisterItemVisual)}(): Registering new Icon {iconName} to Item UID '{itemUID}'. Icon file path: {iconPath}.");
-            var itemIcons = _itemIcons.GetOrAdd(itemUID, new ConcurrentDictionary<string, string>());
+            var itemIcons = _itemsIcons.GetOrAdd(itemUID, new ConcurrentDictionary<string, string>());
             _ = itemIcons.TryAdd(iconName, iconPath);
             if (!_displayIcons.Contains(iconName))
                 _displayIcons.Add(iconName);
         }
+        public void UnregisterAdditionalIcon(string itemUID, string iconName)
+        {
+            Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(RegisterItemVisual)}(): Unregistering Icon {iconName} from Item UID '{itemUID}'.");
+            if (_itemsIcons.TryGetValue(itemUID, out var itemIcons));
+            {
+                itemIcons.TryRemove(iconName, out _);
+                if (itemIcons.Count == 0)
+                    _itemsIcons.TryRemove(itemUID, out _);
+            }
+        }
 
-        public bool IsAdditionalIconRegistered(string itemUID, string iconName) => _itemIcons.TryGetValue(itemUID, out var icons) ? icons.ContainsKey(iconName) : false;
+        public bool IsAdditionalIconRegistered(string itemUID, string iconName) => _itemsIcons.TryGetValue(itemUID, out var icons) ? icons.ContainsKey(iconName) : false;
         private bool GetVisualsByItemOverride(Item item, out ItemVisual visual)
         {
             if (!_itemVisuals.TryGetValue(item.UID, out var visualItemID))
@@ -186,7 +195,7 @@ namespace ModifAmorphic.Outward.Modules.Items
             var registeredItemIcons = new HashSet<string>();
             Logger.LogTrace($"{nameof(ItemVisualizer)}::{nameof(ToggleCustomIcons)}(): Setting custom icons for Item {item?.ItemID} - {item?.DisplayName} ({item?.UID}) current ItemDisplay {itemDisplay.name}.");
             
-            if (item != null && !string.IsNullOrEmpty(item.UID) && _itemIcons.TryGetValue(item.UID, out var itemIcons))
+            if (item != null && !string.IsNullOrEmpty(item.UID) && _itemsIcons.TryGetValue(item.UID, out var itemIcons))
             {
                 foreach (var iconKvp in itemIcons)
                 {

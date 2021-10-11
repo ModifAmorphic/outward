@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
 using System;
+using System.Collections.Generic;
 
 namespace ModifAmorphic.Outward.Modules.Crafting.Patches
 {
@@ -27,27 +28,27 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
             }
         }
 
-        public static event Action<CustomCraftingMenu> CraftingDoneBefore;
-        [HarmonyPatch("CraftingDone", MethodType.Normal)]
-        [HarmonyPrefix]
-        private static void CraftingDonePrefix(CraftingMenu __instance)
-        {
-            try
-            {
-                if (!(__instance is CustomCraftingMenu customCraftingMenu))
-                {
-                    Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(CraftingDonePrefix)}(): Menu is not a {nameof(CustomCraftingMenu)}. Not invoking {nameof(CraftingDoneBefore)}.");
-                    return;
-                }
-                Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(CraftingDonePrefix)}(): Invoked on CraftingMenu type {customCraftingMenu?.GetType()}. Invoking " +
-                    $"{nameof(CraftingDoneBefore)}({customCraftingMenu?.GetType()})");
-                CraftingDoneBefore?.Invoke(customCraftingMenu);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(CraftingDonePrefix)}(): Exception Invoking {nameof(CraftingDoneBefore)}().", ex);
-            }
-        }
+        //public static event Action<CustomCraftingMenu> CraftingDoneBefore;
+        //[HarmonyPatch("CraftingDone", MethodType.Normal)]
+        //[HarmonyPrefix]
+        //private static void CraftingDonePrefix(CraftingMenu __instance)
+        //{
+        //    try
+        //    {
+        //        if (!(__instance is CustomCraftingMenu customCraftingMenu))
+        //        {
+        //            Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(CraftingDonePrefix)}(): Menu is not a {nameof(CustomCraftingMenu)}. Not invoking {nameof(CraftingDoneBefore)}.");
+        //            return;
+        //        }
+        //        Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(CraftingDonePrefix)}(): Invoked on CraftingMenu type {customCraftingMenu?.GetType()}. Invoking " +
+        //            $"{nameof(CraftingDoneBefore)}({customCraftingMenu?.GetType()})");
+        //        CraftingDoneBefore?.Invoke(customCraftingMenu);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(CraftingDonePrefix)}(): Exception Invoking {nameof(CraftingDoneBefore)}().", ex);
+        //    }
+        //}
 
         public static event Func<(CustomCraftingMenu CraftingMenu, ItemReferenceQuantity Result, int ResultMultiplier), bool> GenerateResultOverride;
         [HarmonyPatch("GenerateResult", MethodType.Normal)]
@@ -140,5 +141,75 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
             }
             return true;
         }
+
+
+        [HarmonyPatch("RefreshAutoIngredients", MethodType.Normal)]
+        [HarmonyPrefix]
+        private static void RefreshAutoIngredientsPrefix(CraftingMenu __instance, Recipe _recipe, ref IList<int>[] _allMatches, ref IList<int> _bestIngredientsMatch)
+        {
+            try
+            {
+                Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredientsPrefix)}(): Invoked on CraftingMenu type {__instance?.GetType()}.");
+                if (!(__instance is CustomCraftingMenu customCraftingMenu)
+                    || _recipe == null
+                    || _recipe.Results == null || _recipe.Results.Length == 0)
+                {
+                    return;
+                }
+                Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredientsPrefix)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Updating MatchIngredientsRecipe to recipe {_recipe.Name}");
+                customCraftingMenu.IngredientCraftData.MatchIngredientsRecipe = _recipe;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredientsPrefix)}(): Exception updating MatchIngredientsRecipe.", ex);
+            }
+        }
+        [HarmonyPatch("RefreshAutoIngredients", MethodType.Normal)]
+        [HarmonyPostfix]
+        private static void RefreshAutoIngredientsPostfix(CraftingMenu __instance, Recipe _recipe, ref IList<int>[] _allMatches, ref IList<int> _bestIngredientsMatch)
+        {
+            try
+            {
+                Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredientsPostfix)}(): Invoked on CraftingMenu type {__instance?.GetType()}.");
+                if (!(__instance is CustomCraftingMenu customCraftingMenu)
+                    || _recipe == null
+                    || _recipe.Results == null || _recipe.Results.Length == 0)
+                {
+                    return;
+                }
+                Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredientsPostfix)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Updating MatchIngredientsRecipe to recipe {_recipe.Name}");
+                customCraftingMenu.IngredientCraftData.MatchIngredientsRecipe = null;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredientsPostfix)}(): Exception nulling MatchIngredientsRecipe.", ex);
+            }
+        }
+
+        //public delegate void RefreshAutoIngredients(CraftingMenu craftingMenu, Recipe recipe, ref IList<int>[] allMatches, ref IList<int> bestIngredientsMatch);
+        //public static event RefreshAutoIngredients RefreshAutoIngredientsAfter;
+        //[HarmonyPatch("RefreshAutoIngredients", MethodType.Normal)]
+        //[HarmonyPostfix]
+        //private static void RefreshAutoIngredientsPostfix(CraftingMenu __instance, Recipe _recipe, ref IList<int>[] _allMatches, ref IList<int> _bestIngredientsMatch)
+        //{
+        //    try
+        //    {
+        //        Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredientsPostfix)}(): Invoked on CraftingMenu type {__instance?.GetType()}.");
+        //        if (!(__instance is CustomCraftingMenu)
+        //            || _recipe == null
+        //            || _recipe.Results == null || _recipe.Results.Length == 0
+        //            || !(_recipe.Results[0] is DynamicCraftingResult))
+        //        {
+        //            return;
+        //        }
+        //        Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredientsPostfix)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Invoking " +
+        //            $"{nameof(IngredientSelectorHasChangedAfter)}() for recipe {_recipe.Name}");
+        //        RefreshAutoIngredientsAfter?.Invoke(__instance, _recipe, ref _allMatches, ref _bestIngredientsMatch);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredientsPostfix)}(): Exception Invoking {nameof(RefreshAutoIngredientsAfter)}().", ex);
+        //    }
+        //}
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.Modules.Crafting.Models;
 using ModifAmorphic.Outward.Modules.Crafting.Patches;
 using System;
 using System.Collections.Generic;
@@ -63,6 +64,12 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			get => _inventoryFilterTag;
 			protected set => _inventoryFilterTag = value;
         }
+		private bool _hideFreeCraftingRecipe = false;
+		public bool HideFreeCraftingRecipe
+		{
+			get => _hideFreeCraftingRecipe;
+			protected set => _hideFreeCraftingRecipe = value;
+		}
 
 		private bool _includeEnchantedIngredients = false;
 		/// <summary>
@@ -75,7 +82,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			protected set => _includeEnchantedIngredients = value;
 		}
 
-		public Dictionary<int, string> IngredientEnchantData { get; protected set; } = new Dictionary<int, string>();
+		public IngredientCraftData IngredientCraftData = new IngredientCraftData();
 
 		protected Dictionary<Recipe.CraftingType, Sprite> _craftingBackgrounds = new Dictionary<Recipe.CraftingType, Sprite>();
 
@@ -315,6 +322,10 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			_craftingStationType = craftingStationType;
 			if (!_inventoryFilterTag.IsSet)
 				_inventoryFilterTag = TagSourceManager.GetCraftingIngredient(GetRecipeCraftingType());
+			if (HideFreeCraftingRecipe)
+			{
+				this._freeRecipeDisplay.gameObject.SetActive(false);
+			}
 		}
 
 		private bool showRecurseCheck = false;
@@ -335,16 +346,30 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				}
 				showRecurseCheck = false;
 
-				Logger.LogDebug($"CustomCraftingMenu::AwakeInit() Bypassing CraftingMenu Show()");
-				var awakePtr = typeof(MenuPanel).GetMethod("Show", BindingFlags.Instance | BindingFlags.NonPublic)
-                    .MethodHandle.GetFunctionPointer();
-                var menuPanelAwakeInit = (Action)Activator.CreateInstance(typeof(Action), this, awakePtr);
-                menuPanelAwakeInit.Invoke();
+				_allRecipes = RecipeManager.Instance.GetRecipes(GetRecipeCraftingType(), base.LocalCharacter);
 
-				CustomShow();
+				base.Show();
+
+				resetFreeRecipeLastIngredients();
+
+				Logger.LogDebug($"CustomCraftingMenu::CustomShow(): Getting Recipes for CraftingType {GetRecipeCraftingType()} and character '{base.LocalCharacter.UID}'.");
+				_allRecipes = RecipeManager.Instance.GetRecipes(GetRecipeCraftingType(), base.LocalCharacter);
+
+				_refreshComplexeRecipeRequired = true;
+				refreshAutoRecipe();
+				OnRecipeSelected(-1, _forceRefresh: true);
+
+				//Logger.LogDebug($"CustomCraftingMenu::Show() Bypassing CraftingMenu Show()");
+				//var showPtr = typeof(MenuPanel).GetMethod(nameof(MenuPanel.Show), new Type[0])
+    //                .MethodHandle.GetFunctionPointer();
+				//Logger.LogDebug($"CustomCraftingMenu::Show() showPtr is null? {showPtr == null}");
+				//var menuPanelAwakeInit = (Action)Activator.CreateInstance(typeof(Action), this, showPtr);
+				//Logger.LogDebug($"CustomCraftingMenu::Show() Invoking show of MenuPanel with {menuPanelAwakeInit?.Method}");
+				//menuPanelAwakeInit.Invoke();
+
+				//CustomShow();
 #else
 				Logger.LogDebug($"CustomCraftingMenu::Show(): Type is {this.GetType().Name}");
-				
 				if (PermanentCraftingStationType != null
 					&& PermanentCraftingStationType.Value.IsDefinedValue()
 					&& !showRecurseCheck)
@@ -356,17 +381,42 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				}
 				showRecurseCheck = false;
 
-				this.SetPrivateField<Panel, bool>("m_showWanted", true);
-				Logger.LogDebug($"CustomCraftingMenu::Show(): Invoking UIElement_Show()");
-				UIElement_Show();
-				Logger.LogDebug($"CustomCraftingMenu::Show(): Invoking Panel_Show()");
-				Panel_Show();
-				Logger.LogDebug($"CustomCraftingMenu::Show(): Invoking MenuPanel_Show()");
-				MenuPanel_Show();
-				Logger.LogDebug($"CustomCraftingMenu::Show(): Invoking CustomShow()");
-				CustomShow();
+				_allRecipes = RecipeManager.Instance.GetRecipes(GetRecipeCraftingType(), base.LocalCharacter);
+
+                base.Show();
+
+                resetFreeRecipeLastIngredients();
+
+                Logger.LogDebug($"CustomCraftingMenu::Show(): Getting Recipes for CraftingType {GetRecipeCraftingType()} and character '{base.LocalCharacter.UID}'.");
+                _allRecipes = RecipeManager.Instance.GetRecipes(GetRecipeCraftingType(), base.LocalCharacter);
+
+                _refreshComplexeRecipeRequired = true;
+				Logger.LogDebug($"CustomCraftingMenu::Show(): base.RefreshAutoRecipe().");
+				refreshAutoRecipe();
+                OnRecipeSelected(-1, _forceRefresh: true);
+
+
+                //Enable for Debugging base methods
+                //            this.SetPrivateField<Panel, bool>("m_showWanted", true);
+                //            Logger.LogDebug($"CustomCraftingMenu::Show(): Invoking UIElement_Show()");
+                //            UIElement_Show();
+                //            Logger.LogDebug($"CustomCraftingMenu::Show(): Invoking Panel_Show()");
+                //            Panel_Show();
+                //            Logger.LogDebug($"CustomCraftingMenu::Show(): Invoking MenuPanel_Show()");
+                //            MenuPanel_Show();
+                //            Logger.LogDebug($"CustomCraftingMenu::Show(): Invoking CustomShow()");
+                //            CustomShow();
+
+                //resetFreeRecipeLastIngredients();
+
+                //Logger.LogDebug($"CustomCraftingMenu::CustomShow(): Getting Recipes for CraftingType {GetRecipeCraftingType()} and character '{base.LocalCharacter.UID}'.");
+                //_allRecipes = RecipeManager.Instance.GetRecipes(GetRecipeCraftingType(), base.LocalCharacter);
+
+                //_refreshComplexeRecipeRequired = true;
+                //refreshAutoRecipe();
+                //OnRecipeSelected(-1, _forceRefresh: true);
 #endif
-			}
+            }
 			catch (Exception ex)
             {
                 Logger.LogException($"CustomCraftingMenu::Show() Exception.\n", ex);
@@ -394,10 +444,14 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
 			Show(stationItem.gameObject.GetComponentInChildren<CraftingStation>());
 		}
+
+		//TODO: See if replicating this entire thing is really necessary. I think it was done only for troubleshooting nullexceptions and left for this line:
+		//_allRecipes =  RecipeManager.Instance.GetRecipes(GetRecipeCraftingType(), base.LocalCharacter);
+		// and the overrideSprite. Both could probably be done after CraftingMenu.Show()
 		private void CustomShow()
-        {
+		{
 			Logger.LogDebug($"CustomShow: 0");
-			
+
 
 			Logger.LogDebug($"CustomShow: 1");
 			if (_craftingStation == null)
@@ -470,7 +524,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 					break;
 				default:
 					num = 1;
-					overrideSprite = _craftingBackgrounds.TryGetValue(_craftingStationType, out var customSprite) ? 
+					overrideSprite = _craftingBackgrounds.TryGetValue(_craftingStationType, out var customSprite) ?
 						customSprite : _survivalCraftingBg;
 					break;
 
@@ -494,7 +548,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			Logger.LogDebug($"CustomShow: 11");
 			//m_allRecipes = RecipeManager.Instance.GetRecipes(m_craftingStationType, base.LocalCharacter);
 			Logger.LogDebug($"CustomCraftingMenu::CustomShow(): Getting Recipes for CraftingType {GetRecipeCraftingType()} and character '{base.LocalCharacter.UID}'.");
-			_allRecipes =  RecipeManager.Instance.GetRecipes(GetRecipeCraftingType(), base.LocalCharacter);
+			_allRecipes = RecipeManager.Instance.GetRecipes(GetRecipeCraftingType(), base.LocalCharacter);
 
 			Logger.LogDebug($"CustomShow: 12");
 			//m_refreshComplexeRecipeRequired = true;
