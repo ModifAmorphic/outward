@@ -16,9 +16,22 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
         public const int ItemPrefixUID = -1356830026;
         public const string ItemStringPrefixUID = "tmogr";
         public const int RecipeSecondaryItemID = 6300030;
+
+        public static readonly string PluginPath = Path.GetDirectoryName(TransmorphPlugin.Instance.Info.Location);
         public static readonly string IconImageFilePath = Path.Combine(
-                                            Path.GetDirectoryName(TransmorphPlugin.Instance.Info.Location),
+                                            PluginPath,
                                             "tex_men_transmogItem.png");
+
+        public static readonly string UnpressedMenuIconFilePath = Path.Combine(
+                                            PluginPath,
+                                            "tex_men_iconsUnpressedTransmogrify.png");
+        public static readonly string HoverMenuIconFilePath = Path.Combine(
+                                            PluginPath,
+                                            "tex_men_iconsHoverTransmogrify.png");
+        public static readonly string PressedMenuIconFilePath = Path.Combine(
+                                            PluginPath,
+                                            "tex_men_iconsPressedTransmogrify.png");
+
         public const string IconName = "transmog";
 
         public static byte[] BytePrefixUID = BitConverter.GetBytes(ItemPrefixUID);

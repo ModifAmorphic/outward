@@ -81,7 +81,15 @@ namespace ModifAmorphic.Outward.Transmorph
             craftingModule.RegisterCraftingMenu<CookingMenu>("Cooking");
             craftingModule.RegisterCraftingMenu<AlchemyMenu>("Alchemy");
             craftingModule.RegisterCraftingMenu<AdvancedCraftingMenu>("Advanced");
-            craftingModule.RegisterCraftingMenu<TransmogrifyMenu>("Transmogrify");
+
+            var tmogMenuIcons = new MenuIcons()
+            {
+                UnpressedIcon = new MenuIcon() { IconFilePath = TransmogSettings.UnpressedMenuIconFilePath },
+                HoverIcon = new MenuIcon() { IconFilePath = TransmogSettings.HoverMenuIconFilePath },
+                PressedIcon = new MenuIcon() { IconFilePath = TransmogSettings.PressedMenuIconFilePath }
+            };
+
+            craftingModule.RegisterCraftingMenu<TransmogrifyMenu>("Transmogrify", tmogMenuIcons);
 
             craftingModule.RegisterCompatibleIngredientMatcher<TransmogrifyMenu>(services.GetService<IngredientMatcher>());
             craftingModule.RegisterCustomCrafter<TransmogrifyMenu>(services.GetService<TransmogCrafter>());
