@@ -35,5 +35,36 @@ namespace ModifAmorphic.Outward.Extensions
 
             return image;
         }
+        public static Image ReplaceSpriteIcon(this Image image, string pngFilePath, string spriteName, string textureName)
+        {
+            if (!File.Exists(pngFilePath))
+                throw new FileNotFoundException($"Sprite {spriteName} could not be loaded.", pngFilePath);
+
+            var oldSprite = image.sprite;
+            var oldTex = oldSprite.texture;
+
+            var newtexture = new Texture2D(oldTex.width, oldTex.height, oldTex.format, false);
+            newtexture.LoadImage(File.ReadAllBytes(pngFilePath));
+            newtexture.hideFlags = HideFlags.None;
+            newtexture.anisoLevel = oldTex.anisoLevel;
+            newtexture.filterMode = oldTex.filterMode;
+            newtexture.wrapMode = oldTex.wrapMode;
+            newtexture.name = textureName;
+
+            var oldRect = oldSprite.rect;
+            var newSprite = Sprite.Create(
+                newtexture,
+                new Rect(oldRect.x, oldRect.y, oldRect.width, oldRect.height),
+                new Vector2(oldSprite.pivot.x, oldSprite.pivot.y),
+                oldSprite.pixelsPerUnit,
+                0,
+                SpriteMeshType.FullRect);
+
+            newSprite.name = spriteName;
+
+            image.sprite = newSprite;
+
+            return image;
+        }
     }
 }

@@ -74,12 +74,15 @@ namespace ModifAmorphic.Outward.Modules.Crafting
         /// </summary>
         /// <typeparam name="T">The type of <see cref="CustomCraftingMenu"/> to register.</typeparam>
         /// <param name="craftingMenu"></param>
-        /// <param name="MenuDisplayName"></param>
-        public Recipe.CraftingType RegisterCraftingMenu<T>(string MenuDisplayName) where T : CustomCraftingMenu
+        /// <param name="menuDisplayName"></param>
+        public Recipe.CraftingType RegisterCraftingMenu<T>(string menuDisplayName, MenuIcons menuIcons = null) where T : CustomCraftingMenu
         {
             if (_craftingMenus.ContainsKey(typeof(T)))
                 throw new ArgumentException($"{nameof(CustomCraftingMenu)} of type {typeof(T)} already exists. " +
                     $"Only one instance of a type derived from {nameof(CustomCraftingMenu)} can be added.", nameof(T));
+            
+            if (menuIcons != null)
+                menuIcons.TrySetIconNames(menuDisplayName);
 
             //var orderNo = _craftingMenus.Count;
             _craftingMenus.TryAdd(typeof(T),
@@ -88,8 +91,9 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                     MenuType = typeof(T),
                     TabButtonName = "btn" + typeof(T).Name,
                     TabName = "PlayerMenu_Tab_" + typeof(T).Name,
-                    TabDisplayName = MenuDisplayName,
+                    TabDisplayName = menuDisplayName,
                     MenuName = typeof(T).Name,
+                    MenuIcons = menuIcons,
                     FooterName = typeof(T).Name + "Footer",
                     //TabOrderNo = orderNo
                 }) ;
@@ -195,7 +199,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                 menu.MenuScreenNo = screenNo++;
 
                 menuTypes[menu.MenuScreenNo] = menu.MenuType;
-                menu.MenuTab = _menuTabService.AddMenuTab(characterUI, menu.TabName, menu.TabDisplayName, menu.TabButtonName, menu.MenuScreenNo, menu.OrderAfterTab);
+                menu.MenuTab = _menuTabService.AddMenuTab(characterUI, menu.TabName, menu.TabDisplayName, menu.TabButtonName, menu.MenuScreenNo, menu.OrderAfterTab, menu.MenuIcons);
                 menu.MenuFooter = _menuTabService.AddFooter(characterUI, menu.MenuScreenNo, menu.FooterName);
             }
             characterUI.SetPrivateField("MenuTypes", menuTypes);
@@ -224,7 +228,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                 menu.MenuScreenNo = screenNo++;
 
                 menuTypes[menu.MenuScreenNo] = menuType;
-                menu.MenuTab =  _menuTabService.AddMenuTab(characterUI, menu.TabName, menu.TabDisplayName, menu.TabButtonName, menu.MenuScreenNo, menu.OrderAfterTab);
+                menu.MenuTab =  _menuTabService.AddMenuTab(characterUI, menu.TabName, menu.TabDisplayName, menu.TabButtonName, menu.MenuScreenNo, menu.OrderAfterTab, menu.MenuIcons);
                 menu.MenuFooter = _menuTabService.AddFooter(characterUI, menu.MenuScreenNo, menu.FooterName);
             }
             characterUI.SetPrivateField("MenuTypes", menuTypes);

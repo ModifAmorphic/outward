@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Modules.Crafting.Services
 {
@@ -17,7 +18,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
         public CraftingMenuService(Func<IModifLogger> loggerFactory) =>
             (_loggerFactory) = (loggerFactory);
 
-        public GameObject AddMenuTab(CharacterUI characterUI, string tabName, string tabDisplayName, string buttonName, int menuId, string orderAfterBtn)
+        public GameObject AddMenuTab(CharacterUI characterUI, string tabName, string tabDisplayName, string buttonName, int menuId, string orderAfterBtn, MenuIcons menuIcons)
         {
             var menuTabs = characterUI.GetPrivateField<CharacterUI, MenuTab[]>("m_menuTabs");
             
@@ -56,7 +57,34 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
 
             SetTabOrder(buttonName, orderAfterBtn, characterUI);
 
+            if (menuIcons != null)
+                SetMenuIcons(newUiMenuTabGo, menuIcons);
+
             return newUiMenuTabGo;
+        }
+        private void SetMenuIcons(GameObject menuBtn, MenuIcons menuIcons)
+        {
+            var toggle = menuBtn.GetComponent<Toggle>();
+
+            
+            var spriteState = new SpriteState()
+            { 
+                pressedSprite = toggle.spriteState.pressedSprite.Clone(menuIcons.PressedIcon.IconFilePath, menuIcons.PressedIcon.SpriteName, menuIcons.PressedIcon.TextureName),
+                highlightedSprite = toggle.spriteState.pressedSprite.Clone(menuIcons.HoverIcon.IconFilePath, menuIcons.HoverIcon.SpriteName, menuIcons.HoverIcon.TextureName)
+            };
+
+            toggle.spriteState = spriteState;
+
+            Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(SetMenuIcons)}: Replaced HighlightedSprite with new Sprite '{menuIcons.HoverIcon.SpriteName}'. PressedSprite is now {toggle.spriteState.highlightedSprite}. File: {menuIcons.HoverIcon.IconFilePath}.");
+
+            var unpressed = menuBtn.GetComponent<Image>();
+            unpressed.ReplaceSpriteIcon(menuIcons.UnpressedIcon.IconFilePath, menuIcons.UnpressedIcon.SpriteName, menuIcons.UnpressedIcon.TextureName);
+            Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(SetMenuIcons)}: Replaced UnpressedSprite with new Sprite '{menuIcons.UnpressedIcon.SpriteName}', File: {menuIcons.UnpressedIcon.IconFilePath}.");
+
+            var pressedGo = menuBtn.transform.Find("Pressed").gameObject;
+            var pressed = pressedGo.GetComponent<Image>();
+            pressed.ReplaceSpriteIcon(menuIcons.PressedIcon.IconFilePath, menuIcons.PressedIcon.SpriteName, menuIcons.PressedIcon.TextureName);
+            Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(SetMenuIcons)}: Replaced PressedSprite with new Sprite '{menuIcons.PressedIcon.SpriteName}', File: {menuIcons.PressedIcon.IconFilePath}.");
         }
         private void SetTabOrder(string targetBtn, string orderAfterBtn, CharacterUI characterUI)
         {
