@@ -30,7 +30,8 @@ namespace ModifAmorphic.Outward.Patches
             }
         }
 
-        public static event Action<Dictionary<int, ItemLocalization>> LoadItemLocalizationAfter;
+        public delegate void RegisterItemLocalizations(ref Dictionary<int, ItemLocalization> itemLocalizations);
+        public static event RegisterItemLocalizations LoadItemLocalizationAfter;
 
         [HarmonyPatch("LoadItemLocalization")]
         [HarmonyPostfix]
@@ -41,7 +42,7 @@ namespace ModifAmorphic.Outward.Patches
             try
             {
                 Logger.LogTrace($"{nameof(LocalizationManagerPatches)}::{nameof(LoadItemLocalizationPostfix)}(): Invoked. Invoking {nameof(LoadItemLocalizationPostfix)}({nameof(Dictionary<int, ItemLocalization>)})");
-                LoadItemLocalizationAfter?.Invoke(___m_itemLocalization);
+                LoadItemLocalizationAfter?.Invoke(ref ___m_itemLocalization);
             }
             catch (Exception ex)
             {

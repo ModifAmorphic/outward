@@ -46,8 +46,7 @@ namespace ModifAmorphic.Outward.Modules.Items
             this._modId = modId;
             this._loggerFactory = loggerFactory;
             this._prefabManagerFactory = prefabManagerFactory;
-            LocalizationManagerPatches.LoadItemLocalizationAfter += (itemLocalizations) =>
-                    RegisterItemLocalizations(_itemLocalizations, itemLocalizations);
+            LocalizationManagerPatches.LoadItemLocalizationAfter += RegisterItemLocalizations;
             ItemPatches.GetItemIconBefore += SetCustomItemIcon;
         }
 
@@ -103,9 +102,9 @@ namespace ModifAmorphic.Outward.Modules.Items
             }
             return _itemPrefabs;
         }
-        private void RegisterItemLocalizations(Dictionary<int, ItemLocalization> sourceLocalizations, Dictionary<int, ItemLocalization> targetLocalizations)
+        private void RegisterItemLocalizations(ref Dictionary<int, ItemLocalization> targetLocalizations)
         {
-            foreach (var kvp in sourceLocalizations)
+            foreach (var kvp in _itemLocalizations)
             {
                 targetLocalizations.AddOrUpdate(kvp.Key, kvp.Value);
             }
