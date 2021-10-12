@@ -78,6 +78,9 @@ namespace ModifAmorphic.Outward.Modules.Items.Patches
         {
             try
             {
+                if (_visuals == null)
+                    return;
+
                 int nameItemID = _visuals.GetItemIDFromName();
                 Logger.LogTrace($"{nameof(ItemManagerPatches)}::{nameof(PutBackVisualItemIDFix)}(): Invoked for ItemID {_itemID} and visual ItemVisual: {_visuals}. GetItemIDFromName(): {nameItemID}.");
                 if (nameItemID != _itemID)

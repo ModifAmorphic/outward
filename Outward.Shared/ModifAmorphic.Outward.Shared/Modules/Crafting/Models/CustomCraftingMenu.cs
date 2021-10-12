@@ -229,12 +229,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
         public CustomCraftingMenu()
         {
-            //CraftingMenuPatches.RefreshAvailableIngredientsOverridden += RefreshAvailableIngredientsOverride;
-			//CraftingMenuPatches.SetCraftButtonEnableBefore += RefreshResult;
-
 			CraftingMenuPatches.OnRecipeSelectedAfter += (args) => RefreshResult();
 			CraftingMenuPatches.IngredientSelectorHasChangedAfter += (args) => RefreshResult();
-			//CraftingMenuPatches.OnRecipeSelectedOverride += (args) => TryOnRecipeSelectedOverride(args.Index, args.ForceRefresh);
 		}
 
         private void RefreshResult()
@@ -333,7 +329,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting
         {
             try
             {
-#if !DEBUG
 				Logger.LogDebug($"CustomCraftingMenu::Show(): Type is {this.GetType().Name}");
 				if (PermanentCraftingStationType != null
 					&& PermanentCraftingStationType.Value.IsDefinedValue()
@@ -348,6 +343,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
 				_allRecipes = RecipeManager.Instance.GetRecipes(GetRecipeCraftingType(), base.LocalCharacter);
 
+				//enable this, disable base.Show() to debug menu Show() methods
+				//DebugShow()
 				base.Show();
 
 				resetFreeRecipeLastIngredients();
@@ -358,64 +355,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				_refreshComplexeRecipeRequired = true;
 				refreshAutoRecipe();
 				OnRecipeSelected(-1, _forceRefresh: true);
-
-				//Logger.LogDebug($"CustomCraftingMenu::Show() Bypassing CraftingMenu Show()");
-				//var showPtr = typeof(MenuPanel).GetMethod(nameof(MenuPanel.Show), new Type[0])
-    //                .MethodHandle.GetFunctionPointer();
-				//Logger.LogDebug($"CustomCraftingMenu::Show() showPtr is null? {showPtr == null}");
-				//var menuPanelAwakeInit = (Action)Activator.CreateInstance(typeof(Action), this, showPtr);
-				//Logger.LogDebug($"CustomCraftingMenu::Show() Invoking show of MenuPanel with {menuPanelAwakeInit?.Method}");
-				//menuPanelAwakeInit.Invoke();
-
-				//CustomShow();
-#else
-				Logger.LogDebug($"CustomCraftingMenu::Show(): Type is {this.GetType().Name}");
-				if (PermanentCraftingStationType != null
-					&& PermanentCraftingStationType.Value.IsDefinedValue()
-					&& !showRecurseCheck)
-				{
-					Logger.LogDebug($"CustomCraftingMenu::Show() {this.GetType().Name} is a permenant {PermanentCraftingStationType} crafting station.");
-					showRecurseCheck = true;
-					Show((Recipe.CraftingType)PermanentCraftingStationType);
-					return;
-				}
-				showRecurseCheck = false;
-
-				_allRecipes = RecipeManager.Instance.GetRecipes(GetRecipeCraftingType(), base.LocalCharacter);
-
-                base.Show();
-
-                resetFreeRecipeLastIngredients();
-
-                Logger.LogDebug($"CustomCraftingMenu::Show(): Getting Recipes for CraftingType {GetRecipeCraftingType()} and character '{base.LocalCharacter.UID}'.");
-                _allRecipes = RecipeManager.Instance.GetRecipes(GetRecipeCraftingType(), base.LocalCharacter);
-
-                _refreshComplexeRecipeRequired = true;
-				Logger.LogDebug($"CustomCraftingMenu::Show(): base.RefreshAutoRecipe().");
-				refreshAutoRecipe();
-                OnRecipeSelected(-1, _forceRefresh: true);
-
-
-                //Enable for Debugging base methods
-                //            this.SetPrivateField<Panel, bool>("m_showWanted", true);
-                //            Logger.LogDebug($"CustomCraftingMenu::Show(): Invoking UIElement_Show()");
-                //            UIElement_Show();
-                //            Logger.LogDebug($"CustomCraftingMenu::Show(): Invoking Panel_Show()");
-                //            Panel_Show();
-                //            Logger.LogDebug($"CustomCraftingMenu::Show(): Invoking MenuPanel_Show()");
-                //            MenuPanel_Show();
-                //            Logger.LogDebug($"CustomCraftingMenu::Show(): Invoking CustomShow()");
-                //            CustomShow();
-
-                //resetFreeRecipeLastIngredients();
-
-                //Logger.LogDebug($"CustomCraftingMenu::CustomShow(): Getting Recipes for CraftingType {GetRecipeCraftingType()} and character '{base.LocalCharacter.UID}'.");
-                //_allRecipes = RecipeManager.Instance.GetRecipes(GetRecipeCraftingType(), base.LocalCharacter);
-
-                //_refreshComplexeRecipeRequired = true;
-                //refreshAutoRecipe();
-                //OnRecipeSelected(-1, _forceRefresh: true);
-#endif
             }
 			catch (Exception ex)
             {
@@ -445,253 +384,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			Show(stationItem.gameObject.GetComponentInChildren<CraftingStation>());
 		}
 
-		//TODO: See if replicating this entire thing is really necessary. I think it was done only for troubleshooting nullexceptions and left for this line:
-		//_allRecipes =  RecipeManager.Instance.GetRecipes(GetRecipeCraftingType(), base.LocalCharacter);
-		// and the overrideSprite. Both could probably be done after CraftingMenu.Show()
-		private void CustomShow()
-		{
-			Logger.LogDebug($"CustomShow: 0");
-
-
-			Logger.LogDebug($"CustomShow: 1");
-			if (_craftingStation == null)
-			{
-				//if (_craftingStationType <= Enum.GetValues(typeof(Recipe.CraftingType)).Cast<Recipe.CraftingType>().Max())
-				_craftingStationType = Recipe.CraftingType.Survival;
-
-				Logger.LogDebug($"CustomShow: 1:A:1");
-				if ((bool)(UnityEngine.Object)(object)_lblStationName)
-				{
-					_lblStationName.text = "";
-				}
-				_simpleMode = false;
-				Logger.LogDebug($"CustomShow: 1:A:2");
-			}
-			else
-			{
-				Logger.LogDebug($"CustomShow: 1:B:1");
-				if ((bool)(UnityEngine.Object)(object)_lblStationName)
-				{
-					_lblStationName.text = _craftingStation.DisplayName;
-				}
-				_simpleMode = !_craftingStation.AllowComplexRecipe;
-				Logger.LogDebug($"CustomShow: 1:B:2");
-			}
-			Logger.LogDebug($"CustomShow: 2");
-			if ((bool)(UnityEngine.Object)(object)_singleIngredientBackground)
-			{
-				((UnityEngine.UI.Graphic)(object)_singleIngredientBackground).SetAlpha(_simpleMode ? 1 : 0);
-			}
-			Logger.LogDebug($"CustomShow: 3");
-			if ((bool)(UnityEngine.Object)(object)_multipleIngrenentsBrackground)
-			{
-				((UnityEngine.UI.Graphic)(object)_multipleIngrenentsBrackground).SetAlpha((!_simpleMode) ? 1 : 0);
-			}
-			Logger.LogDebug($"CustomShow: 4");
-			for (int i = 1; i < _ingredientSelectors.Length; i++)
-			{
-				_ingredientSelectors[i].Show(!_simpleMode);
-			}
-			Logger.LogDebug($"CustomShow: 5");
-			int num = -1;
-			Sprite overrideSprite = null;
-			Logger.LogDebug($"CustomShow: 6");
-			switch (_craftingStationType)
-			{
-				case Recipe.CraftingType.Survival:
-					num = 1;
-					overrideSprite = _survivalCraftingBg;
-					break;
-				case Recipe.CraftingType.Cooking:
-					if (_craftingStation.AllowComplexRecipe)
-					{
-						num = 3;
-						overrideSprite = _cookingPotCraftingBg;
-					}
-					else
-					{
-						num = 2;
-						overrideSprite = _cookingFireCraftingBg;
-					}
-					break;
-				case Recipe.CraftingType.Alchemy:
-					num = 0;
-					overrideSprite = _alchemyCraftingBg;
-					break;
-				case Recipe.CraftingType.Forge:
-					num = 4;
-					overrideSprite = _alchemyCraftingBg;
-					break;
-				default:
-					num = 1;
-					overrideSprite = _craftingBackgrounds.TryGetValue(_craftingStationType, out var customSprite) ?
-						customSprite : _survivalCraftingBg;
-					break;
-
-			}
-			Logger.LogDebug($"CustomShow: 7");
-
-			Logger.LogDebug($"CustomShow: 8");
-			if ((bool)(UnityEngine.Object)(object)_lblFreeRecipeDescription)
-			{
-				_lblFreeRecipeDescription.text = LocalizationManager.Instance.GetLoc(_freeRecipesLocKey[num]);
-			}
-			Logger.LogDebug($"CustomShow: 9");
-			if ((bool)(UnityEngine.Object)(object)_imgCraftingBackground)
-			{
-				_imgCraftingBackground.overrideSprite = overrideSprite;
-			}
-			Logger.LogDebug($"CustomShow: 10");
-			//ResetFreeRecipeLastIngredients();
-			resetFreeRecipeLastIngredients();
-
-			Logger.LogDebug($"CustomShow: 11");
-			//m_allRecipes = RecipeManager.Instance.GetRecipes(m_craftingStationType, base.LocalCharacter);
-			Logger.LogDebug($"CustomCraftingMenu::CustomShow(): Getting Recipes for CraftingType {GetRecipeCraftingType()} and character '{base.LocalCharacter.UID}'.");
-			_allRecipes = RecipeManager.Instance.GetRecipes(GetRecipeCraftingType(), base.LocalCharacter);
-
-			Logger.LogDebug($"CustomShow: 12");
-			//m_refreshComplexeRecipeRequired = true;
-			_refreshComplexeRecipeRequired = true;
-
-			Logger.LogDebug($"CustomShow: 13");
-			//RefreshAutoRecipe();
-			refreshAutoRecipe();
-
-			Logger.LogDebug($"CustomShow: 14");
-			OnRecipeSelected(-1, _forceRefresh: true);
-		}
-
-		private bool TryOnRecipeSelectedOverride(int _index, bool _forceRefresh = false)
-        {
-			try
-            {
-				OnRecipeSelectedOverride(_index, _forceRefresh);
-				return true;
-			}
-			catch (Exception ex)
-			{
-				Logger.LogException($"{nameof(CustomCraftingMenu)}::{nameof(TryOnRecipeSelectedOverride)}(): Exception Invoking {nameof(OnRecipeSelectedOverride)}().", ex);
-			}
-			return false;
-        }
-		private void OnRecipeSelectedOverride(int _index, bool _forceRefresh = false)
-		{
-			Logger.LogDebug($"OnRecipeSelectedOverride: 1");
-			if (_lastRecipeIndex == _index && !_forceRefresh)
-				return;
-			Logger.LogDebug($"OnRecipeSelectedOverride: 2");
-			if (IsCraftingInProgress)
-				cancelCrafting();
-
-			Logger.LogDebug($"OnRecipeSelectedOverride: 3");
-			if (_lastRecipeIndex != -1)
-				_recipeDisplays[_lastRecipeIndex].SetHighlight(_highlight: false);
-			else
-				_freeRecipeDisplay.SetHighlight(_highlight: false);
-
-			Logger.LogDebug($"OnRecipeSelectedOverride: 4");
-			for (int i = 0; i < _ingredientSelectors.Length; i++)
-				_ingredientSelectors[i].Free(_resetUseCount: true);
-
-			_lastRecipeIndex = _index;
-			Logger.LogDebug($"OnRecipeSelectedOverride: 5");
-			_itemDetailPanel.Show(_lastRecipeIndex != -1);
-			_freeRecipeDescriptionPanel.gameObject.SetActive(_lastRecipeIndex == -1);
-			Logger.LogDebug($"OnRecipeSelectedOverride: 6");
-			if (_index != -1)
-			{
-				resetFreeRecipeLastIngredients();
-				Logger.LogDebug($"OnRecipeSelectedOverride: 7 | _index: {_index}, _complexeRecipes.Count: {_complexeRecipes.Count}");
-				Logger.LogDebug($"OnRecipeSelectedOverride: 7.5 |_complexeRecipes[_index].Value.Results[0]: {_complexeRecipes[_index].Value.Results[0].ItemID}");
-				_recipeResultDisplay.SetRecipeResult(_complexeRecipes[_index].Value.Results[0]);
-				Logger.LogDebug($"OnRecipeSelectedOverride: 8");
-				RefreshItemDetailDisplay(_recipeResultDisplay);
-				Logger.LogDebug($"OnRecipeSelectedOverride: 9");
-				setCraftButtonEnable(_recipeDisplays[_index].IsRecipeIngredientsComplete);
-				Logger.LogDebug($"OnRecipeSelectedOverride: 10");
-				for (int num = _ingredientSelectors.Length - 1; num >= 0; num--)
-				{
-					Logger.LogDebug($"OnRecipeSelectedOverride: F01");
-					if (num < _complexeRecipes[_index].Value.Ingredients.Length)
-					{
-						Logger.LogDebug($"OnRecipeSelectedOverride: F02");
-						if (num < _ingredientSelectors.Length - 1)
-						{
-							if (_ingredientSelectors[num + 1].Button.interactable)
-							{
-								Logger.LogDebug($"OnRecipeSelectedOverride: F03A");
-								((Selectable)(object)_ingredientSelectors[num].Button).SetRightNav((Selectable)(object)_ingredientSelectors[num + 1].Button);
-							}
-							else
-							{
-								((Selectable)(object)_ingredientSelectors[num].Button).SetRightNav(null);
-								Logger.LogDebug($"OnRecipeSelectedOverride: F03B");
-							}
-						}
-                        _ingredientSelectors[num].Button.interactable = (true);
-						Logger.LogDebug($"OnRecipeSelectedOverride: F04");
-						int num2 = _recipeDisplays[_index].BestIngredientsPerStep[num];
-						Logger.LogDebug($"OnRecipeSelectedOverride: F05");
-						_ingredientSelectors[num].Set(_complexeRecipes[_index].Value.Ingredients[num], (num2 != -1) ? _availableIngredients[num2] : null);
-						Logger.LogDebug($"OnRecipeSelectedOverride: F06");
-					}
-					else
-					{
-						_ingredientSelectors[num].Clear();
-						Logger.LogDebug($"OnRecipeSelectedOverride: G01");
-						_ingredientSelectors[num].Button.interactable = (false);
-						Logger.LogDebug($"OnRecipeSelectedOverride: G02");
-					}
-				}
-				Logger.LogDebug($"OnRecipeSelectedOverride: 11");
-				//_recipeResultDisplay.SetRecipeResult(_complexeRecipes[_index].Value.Results[0]);
-				Logger.LogDebug($"OnRecipeSelectedOverride: 12");
-				//RefreshItemDetailDisplay(_recipeResultDisplay);
-				Logger.LogDebug($"OnRecipeSelectedOverride: 13");
-				_recipeDisplays[_index].SetHighlight(_highlight: true);
-				Logger.LogDebug($"OnRecipeSelectedOverride: 14");
-				return;
-			}
-			_freeRecipeDisplay.SetHighlight(_highlight: true);
-			bool flag = false;
-			_recipeResultDisplay.Clear();
-			for (int j = 0; j < _ingredientSelectors.Length; j++)
-			{
-                _ingredientSelectors[j].Button.interactable = true;
-				if (_lastFreeRecipeIngredientIDs[j] != -1)
-				{
-					int key = _lastFreeRecipeIngredientIDs[j];
-					if (_availableIngredients.TryGetValue(key, out var _outValue) && _outValue.AvailableQty > 0)
-					{
-						_ingredientSelectors[j].Set(null, _outValue);
-					}
-					else
-					{
-						_ingredientSelectors[j].Set(null, null);
-					}
-					_lastFreeRecipeIngredientIDs[j] = -1;
-				}
-				else
-				{
-					_ingredientSelectors[j].Set(null, null);
-				}
-				if (j < _ingredientSelectors.Length - 1)
-				{
-					((Selectable)(object)_ingredientSelectors[j].Button).SetRightNav((Selectable)(object)_ingredientSelectors[j + 1].Button);
-				}
-				flag |= !_ingredientSelectors[j].IsMissingIngredient;
-			}
-			setCraftButtonEnable(flag);
-			refreshFreeRecipeResult();
-			for (int k = 0; k < _ingredientSelectors.Length; k++)
-			{
-				if (_ingredientSelectors[k].IsMissingIngredient)
-				{
-					_lastFreeRecipeIngredientIDs[k] = -1;
-				}
-			}
-		}
+		
 		public Recipe GetSelectedRecipe() =>
 				_lastRecipeIndex != -1 ? _complexeRecipes[_lastRecipeIndex].Value : null;
 		public List<CompatibleIngredient> GetSelectedIngredients() =>
@@ -701,6 +394,20 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
 		#region Copies of Base Methods for Debugging 
 #if DEBUG
+		private void DebugShow()
+		{
+			this.SetPrivateField<Panel, bool>("m_showWanted", true);
+			Logger.LogDebug($"CustomCraftingMenu::Show(): Invoking UIElement_Show()");
+			UIElement_Show();
+			Logger.LogDebug($"CustomCraftingMenu::Show(): Invoking Panel_Show()");
+			Panel_Show();
+			Logger.LogDebug($"CustomCraftingMenu::Show(): Invoking MenuPanel_Show()");
+			MenuPanel_Show();
+			Logger.LogDebug($"CustomCraftingMenu::Show(): Invoking CustomShow()");
+			CustomShow();
+
+			resetFreeRecipeLastIngredients();
+		}
 		private void UIElement_Show()
         {
 			var m_starting = this.GetPrivateField<UIElement, bool>("m_starting");
@@ -873,6 +580,250 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
 			Logger.LogDebug($"CraftingMenu_Show: 14");
 			OnRecipeSelected(-1, _forceRefresh: true);
+		}
+
+		private void CustomShow()
+		{
+			Logger.LogDebug($"CustomShow: 0");
+
+
+			Logger.LogDebug($"CustomShow: 1");
+			if (_craftingStation == null)
+			{
+				//if (_craftingStationType <= Enum.GetValues(typeof(Recipe.CraftingType)).Cast<Recipe.CraftingType>().Max())
+				_craftingStationType = Recipe.CraftingType.Survival;
+
+				Logger.LogDebug($"CustomShow: 1:A:1");
+				if ((bool)(UnityEngine.Object)(object)_lblStationName)
+				{
+					_lblStationName.text = "";
+				}
+				_simpleMode = false;
+				Logger.LogDebug($"CustomShow: 1:A:2");
+			}
+			else
+			{
+				Logger.LogDebug($"CustomShow: 1:B:1");
+				if ((bool)(UnityEngine.Object)(object)_lblStationName)
+				{
+					_lblStationName.text = _craftingStation.DisplayName;
+				}
+				_simpleMode = !_craftingStation.AllowComplexRecipe;
+				Logger.LogDebug($"CustomShow: 1:B:2");
+			}
+			Logger.LogDebug($"CustomShow: 2");
+			if ((bool)(UnityEngine.Object)(object)_singleIngredientBackground)
+			{
+				((UnityEngine.UI.Graphic)(object)_singleIngredientBackground).SetAlpha(_simpleMode ? 1 : 0);
+			}
+			Logger.LogDebug($"CustomShow: 3");
+			if ((bool)(UnityEngine.Object)(object)_multipleIngrenentsBrackground)
+			{
+				((UnityEngine.UI.Graphic)(object)_multipleIngrenentsBrackground).SetAlpha((!_simpleMode) ? 1 : 0);
+			}
+			Logger.LogDebug($"CustomShow: 4");
+			for (int i = 1; i < _ingredientSelectors.Length; i++)
+			{
+				_ingredientSelectors[i].Show(!_simpleMode);
+			}
+			Logger.LogDebug($"CustomShow: 5");
+			int num = -1;
+			Sprite overrideSprite = null;
+			Logger.LogDebug($"CustomShow: 6");
+			switch (_craftingStationType)
+			{
+				case Recipe.CraftingType.Survival:
+					num = 1;
+					overrideSprite = _survivalCraftingBg;
+					break;
+				case Recipe.CraftingType.Cooking:
+					if (_craftingStation.AllowComplexRecipe)
+					{
+						num = 3;
+						overrideSprite = _cookingPotCraftingBg;
+					}
+					else
+					{
+						num = 2;
+						overrideSprite = _cookingFireCraftingBg;
+					}
+					break;
+				case Recipe.CraftingType.Alchemy:
+					num = 0;
+					overrideSprite = _alchemyCraftingBg;
+					break;
+				case Recipe.CraftingType.Forge:
+					num = 4;
+					overrideSprite = _alchemyCraftingBg;
+					break;
+				default:
+					num = 1;
+					overrideSprite = _craftingBackgrounds.TryGetValue(_craftingStationType, out var customSprite) ?
+						customSprite : _survivalCraftingBg;
+					break;
+
+			}
+			Logger.LogDebug($"CustomShow: 7");
+
+			Logger.LogDebug($"CustomShow: 8");
+			if ((bool)(UnityEngine.Object)(object)_lblFreeRecipeDescription)
+			{
+				_lblFreeRecipeDescription.text = LocalizationManager.Instance.GetLoc(_freeRecipesLocKey[num]);
+			}
+			Logger.LogDebug($"CustomShow: 9");
+			if ((bool)(UnityEngine.Object)(object)_imgCraftingBackground)
+			{
+				_imgCraftingBackground.overrideSprite = overrideSprite;
+			}
+			Logger.LogDebug($"CustomShow: 10");
+			//ResetFreeRecipeLastIngredients();
+			resetFreeRecipeLastIngredients();
+
+			Logger.LogDebug($"CustomShow: 11");
+			//m_allRecipes = RecipeManager.Instance.GetRecipes(m_craftingStationType, base.LocalCharacter);
+			Logger.LogDebug($"CustomCraftingMenu::CustomShow(): Getting Recipes for CraftingType {GetRecipeCraftingType()} and character '{base.LocalCharacter.UID}'.");
+			_allRecipes = RecipeManager.Instance.GetRecipes(GetRecipeCraftingType(), base.LocalCharacter);
+
+			Logger.LogDebug($"CustomShow: 12");
+			//m_refreshComplexeRecipeRequired = true;
+			_refreshComplexeRecipeRequired = true;
+
+			Logger.LogDebug($"CustomShow: 13");
+			//RefreshAutoRecipe();
+			refreshAutoRecipe();
+
+			Logger.LogDebug($"CustomShow: 14");
+			OnRecipeSelected(-1, _forceRefresh: true);
+		}
+		private bool TryOnRecipeSelectedOverride(int _index, bool _forceRefresh = false)
+		{
+			try
+			{
+				OnRecipeSelectedOverride(_index, _forceRefresh);
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Logger.LogException($"{nameof(CustomCraftingMenu)}::{nameof(TryOnRecipeSelectedOverride)}(): Exception Invoking {nameof(OnRecipeSelectedOverride)}().", ex);
+			}
+			return false;
+		}
+		private void OnRecipeSelectedOverride(int _index, bool _forceRefresh = false)
+		{
+			Logger.LogDebug($"OnRecipeSelectedOverride: 1");
+			if (_lastRecipeIndex == _index && !_forceRefresh)
+				return;
+			Logger.LogDebug($"OnRecipeSelectedOverride: 2");
+			if (IsCraftingInProgress)
+				cancelCrafting();
+
+			Logger.LogDebug($"OnRecipeSelectedOverride: 3");
+			if (_lastRecipeIndex != -1)
+				_recipeDisplays[_lastRecipeIndex].SetHighlight(_highlight: false);
+			else
+				_freeRecipeDisplay.SetHighlight(_highlight: false);
+
+			Logger.LogDebug($"OnRecipeSelectedOverride: 4");
+			for (int i = 0; i < _ingredientSelectors.Length; i++)
+				_ingredientSelectors[i].Free(_resetUseCount: true);
+
+			_lastRecipeIndex = _index;
+			Logger.LogDebug($"OnRecipeSelectedOverride: 5");
+			_itemDetailPanel.Show(_lastRecipeIndex != -1);
+			_freeRecipeDescriptionPanel.gameObject.SetActive(_lastRecipeIndex == -1);
+			Logger.LogDebug($"OnRecipeSelectedOverride: 6");
+			if (_index != -1)
+			{
+				resetFreeRecipeLastIngredients();
+				Logger.LogDebug($"OnRecipeSelectedOverride: 7 | _index: {_index}, _complexeRecipes.Count: {_complexeRecipes.Count}");
+				Logger.LogDebug($"OnRecipeSelectedOverride: 7.5 |_complexeRecipes[_index].Value.Results[0]: {_complexeRecipes[_index].Value.Results[0].ItemID}");
+				_recipeResultDisplay.SetRecipeResult(_complexeRecipes[_index].Value.Results[0]);
+				Logger.LogDebug($"OnRecipeSelectedOverride: 8");
+				RefreshItemDetailDisplay(_recipeResultDisplay);
+				Logger.LogDebug($"OnRecipeSelectedOverride: 9");
+				setCraftButtonEnable(_recipeDisplays[_index].IsRecipeIngredientsComplete);
+				Logger.LogDebug($"OnRecipeSelectedOverride: 10");
+				for (int num = _ingredientSelectors.Length - 1; num >= 0; num--)
+				{
+					Logger.LogDebug($"OnRecipeSelectedOverride: F01");
+					if (num < _complexeRecipes[_index].Value.Ingredients.Length)
+					{
+						Logger.LogDebug($"OnRecipeSelectedOverride: F02");
+						if (num < _ingredientSelectors.Length - 1)
+						{
+							if (_ingredientSelectors[num + 1].Button.interactable)
+							{
+								Logger.LogDebug($"OnRecipeSelectedOverride: F03A");
+								((Selectable)(object)_ingredientSelectors[num].Button).SetRightNav((Selectable)(object)_ingredientSelectors[num + 1].Button);
+							}
+							else
+							{
+								((Selectable)(object)_ingredientSelectors[num].Button).SetRightNav(null);
+								Logger.LogDebug($"OnRecipeSelectedOverride: F03B");
+							}
+						}
+						_ingredientSelectors[num].Button.interactable = (true);
+						Logger.LogDebug($"OnRecipeSelectedOverride: F04");
+						int num2 = _recipeDisplays[_index].BestIngredientsPerStep[num];
+						Logger.LogDebug($"OnRecipeSelectedOverride: F05");
+						_ingredientSelectors[num].Set(_complexeRecipes[_index].Value.Ingredients[num], (num2 != -1) ? _availableIngredients[num2] : null);
+						Logger.LogDebug($"OnRecipeSelectedOverride: F06");
+					}
+					else
+					{
+						_ingredientSelectors[num].Clear();
+						Logger.LogDebug($"OnRecipeSelectedOverride: G01");
+						_ingredientSelectors[num].Button.interactable = (false);
+						Logger.LogDebug($"OnRecipeSelectedOverride: G02");
+					}
+				}
+				Logger.LogDebug($"OnRecipeSelectedOverride: 11");
+				//_recipeResultDisplay.SetRecipeResult(_complexeRecipes[_index].Value.Results[0]);
+				Logger.LogDebug($"OnRecipeSelectedOverride: 12");
+				//RefreshItemDetailDisplay(_recipeResultDisplay);
+				Logger.LogDebug($"OnRecipeSelectedOverride: 13");
+				_recipeDisplays[_index].SetHighlight(_highlight: true);
+				Logger.LogDebug($"OnRecipeSelectedOverride: 14");
+				return;
+			}
+			_freeRecipeDisplay.SetHighlight(_highlight: true);
+			bool flag = false;
+			_recipeResultDisplay.Clear();
+			for (int j = 0; j < _ingredientSelectors.Length; j++)
+			{
+				_ingredientSelectors[j].Button.interactable = true;
+				if (_lastFreeRecipeIngredientIDs[j] != -1)
+				{
+					int key = _lastFreeRecipeIngredientIDs[j];
+					if (_availableIngredients.TryGetValue(key, out var _outValue) && _outValue.AvailableQty > 0)
+					{
+						_ingredientSelectors[j].Set(null, _outValue);
+					}
+					else
+					{
+						_ingredientSelectors[j].Set(null, null);
+					}
+					_lastFreeRecipeIngredientIDs[j] = -1;
+				}
+				else
+				{
+					_ingredientSelectors[j].Set(null, null);
+				}
+				if (j < _ingredientSelectors.Length - 1)
+				{
+					((Selectable)(object)_ingredientSelectors[j].Button).SetRightNav((Selectable)(object)_ingredientSelectors[j + 1].Button);
+				}
+				flag |= !_ingredientSelectors[j].IsMissingIngredient;
+			}
+			setCraftButtonEnable(flag);
+			refreshFreeRecipeResult();
+			for (int k = 0; k < _ingredientSelectors.Length; k++)
+			{
+				if (_ingredientSelectors[k].IsMissingIngredient)
+				{
+					_lastFreeRecipeIngredientIDs[k] = -1;
+				}
+			}
 		}
 #endif
 		#endregion
