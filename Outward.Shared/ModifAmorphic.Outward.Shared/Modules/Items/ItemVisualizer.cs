@@ -32,7 +32,12 @@ namespace ModifAmorphic.Outward.Modules.Items
 
         public HashSet<Type> EventSubscriptions => new HashSet<Type>();
 
-        private readonly ConcurrentDictionary<string, int> _itemVisuals = new ConcurrentDictionary<string, int>();
+        public HashSet<Type> DepsWithMultiLogger => new HashSet<Type>() {
+              typeof(ItemManagerPatches),
+              typeof(ItemDisplayPatches)
+        };
+
+    private readonly ConcurrentDictionary<string, int> _itemVisuals = new ConcurrentDictionary<string, int>();
 
         /// <summary>
         /// Collection of a specific Item UID's icons and a means to get them.<br />

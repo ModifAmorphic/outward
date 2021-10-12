@@ -12,7 +12,7 @@ namespace ModifAmorphic.Outward.Localization
     {
         public static readonly ConcurrentDictionary<string, string> _localizations = new ConcurrentDictionary<string, string>();
 
-        [PatchLogger]
+        [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
 
         private static LocalizationManager _localizationManager;

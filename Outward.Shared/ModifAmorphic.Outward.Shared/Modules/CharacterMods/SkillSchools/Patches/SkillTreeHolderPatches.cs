@@ -8,7 +8,7 @@ namespace ModifAmorphic.Outward.Modules.CharacterMods
     [HarmonyPatch(typeof(SkillTreeHolder))]
     internal static class SkillTreeHolderPatches
     {
-        [PatchLogger]
+        [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
         public static event Action<SkillTreeHolder> AwakeAfter;
 

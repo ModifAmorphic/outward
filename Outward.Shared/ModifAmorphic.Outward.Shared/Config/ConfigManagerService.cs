@@ -16,7 +16,7 @@ namespace ModifAmorphic.Outward.Config
             if (_reflectedConfigManager == null)
             {
 #if DEBUG
-                var _logger = LoggerFactory.ConfigureLogger(DebugLoggerInfo.ModId, DebugLoggerInfo.ModName, DebugLoggerInfo.DebugLogLevel);
+                var _logger = LoggerFactory.ConfigureLogger(DefaultLoggerInfo.ModId, DefaultLoggerInfo.ModName, DefaultLoggerInfo.DebugLogLevel);
                 _logger.LogWarning("ConfigurationManager.ConfigurationManager Component not found. Refreshing will be disabled.\n" + new MissingMemberException(typeof(BaseUnityPlugin).Name, "ConfigurationManager.ConfigurationManager"));
 #endif
             }
@@ -29,7 +29,7 @@ namespace ModifAmorphic.Outward.Config
 
             var buildSettingList = _reflectedConfigManager.GetType().GetMethod("BuildSettingList");
 #if DEBUG
-            var _logger = LoggerFactory.ConfigureLogger(DebugLoggerInfo.ModId, DebugLoggerInfo.ModName, DebugLoggerInfo.DebugLogLevel);
+            var _logger = LoggerFactory.ConfigureLogger(DefaultLoggerInfo.ModId, DefaultLoggerInfo.ModName, DefaultLoggerInfo.DebugLogLevel);
             _logger.LogDebug(
                 $"Refreshing ConfigurationManager " +
                 $"Reflected ConfigurationManager found? {_reflectedConfigManager != null}. " +

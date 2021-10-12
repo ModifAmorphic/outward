@@ -34,6 +34,13 @@ namespace ModifAmorphic.Outward.Modules.QuickSlots
             typeof(QsLocalizationManagerPatches)
         };
 
+        public HashSet<Type> DepsWithMultiLogger => new HashSet<Type>() {
+            typeof(CharacterQuickSlotManagerPatches),
+            typeof(KeyboardQuickSlotPanelPatches),
+            typeof(LocalCharacterControlPatches),
+            typeof(QsLocalizationManagerPatches)
+        };
+
         [MethodImplAttribute(MethodImplOptions.NoInlining)]
         internal QuickSlotExtender(Func<IModifLogger> loggerFactory)
         {

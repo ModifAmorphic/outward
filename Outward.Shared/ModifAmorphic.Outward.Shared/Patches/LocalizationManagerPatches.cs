@@ -11,7 +11,7 @@ namespace ModifAmorphic.Outward.Patches
     [HarmonyPatch(typeof(LocalizationManager))]
     public static class LocalizationManagerPatches
     {
-        [PatchLogger]
+        [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
 
         public static event Action<LocalizationManager> AwakeAfter;

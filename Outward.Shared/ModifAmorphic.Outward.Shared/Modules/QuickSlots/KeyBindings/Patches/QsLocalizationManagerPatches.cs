@@ -12,7 +12,7 @@ namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
     {
         static readonly List<ILocalizeListener> _customLocalizationListeners = new List<ILocalizeListener>();
 
-        [PatchLogger]
+        [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
 
         private static void QuickSlotExtenderEvents_SlotsChanged(object sender, QuickSlotExtendedArgs e)

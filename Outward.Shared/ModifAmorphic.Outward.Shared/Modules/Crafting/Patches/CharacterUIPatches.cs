@@ -7,7 +7,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
     [HarmonyPatch(typeof(CharacterUI))]
     internal static class CharacterUIPatches
     {
-        [PatchLogger]
+        [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
 
         public static event Action<CharacterUI> AwakeBefore;

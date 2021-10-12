@@ -13,7 +13,7 @@ namespace ModifAmorphic.Outward.Modules.Items.Patches
     [HarmonyPatch(typeof(ItemDisplay))]
     internal static class ItemDisplayPatches
     {
-        [PatchLogger]
+        [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
 
         public static event Action<ItemDisplay, Item> RefreshEnchantedIconAfter;

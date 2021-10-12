@@ -12,7 +12,7 @@ namespace ModifAmorphic.Outward.Modules.Items.Patches
     {
         public delegate bool GetVisualsByItem(Item input, out ItemVisual output);
 
-        [PatchLogger]
+        [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
 
         public static event GetVisualsByItem GetSpecialVisualsByItemOverride;

@@ -31,6 +31,11 @@ namespace ModifAmorphic.Outward.Modules.Items
             typeof(ItemPatches)
         };
 
+        public HashSet<Type> DepsWithMultiLogger => new HashSet<Type>() {
+            typeof(LocalizationManagerPatches),
+            typeof(ItemPatches)
+        };
+
         private Transform _parentTransform;
         private readonly Dictionary<int, ItemLocalization> _itemLocalizations = new Dictionary<int, ItemLocalization>();
         private readonly ConcurrentDictionary<int, Sprite> _itemIcons = new ConcurrentDictionary<int, Sprite>();

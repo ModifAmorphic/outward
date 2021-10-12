@@ -48,6 +48,13 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             typeof(LocalizationManagerPatches)
         };
 
+        public HashSet<Type> DepsWithMultiLogger => new HashSet<Type>() {
+            typeof(CharacterUIPatches),
+            typeof(CraftingMenuPatches),
+            typeof(CompatibleIngredientPatches),
+            typeof(LocalizationManagerPatches)
+        };
+
         internal CustomCraftingModule(CraftingMenuService menuTabService, CustomRecipeService customRecipeService, CustomCraftingService craftingService, Func<IModifLogger> loggerFactory)
         {
             (_menuTabService, _customRecipeService, _craftingService, _loggerFactory) = (menuTabService, customRecipeService, craftingService, loggerFactory);

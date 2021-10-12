@@ -10,7 +10,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
     [HarmonyPatch(typeof(CompatibleIngredient))]
     internal static class CompatibleIngredientPatches
     {
-        [PatchLogger]
+        [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
 
         [HarmonyPatch(nameof(CompatibleIngredient.MatchRecipeStep), MethodType.Normal)]

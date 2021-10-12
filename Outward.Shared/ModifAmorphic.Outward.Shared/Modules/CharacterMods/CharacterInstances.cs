@@ -21,6 +21,11 @@ namespace ModifAmorphic.Outward.Modules.CharacterMods
             typeof(CharacterManagerPatches)
         };
 
+        public HashSet<Type> DepsWithMultiLogger => new HashSet<Type>() {
+            typeof(SkillTreeHolderPatches),
+            typeof(CharacterManagerPatches)
+        };
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         internal CharacterInstances(Func<IModifLogger> loggerFactory)
         {

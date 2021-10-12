@@ -5,7 +5,7 @@ using System.Text;
 namespace ModifAmorphic.Outward.Logging
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-    internal class PatchLoggerAttribute : Attribute
+    internal class MultiLoggerAttribute : Attribute
     {
     }
 }

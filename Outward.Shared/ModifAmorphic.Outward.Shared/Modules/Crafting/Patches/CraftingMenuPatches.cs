@@ -9,7 +9,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
     internal static class CraftingMenuPatches
     {
 
-        [PatchLogger]
+        [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
 
         public static event Action<CraftingMenu> AwakeInitAfter;
