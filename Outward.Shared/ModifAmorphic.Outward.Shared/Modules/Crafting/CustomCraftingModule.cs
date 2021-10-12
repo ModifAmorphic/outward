@@ -55,6 +55,9 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             typeof(LocalizationManagerPatches)
         };
 
+        public delegate void AllMenuTypesLoadedDelegate(List<Type> menuTypes);
+        public event AllMenuTypesLoadedDelegate AllMenuTypesLoaded;
+
         internal CustomCraftingModule(CraftingMenuService menuTabService, CustomRecipeService customRecipeService, CustomCraftingService craftingService, Func<IModifLogger> loggerFactory)
         {
             (_menuTabService, _customRecipeService, _craftingService, _loggerFactory) = (menuTabService, customRecipeService, craftingService, loggerFactory);
@@ -140,6 +143,30 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                 });
             TryAddRecipes();
         }
+        public void RegisterCustomCrafter<T>(ICustomCrafter crafter)  where T : CustomCraftingMenu => _craftingService.AddOrUpdateCrafter<T>(crafter);
+        public void RegisterCompatibleIngredientMatcher<T>(ICompatibleIngredientMatcher matcher) where T : CustomCraftingMenu 
+            => _craftingService.AddOrUpdateCompatibleIngredientMatcher<T>(matcher);
+
+        public void EnableCraftingMenu<T>() where T : CustomCraftingMenu
+        {
+            if (!_craftingMenus.TryGetValue(typeof(T), out var menuData) || menuData.MenuTab == null)
+            {
+                throw new ArgumentException($"CustomCraftingMenu {typeof(T)} is not a registered menu type. Menus " +
+                    $"must be registered using RegisterCraftingMenu<T> and loaded before they can be enabled or disabled.", nameof(T));
+            }
+            _menuTabService.EnableMenuTab(menuData.MenuTab);
+        }
+        public void DisableCraftingMenu<T>() where T : CustomCraftingMenu
+        {
+            if (!_craftingMenus.TryGetValue(typeof(T), out var menuData) || menuData.MenuTab == null)
+            {
+                throw new ArgumentException($"CustomCraftingMenu {typeof(T)} is not a registered menu type. Menus " +
+                    $"must be registered using RegisterCraftingMenu<T> and loaded before they can be enabled or disabled.", nameof(T));
+            }
+            _menuTabService.DisableMenuTab(menuData.MenuTab);
+        }
+
+
         private void ValidateRecipe(Recipe recipe)
         {
             if (recipe.IsFullySetup)
@@ -169,9 +196,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                 }
             }
         }
-        public void RegisterCustomCrafter<T>(ICustomCrafter crafter)  where T : CustomCraftingMenu => _craftingService.AddOrUpdateCrafter<T>(crafter);
-        public void RegisterCompatibleIngredientMatcher<T>(ICompatibleIngredientMatcher matcher) where T : CustomCraftingMenu 
-            => _craftingService.AddOrUpdateCompatibleIngredientMatcher<T>(matcher);
+
         private void TryAddRecipes()
         {
             //get only recipes for crafting stations where the Custom CraftingType is known - basically, the addition of the custom crafting menu is
@@ -219,35 +244,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
             characterUI.SetPrivateField("m_menus", m_menus);
         }
-        private void AddCraftingTabFooter(CharacterUI characterUI)
-        {
-            var menuTypes = characterUI.GetPrivateField<CharacterUI, Type[]>("MenuTypes");
-            
-            var screenNo = menuTypes.Length;
-            Array.Resize(ref menuTypes, menuTypes.Length + _craftingMenus.Count);
-
-            //Crafting menus get inserted right after the base crafting menu, so add the last added menu first.
-            //this way the order the menus were registered in is preserved.
-            foreach (var kvp in _craftingMenus)
-            {
-                (Type menuType, CraftingMenuMetadata menu) = (kvp.Key, kvp.Value);
-                
-                menu.MenuScreenNo = screenNo++;
-
-                menuTypes[menu.MenuScreenNo] = menuType;
-                menu.MenuTab =  _menuTabService.AddMenuTab(characterUI, menu.TabName, menu.TabDisplayName, menu.TabButtonName, menu.MenuScreenNo, menu.OrderAfterTab, menu.MenuIcons);
-                menu.MenuFooter = _menuTabService.AddFooter(characterUI, menu.MenuScreenNo, menu.FooterName);
-            }
-            characterUI.SetPrivateField("MenuTypes", menuTypes);
-
-            var m_menus = characterUI.GetPrivateField<CharacterUI, MenuPanel[]>("m_menus");
-            if (m_menus != null && m_menus.Length < menuTypes.Length)
-                Array.Resize(ref m_menus, menuTypes.Length);
-            else
-                m_menus = new MenuPanel[menuTypes.Length];
-
-            characterUI.SetPrivateField("m_menus", m_menus);
-        }
         private void AddCustomCraftingMenus(CraftingMenu baseCraftingMenu)
         {
             foreach (var kvp in _craftingMenus)
@@ -268,44 +264,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                 if (customMenu.IsCustomCraftingStation())
                     _customRecipeService.AddOrGetCraftingStationRecipes(customMenu.GetRecipeCraftingType());
             }
-        }
-        /// <summary>
-        /// Unregisters a crafting from the CharacterUI menu.
-        /// </summary>
-        /// <typeparam name="T">The type of <see cref="CustomCraftingMenu"/> to register.</typeparam>
-        [Obsolete]
-        public void UnregisterCraftingMenu<T>() where T : CustomCraftingMenu
-        {
-            //TODO: This fails spectacularily. Revist or remove.
-            throw new NotImplementedException();
-
-            if (!_craftingMenus.ContainsKey(typeof(T)))
-                throw new ArgumentException($"{nameof(CustomCraftingMenu)} of type {typeof(T)} does not exist. " +
-                    $"{nameof(CustomCraftingMenu)} can not be removed.", nameof(T));
-
-            if (!_craftingMenus.TryRemove(typeof(T), out var menuMetaData))
-                return;
-
-            foreach (var player in SplitScreenManager.Instance.LocalPlayers)
-            {
-                var characterUI = player.AssignedCharacter.CharacterUI;
-                var menuTabs = characterUI.GetPrivateField<CharacterUI, MenuTab[]>("m_menuTabs");
-                var menuTypes = characterUI.GetPrivateField<CharacterUI, Type[]>("MenuTypes");
-                var m_menus = characterUI.GetPrivateField<CharacterUI, MenuPanel[]>("m_menus");
-                
-                var removeMenu = Array.FindIndex(m_menus, m => m is T);
-                m_menus[removeMenu] = null;
-                menuTypes[menuMetaData.MenuScreenNo] = null;
-
-                menuTabs = menuTabs.Where(t => t.TabName != menuMetaData.TabName).ToArray();
-
-                characterUI.SetPrivateField<CharacterUI, MenuTab[]>("m_menuTabs", menuTabs);
-
-                UnityEngine.Object.Destroy(menuMetaData.MenuFooter);
-                UnityEngine.Object.Destroy(menuMetaData.MenuDisplay);
-                UnityEngine.Object.Destroy(menuMetaData.MenuTab);
-            }
-
+            AllMenuTypesLoaded?.Invoke(_craftingMenus.Keys.ToList());
         }
     }
 }

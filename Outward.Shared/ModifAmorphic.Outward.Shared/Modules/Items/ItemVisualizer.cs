@@ -101,7 +101,7 @@ namespace ModifAmorphic.Outward.Modules.Items
         public void UnregisterAdditionalIcon(string itemUID, string iconName)
         {
             Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(RegisterItemVisual)}(): Unregistering Icon {iconName} from Item UID '{itemUID}'.");
-            if (_itemsIcons.TryGetValue(itemUID, out var itemIcons));
+            if (_itemsIcons.TryGetValue(itemUID, out var itemIcons))
             {
                 itemIcons.TryRemove(iconName, out _);
                 if (itemIcons.Count == 0)

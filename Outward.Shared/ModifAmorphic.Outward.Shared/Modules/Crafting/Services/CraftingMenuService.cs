@@ -62,6 +62,16 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
 
             return newUiMenuTabGo;
         }
+        public void EnableMenuTab(GameObject menuTab)
+        {
+            if (!menuTab.activeSelf)
+                menuTab.SetActive(true);
+        }
+        public void DisableMenuTab(GameObject menuTab)
+        {
+            if (menuTab.activeSelf)
+                menuTab.SetActive(false);
+        }
         private void SetMenuIcons(GameObject menuBtn, MenuIcons menuIcons)
         {
             var toggle = menuBtn.GetComponent<Toggle>();
