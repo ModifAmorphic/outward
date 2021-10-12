@@ -9,6 +9,11 @@
     <PackageId>ModifAmorphic.Outward</PackageId>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>..\..\outward-shared-assemblies\0Harmony.dll</HintPath>

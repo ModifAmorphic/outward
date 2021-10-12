@@ -27,7 +27,8 @@ namespace ModifAmorphic.Outward.Modules.Items
 
         public HashSet<Type> PatchDependencies => new HashSet<Type>() {
               typeof(ItemManagerPatches),
-              typeof(ItemDisplayPatches)
+              typeof(ItemDisplayPatches),
+              //typeof(VisualSlotPatches)
         };
 
         public HashSet<Type> EventSubscriptions => new HashSet<Type>();
@@ -119,28 +120,23 @@ namespace ModifAmorphic.Outward.Modules.Items
             visual = ItemManager.GetVisuals(visualItemID);
             Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetVisualsByItemOverride)}(): ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}). Replaced " +
                         $"visuals with ItemID {visualItemID}'s ItemVisual - {visual?.name}");
+
+            var prefab = PrefabManager.GetItemPrefab(visualItemID);
+            var prefabToggle = prefab.GetComponent<ToggleModelOnEnchant>();
+
+            if (prefabToggle != null && item.GetComponent<ToggleModelOnEnchant>() == null)
+            {
+                var itemToggle = item.gameObject.AddComponent<ToggleModelOnEnchant>();
+                itemToggle.ModelName = prefabToggle.ModelName;
+                itemToggle.name = item.name;
+                itemToggle.gameObject.SetActive(true);
+            }
+
+            ConfigureVisualToggles(item, visualItemID);
+
             return visual != null;
-
-            //return TryGetItemVisual(item, visualItemID, out visual);
-
-            //if (ItemManager.Instance != null)
-            //{
-            //    visual = ItemManager.GetVisuals(visualItemID);
-            //    Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetVisualsByItemOverride)}(): ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}). Replaced " +
-            //        $"visuals with ItemID {visualItemID}'s ItemVisual - {visual?.name}");
-            //    return true;
-            //}
-
-            //var prefab = ResourcesPrefabManager.Instance.GetItemPrefab(visualItemID);
-            //var instantiateInfo = typeof(ItemManager).GetMethod("InstantiateVisuals", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-            //var transform = instantiateInfo.Invoke(null, new object[] { prefab }) as Transform;
-
-            //visual = transform?.GetComponent<ItemVisual>();
-
-            //Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetVisualsByItemOverride)}(): ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}). Tried to replace " +
-            //        $"visuals with ItemID {visualItemID}'s ItemVisual - {visual?.name}");
-            //return transform != null;
         }
+
         //TODO: This isn't working exactly right. Virgin armor loads green enchanted.
         private bool GetSpecialVisualsByItemOverride(Item item, out ItemVisual visual)
         {
@@ -151,11 +147,22 @@ namespace ModifAmorphic.Outward.Modules.Items
                 return false;
             }
             item.SetPrivateField<Item, ItemVisual>("m_loadedVisual", null);
+
+
             //Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetSpecialVisualsByItemOverride)}(): Trying to get visual for {item.ItemID} - {item.DisplayName} ({item.UID}). Visual ItemID - {visualItemID}");
             var prefab = PrefabManager.GetItemPrefab(visualItemID);
             if (prefab.HasSpecialVisualPrefab)
             {
-                visual = ItemManager.GetSpecialVisuals(prefab);
+                var tmpItem = PrefabManager.GenerateItem(visualItemID.ToString());
+                tmpItem.SetHolderUID(Global.GenerateUID());
+                if (item.OwnerCharacter != null)
+                    tmpItem.SetPrivateField<Item, Character>("m_ownerCharacter", item.OwnerCharacter);
+                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetSpecialVisualsByItemOverride)}(): HasSpecialVisualPrefab --> Generated temporary Item and set it's owner to {tmpItem.OwnerCharacter} to retrieve ItemVisual. " +
+                    $" Generated Item: {tmpItem.ItemID} - {tmpItem.DisplayName} ({tmpItem.UID})");
+                visual = ItemManager.GetSpecialVisuals(tmpItem);
+                
+                UnityEngine.Object.Destroy(tmpItem.gameObject);
+                //ItemManager.DestroyItem(tmpItem.UID);
                 Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetSpecialVisualsByItemOverride)}(): HasSpecialVisualPrefab --> ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}). Replaced " +
                     $"visuals with ItemID {visualItemID}'s ItemVisual - {visual?.name}");
             }
@@ -165,29 +172,40 @@ namespace ModifAmorphic.Outward.Modules.Items
                 Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetSpecialVisualsByItemOverride)}(): ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}). Replaced " +
                         $"visuals with ItemID {visualItemID}'s ItemVisual - {visual?.name}");
             }
+            if (visual != null)
+            {
+                visual.SetLinkedItem(item);
+            }
+
+            ConfigureVisualToggles(item, visualItemID);
 
             return visual != null;
 
-            //return TryGetItemVisual(item, visualItemID, out visual);
+        }
 
-            //var prefab = ResourcesPrefabManager.Instance.GetItemPrefab(visualItemID);
+        private void ConfigureVisualToggles(Item item, int visualItemID)
+        {
+            var prefab = PrefabManager.GetItemPrefab(visualItemID);
+            var prefabToggle = prefab.GetComponent<ToggleModelOnEnchant>();
 
-            //if (ItemManager.Instance != null)
-            //{
-            //    visual = ItemManager.Instance.InvokePrivateMethod<ItemManager, ItemVisual>("Internal_GetSpecialVisuals", new object[] { prefab });
-            //    Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetSpecialVisualsByItemOverride)}(): ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}). Replaced " +
-            //        $"visuals with ItemID {visualItemID}'s ItemVisual - {visual?.name}");
-            //    return true;
-            //}
+            if (prefabToggle != null && item.GetComponent<ToggleModelOnEnchant>() == null)
+            {
+                var itemToggle = item.gameObject.AddComponent<ToggleModelOnEnchant>();
+                itemToggle.ModelName = prefabToggle.ModelName;
+                itemToggle.name = item.name;
+                itemToggle.gameObject.SetActive(true);
+            }
 
-            //var instantiateInfo = typeof(ItemManager).GetMethod("InstantiateSpecialVisuals", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-            //var transform = instantiateInfo.Invoke(null, new object[] { prefab }) as Transform;
+            var prefabSwapColor = prefab.GetComponent<SwapColor>();
 
-            //visual = transform?.GetComponent<ItemVisual>();
-            //Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetSpecialVisualsByItemOverride)}(): ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}). Tried to replace " +
-            //        $"visuals with ItemID {visualItemID}'s ItemVisual - {visual?.name}");
-
-            //return transform != null;
+            if (prefabSwapColor != null && item.GetComponent<SwapColor>() == null)
+            {
+                var itemSwapColor = item.gameObject.AddComponent<SwapColor>();
+                itemSwapColor.DefaultColor = prefabSwapColor.DefaultColor;
+                itemSwapColor.Palette = prefabSwapColor.Palette;
+                itemSwapColor.name = item.name;
+                itemSwapColor.gameObject.SetActive(true);
+            }
         }
 
         private void ToggleCustomIcons(ItemDisplay itemDisplay, Item item)
@@ -329,17 +347,129 @@ namespace ModifAmorphic.Outward.Modules.Items
         }
         private bool PositionVisualsOverride(VisualSlot visualSlot, ref Item item)
         {
-            if (string.IsNullOrEmpty(item.UID) || !_itemVisuals.TryGetValue(item.UID, out var visualItemID))
+            if (string.IsNullOrEmpty(item.UID) || (!_itemVisuals.TryGetValue(item.UID, out var visualItemID) && !item.DisplayName.Contains("Virgin")))
             {
                 return false;
             }
 
-            var vPreFab = PrefabManager.GetItemPrefab(visualItemID);
+            //var vPreFab = PrefabManager.GetItemPrefab(visualItemID);
 
-            if (!vPreFab.HasSpecialVisualPrefab && !item.HasSpecialVisualPrefab)
+            //if (!vPreFab.HasSpecialVisualPrefab && !item.HasSpecialVisualPrefab)
+            //{
+            //    return false;
+            //}
+
+            Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): Starting PositionVisuals processing for {item.ItemID} - {item.DisplayName} ({item.UID}) and " +
+                    $"visualItemID {visualItemID}.");
+
+            //terrible idea again. doesn't work. ItemVisual gets linked/cached and doesn't change until unloaded
+            //CopyItemVisual(vPreFab, item);
+
+            //TODO unwind this mess and figure out how special visuals get called.
+            var vs = VisualSlotWrapper.Wrap(visualSlot);
+            var prefab = ResourcesPrefabManager.Instance.GetItemPrefab(visualItemID);
+
+            if (!Application.isPlaying)
+            {
+                vs.m_currentItem = item;
+                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): Application.isPlaying == false.  m_currentItem set to item {item.ItemID} - {item.DisplayName} ({item.UID}).");
+            }
+            else
+            {
+                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): Application.isPlaying == true for item: {item.ItemID} - {item.DisplayName} ({item.UID}).");
+                if (vs.m_editorCurrentVisuals != null)
+                {
+                    vs.m_currentVisual = vs.m_editorCurrentVisuals;
+                    Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): m_editorCurrentVisuals != null. Set m_currentVisual to m_editorCurrentVisuals {vs.m_editorCurrentVisuals} for item: {item.ItemID} - {item.DisplayName} ({item.UID}).");
+                }
+                if (item == vs.m_currentItem)
+                {
+                    
+                    if (!item.HasSpecialVisualPrefab)
+                    {
+                        Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): !item.HasSpecialVisualPrefab. Calling item.LinkVisuals({vs.m_currentVisual}, false). item: {item.ItemID} - {item.DisplayName} ({item.UID}).");
+                        item.LinkVisuals(vs.m_currentVisual, _setParent: false);
+                    }
+                    Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): item == m_currentItem.  Calling PositionVisuals() for item: {item.ItemID} - {item.DisplayName} ({item.UID}).");
+                    vs.PositionVisuals();
+                    return true;
+                }
+                if (vs.m_currentItem != null)
+                {
+                    Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): vs.m_currentItem != null. m_currentItem is [{vs.m_currentItem.ItemID} - {vs.m_currentItem.DisplayName} ({vs.m_currentItem.UID})]. Calling PutBackVisuals(). item: {item.ItemID} - {item.DisplayName} ({item.UID}).");
+                    visualSlot.PutBackVisuals();
+                }
+                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): m_currentItem [{vs.m_currentItem?.ItemID} - {vs.m_currentItem?.DisplayName} ({vs.m_currentItem?.UID})] being set to param item [{item.ItemID} - {item.DisplayName} ({item.UID})].");
+                vs.m_currentItem = item;
+            }
+            if (vs.m_currentVisual == null)
+            {
+                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): m_currentVisual == null. item: [{item.ItemID} - {item.DisplayName} ({item.UID})].");
+                if (!item.HasSpecialVisualPrefab)
+                {
+                    Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): !item.HasSpecialVisualPrefab (No Special). m_currentVisual [{vs.m_currentVisual}] set to item.LoadedVisual [{item.LoadedVisual}]. " +
+                        $"m_editorCurrentVisuals [{vs.m_editorCurrentVisuals}] set to m_currentVisual [{vs.m_currentVisual}]. " +
+                        $"item: [{item.ItemID} - {item.DisplayName} ({item.UID})].");
+                    vs.m_currentVisual = item.LoadedVisual;
+                    vs.m_editorCurrentVisuals = vs.m_currentVisual;
+                }
+                else
+                {
+                    Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): item.HasSpecialVisualPrefab == true. m_currentVisual [{vs.m_currentVisual}]. m_editorCurrentVisuals [{vs.m_editorCurrentVisuals}]. " +
+                        $"item: [{item.ItemID} - {item.DisplayName} ({item.UID})].");
+                    vs.m_currentVisual = ItemManager.GetSpecialVisuals(item);
+                    vs.m_editorCurrentVisuals = vs.m_currentVisual;
+                    Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): ItemManager.GetSpecialVisuals({item.ItemID} - {item.DisplayName} ({item.UID})). m_currentVisual now [{vs.m_currentVisual}] and m_editorCurrentVisuals [{vs.m_currentVisual}].");
+                    if ((bool)vs.m_currentVisual)
+                    {
+                        Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): m_currentVisual.Show(). m_currentVisual [{vs.m_currentVisual}]. item: [{item.ItemID} - {item.DisplayName} ({item.UID})].");
+                        vs.m_currentVisual.Show();
+                    }
+                    if (item is Equipment)
+                    {
+                        Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): item is Equipment. IsEnchanted == {item.IsEnchanted}. Calling (item as Equipment).SetSpecialVisuals({vs.m_currentVisual}) item: [{item.ItemID} - {item.DisplayName} ({item.UID})].");
+                        (item as Equipment).SetSpecialVisuals(vs.m_currentVisual);
+                    }
+                }
+            }
+            if (Application.isPlaying)
+            {
+                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): Application.isPlaying == true. Setting m_editorCurrentVisuals [{vs.m_editorCurrentVisuals}] to  m_currentVisual [{vs.m_currentVisual}].item: [{item.ItemID} - {item.DisplayName} ({item.UID})].");
+                vs.m_editorCurrentVisuals = vs.m_currentVisual;
+            }
+            else if (vs.m_currentItem != null)
+            {
+                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): m_currentItem != null. Setting m_editorCurrentVisuals [{vs.m_editorCurrentVisuals}] to  m_currentVisual [{vs.m_currentVisual}].  item: [{item.ItemID} - {item.DisplayName} ({item.UID})].");
+                vs.m_editorCurrentVisuals = vs.m_currentVisual;
+            }
+
+            Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): Calling PositionVisuals() then returning true.  item: [{item.ItemID} - {item.DisplayName} ({item.UID})].");
+            vs.PositionVisuals();
+
+            if (prefab.HasSpecialVisualPrefab && item is Equipment)
+            {
+                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): Potential postifix. IsEnchanted == {item.IsEnchanted}. Calling (item as Equipment).SetSpecialVisuals({vs.m_currentVisual}) item: [{item.ItemID} - {item.DisplayName} ({item.UID})].");
+                (item as Equipment).SetSpecialVisuals(vs.m_currentVisual);
+            }
+
+            return true;
+        }
+        private bool PositionVisualsOverrideOriginal(VisualSlot visualSlot, ref Item item)
+        {
+            if (string.IsNullOrEmpty(item.UID) || (!_itemVisuals.TryGetValue(item.UID, out var visualItemID) && !item.DisplayName.Contains("Virgin")))
             {
                 return false;
             }
+
+            //var vPreFab = PrefabManager.GetItemPrefab(visualItemID);
+
+            //if (!vPreFab.HasSpecialVisualPrefab && !item.HasSpecialVisualPrefab)
+            //{
+            //    return false;
+            //}
+
+            Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): Starting PositionVisuals processing for {item.ItemID} - {item.DisplayName} ({item.UID}) and " +
+                    $"visualItemID {visualItemID}.");
 
             //terrible idea again. doesn't work. ItemVisual gets linked/cached and doesn't change until unloaded
             //CopyItemVisual(vPreFab, item);
@@ -350,57 +480,78 @@ namespace ModifAmorphic.Outward.Modules.Items
             if (!Application.isPlaying)
             {
                 vs.m_currentItem = item;
+                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): Application.isPlaying == false.  m_currentItem set to item {item.ItemID} - {item.DisplayName} ({item.UID}).");
             }
             else
             {
+                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): Application.isPlaying == true for item: {item.ItemID} - {item.DisplayName} ({item.UID}).");
                 if (vs.m_editorCurrentVisuals != null)
                 {
                     vs.m_currentVisual = vs.m_editorCurrentVisuals;
+                    Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): m_editorCurrentVisuals != null. Set m_currentVisual to m_editorCurrentVisuals {vs.m_editorCurrentVisuals} for item: {item.ItemID} - {item.DisplayName} ({item.UID}).");
                 }
                 if (item == vs.m_currentItem)
                 {
+
                     if (!item.HasSpecialVisualPrefab)
                     {
+                        Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): !item.HasSpecialVisualPrefab. Calling item.LinkVisuals({vs.m_currentVisual}, false). item: {item.ItemID} - {item.DisplayName} ({item.UID}).");
                         item.LinkVisuals(vs.m_currentVisual, _setParent: false);
                     }
+                    Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): item == m_currentItem.  Calling PositionVisuals() for item: {item.ItemID} - {item.DisplayName} ({item.UID}).");
                     vs.PositionVisuals();
-                    //return;
+                    return true;
                 }
                 if (vs.m_currentItem != null)
                 {
+                    Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): vs.m_currentItem != null. m_currentItem is [{vs.m_currentItem.ItemID} - {vs.m_currentItem.DisplayName} ({vs.m_currentItem.UID})]. Calling PutBackVisuals(). item: {item.ItemID} - {item.DisplayName} ({item.UID}).");
                     visualSlot.PutBackVisuals();
                 }
+                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): m_currentItem [{vs.m_currentItem?.ItemID} - {vs.m_currentItem?.DisplayName} ({vs.m_currentItem?.UID})] being set to param item [{item.ItemID} - {item.DisplayName} ({item.UID})].");
                 vs.m_currentItem = item;
             }
             if (vs.m_currentVisual == null)
             {
+                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): m_currentVisual == null. item: [{item.ItemID} - {item.DisplayName} ({item.UID})].");
                 if (!item.HasSpecialVisualPrefab)
                 {
+                    Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): !item.HasSpecialVisualPrefab (No Special). m_currentVisual [{vs.m_currentVisual}] set to item.LoadedVisual [{item.LoadedVisual}]. " +
+                        $"m_editorCurrentVisuals [{vs.m_editorCurrentVisuals}] set to m_currentVisual [{vs.m_currentVisual}]. " +
+                        $"item: [{item.ItemID} - {item.DisplayName} ({item.UID})].");
                     vs.m_currentVisual = item.LoadedVisual;
                     vs.m_editorCurrentVisuals = vs.m_currentVisual;
                 }
                 else
                 {
+                    Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): item.HasSpecialVisualPrefab == true. m_currentVisual [{vs.m_currentVisual}]. m_editorCurrentVisuals [{vs.m_editorCurrentVisuals}]. " +
+                        $"item: [{item.ItemID} - {item.DisplayName} ({item.UID})].");
                     vs.m_currentVisual = ItemManager.GetSpecialVisuals(item);
                     vs.m_editorCurrentVisuals = vs.m_currentVisual;
+                    Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): ItemManager.GetSpecialVisuals({item.ItemID} - {item.DisplayName} ({item.UID})). m_currentVisual now [{vs.m_currentVisual}] and m_editorCurrentVisuals [{vs.m_currentVisual}].");
                     if ((bool)vs.m_currentVisual)
                     {
+                        Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): m_currentVisual.Show(). m_currentVisual [{vs.m_currentVisual}]. item: [{item.ItemID} - {item.DisplayName} ({item.UID})].");
                         vs.m_currentVisual.Show();
                     }
                     if (item is Equipment)
                     {
+                        Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): item is Equipment. IsEnchanted == {item.IsEnchanted}. Calling (item as Equipment).SetSpecialVisuals({vs.m_currentVisual}) item: [{item.ItemID} - {item.DisplayName} ({item.UID})].");
                         (item as Equipment).SetSpecialVisuals(vs.m_currentVisual);
                     }
                 }
             }
             if (Application.isPlaying)
             {
+                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): Application.isPlaying == true. Setting m_editorCurrentVisuals [{vs.m_editorCurrentVisuals}] to  m_currentVisual [{vs.m_currentVisual}].item: [{item.ItemID} - {item.DisplayName} ({item.UID})].");
                 vs.m_editorCurrentVisuals = vs.m_currentVisual;
             }
             else if (vs.m_currentItem != null)
             {
+                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): m_currentItem != null. Setting m_editorCurrentVisuals [{vs.m_editorCurrentVisuals}] to  m_currentVisual [{vs.m_currentVisual}].  item: [{item.ItemID} - {item.DisplayName} ({item.UID})].");
                 vs.m_editorCurrentVisuals = vs.m_currentVisual;
             }
+
+            Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(PositionVisualsOverride)}(): Calling PositionVisuals() then returning true.  item: [{item.ItemID} - {item.DisplayName} ({item.UID})].");
             vs.PositionVisuals();
 
             return true;
