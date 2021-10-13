@@ -18,7 +18,7 @@ namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
         //private static SortedDictionary<int, string> _exQuickSlots = new SortedDictionary<int, string>();
         private static IEnumerable<ExtendedQuickSlot> _exQuickSlots = new List<ExtendedQuickSlot>();
 
-        [PatchLogger]
+        [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
 
         private static void QuickSlotExtenderEvents_SlotsChanged(object sender, QuickSlotExtendedArgs e) => _exQuickSlots = e.ExtendedQuickSlots;

@@ -8,7 +8,7 @@ namespace ModifAmorphic.Outward.Modules.Merchants
     [HarmonyPatch(typeof(Merchant))]
     internal static class MerchantPatches
     {
-        [PatchLogger]
+        [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
         
         public static event Action<(Merchant Merchant, Transform MerchantInventoryTablePrefab, Dropable DropableInventory)> InitDropTableGameObjectAfter;

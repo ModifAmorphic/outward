@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Events;
+using ModifAmorphic.Outward.Localization;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.Patches;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -37,9 +39,9 @@ namespace ModifAmorphic.Outward.Modules
             LoggerEvents.LoggerCreated += (args) =>
             {
                 if (args.ModId == modId)
-                    ConfigurePatchLoggers<T>(modId, module, () => LoggerFactory.GetLogger(modId));
+                    ConfigureMultiLoggersForDependencies<T>(modId, module, () => LoggerFactory.GetLogger(modId));
             };
-            ConfigurePatchLoggers<T>(modId, module, () => LoggerFactory.GetLogger(modId));
+            ConfigureMultiLoggersForDependencies<T>(modId, module, () => LoggerFactory.GetLogger(modId));
             ApplyPatches(module);
             ConfigureSubscriptions(module, () => LoggerFactory.GetLogger(modId));
             return module;
@@ -56,9 +58,9 @@ namespace ModifAmorphic.Outward.Modules
             }
             return module;
         }
-        private void ConfigurePatchLoggers<T>(string modId, IModifModule module, Func<IModifLogger> loggerFactory)
+        private void ConfigureMultiLoggersForDependencies<T>(string modId, IModifModule module, Func<IModifLogger> loggerFactory)
         {
-            foreach (var t in module.PatchDependencies)
+            foreach (var t in module.DepsWithMultiLogger)
                 PatchLoggerRegisterService.AddOrUpdatePatchLogger(t, modId, loggerFactory);
         }
         private IModifModule ApplyPatches(IModifModule module)
@@ -69,6 +71,11 @@ namespace ModifAmorphic.Outward.Modules
                 {
                     _patchedTypes.TryAdd(t, default);
                     GetModPatcher().PatchAll(t);
+                    if (t == typeof(LocalizationManagerPatches))
+                    {
+                        //wake up!
+                        LocalizationService.Init();
+                    }
                 }
             }
             return module;

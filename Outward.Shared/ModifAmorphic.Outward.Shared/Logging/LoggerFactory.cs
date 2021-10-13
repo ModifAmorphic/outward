@@ -16,7 +16,7 @@ namespace ModifAmorphic.Outward.Logging
         public static IModifLogger ConfigureLogger(string modId, string loggerName, LogLevel logLevel)
         {
 #if DEBUG
-            (new Logger(LogLevel.Debug, DebugLoggerInfo.ModName)).LogDebug(
+            (new Logger(LogLevel.Debug, DefaultLoggerInfo.ModName)).LogDebug(
                 $"{nameof(LoggerFactory)}::{nameof(ConfigureLogger)}: Configuring named logger " +
                 $" '{loggerName}' with modId '{modId}'. There are {_loggers.Count} {nameof(IModifLogger)} already configured. " +
                 $"A logger for '{modId}' {(_loggers.ContainsKey(modId) ? "exists and will be configured" : "will be created")}" +

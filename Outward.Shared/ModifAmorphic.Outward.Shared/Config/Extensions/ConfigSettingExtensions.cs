@@ -7,7 +7,7 @@ namespace ModifAmorphic.Outward.Config.Extensions
     public static class ConfigSettingExtensions
     {
 #if DEBUG
-        private static readonly Logging.IModifLogger _logger = Logging.LoggerFactory.ConfigureLogger(DebugLoggerInfo.ModId, DebugLoggerInfo.ModName, DebugLoggerInfo.DebugLogLevel);
+        private static readonly Logging.IModifLogger _logger = Logging.LoggerFactory.ConfigureLogger(DefaultLoggerInfo.ModId, DefaultLoggerInfo.ModName, DefaultLoggerInfo.DebugLogLevel);
 #endif
         public static ConfigDefinition ToConfigDefinition<T>(this ConfigSetting<T> configSetting)
         {
