@@ -16,20 +16,18 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 {
     class TransmogItemListener
     {
-        private readonly TransmorphConfigSettings _settings;
+        private readonly TransmogSettings _settings;
 
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
         private readonly ItemVisualizer _itemVisualizer;
-        private readonly LevelCoroutines _levelCoroutines;
         private readonly Func<ItemManager> _itemManagerFactory;
         private ItemManager ItemManager => _itemManagerFactory.Invoke();
-        private readonly ConcurrentQueue<(string, int)> _visualizations = new ConcurrentQueue<(string, int)>();
 
-        private bool coroutinesStarted = false;
+        private readonly LevelCoroutines _levelCoroutines;
 
-        public TransmogItemListener(ItemVisualizer itemVisualizer, LevelCoroutines levelCoroutines, Func<ItemManager> itemManagerFactory, TransmorphConfigSettings settings, Func<IModifLogger> getLogger)
+        public TransmogItemListener(ItemVisualizer itemVisualizer, LevelCoroutines levelCoroutines, Func<ItemManager> itemManagerFactory, TransmogSettings settings, Func<IModifLogger> getLogger)
         {
             (_itemVisualizer, _levelCoroutines, _itemManagerFactory, _settings, _getLogger) =
                 (itemVisualizer, levelCoroutines, itemManagerFactory, settings, getLogger);
@@ -56,9 +54,13 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
         }
         private void TryRegisterIcon(Item item)
         {
-            if (!_itemVisualizer.IsAdditionalIconRegistered(item.UID, TransmogSettings.IconName))
-                _itemVisualizer.RegisterAdditionalIcon(item.UID, TransmogSettings.IconName, TransmogSettings.IconImageFilePath);
+            if (!_itemVisualizer.IsAdditionalIconRegistered(item.UID, TransmogSettings.ItemIconName))
+                _itemVisualizer.RegisterAdditionalIcon(item.UID, TransmogSettings.ItemIconName, TransmogSettings.ItemIconImageFilePath);
         }
+#if DEBUG
+        private readonly ConcurrentQueue<(string, int)> _visualizations = new ConcurrentQueue<(string, int)>();
+        private bool coroutinesStarted = false;
+        
         private void StartCoroutines()
         {
             coroutinesStarted = true;
@@ -85,6 +87,6 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
                 _itemVisualizer.RegisterItemVisual(r.visualID, r.uid);
             }
         }
-        
+#endif
     }
 }

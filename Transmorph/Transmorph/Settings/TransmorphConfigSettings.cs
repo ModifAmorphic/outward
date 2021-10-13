@@ -6,19 +6,34 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
 {
     internal class TransmorphConfigSettings
     {
-        const string TransmogSection = "Transmogrify Settings";
-        const int TransmogTopOrder = int.MaxValue;
+        const string GeneralSection = "General Settings";
+        const int GeneralTopOrder = int.MaxValue;
 
-        public ConfigSetting<string> SomeStringSetting { get; } = new ConfigSetting<string>()
+        public ConfigSetting<bool> CookingMenuEnabled { get; } = new ConfigSetting<bool>()
         {
-            Name = nameof(SomeStringSetting),
-            DefaultValue = "default",
-            Section = TransmogSection,
-            DisplayName = "SomeStringSetting Friendly Name",
-            Description = $"This is Some String Setting Example",
-            Order = TransmogTopOrder - 1,
+            Name = nameof(CookingMenuEnabled),
+            DefaultValue = false,
+            Section = GeneralSection,
+            DisplayName = "Cooking Crafting Menu Enabled",
+            Description = $"Enables fully functional Cooking menu in the character / inventory UI.",
+            Order = GeneralTopOrder - 1,
             IsAdvanced = false
         };
+
+        public ConfigSetting<bool> AlchemyMenuEnabled { get; } = new ConfigSetting<bool>()
+        {
+            Name = nameof(AlchemyMenuEnabled),
+            DefaultValue = false,
+            Section = GeneralSection,
+            DisplayName = "Alchemy Crafting Menu Enabled",
+            Description = $"Enables fully functional Alchemy crafting menu in the character / inventory UI.",
+            Order = GeneralTopOrder - 2,
+            IsAdvanced = false
+        };
+
+        const string TransmogSection = "Transmogrify Settings";
+        const int TransmogTopOrder = GeneralTopOrder - 1000;
+
         public ConfigSetting<bool> AllCharactersLearnRecipes { get; } = new ConfigSetting<bool>()
         {
             Name = nameof(AllCharactersLearnRecipes),
@@ -26,10 +41,9 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
             Section = TransmogSection,
             DisplayName = "Recipes Unlocked for All Characters",
             Description = $"If enabled, when a transmogrify recipe is unlocked by a character it will be made available to all other existing and future characters.",
-            Order = TransmogTopOrder - 2,
+            Order = TransmogTopOrder - 1,
             IsAdvanced = false
         };
-
 
         const string AdvancedSection = "zz--Advanced Settings--zz";
         const int AdvancedTopOrder = TransmogTopOrder - 1000;

@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using ModifAmorphic.Outward.Coroutines;
+using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Crafting;
@@ -22,7 +23,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 {
     internal class TmogRecipeService
     {
-        private readonly TransmorphConfigSettings _settings;
+        private readonly TransmogSettings _settings;
 
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
@@ -44,16 +45,19 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
                                 PreFabricator preFabricator,
                                 LevelCoroutines coroutine,
                                 TransmogRecipeData recipeSaveData,
-                                TransmorphConfigSettings settings, Func<IModifLogger> getLogger)
+                                TransmogSettings settings, Func<IModifLogger> getLogger)
         {
             (_baseUnityPlugin, _removerResultService, _armorResultService, _weaponResultService, _craftingModule, _preFabricator, _coroutine, _recipeSaveData, _settings, _getLogger) = 
                 (baseUnityPlugin, removerResultService, armorResultService, weaponResultService, craftingModule, preFabricator, coroutine, recipeSaveData, settings, getLogger);
 
-            if (!TryHookSideLoaderOnPacksLoaded(LoadRecipesFromSave))
+            if (!SideLoaderEx.TryHookOnPacksLoaded(this, LoadRecipesFromSave))
                 TmogRecipeManagerPatches.LoadCraftingRecipeAfter += (r) => LoadRecipesFromSave();
             TmogNetworkLevelLoaderPatches.MidLoadLevelAfter += (n) => _coroutine.InvokeAfterLevelAndPlayersLoaded(n, LearnCharacterRecipesFromSave, 300, 1);
             TmogCharacterEquipmentPatches.EquipItemBefore += (equipArgs) => CheckAddTmogRecipe(equipArgs.Character.Inventory, equipArgs.Equipment);
             TmogCharacterRecipeKnowledgePatches.LearnRecipeBefore += TryLearnTransmogRecipe;
+
+            //try to learn recipes
+            _settings.AllCharactersLearnRecipesEnabled += LearnCharacterRecipesFromSave;
         }
 
         private void TryLearnTransmogRecipe(CharacterRecipeKnowledge knowledge, TransmogRecipe recipe)
@@ -103,12 +107,13 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
         }
         private void AddRemoverRecipe()
         {
-            if (!ResourcesPrefabManager.Instance.ContainsItemPrefab("-1303000001"))
+            if (!ResourcesPrefabManager.Instance.ContainsItemPrefab(TransmogSettings.RemoveRecipe.ResultItemID.ToString()))
             {
-                var removerFilePath =
-                    System.IO.Path.Combine(System.IO.Path.GetDirectoryName(_baseUnityPlugin.Info.Location), "tex_men_transmogRemoverArmor.png");
-                var removerResult = _preFabricator.CreatePrefab(3000136, -1303000001, "- Remove Transmog", "Recreated Item with Transmogrify removed. Enchantments are preserved.")
-                              .ConfigureItemIcon(removerFilePath);
+                var removerResult = _preFabricator.CreatePrefab(TransmogSettings.RemoveRecipe.SourceResultItemID,
+                                                                TransmogSettings.RemoveRecipe.ResultItemID,
+                                                                TransmogSettings.RemoveRecipe.ResultItemName,
+                                                                TransmogSettings.RemoveRecipe.ResultItemDesc)
+                              .ConfigureItemIcon(TransmogSettings.RemoveRecipe.IconFile);
                 Logger.LogInfo($"Added Transmog Remover Recipe placeholder prefab {removerResult.ItemID} - {removerResult.DisplayName}.");
             }
 
@@ -121,14 +126,18 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
         private void LearnCharacterRecipesFromSave()
         {
             var characters = SplitScreenManager.Instance.LocalPlayers.Select(p => p.AssignedCharacter);
-            
+
+            string logMessage = $"Learning Transmog Removal and Starter Recipes for {characters?.Count()??0} characters.";
+            if (_settings.AllCharactersLearnRecipes)
+                logMessage += " Setting [AllCharactersLearnRecipes] is enabled. Characters will learn any and all recipes discovered by other character saves.";
+            Logger.LogInfo(logMessage);
             //learn remover recipe
             foreach (var c in characters)
             {
                 TryLearnRecipe(c.Inventory, GetRemoverRecipe());
             }
 
-            if (!_settings.AllCharactersLearnRecipes.Value)
+            if (_settings.AllCharactersLearnRecipes)
             {
                 var saves = _recipeSaveData.GetAllRecipes();
                 LearnRecipes(characters, saves);
@@ -327,7 +336,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
                 .SetVisualItemID(transmogSource.ItemID)
                 .SetNames("Transmogrify - " + transmogSource.DisplayName)
                 .AddIngredient(new TagSourceSelector(transmogTag))
-                .AddIngredient(ResourcesPrefabManager.Instance.GetItemPrefab(TransmogSettings.RecipeSecondaryItemID) ?? ResourcesPrefabManager.Instance.GenerateItem(TransmogSettings.RecipeSecondaryItemID.ToString()))
+                .AddIngredient(ResourcesPrefabManager.Instance.GetItemPrefab(TransmogSettings.TransmogRecipeSecondaryItemID) ?? ResourcesPrefabManager.Instance.GenerateItem(TransmogSettings.TransmogRecipeSecondaryItemID.ToString()))
                 .AddDynamicResult(resultService, transmogSource.ItemID, 1);
 
             return recipe;
@@ -355,58 +364,6 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
                     }
                 }
             }
-        }
-        private bool TryHookSideLoaderOnPacksLoaded(Action subscriber)
-        {
-            try
-            {
-                var slAssembly = AppDomain.CurrentDomain.GetAssemblies()
-                    .FirstOrDefault(a => a.GetName().Name.Equals("SideLoader", StringComparison.InvariantCultureIgnoreCase));
-                if (slAssembly == default)
-                    return false;
-                Logger.LogDebug($"TryHookSideLoaderOnPacksLoaded: Got Assembly {slAssembly}");
-
-                var slType = slAssembly.GetTypes()
-                    .FirstOrDefault(t => t.FullName.Equals("SideLoader.SL", StringComparison.InvariantCultureIgnoreCase));
-                if (slType == default)
-                    return false;
-                Logger.LogDebug($"TryHookSideLoaderOnPacksLoaded: Got Type {slType}");
-
-                var onPacksLoaded = slType.GetEvent("OnPacksLoaded", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
-                Logger.LogDebug($"TryHookSideLoaderOnPacksLoaded: Got Event {onPacksLoaded}");
-                var eventDelegateType = onPacksLoaded.EventHandlerType;
-                Logger.LogDebug($"TryHookSideLoaderOnPacksLoaded: Got EventHandlerType {eventDelegateType}");
-
-                var mcall = ((Expression<Action>)(() => LoadRecipesFromSave())).Body as MethodCallExpression;
-
-
-                var slDelegate = Delegate.CreateDelegate(eventDelegateType, this, subscriber.Method);
-                Logger.LogDebug($"TryHookSideLoaderOnPacksLoaded: Got Delegate {slDelegate}");
-                onPacksLoaded
-                    .GetAddMethod()
-                    .Invoke(null, new object[] { slDelegate });
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException("Error trying to retrieve SideLoader OnPacksLoaded event.", ex);
-            }
-            return false;
-
-            //foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
-            //{
-            //    if (asm.GetName().Name.Contains("SideLoader") || asm.FullName.Contains("SideLoader"))
-            //    {
-            //        logger.LogDebug($"{asm.FullName} | {asm.GetName().Name}: types");
-            //        foreach (var type in asm.GetTypes())
-            //        {
-            //            //if (!string.IsNullOrEmpty(nameFilter) && !type.FullName.ContainsIgnoreCase(nameFilter))
-            //            //    continue;
-            //            logger.LogDebug($"{asm.GetName().Name}: {type.FullName} | {type.Name}");
-            //        }
-            //    }
-            //}
         }
     }
 }

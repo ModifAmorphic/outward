@@ -6,7 +6,7 @@ using System;
 
 namespace ModifAmorphic.Outward.Transmorph.Settings
 {
-    class SettingsService
+    internal class SettingsService
     {
         private readonly ConfigManagerService _configManagerService;
         private readonly ConfigSettingsService _configService;
@@ -33,7 +33,7 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
             }
 
             #region Main Section
-            _configService.BindConfigSetting(settings.AllCharactersLearnRecipes, null);
+            //_configService.BindConfigSetting(settings.AllCharactersLearnRecipes, null);
 
             #endregion
 
@@ -49,13 +49,24 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
 
             return settings;
         }
+        public GlobalSettings ConfigureGlobalSettings(TransmorphConfigSettings settings)
+        {
+            var globalSettings = new GlobalSettings();
+
+            _configService.BindConfigSetting(settings.AlchemyMenuEnabled,
+                (SettingValueChangedArgs<bool> args) => globalSettings.AlchemyMenuEnabled = args.NewValue, true);
+
+            _configService.BindConfigSetting(settings.CookingMenuEnabled,
+                (SettingValueChangedArgs<bool> args) => globalSettings.CookingMenuEnabled = args.NewValue, true);
+
+            return globalSettings;
+        }
         public TransmogSettings ConfigureTransmogrifySettings(TransmorphConfigSettings settings)
         {
             var tmogSettings = new TransmogSettings();
 
             _configService.BindConfigSetting(settings.AllCharactersLearnRecipes,
                 (SettingValueChangedArgs<bool> args) => tmogSettings.AllCharactersLearnRecipes = args.NewValue, true);
-
 
             return tmogSettings;
         }

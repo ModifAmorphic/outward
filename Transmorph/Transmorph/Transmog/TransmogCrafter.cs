@@ -86,7 +86,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
             item.SetHolderUID(newUID);
 
             _itemVisualizer.RegisterItemVisual(visualMap.VisualItemID, item.UID);
-            _itemVisualizer.RegisterAdditionalIcon(item.UID, TransmogSettings.IconName, TransmogSettings.IconImageFilePath);
+            _itemVisualizer.RegisterAdditionalIcon(item.UID, TransmogSettings.ItemIconName, TransmogSettings.ItemIconImageFilePath);
 
             if (PhotonNetwork.isNonMasterClientInRoom)
             {
@@ -106,7 +106,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
                 foreach (var uid in counsumed.Keys)
                 {
                     _itemVisualizer.UnregisterItemVisual(uid);
-                    _itemVisualizer.UnregisterAdditionalIcon(uid, TransmogSettings.IconName);
+                    _itemVisualizer.UnregisterAdditionalIcon(uid, TransmogSettings.ItemIconName);
                 }
             }
 

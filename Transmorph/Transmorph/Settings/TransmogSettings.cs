@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Transmorph.Extensions;
 using System;
 using System.Collections.Generic;
@@ -15,38 +16,41 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
         public const int ArmorTagStartUID = -1302500000;
         public const int ItemPrefixUID = -1356830026;
         public const string ItemStringPrefixUID = "tmogr";
-        public const int RecipeSecondaryItemID = 6300030;
 
         public static readonly string PluginPath = Path.GetDirectoryName(TransmorphPlugin.Instance.Info.Location);
-        public static readonly string IconImageFilePath = Path.Combine(
+        public static readonly string ItemIconImageFilePath = Path.Combine(
                                             PluginPath,
-                                            "tex_men_transmogItem.png");
+                                            Path.Combine("assets","tex_men_transmogItem.png"));
 
-        public static readonly string UnpressedMenuIconFilePath = Path.Combine(
-                                            PluginPath,
-                                            "tex_men_iconsUnpressedTransmogrify.png");
-        public static readonly string HoverMenuIconFilePath = Path.Combine(
-                                            PluginPath,
-                                            "tex_men_iconsHoverTransmogrify.png");
-        public static readonly string PressedMenuIconFilePath = Path.Combine(
-                                            PluginPath,
-                                            "tex_men_iconsPressedTransmogrify.png");
+        public static MenuIcons TransmogMenuIcons = new MenuIcons()
+        {
+            UnpressedIcon = new MenuIcon() { IconFilePath = Path.Combine(PluginPath, Path.Combine("assets", "tex_men_iconsUnpressedTransmogrify.png")) },
+            HoverIcon = new MenuIcon() { IconFilePath = Path.Combine(PluginPath, Path.Combine("assets", "tex_men_iconsHoverTransmogrify.png")) },
+            PressedIcon = new MenuIcon() { IconFilePath = Path.Combine(PluginPath, Path.Combine("assets", "tex_men_iconsPressedTransmogrify.png")) }
+        };
 
-        public const string IconName = "transmog";
+        public const string ItemIconName = "transmog";
 
         public static byte[] BytePrefixUID = BitConverter.GetBytes(ItemPrefixUID);
 
         public static TagSourceSelector TagSelector = new TagSourceSelector(
             new Tag("Axfc-kYcGEOguAqCUHh_fg", "transmog"));
 
+        public const int TransmogRecipeSecondaryItemID = 6300030;
+
         public static class RemoveRecipe
         {
             public static string UID => "APpxHqi-NE2vG_MISt7C0Q";
             public static int RecipeID => (-1303000000);
             public static string RecipeName => "Remove Tranmogrify";
-            public static int SecondIngredientID => 4300190;
+            public static int SecondIngredientID => 4300190; //Hex Potion
             private readonly static Tag transmogTag;
             public static Tag TransmogTag => transmogTag;
+            public static string IconFile => Path.Combine(PluginPath, Path.Combine("assets", "tex_men_transmogRemoverArmor.png"));
+            public static int SourceResultItemID => 3000136;
+            public static int ResultItemID => -1303000001;
+            public const string ResultItemName = "- Remove Transmog";
+            public const string ResultItemDesc = "Recreated Item with Transmogrify removed. Enchantments are preserved.";
 
             static RemoveRecipe()
             {
@@ -79,6 +83,5 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
                     AllCharactersLearnRecipesEnabled?.Invoke();
             } 
         }
-        
     }
 }
