@@ -8,5 +8,9 @@ namespace ModifAmorphic.Outward.Extensions
         {
             return Enum.GetName(typeof(T), enumValue);
         }
+        public static bool IsDefinedValue<T>(this T enumValue) where T : Enum
+        {
+            return Enum.IsDefined(typeof(T), enumValue);
+        }
     }
 }

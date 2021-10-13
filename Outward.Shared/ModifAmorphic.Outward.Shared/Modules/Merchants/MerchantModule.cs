@@ -27,6 +27,9 @@ namespace ModifAmorphic.Outward.Modules.Merchants
             typeof(MerchantPatches)
         };
 
+        public HashSet<Type> DepsWithMultiLogger => new HashSet<Type>() {
+            typeof(MerchantPatches)
+        };
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         internal MerchantModule(Func<IModifLogger> loggerFactory)

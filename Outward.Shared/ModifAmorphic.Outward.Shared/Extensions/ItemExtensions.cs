@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Extensions
 {
@@ -44,9 +45,12 @@ namespace ModifAmorphic.Outward.Extensions
         }
 
 
+        //TODO: This doesn't belong here. Rework all this so the extensions don't need a random dictionary stashed in
+        //the extensions class.
+        
         private static readonly ConcurrentDictionary<int, Sprite> _itemIcons = new ConcurrentDictionary<int, Sprite>();
 
-        public static Item ConfigureCustomIcon(this Item item, string iconPath)
+        public static Item ConfigureItemIcon(this Item item, string iconPath)
         {
             if (item is Skill)
                 throw new ArgumentException("Getting or Setting Icons for Skills is currently not supported.", nameof(item));
@@ -75,10 +79,6 @@ namespace ModifAmorphic.Outward.Extensions
 
             return item;
         }
-        public static Item SetCustomIcon(this Item item, Sprite icon)
-        {
-            return item.SetItemIcon(icon);
-        }
         public static Sprite GetCustomIcon(this Item item)
         {
             if (item is Skill)
@@ -98,6 +98,52 @@ namespace ModifAmorphic.Outward.Extensions
             }
 
             return _itemIcons.TryGetValue(item.ItemID, out icon);
+        }
+
+        public static string GetSpecialVisualPrefabDefaultPath(this Item item)
+        {
+            return item.GetPrivateField<Item, string>("m_specialVisualPrefabDefaultPath");
+        }
+        public static Item SetSpecialVisualPrefabDefaultPath(this Item item, string path)
+        {
+            item.SetPrivateField<Item, string>("m_specialVisualPrefabDefaultPath", path);
+            return item;
+        }
+        public static string GetSpecialVisualPrefabFemalePath(this Item item)
+        {
+            return item.GetPrivateField<Item, string>("m_specialVisualPrefabFemalePath");
+        }
+        public static Item SetSpecialVisualPrefabFemalePath(this Item item, string path)
+        {
+            item.SetPrivateField<Item, string>("m_specialVisualPrefabFemalePath", path);
+            return item;
+        }
+        public static string GetVisualPrefabName(this Item item)
+        {
+            return item.GetPrivateField<Item, string>("m_visualPrefabName");
+        }
+        public static Item SetVisualPrefabName(this Item item, string path)
+        {
+            item.SetPrivateField<Item, string>("m_visualPrefabName", path);
+            return item;
+        }
+        public static string GetVisualPrefabPath(this Item item)
+        {
+            return item.GetPrivateField<Item, string>("m_visualPrefabPath");
+        }
+        public static Item SetVisualPrefabPath(this Item item, string path)
+        {
+            item.SetPrivateField<Item, string>("m_visualPrefabPath", path);
+            return item;
+        }
+        public static ItemVisual GetLoadedVisual(this Item item)
+        {
+            return item.GetPrivateField<Item, ItemVisual>("m_loadedVisual");
+        }
+        public static Item SetLoadedVisual(this Item item, ItemVisual itemVisual)
+        {
+            item.SetPrivateField<Item, ItemVisual>("m_loadedVisual", itemVisual);
+            return item;
         }
     }
 }

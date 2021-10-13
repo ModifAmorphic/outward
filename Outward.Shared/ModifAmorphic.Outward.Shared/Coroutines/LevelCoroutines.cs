@@ -8,8 +8,7 @@ namespace ModifAmorphic.Outward.Coroutines
 {
     public class LevelCoroutines : ModifCoroutine
     {
-        private readonly BaseUnityPlugin _unityPlugin;
-        public LevelCoroutines(BaseUnityPlugin unityPlugin, Func<IModifLogger> getLogger) : base(getLogger) => _unityPlugin = unityPlugin;
+        public LevelCoroutines(BaseUnityPlugin unityPlugin, Func<IModifLogger> getLogger) : base(unityPlugin, getLogger) { }
 
         public void InvokeAfterLevelLoaded(NetworkLevelLoader networkLevelLoader, Action action, int timeoutSecs, float ticSeconds = DefaultTicSeconds)
         {
@@ -20,6 +19,14 @@ namespace ModifAmorphic.Outward.Coroutines
         {
             Func<bool> levelLoadedcondition = () => (networkLevelLoader.IsOverallLoadingDone && networkLevelLoader.AllPlayerDoneLoading);
             _unityPlugin.StartCoroutine(base.InvokeAfter(levelLoadedcondition, action, timeoutSecs, ticSeconds));
+        }
+        public void InvokeAfterLevelAndPlayersLoaded(NetworkLevelLoader networkLevelLoader, Func<bool> additonalCondition, Action action, int timeoutSecs, float ticSeconds = DefaultTicSeconds, Func<bool> cancelCondition = null)
+        {
+            Func<bool> levelLoadedcondition = () => (networkLevelLoader.IsOverallLoadingDone 
+                                                    && networkLevelLoader.AllPlayerDoneLoading
+                                                    && additonalCondition.Invoke());
+
+            _unityPlugin.StartCoroutine(base.InvokeAfter(levelLoadedcondition, action, timeoutSecs, ticSeconds, cancelCondition));
         }
     }
 }

@@ -5,10 +5,10 @@ using System.Text;
 
 namespace ModifAmorphic.Outward.Logging
 {
-    internal class PatchLogger : IModifLogger
+    internal class MultiLogger : IModifLogger
     {
 
-        public string LoggerName => "ModifAmorphic-PatchLogger";
+        public string LoggerName => "ModifAmorphic-MultiLogger";
 
         public LogLevel LogLevel => LogLevel.Warning;
 
