@@ -6,8 +6,8 @@ namespace ModifAmorphic.Outward.Transmorph
 {
     internal static class ModInfo
     {
-        public const string ModId = "modifamorphic.outward.transmorph";
-        public const string ModName = "Transmorph";
+        public const string ModId = "modifamorphic.outward.transmorphic";
+        public const string ModName = "Transmorphic";
 #if PIPELINE
         public const string ModVersion = "${PACKAGE_VERSION}";
 #else

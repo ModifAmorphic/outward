@@ -3,7 +3,7 @@ schemaVersion = "0.0.1"
 
 [package]
 namespace = "ModifAmorphic"
-name = "Transmorph"
+name = "Transmorphic"
 versionNumber = "${PACKAGE_VERSION}"
 description = "Change the appearance of Weapons and Armor through the new Transmogrify crafting menu."
 websiteUrl = "https://github.com/ModifAmorphic/outward/tree/mods/transmorph"
