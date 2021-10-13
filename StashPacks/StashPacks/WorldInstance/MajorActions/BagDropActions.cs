@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.Settings;
@@ -44,14 +45,14 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
 
         private void DropBagItemAfter(Character character, Bag bag)
         {
-            DoAfterBagLoaded(bag.UID, (b) => ProcessBagDropAfterLoaded(character, b));
+            DoAfterBagLoaded(bag, (b) => ProcessBagDropAfterLoaded(character, (Bag)b));
         }
         private void ProcessBagDropAfterLoaded(Character character, Bag bag)
         {
             if (!IsCurrentSceneStashPackEnabled())
             {
                 Logger.LogDebug($"{nameof(BagDropActions)}::{nameof(DropBagItemAfter)}: Scene is not enabled for StashPacks. Bag {bag.Name} ({bag.UID}) has StashBag functionality disabled.");
-                _instances.UnityPlugin.StartCoroutine(AfterBagLoadedCoroutine(bag.UID, (b) => UnclaimAndClearBag(b)));
+                DoAfterBagLoaded(bag, (b) => UnclaimAndClearBag((Bag)b));
                 return;
             }
 
@@ -84,8 +85,9 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             }
             bag.Container.SpecialType = ItemContainer.SpecialContainerTypes.Stash;
             _instances.StashPackNet.SendStashPackLinkChanged(bag.UID, charUID, true);
-            DoAfterBagLoaded(bag.UID, (Bag b) => SaveStateEnableTracking(charUID, b.UID));
+            DoAfterBagLoaded(bag, (b) => SaveStateEnableTracking(charUID, b.UID));
         }
+
         private bool TryRestoreStash(string characterUID, Bag bag)
         {
             if (_instances.TryGetStashSaveData(characterUID, out var stashSaveData))

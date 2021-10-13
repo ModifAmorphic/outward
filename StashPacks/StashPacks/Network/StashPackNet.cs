@@ -96,8 +96,8 @@ namespace ModifAmorphic.Outward.StashPacks.Network
         public void SendLinkedStashPacks(PhotonPlayer target, IEnumerable<(string bagUID, string characterUID)> stashPacks)
         {
             Logger.LogDebug($"{nameof(StashPackNet)}::{nameof(SendLinkedStashPacks)}: Sending {stashPacks.Count()} linked packs to player {target.NickName}.");
-            foreach (var p in stashPacks)
-                this.photonView.RPC(nameof(ReceivedStashPackLinkChanged), target, p.bagUID, p.characterUID, true);
+            foreach (var (bagUID, characterUID) in stashPacks)
+                this.photonView.RPC(nameof(ReceivedStashPackLinkChanged), target, bagUID, characterUID, true);
         }
         public void SendRequestForLinkedStashPacks(PhotonPlayer requestPlayer)
         {

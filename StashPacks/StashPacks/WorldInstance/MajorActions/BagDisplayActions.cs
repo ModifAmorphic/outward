@@ -17,7 +17,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             BagEvents.ShowContentBefore += ShowStashPanel;
             ItemEvents.DisplayNameAfter += GetPersonalizedBagDisplayName;
             InteractionDisplayEvents.SetInteractableBefore += SetBagInteractionActionText;
-            CharacterInventoryEvents.DropBagItemBefore += (c, bag) => DoAfterBagLoaded(bag.UID, (uid) => BagVisualizer.RemoveLanternSlot(bag));
+            CharacterInventoryEvents.DropBagItemBefore += (c, bag) => DoAfterBagLoaded(bag, (uid) => BagVisualizer.RemoveLanternSlot((Bag)bag));
             _instances.HostSettings.DisableBagScalingRotationChanged += (newValue) => ToggleBagScaleRotation(newValue);
             ToggleBagScaleRotation(_instances.HostSettings.DisableBagScalingRotation);
             //BagUnclaimed += OnBagUnclaimed;
@@ -59,9 +59,9 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
         private void SizeBagsForNewLevel(NetworkLevelLoader networkLevelLoader)
         {
             Logger.LogDebug($"{nameof(BagDisplayActions)}::{nameof(SizeBagsForNewLevel)}: Sizing bags after level load of scene {networkLevelLoader.TargetScene}.");
-            _instances.UnityPlugin.StartCoroutine(
-                AfterLevelLoadedCoroutine(networkLevelLoader, () =>
-                {
+            
+            DoAfterLevelLoaded(networkLevelLoader, () =>
+            {
                 if (!_instances.TryGetStashPackWorldData(out var spData))
                     return;
                 var stashPacks = spData.GetAllStashPacks()?.Where(p => !p.StashBag.IsEquipped && !p.StashBag.IsInContainer);
@@ -73,7 +73,7 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                     if (!PhotonNetwork.isNonMasterClientInRoom)
                         BagVisualizer.FreezeBag(p.StashBag);
                 }
-                }));
+            });
         }
 
         private void SetBagInteractionActionText(InteractionDisplay interactionDisplay, InputDisplay bagDisplay, InteractionTriggerBase interactionTrigger)
@@ -130,11 +130,12 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             //Only master needs to continully stand up the bag and freeze it wehn it falls.
             if (!PhotonNetwork.isNonMasterClientInRoom)
             {
-                _instances.UnityPlugin.StartCoroutine(
-                    WhileBagFallingCoroutine(args.bagUID
-                    , (b) => BagVisualizer.StandBagUp(b)
-                    , (b) => BagVisualizer.FreezeBag(b)
-                    ));
+                DoAfterBagLoaded(args.bagUID, (loadedBag) =>
+                    DoWhileBagFalling(loadedBag.UID
+                        , (stationaryBag) => BagVisualizer.StandBagUp(stationaryBag)
+                        , (stationaryBag) => BagVisualizer.FreezeBag(stationaryBag)
+                        )
+                );
             }
         }
 
@@ -155,19 +156,19 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 BagVisualizer.StandBagUp(bag);
             }
         }
-        private void DropBagItemAfter(Character character, Bag bag)
-        {
-            if (!PhotonNetwork.isNonMasterClientInRoom)
-            {
-                _instances.UnityPlugin.StartCoroutine(AfterBagLandedCoroutine(bag, () =>
-                {
-                    if (IsBagLinked(bag))
-                    {
-                        BagVisualizer.FreezeBag(bag);
-                    }
-                }));
-            }
-        }
+        //private void DropBagItemAfter(Character character, Bag bag)
+        //{
+        //    if (!PhotonNetwork.isNonMasterClientInRoom)
+        //    {
+        //        AfterBagLandedCoroutine(bag.UID, () =>
+        //        {
+        //            if (IsBagLinked(bag))
+        //            {
+        //                BagVisualizer.FreezeBag(bag);
+        //            }
+        //        });
+        //    }
+        //}
         /// <summary>
         /// TODO: Test if this is ever necessary. More of a failsafe, but probably not really that important to freeze a bag.
         /// </summary>
@@ -178,13 +179,13 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
             var bag = stashPackWorldData.GetStashPack(bagUID)?.StashBag;
             if (bag != null)
             {
-                _instances.UnityPlugin.StartCoroutine(AfterBagLandedCoroutine(bag, () =>
+                DoAfterBagLanded(bag.UID, () =>
                 {
                     if (IsBagLinked(bag))
                     {
                         BagVisualizer.FreezeBag(bag);
                     }
-                }));
+                });
             }
         }
 

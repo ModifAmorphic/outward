@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.StashPacks.SaveData.Models;
+﻿using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.StashPacks.SaveData.Models;
 using ModifAmorphic.Outward.StashPacks.Sync.Models;
 using System.Linq;
 
