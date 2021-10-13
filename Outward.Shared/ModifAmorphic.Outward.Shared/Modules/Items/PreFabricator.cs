@@ -9,6 +9,7 @@ using UnityEngine;
 using ModifAmorphic.Outward.Extensions;
 using System.Reflection;
 using System.Collections.Concurrent;
+using ModifAmorphic.Outward.Modules.Items.Patches;
 
 namespace ModifAmorphic.Outward.Modules.Items
 {
@@ -30,6 +31,11 @@ namespace ModifAmorphic.Outward.Modules.Items
             typeof(ItemPatches)
         };
 
+        public HashSet<Type> DepsWithMultiLogger => new HashSet<Type>() {
+            typeof(LocalizationManagerPatches),
+            typeof(ItemPatches)
+        };
+
         private Transform _parentTransform;
         private readonly Dictionary<int, ItemLocalization> _itemLocalizations = new Dictionary<int, ItemLocalization>();
         private readonly ConcurrentDictionary<int, Sprite> _itemIcons = new ConcurrentDictionary<int, Sprite>();
@@ -40,15 +46,14 @@ namespace ModifAmorphic.Outward.Modules.Items
             this._modId = modId;
             this._loggerFactory = loggerFactory;
             this._prefabManagerFactory = prefabManagerFactory;
-            LocalizationManagerPatches.LoadItemLocalizationAfter += (itemLocalizations) =>
-                    RegisterItemLocalizations(_itemLocalizations, itemLocalizations);
+            LocalizationManagerPatches.LoadItemLocalizationAfter += RegisterItemLocalizations;
             ItemPatches.GetItemIconBefore += SetCustomItemIcon;
         }
 
         private void SetCustomItemIcon(Item item)
         {
             if (item.TryGetCustomIcon(out var icon))
-                item.SetCustomIcon(icon);
+                item.SetItemIcon(icon);
         }
 
         public Item CreatePrefab(int baseItemID, int newItemID, string name, string description)
@@ -80,11 +85,10 @@ namespace ModifAmorphic.Outward.Modules.Items
         {
             if (_parentTransform == null)
             {
-                var parentTransform = new GameObject(_modId.Replace(".", "_") + "_prefabs").transform;
-                UnityEngine.Object.DontDestroyOnLoad(parentTransform.gameObject);
-                parentTransform.hideFlags |= HideFlags.HideAndDontSave;
-                parentTransform.gameObject.SetActive(false);
-                _parentTransform = parentTransform;
+                _parentTransform = new GameObject(_modId.Replace(".", "_") + "_item_prefabs").transform;
+                UnityEngine.Object.DontDestroyOnLoad(_parentTransform.gameObject);
+                _parentTransform.hideFlags |= HideFlags.HideAndDontSave;
+                _parentTransform.gameObject.SetActive(false);
             }
             return _parentTransform;
         }
@@ -98,9 +102,9 @@ namespace ModifAmorphic.Outward.Modules.Items
             }
             return _itemPrefabs;
         }
-        private void RegisterItemLocalizations(Dictionary<int, ItemLocalization> sourceLocalizations, Dictionary<int, ItemLocalization> targetLocalizations)
+        private void RegisterItemLocalizations(ref Dictionary<int, ItemLocalization> targetLocalizations)
         {
-            foreach (var kvp in sourceLocalizations)
+            foreach (var kvp in _itemLocalizations)
             {
                 targetLocalizations.AddOrUpdate(kvp.Key, kvp.Value);
             }

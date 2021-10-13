@@ -3,12 +3,12 @@ using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Logging;
 using System;
 
-namespace ModifAmorphic.Outward.Modules.Character
+namespace ModifAmorphic.Outward.Modules.CharacterMods
 {
     [HarmonyPatch(typeof(SkillTreeHolder))]
     internal static class SkillTreeHolderPatches
     {
-        [PatchLogger]
+        [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
         public static event Action<SkillTreeHolder> AwakeAfter;
 

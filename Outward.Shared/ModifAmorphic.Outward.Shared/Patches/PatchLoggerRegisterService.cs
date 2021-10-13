@@ -8,7 +8,7 @@ namespace ModifAmorphic.Outward.Events
     internal static class PatchLoggerRegisterService
     {
 #if DEBUG
-        private readonly static IModifLogger _logger = LoggerFactory.ConfigureLogger(DebugLoggerInfo.ModId, DebugLoggerInfo.ModName, DebugLoggerInfo.DebugLogLevel);
+        private readonly static IModifLogger _logger = LoggerFactory.ConfigureLogger(DefaultLoggerInfo.ModId, DefaultLoggerInfo.ModName, DefaultLoggerInfo.DebugLogLevel);
 #endif
         private static readonly object lockRegistration = new object();
         public static void AddOrUpdatePatchLogger(Type classType, string modId, Func<IModifLogger> loggerFactory)
@@ -23,21 +23,21 @@ namespace ModifAmorphic.Outward.Events
 #endif
 
                 var patchLoggerProps = classType.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
-                        .Where(p => p.GetCustomAttributes(typeof(PatchLoggerAttribute), false).Any());
+                        .Where(p => p.GetCustomAttributes(typeof(MultiLoggerAttribute), false).Any());
                 var patchLoggerFields = classType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
-                        .Where(m => m.GetCustomAttributes(typeof(PatchLoggerAttribute), false).Any());
+                        .Where(m => m.GetCustomAttributes(typeof(MultiLoggerAttribute), false).Any());
 
                 foreach (var p in patchLoggerProps)
                 {
 #if DEBUG
                     _logger.LogTrace($"{nameof(PatchLoggerRegisterService)}::{nameof(AddOrUpdatePatchLogger)}:" +
-                        $" Property p.GetValue(null) as PatchLogger is {(p.GetValue(null) as PatchLogger == null ? "null" : "not null")}." +
+                        $" Property p.GetValue(null) as PatchLogger is {(p.GetValue(null) as MultiLogger == null ? "null" : "not null")}." +
                         $" propery name is {p?.Name}");
 #endif
-                    var patchLogger = p.GetValue(null) as PatchLogger;
+                    var patchLogger = p.GetValue(null) as MultiLogger;
                     if (patchLogger == null)
                     {
-                        patchLogger = new PatchLogger();
+                        patchLogger = new MultiLogger();
                         p.SetValue(null, patchLogger);
                     }
                     patchLogger.AddOrUpdateLogger(modId, loggerFactory);
@@ -47,13 +47,13 @@ namespace ModifAmorphic.Outward.Events
                 {
 #if DEBUG
                     _logger.LogTrace($"{nameof(PatchLoggerRegisterService)}::{nameof(AddOrUpdatePatchLogger)}:" +
-                        $" Field f.GetValue(null) as PatchLogger is {(f.GetValue(null) as PatchLogger == null ? "null" : "not null")}." +
+                        $" Field f.GetValue(null) as PatchLogger is {(f.GetValue(null) as MultiLogger == null ? "null" : "not null")}." +
                         $" propery name is {f?.Name}");
 #endif
-                    var patchLogger = f.GetValue(null) as PatchLogger;
+                    var patchLogger = f.GetValue(null) as MultiLogger;
                     if (patchLogger == null)
                     {
-                        patchLogger = new PatchLogger();
+                        patchLogger = new MultiLogger();
                         f.SetValue(null, patchLogger);
                     }
                     patchLogger.AddOrUpdateLogger(modId, loggerFactory);

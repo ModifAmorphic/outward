@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace ModifAmorphic.Outward.Modules.Character
+namespace ModifAmorphic.Outward.Modules.CharacterMods
 {
     public class CharacterInstances : IModifModule
     {
@@ -17,6 +17,11 @@ namespace ModifAmorphic.Outward.Modules.Character
         };
 
         public HashSet<Type> EventSubscriptions => new HashSet<Type>() {
+            typeof(SkillTreeHolderPatches),
+            typeof(CharacterManagerPatches)
+        };
+
+        public HashSet<Type> DepsWithMultiLogger => new HashSet<Type>() {
             typeof(SkillTreeHolderPatches),
             typeof(CharacterManagerPatches)
         };

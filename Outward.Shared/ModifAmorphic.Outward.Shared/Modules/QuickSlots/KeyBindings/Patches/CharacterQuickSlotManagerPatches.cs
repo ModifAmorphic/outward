@@ -15,7 +15,7 @@ namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
     internal static class CharacterQuickSlotManagerPatches
     {
         private static int _quickslotsToAdd;
-        [PatchLogger]
+        [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
         private static void QuickSlotExtenderEvents_SlotsChanged(object sender, QuickSlotExtendedArgs e) => (_quickslotsToAdd) = (e.ExtendedQuickSlots.Count());
 

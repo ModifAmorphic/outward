@@ -11,7 +11,7 @@ namespace ModifAmorphic.Outward.Config
     public class ConfigSettingsService
     {
 #if DEBUG
-        private readonly IModifLogger _logger = LoggerFactory.ConfigureLogger(DebugLoggerInfo.ModId, DebugLoggerInfo.ModName, DebugLoggerInfo.DebugLogLevel);
+        private readonly IModifLogger _logger = LoggerFactory.ConfigureLogger(DefaultLoggerInfo.ModId, DefaultLoggerInfo.ModName, DefaultLoggerInfo.DebugLogLevel);
 #endif
         public ConfigFile Config { get; }
         private readonly ConfigManagerService _configManagerService;
