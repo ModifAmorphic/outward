@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModifAmorphic.Outward.Transmorph", "Transmorph\ModifAmorphic.Outward.Transmorph.csproj", "{B5BAF1A6-C097-4219-A14F-9410C66CA395}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModifAmorphic.Outward.Transmorphic", "Transmorphic\ModifAmorphic.Outward.Transmorphic.csproj", "{B5BAF1A6-C097-4219-A14F-9410C66CA395}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
