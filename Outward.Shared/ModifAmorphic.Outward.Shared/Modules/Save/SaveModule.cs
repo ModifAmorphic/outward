@@ -25,6 +25,8 @@ namespace ModifAmorphic.Outward.Modules.Items
             typeof(LocalizationManagerPatches)
         };
 
+        public HashSet<Type> DepsWithMultiLogger => throw new NotImplementedException();
+
         private Transform _parentTransform;
         private readonly Dictionary<int, ItemLocalization> _itemLocalizations = new Dictionary<int, ItemLocalization>();
 

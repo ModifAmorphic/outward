@@ -11,10 +11,27 @@ namespace ModifAmorphic.Outward.Patches
     [HarmonyPatch(typeof(LocalizationManager))]
     public static class LocalizationManagerPatches
     {
-        [PatchLogger]
+        [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
 
-        public static event Action<Dictionary<int, ItemLocalization>> LoadItemLocalizationAfter;
+        public static event Action<LocalizationManager> AwakeAfter;
+        [HarmonyPatch("Awake")]
+        [HarmonyPostfix]
+        private static void AwakePostfix(LocalizationManager __instance)
+        {
+            try
+            {
+                Logger.LogTrace($"{nameof(LocalizationManagerPatches)}::{nameof(AwakePostfix)}(): Invoked. Invoking {nameof(AwakePostfix)}({nameof(LocalizationManager)}). AwakeAfter null: {AwakeAfter == null}");
+                AwakeAfter?.Invoke(__instance);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(LocalizationManagerPatches)}::{nameof(AwakePostfix)}(): Exception Invoking {nameof(AwakePostfix)}({nameof(LocalizationManager)}).", ex);
+            }
+        }
+
+        public delegate void RegisterItemLocalizations(ref Dictionary<int, ItemLocalization> itemLocalizations);
+        public static event RegisterItemLocalizations LoadItemLocalizationAfter;
 
         [HarmonyPatch("LoadItemLocalization")]
         [HarmonyPostfix]
@@ -22,7 +39,15 @@ namespace ModifAmorphic.Outward.Patches
         private static void LoadItemLocalizationPostfix(ref Dictionary<int, ItemLocalization> ___m_itemLocalization)
 #pragma warning restore IDE0051 // Remove unused private members
         {
-            LoadItemLocalizationAfter?.Invoke(___m_itemLocalization);
+            try
+            {
+                Logger.LogTrace($"{nameof(LocalizationManagerPatches)}::{nameof(LoadItemLocalizationPostfix)}(): Invoked. Invoking {nameof(LoadItemLocalizationPostfix)}({nameof(Dictionary<int, ItemLocalization>)})");
+                LoadItemLocalizationAfter?.Invoke(ref ___m_itemLocalization);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(LocalizationManagerPatches)}::{nameof(LoadItemLocalizationPostfix)}(): Exception Invoking {nameof(LoadItemLocalizationPostfix)}({nameof(Dictionary<int, ItemLocalization>)}).", ex);
+            }
         }
 
     }

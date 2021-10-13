@@ -40,7 +40,7 @@ namespace ModifAmorphic.Outward.Config.Models
             if (!SuppressValueChangedEvents)
             {
 #if DEBUG
-                var logger = Logging.LoggerFactory.ConfigureLogger(DebugLoggerInfo.ModId, DebugLoggerInfo.ModName, DebugLoggerInfo.DebugLogLevel);
+                var logger = Logging.LoggerFactory.ConfigureLogger(DefaultLoggerInfo.ModId, DefaultLoggerInfo.ModName, DefaultLoggerInfo.DebugLogLevel);
                 logger.LogTrace($"ConfigSetting: {this.Name}. Triggering {nameof(ValueChanged)} Event. " +
                     $"oldValue: {oldValue}. newvalue: {newValue} " +
                     $"{nameof(ValueChanged)} null? {ValueChanged == null}. " +

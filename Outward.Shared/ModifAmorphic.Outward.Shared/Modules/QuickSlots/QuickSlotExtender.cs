@@ -25,13 +25,20 @@ namespace ModifAmorphic.Outward.Modules.QuickSlots
             typeof(CharacterQuickSlotManagerPatches),
             typeof(KeyboardQuickSlotPanelPatches),
             typeof(LocalCharacterControlPatches),
-            typeof(LocalizationManagerPatches)
+            typeof(QsLocalizationManagerPatches)
         };
         public HashSet<Type> EventSubscriptions => new HashSet<Type>() {
             typeof(CharacterQuickSlotManagerPatches),
             typeof(KeyboardQuickSlotPanelPatches),
             typeof(LocalCharacterControlPatches),
-            typeof(LocalizationManagerPatches)
+            typeof(QsLocalizationManagerPatches)
+        };
+
+        public HashSet<Type> DepsWithMultiLogger => new HashSet<Type>() {
+            typeof(CharacterQuickSlotManagerPatches),
+            typeof(KeyboardQuickSlotPanelPatches),
+            typeof(LocalCharacterControlPatches),
+            typeof(QsLocalizationManagerPatches)
         };
 
         [MethodImplAttribute(MethodImplOptions.NoInlining)]

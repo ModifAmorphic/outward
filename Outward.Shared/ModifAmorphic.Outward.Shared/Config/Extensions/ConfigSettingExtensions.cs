@@ -7,7 +7,7 @@ namespace ModifAmorphic.Outward.Config.Extensions
     public static class ConfigSettingExtensions
     {
 #if DEBUG
-        private static readonly Logging.IModifLogger _logger = Logging.LoggerFactory.ConfigureLogger(DebugLoggerInfo.ModId, DebugLoggerInfo.ModName, DebugLoggerInfo.DebugLogLevel);
+        private static readonly Logging.IModifLogger _logger = Logging.LoggerFactory.ConfigureLogger(DefaultLoggerInfo.ModId, DefaultLoggerInfo.ModName, DefaultLoggerInfo.DebugLogLevel);
 #endif
         public static ConfigDefinition ToConfigDefinition<T>(this ConfigSetting<T> configSetting)
         {
@@ -33,23 +33,29 @@ namespace ModifAmorphic.Outward.Config.Extensions
             if (configSetting.BoundConfigEntry == null)
                 throw new InvalidOperationException($"Cannot hide unbound ConfigSettings.  ConfigSetting {configSetting.Name} has not been bound to a Configuration Entry.");
             configSetting.IsVisible = false;
-            configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes().Browsable = configSetting.IsVisible;
+
+            if (configSetting.BoundConfigEntry.Description
+                .TryGetConfigurationManagerAttributes(out var confAttributes))
+                confAttributes.Browsable = configSetting.IsVisible;
 #if DEBUG
             _logger.LogDebug($"Hid ConfigSetting {configSetting.Name}. " +
                 $"IsVisible = {configSetting.IsVisible}. " +
-                $"Browsable = {configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes().Browsable}.");
+                $"Browsable = {configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes()?.Browsable}.");
 #endif
         }
         public static void Show<T>(this ConfigSetting<T> configSetting)
         {
             if (configSetting.BoundConfigEntry == null)
                 throw new InvalidOperationException($"Cannot hide unbound ConfigSettings.  ConfigSetting {configSetting.Name} has not been bound to a Configuration Entry.");
+
             configSetting.IsVisible = true;
-            configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes().Browsable = configSetting.IsVisible;
+            if (configSetting.BoundConfigEntry.Description
+                .TryGetConfigurationManagerAttributes(out var confAttributes))
+                confAttributes.Browsable = configSetting.IsVisible;
 #if DEBUG
             _logger.LogDebug($"Showed ConfigSetting {configSetting.Name}. " +
                 $"IsVisible = {configSetting.IsVisible}. " +
-                $"Browsable = {configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes().Browsable}.");
+                $"Browsable = {configSetting.BoundConfigEntry.Description.ConfigurationManagerAttributes()?.Browsable}.");
 #endif
         }
     }

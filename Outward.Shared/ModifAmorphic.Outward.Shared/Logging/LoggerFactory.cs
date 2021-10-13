@@ -16,7 +16,7 @@ namespace ModifAmorphic.Outward.Logging
         public static IModifLogger ConfigureLogger(string modId, string loggerName, LogLevel logLevel)
         {
 #if DEBUG
-            (new Logger(LogLevel.Debug, DebugLoggerInfo.ModName)).LogDebug(
+            (new Logger(LogLevel.Debug, DefaultLoggerInfo.ModName)).LogDebug(
                 $"{nameof(LoggerFactory)}::{nameof(ConfigureLogger)}: Configuring named logger " +
                 $" '{loggerName}' with modId '{modId}'. There are {_loggers.Count} {nameof(IModifLogger)} already configured. " +
                 $"A logger for '{modId}' {(_loggers.ContainsKey(modId) ? "exists and will be configured" : "will be created")}" +
@@ -40,10 +40,10 @@ namespace ModifAmorphic.Outward.Logging
         {
             if (logger.LogLevel != logLevel)
             {
-                if (logger is BepInExLogger bepInExLogger)
-                    bepInExLogger.LogLevel = logLevel;
-                else if (logger is Logger modifLogger)
-                    modifLogger.LogLevel = logLevel;
+                if (logger is BepInExLogger)
+                    ((BepInExLogger)logger).LogLevel = logLevel;
+                else if (logger is Logger)
+                    ((Logger)logger).LogLevel = logLevel;
                 else
                     throw new ArgumentException($"'{nameof(logger)}' Argument's base type was unexpected. Supported base types are '{typeof(Logger).FullName}' or '{typeof(BepInExLogger).FullName}'."
                         , nameof(logger));
