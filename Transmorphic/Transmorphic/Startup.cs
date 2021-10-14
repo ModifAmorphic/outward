@@ -104,6 +104,7 @@ namespace ModifAmorphic.Outward.Transmorph
             craftingModule.RegisterCraftingMenu<TransmogrifyMenu>("Transmogrify", TransmogSettings.TransmogMenuIcons);
 
             craftingModule.RegisterCompatibleIngredientMatcher<TransmogrifyMenu>(_services.GetService<IngredientMatcher>());
+            craftingModule.RegisterConsumedItemSelector<TransmogrifyMenu>(_services.GetService<IngredientMatcher>());
             craftingModule.RegisterCustomCrafter<TransmogrifyMenu>(_services.GetService<TransmogCrafter>());
         }
         private void ToggleCraftingMenu<T>(bool isEnabled) where T : CustomCraftingMenu

@@ -5,7 +5,7 @@ schemaVersion = "0.0.1"
 namespace = "ModifAmorphic"
 name = "Transmorphic"
 versionNumber = "${PACKAGE_VERSION}"
-description = "Change the appearance of Weapons and Armor through the new Transmogrify crafting menu."
+description = "Equipment Tranmogs Tired of running around looking like a freak in a bird mask? Change equipment appearance with a new crafting menu!"
 websiteUrl = "https://github.com/ModifAmorphic/outward/tree/mods/transmorph"
 containsNsfwContent = false
 

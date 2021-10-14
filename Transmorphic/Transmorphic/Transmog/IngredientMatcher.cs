@@ -11,8 +11,8 @@ using System.Text;
 
 namespace ModifAmorphic.Outward.Transmorph.Transmog
 {
-    public class IngredientMatcher : ICompatibleIngredientMatcher
-    {
+    public class IngredientMatcher : ICompatibleIngredientMatcher, IConsumedItemSelector
+	{
 		private readonly Func<IModifLogger> _loggerFactory;
 		private IModifLogger Logger => _loggerFactory.Invoke();
 
@@ -75,6 +75,37 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 			}
 
 			return false;
+		}
+
+        public IList<KeyValuePair<string, int>> GetConsumedItems(CompatibleIngredient compatibleIngredient, bool useMultipler, ref int resultMultiplier)
+        {
+			var ownedItems = compatibleIngredient.GetPrivateField<CompatibleIngredient, List<Item>>("m_ownedItems");
+			var consumedItems = new List<KeyValuePair<string, int>>();
+
+			if (ownedItems.Count == 1)
+            {
+				consumedItems.Add(new KeyValuePair<string, int>(ownedItems[0].UID, ownedItems[0].ItemID));
+				return consumedItems;
+            }
+			var recipe = ParentCraftingMenu.GetSelectedRecipe();
+			//Return first Non Transmogrified Item
+			if (recipe is TransmogRecipe)
+            {
+				var item = ownedItems.First(i => !((UID)i.UID).IsTransmogrified());
+				consumedItems.Add(new KeyValuePair<string, int>(item.UID, item.ItemID));
+				return consumedItems;
+			}
+
+			//Return first Tranmog'd item
+			if (recipe is TransmogRemoverRecipe)
+			{
+				var tmoggedItem = ownedItems.First(i => ((UID)i.UID).IsTransmogrified());
+				consumedItems.Add(new KeyValuePair<string, int>(tmoggedItem.UID, tmoggedItem.ItemID));
+				return consumedItems;
+			}
+
+			consumedItems.Add(new KeyValuePair<string, int>(ownedItems[0].UID, ownedItems[0].ItemID));
+			return consumedItems;
 		}
     }
 }
