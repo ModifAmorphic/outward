@@ -43,7 +43,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
 
         [HarmonyPatch(nameof(CompatibleIngredient.GetConsumedItems), MethodType.Normal)]
         [HarmonyPostfix]
-        private static void GetConsumedItemsPostfix(CompatibleIngredient __instance, bool _useMultipler, int _resultMultiplier, IList<KeyValuePair<string, int>>  __result)
+        private static void GetConsumedItemsPostfix(CompatibleIngredient __instance, bool _useMultipler, ref int _resultMultiplier, ref IList<KeyValuePair<string, int>>  __result)
         {
             string logMethod = nameof(CustomCompatibleIngredient) + "." + nameof(CustomCompatibleIngredient.CaptureConsumedItems);
             try
@@ -52,6 +52,12 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
                     return;
 
                 Logger.LogTrace($"{nameof(CompatibleIngredientPatches)}::{nameof(GetConsumedItemsPostfix)}(): Capturing {__result?.Count} consumed items.");
+                int resultMulti = _resultMultiplier;
+                if (customIngredient.TryGetConsumedItems(_useMultipler, ref resultMulti, out var consumedIngredients))
+                {
+                    _resultMultiplier = resultMulti;
+                    __result = consumedIngredients;
+                }
                 customIngredient.CaptureConsumedItems(__result);
             }
             catch (Exception ex)

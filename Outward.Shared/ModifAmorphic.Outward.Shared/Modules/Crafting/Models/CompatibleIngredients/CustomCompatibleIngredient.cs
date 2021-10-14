@@ -13,9 +13,10 @@ namespace ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients
         private IModifLogger Logger => _loggerFactory.Invoke();
 
         private readonly ICompatibleIngredientMatcher _ingredientMatcher;
+        private readonly IConsumedItemSelector _consumedItemSelector;
 
-        public CustomCompatibleIngredient(int itemID, ICompatibleIngredientMatcher ingredientMatcher, Func<IModifLogger> loggerFactory) : base(itemID) =>
-            (_ingredientMatcher, _loggerFactory) = (ingredientMatcher, loggerFactory);
+        public CustomCompatibleIngredient(int itemID, ICompatibleIngredientMatcher ingredientMatcher, IConsumedItemSelector consumedItemSelector, Func<IModifLogger> loggerFactory) : base(itemID) =>
+            (_ingredientMatcher, _consumedItemSelector, _loggerFactory) = (ingredientMatcher, consumedItemSelector, loggerFactory);
 
         public bool MatchRecipeStepOverride(RecipeIngredient recipeIngredient, out bool isMatchResult)
         {
@@ -28,11 +29,27 @@ namespace ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients
             return false;
         }
 
+        public List<Item> GetOwnedItems()
+        {
+            return this.GetPrivateField<CompatibleIngredient, List<Item>>("m_ownedItems");
+        }
         public void SetOwnedItems(List<Item> ownedItems)
         {
             this.SetPrivateField<CompatibleIngredient, List<Item>>("m_ownedItems", ownedItems);
         }
+        public bool TryGetConsumedItems(bool useMultipler, ref int resultMultiplier, out IList<KeyValuePair<string, int>> consumedItems)
+        {
+            if (_consumedItemSelector == null)
+            {
+                resultMultiplier = default;
+                consumedItems = default;
+                return false;
+            }
 
+            consumedItems = _consumedItemSelector.GetConsumedItems(this, useMultipler, ref resultMultiplier);
+
+            return true;
+        }
         public void CaptureConsumedItems(IList<KeyValuePair<string, int>> consumedItems)
         {
             if (_ingredientMatcher != null)

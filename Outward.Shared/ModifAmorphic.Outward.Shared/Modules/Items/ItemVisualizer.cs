@@ -67,8 +67,8 @@ namespace ModifAmorphic.Outward.Modules.Items
             _itemManagerFactory = itemManagerFactory;
             _iconService = iconService;
 
-            ItemManagerPatches.GetVisualsByItemOverride += GetVisualsByItemOverride;
-            ItemManagerPatches.GetSpecialVisualsByItemOverride += GetSpecialVisualsByItemOverride;
+            ItemManagerPatches.GetVisualsByItemAfter += SetVisualsByItem;
+            ItemManagerPatches.GetSpecialVisualsByItemAfter += SetSpecialVisualsByItem;
             ItemDisplayPatches.RefreshEnchantedIconAfter += ToggleCustomIcons;
             //VisualSlotPatches.PositionVisualsOverride += PositionVisualsOverride;
         }
@@ -110,19 +110,57 @@ namespace ModifAmorphic.Outward.Modules.Items
         }
 
         public bool IsAdditionalIconRegistered(string itemUID, string iconName) => _itemsIcons.TryGetValue(itemUID, out var icons) ? icons.ContainsKey(iconName) : false;
-        private bool GetVisualsByItemOverride(Item item, out ItemVisual visual)
+        //private bool GetVisualsByItemOverride(Item item, out ItemVisual visual)
+        //{
+        //    if (!_itemVisuals.TryGetValue(item.UID, out var visualItemID))
+        //    {
+        //        visual = null;
+        //        Logger.LogTrace($"{nameof(ItemVisualizer)}::{nameof(GetVisualsByItemOverride)}(): No custom ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}).");
+        //        return false;
+        //    }
+
+        //    //this doesn't seem necessary.
+        //    item.SetPrivateField<Item, ItemVisual>("m_loadedVisual", null);
+        //    visual = ItemManager.GetVisuals(visualItemID);
+        //    Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetVisualsByItemOverride)}(): ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}). Replaced " +
+        //                $"visuals with ItemID {visualItemID}'s ItemVisual - {visual?.name}");
+
+        //    var prefab = PrefabManager.GetItemPrefab(visualItemID);
+        //    var prefabToggle = prefab.GetComponent<ToggleModelOnEnchant>();
+
+        //    if (prefabToggle != null && item.GetComponent<ToggleModelOnEnchant>() == null)
+        //    {
+        //        var itemToggle = item.gameObject.AddComponent<ToggleModelOnEnchant>();
+        //        itemToggle.ModelName = prefabToggle.ModelName;
+        //        itemToggle.name = item.name;
+        //        itemToggle.gameObject.SetActive(true);
+        //    }
+
+        //    ConfigureVisualToggles(item, visualItemID);
+
+        //    return visual != null;
+        //}
+        private void SetVisualsByItem(Item item, ref ItemVisual visual)
         {
+            if (TryGetVisualsByItem(item, out var replacedVisual))
+            {
+                visual = replacedVisual;
+            }
+        }
+        private bool TryGetVisualsByItem(Item item, out ItemVisual visual)
+        {
+            visual = null;
             if (!_itemVisuals.TryGetValue(item.UID, out var visualItemID))
             {
-                visual = null;
-                Logger.LogTrace($"{nameof(ItemVisualizer)}::{nameof(GetVisualsByItemOverride)}(): No custom ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}).");
+                //visual = null;
+                Logger.LogTrace($"{nameof(ItemVisualizer)}::{nameof(TryGetVisualsByItem)}(): No custom ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}).");
                 return false;
             }
 
             //this doesn't seem necessary.
             item.SetPrivateField<Item, ItemVisual>("m_loadedVisual", null);
             visual = ItemManager.GetVisuals(visualItemID);
-            Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetVisualsByItemOverride)}(): ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}). Replaced " +
+            Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(TryGetVisualsByItem)}(): ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}). Replaced " +
                         $"visuals with ItemID {visualItemID}'s ItemVisual - {visual?.name}");
 
             var prefab = PrefabManager.GetItemPrefab(visualItemID);
@@ -141,13 +179,64 @@ namespace ModifAmorphic.Outward.Modules.Items
             return visual != null;
         }
 
-        //TODO: This isn't working exactly right. Virgin armor loads green enchanted.
-        private bool GetSpecialVisualsByItemOverride(Item item, out ItemVisual visual)
+        //private bool GetSpecialVisualsByItemOverride(Item item, out ItemVisual visual)
+        //{
+        //    if (!_itemVisuals.TryGetValue(item.UID, out var visualItemID))
+        //    {
+        //        visual = null;
+        //        Logger.LogTrace($"{nameof(ItemVisualizer)}::{nameof(GetSpecialVisualsByItemOverride)}(): No custom ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}).");
+        //        return false;
+        //    }
+        //    item.SetPrivateField<Item, ItemVisual>("m_loadedVisual", null);
+
+
+        //    //Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetSpecialVisualsByItemOverride)}(): Trying to get visual for {item.ItemID} - {item.DisplayName} ({item.UID}). Visual ItemID - {visualItemID}");
+        //    var prefab = PrefabManager.GetItemPrefab(visualItemID);
+        //    if (prefab.HasSpecialVisualPrefab)
+        //    {
+        //        var tmpItem = PrefabManager.GenerateItem(visualItemID.ToString());
+        //        tmpItem.SetHolderUID(Global.GenerateUID());
+        //        if (item.OwnerCharacter != null)
+        //            tmpItem.SetPrivateField<Item, Character>("m_ownerCharacter", item.OwnerCharacter);
+        //        Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetSpecialVisualsByItemOverride)}(): HasSpecialVisualPrefab --> Generated temporary Item and set it's owner to {tmpItem.OwnerCharacter} to retrieve ItemVisual. " +
+        //            $" Generated Item: {tmpItem.ItemID} - {tmpItem.DisplayName} ({tmpItem.UID})");
+        //        visual = ItemManager.GetSpecialVisuals(tmpItem);
+
+        //        UnityEngine.Object.Destroy(tmpItem.gameObject);
+        //        //ItemManager.DestroyItem(tmpItem.UID);
+        //        Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetSpecialVisualsByItemOverride)}(): HasSpecialVisualPrefab --> ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}). Replaced " +
+        //            $"visuals with ItemID {visualItemID}'s ItemVisual - {visual?.name}");
+        //    }
+        //    else
+        //    {
+        //        visual = ItemManager.GetVisuals(visualItemID);
+        //        Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetSpecialVisualsByItemOverride)}(): ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}). Replaced " +
+        //                $"visuals with ItemID {visualItemID}'s ItemVisual - {visual?.name}");
+        //    }
+        //    if (visual != null)
+        //    {
+        //        visual.SetLinkedItem(item);
+        //    }
+
+        //    ConfigureVisualToggles(item, visualItemID);
+
+        //    return visual != null;
+
+        //}
+
+        private void SetSpecialVisualsByItem(Item item, ref ItemVisual visual)
         {
+            if (TryGetSpecialVisualsByItem(item, out var replacedVisual))
+            {
+                visual = replacedVisual;
+            }
+        }
+        private bool TryGetSpecialVisualsByItem(Item item, out ItemVisual visual)
+        {
+            visual = null;
             if (!_itemVisuals.TryGetValue(item.UID, out var visualItemID))
             {
-                visual = null;
-                Logger.LogTrace($"{nameof(ItemVisualizer)}::{nameof(GetSpecialVisualsByItemOverride)}(): No custom ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}).");
+                Logger.LogTrace($"{nameof(ItemVisualizer)}::{nameof(SetSpecialVisualsByItem)}(): No custom ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}).");
                 return false;
             }
             item.SetPrivateField<Item, ItemVisual>("m_loadedVisual", null);
@@ -161,19 +250,19 @@ namespace ModifAmorphic.Outward.Modules.Items
                 tmpItem.SetHolderUID(Global.GenerateUID());
                 if (item.OwnerCharacter != null)
                     tmpItem.SetPrivateField<Item, Character>("m_ownerCharacter", item.OwnerCharacter);
-                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetSpecialVisualsByItemOverride)}(): HasSpecialVisualPrefab --> Generated temporary Item and set it's owner to {tmpItem.OwnerCharacter} to retrieve ItemVisual. " +
+                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(SetSpecialVisualsByItem)}(): HasSpecialVisualPrefab --> Generated temporary Item and set it's owner to {tmpItem.OwnerCharacter} to retrieve ItemVisual. " +
                     $" Generated Item: {tmpItem.ItemID} - {tmpItem.DisplayName} ({tmpItem.UID})");
                 visual = ItemManager.GetSpecialVisuals(tmpItem);
-                
+
                 UnityEngine.Object.Destroy(tmpItem.gameObject);
                 //ItemManager.DestroyItem(tmpItem.UID);
-                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetSpecialVisualsByItemOverride)}(): HasSpecialVisualPrefab --> ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}). Replaced " +
+                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(SetSpecialVisualsByItem)}(): HasSpecialVisualPrefab --> ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}). Replaced " +
                     $"visuals with ItemID {visualItemID}'s ItemVisual - {visual?.name}");
             }
             else
             {
                 visual = ItemManager.GetVisuals(visualItemID);
-                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(GetSpecialVisualsByItemOverride)}(): ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}). Replaced " +
+                Logger.LogDebug($"{nameof(ItemVisualizer)}::{nameof(SetSpecialVisualsByItem)}(): ItemVisual mapping found for {item.ItemID} - {item.DisplayName} ({item.UID}). Replaced " +
                         $"visuals with ItemID {visualItemID}'s ItemVisual - {visual?.name}");
             }
             if (visual != null)
