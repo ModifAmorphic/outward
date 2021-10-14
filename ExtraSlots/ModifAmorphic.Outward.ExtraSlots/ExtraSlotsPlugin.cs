@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using HarmonyLib;
+using ModifAmorphic.Outward.ExtraSlots.Patches;
 using ModifAmorphic.Outward.Logging;
 using System;
 
@@ -19,7 +20,7 @@ namespace ModifAmorphic.Outward.ExtraSlots
             {
                 logger = LoggerFactory.ConfigureLogger(ModInfo.ModId, ModInfo.ModName, LogLevel.Info);
                 logger.LogInfo($"Patching...");
-                harmony.PatchAll();
+                harmony.PatchAll(typeof(QuickSlotPanelPatches));
 
                 var extraSlots = new ExtraSlots();
                 logger.LogInfo($"Starting {ModInfo.ModName} {ModInfo.ModVersion}...");

@@ -88,41 +88,17 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 _takingBags.TryRemove(bagUID, out var _);
                 return false;
             }
-            if (bag.HasContents())
-            {
-                var bagContents = bag.Container.GetContainedItems().ToList();
-                foreach (var item in bagContents)
-                {
-                    if (!PhotonNetwork.isNonMasterClientInRoom)
-                    {
-                        itemManager.DestroyItem(item.UID);
-                    }
-                    else
-                    {
-                        itemManager.SendDestroyItem(item.UID);
-                    }
-                }
-                bag.Container.RemoveAllSilver();
-            }
-            int bagItemID = bag.ItemID;
-            if (!PhotonNetwork.isNonMasterClientInRoom)
-            {
-                Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(TakeBag)}: Destroying Bag {bag.Name} ({bag.UID}).");
-                itemManager.DestroyItem(bag.UID);
-            }
-            else
-            {
-                Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(TakeBag)}: Sending Request to Destroy Bag {bag.Name} ({bag.UID}).");
-                itemManager.SendDestroyItem(bag.UID);
-            }
+            var bagItemID = bag.ItemID;
+            DoAfterBagTracked(bag, _instances.GetBagStateService(character.UID),
+                () => DestroyBag(bag));
 
-            _instances.UnityPlugin.StartCoroutine(AfterBagDestroyedCoroutine(bagUID, () =>
+            DoAfterBagDestroyed(bagUID, () =>
             {
                 var bagPrefab = ResourcesPrefabManager.Instance.GetItemPrefab(bagItemID);
                 character.Inventory.GenerateItem(bagPrefab, 1, false);
                 character.Inventory.NotifyItemTake(bagPrefab, 1);
                 _takingBags.TryRemove(bagUID, out var _);
-            }));
+            });
             _instances.StashPackNet.SendStashPackLinkChanged(bagUID, character.UID, false);
             return true;
         }
@@ -156,17 +132,18 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
                 BagStateService.DisableBag(bag.UID);
                 return true;
             }
+
             bagStates.DisableContentChangeTracking(bag.ItemID);
 
-            if (!bagStates.TryGetState(bag.ItemID, out var bagState) && bag.HasContents())
-            {
-                if (bag.PreviousOwnerUID == charUID)
-                {
-                    Logger.LogWarning($"{nameof(BagPickedActions)}::{nameof(HandleBackpackBefore)}: No existing state found for bag, but already has contents. Disabling Stashpack functionality.");
-                    BagStateService.DisableBag(bag.UID);
-                    return true;
-                }
-            }
+            //if (!bagStates.TryGetState(bag.ItemID, out var bagState) && bag.HasContents())
+            //{
+            //    if (bag.PreviousOwnerUID == charUID)
+            //    {
+            //        Logger.LogWarning($"{nameof(BagPickedActions)}::{nameof(HandleBackpackBefore)}: No existing state found for bag, but already has contents. Disabling Stashpack functionality.");
+            //        BagStateService.DisableBag(bag.UID);
+            //        return true;
+            //    }
+            //}
 
             Logger.LogDebug($"{nameof(BagPickedActions)}::{nameof(HandleBackpackBefore)}: Placing Bag {bag.Name} ({bag.UID}) into Character '{charUID}' inventory. character.transform: {character.transform?.name}," +
                 $" character.transform.parent: {character.transform?.parent?.name}");
