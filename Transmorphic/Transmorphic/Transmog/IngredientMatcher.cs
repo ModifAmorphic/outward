@@ -54,7 +54,9 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
             {
 				Logger.LogTrace($"{nameof(IngredientMatcher)}::{nameof(MatchRecipeStep)}() Potential Ingredient ItemID: {potentialIngredient.ItemID}. Filter is AddGenericIngredient and TagType is Armor. Matching on " +
 					$"Equipment Slot type {slot}.  Potential Ingredient Type: {firstItem?.GetType()}, Name: {firstItem?.DisplayName}, Slot: {(firstItem as Armor)?.EquipSlot}, and any Non Transmog Owned Item UID.");
-				return ownedItems.Any(i => i is Armor armor && armor.EquipSlot == slot && !((UID)armor.UID).IsTransmogrified() 
+				return ownedItems.Any(i => i is Armor armor && armor.EquipSlot == slot 
+											&& !((UID)armor.UID).IsTransmogrified() 
+											&& armor.IsEquipped
 											&& (tmogRecipe == null || i.ItemID != tmogRecipe.VisualItemID));
 			}
 
@@ -63,7 +65,9 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 			{
 				Logger.LogTrace($"{nameof(IngredientMatcher)}::{nameof(MatchRecipeStep)}() Potential Ingredient ItemID: {potentialIngredient.ItemID}. Filter is AddGenericIngredient and TagType is Weapons. Matching on " +
 					$"Weapon type {weaponType}.  Potential Ingredient Type: {firstItem?.GetType()}, Name: {firstItem?.DisplayName}, Slot: {(firstItem as Weapon)?.Type}, and any Non Transmog Owned Item UID.");
-				return ownedItems.Any(i => i is Weapon wep && wep.Type == weaponType && !((UID)wep.UID).IsTransmogrified()
+				return ownedItems.Any(i => i is Weapon wep && wep.Type == weaponType 
+											&& !((UID)wep.UID).IsTransmogrified()
+											&& wep.IsEquipped
 											&& (tmogRecipe == null || i.ItemID != tmogRecipe.VisualItemID));
 			}
 
@@ -71,7 +75,9 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
             {
 				Logger.LogTrace($"{nameof(IngredientMatcher)}::{nameof(MatchRecipeStep)}() Potential Ingredient ItemID: {potentialIngredient.ItemID}. Filter is AddGenericIngredient and TagType is a Custom IsRemoverTag. Matching on " +
 					$"any owned Tranmogrified Equipment items (m_ownedItems => i is Equipment and i.IsTransmog()).");
-				return ownedItems.Any(i => i is Equipment equip && ((UID)equip.UID).IsTransmogrified());
+				return ownedItems.Any(i => i is Equipment equip 
+											&& ((UID)equip.UID).IsTransmogrified()
+											&& equip.IsEquipped);
 			}
 
 			return false;
@@ -82,23 +88,46 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 			var ownedItems = compatibleIngredient.GetPrivateField<CompatibleIngredient, List<Item>>("m_ownedItems");
 			consumedItems = new List<KeyValuePair<string, int>>();
 
+			if (ownedItems == null || ownedItems.Count == 0)
+				return false;
+					
 			var recipe = ParentCraftingMenu.GetSelectedRecipe();
+
+			Logger.LogDebug($"{nameof(IngredientMatcher)}::{nameof(TryGetConsumedItems)}() Potential Ingredient ItemID: {compatibleIngredient.ItemID} - {ownedItems[0].DisplayName}. Recipe: {recipe.Name}. " +
+				$"useMultipler: {useMultipler}, resultMultiplier: {resultMultiplier}.");
+
 			//Return first Non Transmogrified Item
-			if (recipe is TransmogRecipe)
+			if (recipe is TransmogRecipe tmogRecipe)
             {
-				var item = ownedItems.First(i => !((UID)i.UID).IsTransmogrified());
-				consumedItems.Add(new KeyValuePair<string, int>(item.UID, item.ItemID));
-				return true;
+				var item = ownedItems.FirstOrDefault(i => i is Equipment equip && !((UID)i.UID).IsTransmogrified() && equip.IsEquipped);
+				if (item != default)
+				{
+					Logger.LogDebug($"{nameof(IngredientMatcher)}::{nameof(TryGetConsumedItems)}() Recipe '{tmogRecipe.RecipeName}' is a Transmog. Ingredient {compatibleIngredient.ItemID} - {item.DisplayName} ({item.UID}) " +
+						$"was selected to be consumed.");
+					consumedItems.Add(new KeyValuePair<string, int>(item.UID, item.ItemID));
+					return true;
+				}
+				Logger.LogDebug($"{nameof(IngredientMatcher)}::{nameof(TryGetConsumedItems)}() Recipe '{tmogRecipe.Name}' is a Transmog, but none of the owned ingredients are non-transmog'd equipment types. Keeping base game selection for item " +
+					$"{compatibleIngredient.ItemID}. First owned item in list was {ownedItems[0].DisplayName} ({ownedItems[0].UID}) with RemainingAmount: {ownedItems[0].RemainingAmount}.");
 			}
 
-			//Return first Tranmog'd item
-			if (recipe is TransmogRemoverRecipe)
+			//Return first Tranmog'd item if found
+			if (recipe is TransmogRemoverRecipe removerRecipe)
 			{
-				var tmoggedItem = ownedItems.First(i => ((UID)i.UID).IsTransmogrified());
-				consumedItems.Add(new KeyValuePair<string, int>(tmoggedItem.UID, tmoggedItem.ItemID));
-				return true;
+				var tmoggedItem = ownedItems.FirstOrDefault(i => i is Equipment equip && ((UID)i.UID).IsTransmogrified() && equip.IsEquipped);
+				if (tmoggedItem != default)
+				{
+					Logger.LogDebug($"{nameof(IngredientMatcher)}::{nameof(TryGetConsumedItems)}() Recipe '{removerRecipe.Name}' is a RemoverRecipe. Ingredient {compatibleIngredient.ItemID} - {tmoggedItem.DisplayName} ({tmoggedItem.UID}) " +
+						$"was selected to be consumed.");
+					consumedItems.Add(new KeyValuePair<string, int>(tmoggedItem.UID, tmoggedItem.ItemID));
+					return true;
+				}
+				Logger.LogDebug($"{nameof(IngredientMatcher)}::{nameof(TryGetConsumedItems)}() Recipe '{removerRecipe.Name}' is a RemoverRecipe, but none of the owned ingredients are transmog'd. Keeping base game selection for item " +
+					$"{compatibleIngredient.ItemID}. First owned item in list was {ownedItems[0].DisplayName} ({ownedItems[0].UID}) with RemainingAmount: {ownedItems[0].RemainingAmount}.");
 			}
 
+			Logger.LogDebug($"{nameof(IngredientMatcher)}::{nameof(TryGetConsumedItems)}() Recipe '{recipe.Name}' is neither a Transmog or Transmog Remover recipe. Keeping base game selection for item " +
+					$"{compatibleIngredient.ItemID}. First owned item in list was {ownedItems[0].DisplayName} ({ownedItems[0].UID}) with RemainingAmount: {ownedItems[0].RemainingAmount}.");
 			return false;
 		}
     }

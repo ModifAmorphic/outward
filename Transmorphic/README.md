@@ -1,5 +1,5 @@
 # Summary
-**Tired of running around looking like a freak in a bird mask? Give your equipment a makeover with a new Transmogrify crafting menu!**
+**Tired of running around looking like a freak in a bird mask? Change your gear's appearance with a new Transmogrify system!**
 &nbsp;
 - - - -
 &nbsp;
@@ -16,20 +16,40 @@ Cooking | ![Cooking menu](https://github.com/ModifAmorphic/outward/blob/mods/tra
 [![Transmogrify Video](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/ReadmeVideoPreview.png?raw=true)](https://youtu.be/XwYYAvxiIBM)
 
 # Instructions
-- Alter the appearance of weapons and armor in the new Transmog crafting menu.
-  - Select a recipe on the left.
-  - Choose the weapon or armor piece as one of the ingredients.
-  - Transmog your item!
-- Learn new Transmog recipes by equiping gear.
+- Learn new Transmog recipes by equipping gear.
+- Transmogrify an Item (swap visuals with another).
+  - \*\***Important**\*\* Equip the Item you want to change.
+  - Open the Transmogrify Crafting Menu
+  - Select the Transmog Recipe on the left.
+  - Confirm the Selected Item is the item you wish to apply the transmog to.
+  - Craft your new item.
+    - Any Enchantments are carried over to the new item.
 - Remove a transmog from equipment with the "-Remove Transmogrify" recipe.
+  - Equip Item you wish to remove the Transmogrify from.
+  - Open the Transmogrify Crafting Menu.
+  - Select the "- Remove Transmog" recipe at the top.
+  - Select the Equipped Item you wish to remove the Transmog from.
+  - Craft your new item with the transmog removed.
+    - Any Enchantments are carried over to the new item.
 
 # Description
-Transmorph adds additional crafting menus to character UI - Alchemy, Cooking and a new Transmogrify crafting menu (Alchemy and Cooking are disabled by default in the options).  Transmog recipes are learned automatically by equiping weapons and armor. Change the appearance of a weapon to any other weapon of the same type (1h sword --> 1h sword, 2h axe --> 2h axe, etc.). Armor visuals can be swapped to any armor of the same slot.
+<p>
+Transmorphic adds a new crafting system focused on customizing your equipment's visuals. Transmog Recipes (equipment appearances) are unlocking by finding and equipping gear. Once a transmog recipe is learned, any equipment item of the same type* can have its appearance altered to look like it in the new custom Transmogrify menu. Only equipped items are selectable in the Transmogrify crafting menu. If the item you want to transmog (or remove) is not available to select in the new crafting menu, make sure you have it equipped.
+</p>
 
-## Craft Transmog Gear with a New Crafting Menu
+\**1h sword --> 1h sword, 2h axe --> 2h axe, Boots --> Boots, etc.*
+
+
+<p> Alchemy and Cooking crafting menus can also be enabled in the Character UI. They are disabled by default in the options / settings file. </p>
+
+## Equip Item
+![Equip Target Item](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/EquipItemSmallest.png?raw=true)
+## Transmog in New Crafting Menu
 ![New Transmogrify Menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/CraftingMenuSmallest.png?raw=true)
 ## Custom Icon Identifies Transmog Gear
-![New Icons](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/TmogIconsSmallest.png?raw=true)
+![New Icons](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/NewTmogEquipmentSmallest.png?raw=true)
+## Equip Item
+![New Icons](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/HeadshotSmall.png?raw=true)
 
 # Change Logs
 

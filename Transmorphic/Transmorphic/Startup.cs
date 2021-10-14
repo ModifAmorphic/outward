@@ -81,7 +81,6 @@ namespace ModifAmorphic.Outward.Transmorph
         }
         private void ConfigureCraftingMenus()
         {
-
             _services.AddSingleton(new IngredientMatcher(_services.GetService<IModifLogger>))
                      .AddSingleton(new TransmogCrafter(_services.GetService<ItemVisualizer>(),
                                         _services.GetService<IModifLogger>)
@@ -106,6 +105,17 @@ namespace ModifAmorphic.Outward.Transmorph
             craftingModule.RegisterCompatibleIngredientMatcher<TransmogrifyMenu>(_services.GetService<IngredientMatcher>());
             craftingModule.RegisterConsumedItemSelector<TransmogrifyMenu>(_services.GetService<IngredientMatcher>());
             craftingModule.RegisterCustomCrafter<TransmogrifyMenu>(_services.GetService<TransmogCrafter>());
+            craftingModule.RegisterMenuIngredientFilters<TransmogrifyMenu>(
+                new MenuIngredientFilters()
+                {
+                    //BaseInventoryFilterTag = new Tag("70", "Item"),
+                    AdditionalInventoryIngredientFilter = null,
+                    EquippedIngredientFilter = new AvailableIngredientFilter()
+                    {
+                        EnchantFilter = AvailableIngredientFilter.EnchantFilters.IncludeEnchanted,
+                        ItemTypes = new HashSet<Type>() { typeof(Equipment) }
+                    },
+                });
         }
         private void ToggleCraftingMenu<T>(bool isEnabled) where T : CustomCraftingMenu
         {
