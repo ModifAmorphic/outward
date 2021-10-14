@@ -1,4 +1,12 @@
-﻿using BepInEx;
+﻿#if DEBUG
+using UnityEngine;
+using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.Transmorph.Extensions;
+using ModifAmorphic.Outward.Transmorph.Transmog.Models;
+#endif
+using System;
+using BepInEx;
+using System.Collections.Generic;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules;
@@ -8,14 +16,7 @@ using ModifAmorphic.Outward.Transmorph.Menu;
 using ModifAmorphic.Outward.Transmorph.Settings;
 using ModifAmorphic.Outward.Transmorph.Transmog;
 using ModifAmorphic.Outward.Transmorph.Transmog.SaveData;
-#if DEBUG
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using ModifAmorphic.Outward.Extensions;
-using ModifAmorphic.Outward.Transmorph.Extensions;
-using ModifAmorphic.Outward.Transmorph.Transmog.Models;
-#endif
+
 namespace ModifAmorphic.Outward.Transmorph
 {
     internal class Startup

@@ -1,5 +1,5 @@
 # Summary
-**Tired of running around looking like a freak in a bird mask? Change your gear's appearance with a new Transmogrify system!**
+**Tired of running around looking like a freak in a bird mask? Change your gear's appearance with a new Transmogrify Crafting system!**
 &nbsp;
 - - - -
 &nbsp;
@@ -9,8 +9,8 @@
  Menu | | Description
 --- | --- | --- 
  Transmogrify | ![Transmogrify](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverTransmogrify.png?raw=true) | Customize your gear. Change the appearance of weapons or armor.
-Alchemy | ![Alchemy menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverAlchemy.png?raw=true) | Adds an Alchemy crafting menu. Mix potions without deploying an alchemy kit. Enable in settings.
-Cooking | ![Cooking menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverCooking.png?raw=true) | Fully functional cooking from the character UI. Cook food without deploying a cooking pot. Enable in settings.
+Alchemy | ![Alchemy menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverAlchemy.png?raw=true) | (Optional) Adds an Alchemy crafting menu. Mix potions without deploying an alchemy kit. Enable in settings.
+Cooking | ![Cooking menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverCooking.png?raw=true) | (Optional) Fully functional cooking from the character UI. Cook food without deploying a cooking pot. Enable in settings.
 &nbsp;
 # Video
 [![Transmogrify Video](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/ReadmeVideoPreview.png?raw=true)](https://youtu.be/XwYYAvxiIBM)
@@ -34,7 +34,7 @@ Cooking | ![Cooking menu](https://github.com/ModifAmorphic/outward/blob/mods/tra
 
 # Description
 <p>
-Transmorphic adds a new crafting system focused on customizing your equipment's visuals. Transmog Recipes (equipment appearances) are unlocking by finding and equipping gear. Once a transmog recipe is learned, any equipment item of the same type* can have its appearance altered to look like it in the new custom Transmogrify menu. Only equipped items are selectable in the Transmogrify crafting menu. If the item you want to transmog (or remove) is not available to select in the new crafting menu, make sure you have it equipped.
+Transmorphic adds a new crafting system focused on customizing your equipment's visuals. Transmog Recipes (equipment appearances) are unlocking by finding and equipping gear. Once a transmog recipe is learned, any equipment item of the same type* can have its appearance altered to look like it in the new Transmogrify crafting menu. Only equipped items are selectable in the Transmogrify crafting menu. If the item you want to transmog (or remove) is not available to select in the new crafting menu, make sure you have it equipped.
 </p>
 
 \**1h sword --> 1h sword, 2h axe --> 2h axe, Boots --> Boots, etc.*
@@ -42,13 +42,13 @@ Transmorphic adds a new crafting system focused on customizing your equipment's 
 
 <p> Alchemy and Cooking crafting menus can also be enabled in the Character UI. They are disabled by default in the options / settings file. </p>
 
-## Equip Item
+## 1. Equip Item
 ![Equip Target Item](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/EquipItemSmallest.png?raw=true)
-## Transmog in New Crafting Menu
+## 2. Transmog in New Crafting Menu
 ![New Transmogrify Menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/CraftingMenuSmallest.png?raw=true)
-## Custom Icon Identifies Transmog Gear
+## 3. Custom Icon Identifies Transmog Gear
 ![New Icons](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/NewTmogEquipmentSmallest.png?raw=true)
-## Equip Item
+## 4. Reequip Item
 ![New Icons](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/HeadshotSmall.png?raw=true)
 
 # Change Logs
