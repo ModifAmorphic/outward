@@ -50,7 +50,7 @@ namespace ModifAmorphic.Outward.Logging
         }
         public void LogException(string message, Exception ex)
         {
-            Log(LogLevel.Error, message + " | Exception: " + ex.ToString());
+            Log(LogLevel.Error, message + " |\nException: " + ex.ToString());
         }
     }
 }
