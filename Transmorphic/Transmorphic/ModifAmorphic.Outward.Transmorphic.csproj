@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ModifAmorphic.Outward" Version="0.0.5.43" />
+    <PackageReference Include="ModifAmorphic.Outward" Version="0.0.5.45" />
   </ItemGroup>
 
   <ItemGroup>

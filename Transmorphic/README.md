@@ -28,7 +28,7 @@ Transmorph adds additional crafting menus to character UI - Alchemy, Cooking and
 
 ## Craft Transmog Gear with a New Crafting Menu
 ![New Transmogrify Menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/CraftingMenuSmallest.png?raw=true)
-## Custom Icon Identifies Tranmog Gear
+## Custom Icon Identifies Transmog Gear
 ![New Icons](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/TmogIconsSmallest.png?raw=true)
 
 # Change Logs

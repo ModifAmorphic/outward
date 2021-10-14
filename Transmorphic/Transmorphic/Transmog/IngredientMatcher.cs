@@ -77,23 +77,18 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 			return false;
 		}
 
-        public IList<KeyValuePair<string, int>> GetConsumedItems(CompatibleIngredient compatibleIngredient, bool useMultipler, ref int resultMultiplier)
+        public bool TryGetConsumedItems(CompatibleIngredient compatibleIngredient, bool useMultipler, ref int resultMultiplier, out IList<KeyValuePair<string, int>> consumedItems)
         {
 			var ownedItems = compatibleIngredient.GetPrivateField<CompatibleIngredient, List<Item>>("m_ownedItems");
-			var consumedItems = new List<KeyValuePair<string, int>>();
+			consumedItems = new List<KeyValuePair<string, int>>();
 
-			if (ownedItems.Count == 1)
-            {
-				consumedItems.Add(new KeyValuePair<string, int>(ownedItems[0].UID, ownedItems[0].ItemID));
-				return consumedItems;
-            }
 			var recipe = ParentCraftingMenu.GetSelectedRecipe();
 			//Return first Non Transmogrified Item
 			if (recipe is TransmogRecipe)
             {
 				var item = ownedItems.First(i => !((UID)i.UID).IsTransmogrified());
 				consumedItems.Add(new KeyValuePair<string, int>(item.UID, item.ItemID));
-				return consumedItems;
+				return true;
 			}
 
 			//Return first Tranmog'd item
@@ -101,11 +96,10 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
 			{
 				var tmoggedItem = ownedItems.First(i => ((UID)i.UID).IsTransmogrified());
 				consumedItems.Add(new KeyValuePair<string, int>(tmoggedItem.UID, tmoggedItem.ItemID));
-				return consumedItems;
+				return true;
 			}
 
-			consumedItems.Add(new KeyValuePair<string, int>(ownedItems[0].UID, ownedItems[0].ItemID));
-			return consumedItems;
+			return false;
 		}
     }
 }
