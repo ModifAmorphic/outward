@@ -46,7 +46,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients
                 return false;
             }
 
-            return _consumedItemSelector.TryGetConsumedItems(this, useMultipler, out resultMultiplier, out consumedItems);
+            return _consumedItemSelector.TryGetConsumedItems(this, useMultipler, ref resultMultiplier, out consumedItems);
         }
         public void CaptureConsumedItems(IList<KeyValuePair<string, int>> consumedItems)
         {

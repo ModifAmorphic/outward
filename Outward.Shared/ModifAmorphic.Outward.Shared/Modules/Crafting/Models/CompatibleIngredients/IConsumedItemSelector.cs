@@ -21,6 +21,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients
         /// <param name="resultMultiplier">The calculated result multiplier. Usually 1 unless multiplier is true, in which case it will be total amount of owned items. Can be set to a different value, but normally left as.</param>
         /// <param name="consumedItems">A collection of (UID, ItemID) KeyValuePairs. This needs to return at least one valid item if a "true" result is returned.</param>
         /// <returns>True to use consumed items returned by this invocation. Otherwise false to use the base game calculation.</returns>
-        bool TryGetConsumedItems(CompatibleIngredient compatibleIngredient, bool useMultipler, out int resultMultiplier, out IList<KeyValuePair<string, int>> consumedItems);
+        bool TryGetConsumedItems(CompatibleIngredient compatibleIngredient, bool useMultipler, ref int resultMultiplier, out IList<KeyValuePair<string, int>> consumedItems);
     }
 }
