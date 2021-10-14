@@ -146,6 +146,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
         public void RegisterCustomCrafter<T>(ICustomCrafter crafter)  where T : CustomCraftingMenu => _craftingService.AddOrUpdateCrafter<T>(crafter);
         public void RegisterCompatibleIngredientMatcher<T>(ICompatibleIngredientMatcher matcher) where T : CustomCraftingMenu 
             => _craftingService.AddOrUpdateCompatibleIngredientMatcher<T>(matcher);
+        public void RegisterConsumedItemSelector<T>(IConsumedItemSelector itemSelector) where T : CustomCraftingMenu
+            => _craftingService.AddOrUpdateConsumedItemSelector<T>(itemSelector);
 
         public void EnableCraftingMenu<T>() where T : CustomCraftingMenu
         {

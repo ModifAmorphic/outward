@@ -186,6 +186,12 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			get => this.GetPrivateField<CraftingMenu, bool>("m_refreshComplexeRecipeRequired");
 			set => this.SetPrivateField<CraftingMenu, bool>("m_refreshComplexeRecipeRequired", value);
 		}
+		
+		protected int _lastFreeRecipeIndex
+		{
+			get => this.GetPrivateField<CraftingMenu, int>("m_lastFreeRecipeIndex");
+			set => this.SetPrivateField<CraftingMenu, int>("m_lastFreeRecipeIndex", value);
+		}
 		protected int _lastRecipeIndex
         {
 			get => this.GetPrivateField<CraftingMenu, int>("m_lastRecipeIndex");
@@ -384,7 +390,9 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			Show(stationItem.gameObject.GetComponentInChildren<CraftingStation>());
 		}
 
-		
+
+		//public Recipe GetSelectedRecipe() =>
+		//		_lastRecipeIndex != -1 ? _complexeRecipes[_lastRecipeIndex].Value : !HideFreeCraftingRecipe ? _complexeRecipes[_lastFreeRecipeIndex].Value : null;
 		public Recipe GetSelectedRecipe() =>
 				_lastRecipeIndex != -1 ? _complexeRecipes[_lastRecipeIndex].Value : null;
 		public List<CompatibleIngredient> GetSelectedIngredients() =>

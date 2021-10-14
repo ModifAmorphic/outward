@@ -119,29 +119,24 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
             }
         }
 
-        public static event Func<CustomCraftingMenu, bool> RefreshAvailableIngredientsOverridden;
+        public static event Action<CustomCraftingMenu> RefreshAvailableIngredientsAfter;
         [HarmonyPatch("RefreshAvailableIngredients", MethodType.Normal)]
-        [HarmonyPrefix]
-        private static bool RefreshAvailableIngredientsPrefix(CraftingMenu __instance)
+        [HarmonyPostfix]
+        private static void RefreshAvailableIngredientsPostfix(CraftingMenu __instance)
         {
             try
             {
-                Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAvailableIngredientsPrefix)}(): Invoked on CraftingMenu type {__instance?.GetType()}.");
-                if (__instance is CustomCraftingMenu menu
-                    && (RefreshAvailableIngredientsOverridden?.Invoke(menu) ?? false))
-                {
-                    Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAvailableIngredientsPrefix)}(): {nameof(RefreshAvailableIngredientsOverridden)}() result: was true. Returning false to override base method.");
-                    return false;
-                }
-
+                if (!(__instance is CustomCraftingMenu customCraftingMenu))
+                    return;
+                
+                Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAvailableIngredientsPostfix)}(): Invoked on CraftingMenu type {customCraftingMenu?.GetType()}.  Invoking {nameof(RefreshAvailableIngredientsAfter)}().");
+                RefreshAvailableIngredientsAfter?.Invoke(customCraftingMenu);
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAvailableIngredientsPrefix)}(): Exception Invoking {nameof(RefreshAvailableIngredientsOverridden)}({__instance?.GetType()}).", ex);
+                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAvailableIngredientsPostfix)}(): Exception Invoking {nameof(RefreshAvailableIngredientsAfter)}({__instance?.GetType()}).", ex);
             }
-            return true;
         }
-
 
         [HarmonyPatch("RefreshAutoIngredients", MethodType.Normal)]
         [HarmonyPrefix]
@@ -186,30 +181,5 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
             }
         }
 
-        //public delegate void RefreshAutoIngredients(CraftingMenu craftingMenu, Recipe recipe, ref IList<int>[] allMatches, ref IList<int> bestIngredientsMatch);
-        //public static event RefreshAutoIngredients RefreshAutoIngredientsAfter;
-        //[HarmonyPatch("RefreshAutoIngredients", MethodType.Normal)]
-        //[HarmonyPostfix]
-        //private static void RefreshAutoIngredientsPostfix(CraftingMenu __instance, Recipe _recipe, ref IList<int>[] _allMatches, ref IList<int> _bestIngredientsMatch)
-        //{
-        //    try
-        //    {
-        //        Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredientsPostfix)}(): Invoked on CraftingMenu type {__instance?.GetType()}.");
-        //        if (!(__instance is CustomCraftingMenu)
-        //            || _recipe == null
-        //            || _recipe.Results == null || _recipe.Results.Length == 0
-        //            || !(_recipe.Results[0] is DynamicCraftingResult))
-        //        {
-        //            return;
-        //        }
-        //        Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredientsPostfix)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Invoking " +
-        //            $"{nameof(IngredientSelectorHasChangedAfter)}() for recipe {_recipe.Name}");
-        //        RefreshAutoIngredientsAfter?.Invoke(__instance, _recipe, ref _allMatches, ref _bestIngredientsMatch);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredientsPostfix)}(): Exception Invoking {nameof(RefreshAutoIngredientsAfter)}().", ex);
-        //    }
-        //}
     }
 }
