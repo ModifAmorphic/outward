@@ -6,7 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ModifAmorphic.Outward" Version="0.4.4" />
+    <!--<PackageReference Include="Costura.Fody" Version="5.6.0">
+      <PrivateAssets>all</PrivateAssets>
+      --><!--<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>--><!--
+    </PackageReference>-->
+    <PackageReference Include="ModifAmorphic.Outward" Version="0.5.0">
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

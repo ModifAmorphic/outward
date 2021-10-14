@@ -44,16 +44,6 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.Data
             };
 
         }
-        public IEnumerator InvokeAfterStashPackLoaded(string UID, Action<StashPack> invokeAfter)
-        {
-            StashPack stashPack = null;
-            while (stashPack == null || !_itemManager.IsAllItemSynced || string.IsNullOrEmpty(stashPack.StashBag.PreviousOwnerUID))
-            {
-                stashPack = GetStashPack(UID);
-                yield return new WaitForSeconds(.5f);
-            }
-            invokeAfter?.Invoke(stashPack);
-        }
 
         /// <summary>
         /// Get's all StashPacks currently loaded into the world for for the <paramref name="previousOwnerUID"/>.

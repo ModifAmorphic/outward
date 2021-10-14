@@ -1,57 +1,67 @@
 ﻿using BepInEx;
+using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Network;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.Settings;
 using ModifAmorphic.Outward.StashPacks.State;
 using ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions;
+using System;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.StashPacks
 {
     public class Startup
     {
-        private IModifLogger Logger => LoggerFactory.GetLogger();
-
         public Startup() { }
-        public void Start(BaseUnityPlugin unityPlugin)
+        public void Start(ServicesProvider services)
         {
-            var settingsService = new SettingsService(unityPlugin, ModInfo.MinimumConfigVersion);
-            var configSettings = settingsService.ConfigureSettings();
-            var stashPackNet = ConfigureStashPackNet();
-            BagStateService.ConfigureNet(stashPackNet);
-            var hostSettings = settingsService.ConfigureHostSettings(configSettings, stashPackNet);
-            var instanceFactory = new InstanceFactory(unityPlugin, configSettings, hostSettings, stashPackNet, LoggerFactory.GetLogger);
-            var actionInstances = new ActionInstanceManager(instanceFactory, LoggerFactory.GetLogger);
+            var settingsService = new SettingsService(services.GetService<BaseUnityPlugin>(), ModInfo.MinimumConfigVersion);
+            services.AddSingleton(settingsService.ConfigureSettings());
+            services.AddFactory(() => LoggerFactory.GetLogger(ModInfo.ModId));
+
+            services.ConfigureStashPackNet();
+            BagStateService.ConfigureNet(services.GetService<StashPackNet>());
+
+            services.AddSingleton(
+                settingsService.ConfigureHostSettings(
+                    services.GetService<StashPacksConfigSettings>(), 
+                    services.GetService<StashPackNet>())
+                );
+
+            services.AddSingleton(new PlayerCoroutines(
+                services.GetService<BaseUnityPlugin>(),
+                services.GetServiceFactory<IModifLogger>()));
+            services.AddSingleton(new LevelCoroutines(
+                services.GetService<BaseUnityPlugin>(),
+                services.GetServiceFactory<IModifLogger>()));
+            services.AddSingleton(new ItemCoroutines(
+                services.GetService<BaseUnityPlugin>(),
+                () => ItemManager.Instance,
+                services.GetServiceFactory<IModifLogger>()));
+
+            var instanceFactory = new InstanceFactory(services);
+
+            var actionInstances = new ActionInstanceManager(instanceFactory, services.GetService<IModifLogger>);
             actionInstances.StartActions();
 
-            ConfigurePatchLogging();
+            ConfigurePatchLogging(services.GetService<IModifLogger>);
         }
-        private StashPackNet ConfigureStashPackNet()
+        private void ConfigurePatchLogging(Func<IModifLogger> loggerFactory)
         {
-            var gameObject = new GameObject(nameof(StashPackNet))
-            {
-                hideFlags = HideFlags.HideAndDontSave
-            };
-            var stashPackNet = gameObject.AddComponent<StashPackNet>();
-            stashPackNet.LoggerFactory = LoggerFactory.GetLogger;
-
-            return stashPackNet;
-        }
-        private void ConfigurePatchLogging()
-        {
-            LobbySystemEvents.LoggerFactory = LoggerFactory.GetLogger;
-            ConnectPhotonMasterEvents.LoggerFactory = LoggerFactory.GetLogger;
-            CharacterSaveInstanceHolderEvents.LoggerFactory = LoggerFactory.GetLogger;
-            CharacterEvents.LoggerFactory = LoggerFactory.GetLogger;
-            ItemContainerEvents.LoggerFactory = LoggerFactory.GetLogger;
-            ItemManagerEvents.LoggerFactory = LoggerFactory.GetLogger;
-            NetworkLevelLoaderEvents.LoggerFactory = LoggerFactory.GetLogger;
-            SaveInstanceEvents.LoggerFactory = LoggerFactory.GetLogger;
-            CharacterInventoryEvents.LoggerFactory = LoggerFactory.GetLogger;
-            ItemEvents.LoggerFactory = LoggerFactory.GetLogger;
-            BagEvents.LoggerFactory = LoggerFactory.GetLogger;
-            InteractionDisplayEvents.LoggerFactory = LoggerFactory.GetLogger;
+            LobbySystemEvents.LoggerFactory = loggerFactory;
+            ConnectPhotonMasterEvents.LoggerFactory = loggerFactory;
+            CharacterSaveInstanceHolderEvents.LoggerFactory = loggerFactory;
+            CharacterEvents.LoggerFactory = loggerFactory;
+            ItemContainerEvents.LoggerFactory = loggerFactory;
+            ItemManagerEvents.LoggerFactory = loggerFactory;
+            NetworkLevelLoaderEvents.LoggerFactory = loggerFactory;
+            SaveInstanceEvents.LoggerFactory = loggerFactory;
+            CharacterInventoryEvents.LoggerFactory = loggerFactory;
+            ItemEvents.LoggerFactory = loggerFactory;
+            BagEvents.LoggerFactory = loggerFactory;
+            InteractionDisplayEvents.LoggerFactory = loggerFactory;
         }
     }
 }

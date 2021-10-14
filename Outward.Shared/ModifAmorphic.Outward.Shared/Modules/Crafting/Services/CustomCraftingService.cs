@@ -18,6 +18,10 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
         private readonly ConcurrentDictionary<Type, ICompatibleIngredientMatcher> _ingredientMatchers =
             new ConcurrentDictionary<Type, ICompatibleIngredientMatcher>();
 
+        private readonly ConcurrentDictionary<Type, IConsumedItemSelector> _itemSelectors =
+            new ConcurrentDictionary<Type, IConsumedItemSelector>();
+        
+
         private readonly Func<IModifLogger> _loggerFactory;
         private IModifLogger Logger => _loggerFactory.Invoke();
 
@@ -25,7 +29,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
         {
             _loggerFactory = loggerFactory;
             CraftingMenuPatches.GenerateResultOverride += TryGenerateResultOverride;
-            CraftingMenuPatches.RefreshAvailableIngredientsOverridden += TryRefreshAvailableIngredientsOverride;
+            CraftingMenuPatches.RefreshAvailableIngredientsAfter += TryRefreshAvailableIngredients;
         }
 
         private bool TryGenerateResultOverride((CustomCraftingMenu CraftingMenu, ItemReferenceQuantity Result, int ResultMultiplier) arg)
@@ -79,81 +83,106 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             return true;
         }
 
-        private bool TryRefreshAvailableIngredientsOverride(CustomCraftingMenu craftingMenu)
+        private void TryRefreshAvailableIngredients(CustomCraftingMenu craftingMenu)
         {
             try
             {
-                return RefreshAvailableIngredientsOverride(craftingMenu);
+                RefreshAvailableIngredients(craftingMenu);
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(CustomCraftingService)}::{nameof(TryRefreshAvailableIngredientsOverride)}(): " +
-                        $"Exception in call {nameof(RefreshAvailableIngredientsOverride)} for CustomCraftingMenu type {craftingMenu.GetType()}.", ex);
-                return false;
+                Logger.LogException($"{nameof(CustomCraftingService)}::{nameof(TryRefreshAvailableIngredients)}(): " +
+                        $"Exception in call {nameof(RefreshAvailableIngredients)} for CustomCraftingMenu type {craftingMenu.GetType()}.", ex);
             }
         }
-        private bool RefreshAvailableIngredientsOverride(CustomCraftingMenu craftingMenu)
+        private void RefreshAvailableIngredients(CustomCraftingMenu craftingMenu)
         {
             var availableIngredients = craftingMenu.GetPrivateField<CraftingMenu, DictionaryExt<int, CompatibleIngredient>>("m_availableIngredients");
-            availableIngredients.Values.ForEach(i => i.Clear());
-
-            craftingMenu.LocalCharacter.Inventory.InventoryIngredients(craftingMenu.InventoryFilterTag, ref availableIngredients);
-
-            Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(RefreshAvailableIngredientsOverride)}(): " +
+            
+            Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(RefreshAvailableIngredients)}(): " +
                         $"Retrieved {availableIngredients.Count} items from character inventory for RecipeCraftingType {craftingMenu.GetRecipeCraftingType()} and Tag {craftingMenu.InventoryFilterTag}" +
                         $" for CustomCraftingMenu type {craftingMenu.GetType()}.");
 
             //If a custom ingredient matcher is found, rebuild the list with CustomCompatibleIngredients with the matcher injected
-            ICompatibleIngredientMatcher matcher;
-            if (_ingredientMatchers.TryGetValue(craftingMenu.GetType(), out matcher))
+            _ingredientMatchers.TryGetValue(craftingMenu.GetType(), out var matcher);
+            _itemSelectors.TryGetValue(craftingMenu.GetType(), out var itemSelector);
+
+            if (matcher != null || itemSelector != null)
             {
-                Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(RefreshAvailableIngredientsOverride)}(): " +
+                if (matcher != null)
+                    Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(RefreshAvailableIngredients)}(): " +
                         $"Found ICompatibleIngredientMatcher {matcher?.GetType()} registered for CustomCraftingMenu type {craftingMenu.GetType()}.");
-                matcher.ParentCraftingMenu = craftingMenu;
+                if (itemSelector != null)
+                    Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(RefreshAvailableIngredients)}(): " +
+                        $"Found IConsumedItemSelector {itemSelector?.GetType()} registered for CustomCraftingMenu type {craftingMenu.GetType()}.");
+                if (matcher != null)
+                    matcher.ParentCraftingMenu = craftingMenu;
+                if (itemSelector != null)
+                    itemSelector.ParentCraftingMenu = craftingMenu;
                 var tmpIngrds = new DictionaryExt<int, CompatibleIngredient>();
+                bool isNewCustomIngredients = false;
                 for (int i = 0; i < availableIngredients.Keys.Count; i++)
                 {
                     var ingredient = availableIngredients[availableIngredients.Keys[i]];
-                    var custIngredient = new CustomCompatibleIngredient(ingredient.ItemID, matcher, _loggerFactory);
-
-                    //m_ownedItems gets added to by the earlier InventoryIngredients call, so copy that as well.
-                    var ownedItems = ingredient.GetPrivateField<CompatibleIngredient, List<Item>>("m_ownedItems");
-                    foreach (var o in ownedItems)
+                    if (!(ingredient is CustomCompatibleIngredient custIngredient))
                     {
-                        custIngredient.AddOwnedItem(o);
-                    }
+                        isNewCustomIngredients = true;
+                        var newCustIngredient = new CustomCompatibleIngredient(ingredient.ItemID, matcher, itemSelector, _loggerFactory);
 
-                    tmpIngrds.Add(availableIngredients.Keys[i], custIngredient);
+                        //m_ownedItems gets added to by the earlier InventoryIngredients call, so copy that as well.
+                        var ownedItems = ingredient.GetPrivateField<CompatibleIngredient, List<Item>>("m_ownedItems");
+                        foreach (var o in ownedItems)
+                        {
+                            newCustIngredient.AddOwnedItem(o);
+                        }
+                        tmpIngrds.Add(availableIngredients.Keys[i], newCustIngredient);
+                    }
+                    else
+                    {
+                        //add the original ingredient just in case there are some new CustomCompatibleIngredients created
+                        tmpIngrds.Add(availableIngredients.Keys[i], custIngredient);
+                    }
+#if DEBUG
+                    var logItems = availableIngredients[availableIngredients.Keys[i]].GetPrivateField<CompatibleIngredient, List<Item>>("m_ownedItems");
+                    foreach (var item in logItems)
+                        Logger.LogTrace($"{nameof(CustomCraftingService)}::{nameof(RefreshAvailableIngredients)}(): {availableIngredients.Keys[i]} - " +
+                            $"{item.Name} ({item.UID}). IsEnchanted: {item.IsEnchanted}");
+#endif
                 }
-                availableIngredients = tmpIngrds;
+                //Only set the dictionary if a new CustomCompatibleIngredient was created and added. Otherwise, stick with
+                //the original dictionary values.
+                if (isNewCustomIngredients)
+                    availableIngredients = tmpIngrds;
             }
             if (craftingMenu.IncludeEnchantedIngredients)
             {
-                AddEnchantingIngredients(craftingMenu.LocalCharacter.Inventory, craftingMenu.InventoryFilterTag, matcher, ref availableIngredients);
+                AddEnchantingIngredients(craftingMenu.LocalCharacter.Inventory.Pouch.GetContainedItems(), 
+                    craftingMenu.InventoryFilterTag, matcher, itemSelector, ref availableIngredients);
+                AddEnchantingIngredients(craftingMenu.LocalCharacter.Inventory.EquippedBag.Container.GetContainedItems(), 
+                    craftingMenu.InventoryFilterTag, matcher, itemSelector, ref availableIngredients);
             }
             craftingMenu.SetPrivateField<CraftingMenu, DictionaryExt<int, CompatibleIngredient>>("m_availableIngredients", availableIngredients);
 
-            return true;
         }
-        private void AddEnchantingIngredients(CharacterInventory inventory, Tag filterTag, ICompatibleIngredientMatcher matcher, ref DictionaryExt<int, CompatibleIngredient> ingredients)
+        private void AddEnchantingIngredients(List<Item> inventoryItems, Tag filterTag, ICompatibleIngredientMatcher matcher, IConsumedItemSelector itemSelector, ref DictionaryExt<int, CompatibleIngredient> ingredients)
         {
-            var allItems = inventory.Pouch.GetContainedItems();
-            if (inventory.HasABag)
-                allItems.AddRange(inventory.EquippedBag.Container.GetContainedItems());
-
-            foreach (var item in allItems)
+            foreach (var item in inventoryItems)
             {
                 if (item.HasTag(filterTag) && !(item is WaterContainer) && item.IsEnchanted)
                 {
                     if (ingredients.ContainsKey(item.ItemID))
                     {
                         ingredients[item.ItemID].AddOwnedItem(item);
+                        Logger.LogTrace($"{nameof(CustomCraftingService)}::{nameof(AddEnchantingIngredients)}(): Added {item.ItemID} - " +
+                            $"{item.Name} ({item.UID}). IsEnchanted: {item.IsEnchanted}");
                         continue;
                     }
                     CompatibleIngredient compatible = matcher == null ?
-                        new CompatibleIngredient(item.ItemID) : new CustomCompatibleIngredient(item.ItemID, matcher, _loggerFactory);
+                        new CompatibleIngredient(item.ItemID) : new CustomCompatibleIngredient(item.ItemID, matcher, itemSelector, _loggerFactory);
                     compatible.AddOwnedItem(item);
                     ingredients.Add(compatible.ItemID, compatible);
+                    Logger.LogTrace($"{nameof(CustomCraftingService)}::{nameof(AddEnchantingIngredients)}(): New {item.ItemID} - " +
+                        $"{item.Name} ({item.UID}). IsEnchanted: {item.IsEnchanted}");
                 }
             }
         }
@@ -165,5 +194,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
 
         public bool TryGetCompatibleIngredientMatcher<T>(out ICompatibleIngredientMatcher matcher) =>
             _ingredientMatchers.TryGetValue(typeof(T), out matcher);
+
+        public IConsumedItemSelector AddOrUpdateConsumedItemSelector<T>(IConsumedItemSelector itemSelector) =>
+           _itemSelectors.AddOrUpdate(typeof(T), itemSelector, (k, v) => v = itemSelector);
     }
 }

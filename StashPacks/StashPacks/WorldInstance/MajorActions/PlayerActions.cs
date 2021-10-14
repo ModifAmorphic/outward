@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Patch.Events;
 using ModifAmorphic.Outward.StashPacks.SaveData.Data;
@@ -51,15 +52,15 @@ namespace ModifAmorphic.Outward.StashPacks.WorldInstance.MajorActions
         private void ReceivedPlayerHasLeftAfter(string playerUID)
         {
             var player = GetPlayerSystem(playerUID);
-            if (player != null && player.IsHostPlayer())
+            if ((player != null && player.IsHostPlayer()) || 
+                Global.IsApplicationClosing || 
+                MenuManager.Instance.IsReturningToMainMenu)
             {
                 return;
             }
 
             Logger.LogDebug($"{nameof(PlayerActions)}::{nameof(ReceivedPlayerHasLeftAfter)}: Starting coroutine. Waiting for playerUID '{playerUID}' to leave before cleaning up stash packs.");
-            _instances.UnityPlugin.StartCoroutine(
-                AfterPlayerLeftCoroutine(playerUID, () => CheckForAbandonedPacks()));
-
+             DoAfterPlayerLeftCoroutine(playerUID, () => CheckForAbandonedPacks());
         }
         private void CheckForAbandonedPacks()
         {
