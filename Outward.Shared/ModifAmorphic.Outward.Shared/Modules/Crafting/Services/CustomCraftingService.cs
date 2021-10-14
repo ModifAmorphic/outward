@@ -142,10 +142,12 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                         //add the original ingredient just in case there are some new CustomCompatibleIngredients created
                         tmpIngrds.Add(availableIngredients.Keys[i], custIngredient);
                     }
+#if DEBUG
                     var logItems = availableIngredients[availableIngredients.Keys[i]].GetPrivateField<CompatibleIngredient, List<Item>>("m_ownedItems");
                     foreach (var item in logItems)
-                        Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(RefreshAvailableIngredients)}(): {availableIngredients.Keys[i]} - " +
+                        Logger.LogTrace($"{nameof(CustomCraftingService)}::{nameof(RefreshAvailableIngredients)}(): {availableIngredients.Keys[i]} - " +
                             $"{item.Name} ({item.UID}). IsEnchanted: {item.IsEnchanted}");
+#endif
                 }
                 //Only set the dictionary if a new CustomCompatibleIngredient was created and added. Otherwise, stick with
                 //the original dictionary values.
@@ -171,7 +173,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                     if (ingredients.ContainsKey(item.ItemID))
                     {
                         ingredients[item.ItemID].AddOwnedItem(item);
-                        Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(AddEnchantingIngredients)}(): Added {item.ItemID} - " +
+                        Logger.LogTrace($"{nameof(CustomCraftingService)}::{nameof(AddEnchantingIngredients)}(): Added {item.ItemID} - " +
                             $"{item.Name} ({item.UID}). IsEnchanted: {item.IsEnchanted}");
                         continue;
                     }
@@ -179,7 +181,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                         new CompatibleIngredient(item.ItemID) : new CustomCompatibleIngredient(item.ItemID, matcher, itemSelector, _loggerFactory);
                     compatible.AddOwnedItem(item);
                     ingredients.Add(compatible.ItemID, compatible);
-                    Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(AddEnchantingIngredients)}(): New {item.ItemID} - " +
+                    Logger.LogTrace($"{nameof(CustomCraftingService)}::{nameof(AddEnchantingIngredients)}(): New {item.ItemID} - " +
                         $"{item.Name} ({item.UID}). IsEnchanted: {item.IsEnchanted}");
                 }
             }

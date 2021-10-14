@@ -52,7 +52,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
                     return;
 
                 Logger.LogTrace($"{nameof(CompatibleIngredientPatches)}::{nameof(GetConsumedItemsPostfix)}(): Capturing {__result?.Count} consumed items.");
-                int resultMulti = _resultMultiplier;
+                var resultMulti = _resultMultiplier;
                 if (customIngredient.TryGetConsumedItems(_useMultipler, ref resultMulti, out var consumedIngredients))
                 {
                     _resultMultiplier = resultMulti;
