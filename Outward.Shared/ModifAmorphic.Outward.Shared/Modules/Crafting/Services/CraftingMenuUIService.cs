@@ -9,13 +9,13 @@ using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Modules.Crafting.Services
 {
-    internal class CraftingMenuService
+    internal class CraftingMenuUIService
     {
         private readonly Func<IModifLogger> _loggerFactory;
         private IModifLogger Logger => _loggerFactory.Invoke();
 
 
-        public CraftingMenuService(Func<IModifLogger> loggerFactory) =>
+        public CraftingMenuUIService(Func<IModifLogger> loggerFactory) =>
             (_loggerFactory) = (loggerFactory);
 
         public GameObject AddMenuTab(CharacterUI characterUI, string tabName, string tabDisplayName, string buttonName, int menuId, string orderAfterBtn, MenuIcons menuIcons)
@@ -50,7 +50,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             menuTabs[menuTabs.Length - 1] = newMenuTab;
             characterUI.SetPrivateField("m_menuTabs", menuTabs);
             
-            Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(AddMenuTab)}: Resized m_menuTabs to {menuTabs.Length}");
+            Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(AddMenuTab)}: Resized m_menuTabs to {menuTabs.Length}");
 
             //activate the new menu gameobject
             newUiMenuTabGo.SetActive(isActive);
@@ -85,16 +85,16 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
 
             toggle.spriteState = spriteState;
 
-            Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(SetMenuIcons)}: Replaced HighlightedSprite with new Sprite '{menuIcons.HoverIcon.SpriteName}'. PressedSprite is now {toggle.spriteState.highlightedSprite}. File: {menuIcons.HoverIcon.IconFilePath}.");
+            Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(SetMenuIcons)}: Replaced HighlightedSprite with new Sprite '{menuIcons.HoverIcon.SpriteName}'. PressedSprite is now {toggle.spriteState.highlightedSprite}. File: {menuIcons.HoverIcon.IconFilePath}.");
 
             var unpressed = menuBtn.GetComponent<Image>();
             unpressed.ReplaceSpriteIcon(menuIcons.UnpressedIcon.IconFilePath, menuIcons.UnpressedIcon.SpriteName, menuIcons.UnpressedIcon.TextureName);
-            Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(SetMenuIcons)}: Replaced UnpressedSprite with new Sprite '{menuIcons.UnpressedIcon.SpriteName}', File: {menuIcons.UnpressedIcon.IconFilePath}.");
+            Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(SetMenuIcons)}: Replaced UnpressedSprite with new Sprite '{menuIcons.UnpressedIcon.SpriteName}', File: {menuIcons.UnpressedIcon.IconFilePath}.");
 
             var pressedGo = menuBtn.transform.Find("Pressed").gameObject;
             var pressed = pressedGo.GetComponent<Image>();
             pressed.ReplaceSpriteIcon(menuIcons.PressedIcon.IconFilePath, menuIcons.PressedIcon.SpriteName, menuIcons.PressedIcon.TextureName);
-            Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(SetMenuIcons)}: Replaced PressedSprite with new Sprite '{menuIcons.PressedIcon.SpriteName}', File: {menuIcons.PressedIcon.IconFilePath}.");
+            Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(SetMenuIcons)}: Replaced PressedSprite with new Sprite '{menuIcons.PressedIcon.SpriteName}', File: {menuIcons.PressedIcon.IconFilePath}.");
         }
         private void SetTabOrder(string targetBtn, string orderAfterBtn, CharacterUI characterUI)
         {
@@ -114,12 +114,12 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                 if (orderedTabs[i].name == orderAfterBtn)
                 {
                     targetTab.transform.SetSiblingIndex(endIndex + shiftIndex - iteration);
-                    Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(SetTabOrder)}: {targetTab.name}: SetSiblingIndex({(endIndex + shiftIndex - iteration)}). GetSiblingIndex(): {targetTab.transform.GetSiblingIndex()}");
+                    Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(SetTabOrder)}: {targetTab.name}: SetSiblingIndex({(endIndex + shiftIndex - iteration)}). GetSiblingIndex(): {targetTab.transform.GetSiblingIndex()}");
                     shiftIndex = 0;
                 }
 
                 orderedTabs[i].transform.SetSiblingIndex(endIndex + shiftIndex - iteration);
-                Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(SetTabOrder)}: {orderedTabs[i].name}: {orderedTabs[i].transform.GetSiblingIndex()}");
+                Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(SetTabOrder)}: {orderedTabs[i].name}: {orderedTabs[i].transform.GetSiblingIndex()}");
 
                 iteration++;
             }
@@ -131,10 +131,10 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             if (lblTitleXform != null)
             {
                 lblTitleXform.gameObject.SetActive(false);
-                Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(DisableTitleLabel)}: Disabled title label {lblTitleXform.gameObject.name} under menu {menu.name}.");
+                Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(DisableTitleLabel)}: Disabled title label {lblTitleXform.gameObject.name} under menu {menu.name}.");
             }
             else
-                Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(DisableTitleLabel)}: Could not find title under menu {menu.name}. Tried to find: {lblTitlePath}.");
+                Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(DisableTitleLabel)}: Could not find title under menu {menu.name}. Tried to find: {lblTitlePath}.");
         }
         public GameObject AddFooter(CharacterUI characterUI, int menuScreen, string footerName)
         {
@@ -175,12 +175,12 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             //activate everything to trigger the awakes.
             try
             {
-                Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(AddCustomMenu)}: Activating menu parent: {menuParentXform.gameObject.name}.");
+                Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(AddCustomMenu)}: Activating menu parent: {menuParentXform.gameObject.name}.");
                 menuParentXform.gameObject.SetActive(true);
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(CraftingMenuService)}::{nameof(AddCustomMenu)}: CraftingMenuPatches_AwakeAfter() activate / deactive cycle error.", ex);
+                Logger.LogException($"{nameof(CraftingMenuUIService)}::{nameof(AddCustomMenu)}: CraftingMenuPatches_AwakeAfter() activate / deactive cycle error.", ex);
             }
             //reset the parent Active status back to whatever it was before
             menuParentXform.gameObject.SetActive(isActive);
@@ -218,7 +218,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
 
             TagSourceManager.Instance.SetPrivateField("m_craftingStationIngredientTags", m_craftingStationIngredientTags);
             
-            Logger.LogDebug($"{nameof(CraftingMenuService)}::{nameof(AddIngredientTags)}: Expanded m_craftingStationIngredientTags by {expandBy}.");
+            Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(AddIngredientTags)}: Expanded m_craftingStationIngredientTags by {expandBy}.");
 
             return addedTagIds;
 

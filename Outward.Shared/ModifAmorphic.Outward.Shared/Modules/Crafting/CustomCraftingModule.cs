@@ -19,7 +19,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
         private readonly Func<IModifLogger> _loggerFactory;
         private IModifLogger Logger => _loggerFactory.Invoke();
 
-        private readonly CraftingMenuService _menuTabService;
+        private readonly CraftingMenuUIService _menuTabService;
         private readonly CustomRecipeService _customRecipeService;
         private readonly CustomCraftingService _craftingService;
 
@@ -58,7 +58,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
         public delegate void AllMenuTypesLoadedDelegate(List<Type> menuTypes);
         public event AllMenuTypesLoadedDelegate AllMenuTypesLoaded;
 
-        internal CustomCraftingModule(CraftingMenuService menuTabService, CustomRecipeService customRecipeService, CustomCraftingService craftingService, Func<IModifLogger> loggerFactory)
+        internal CustomCraftingModule(CraftingMenuUIService menuTabService, CustomRecipeService customRecipeService, CustomCraftingService craftingService, Func<IModifLogger> loggerFactory)
         {
             (_menuTabService, _customRecipeService, _craftingService, _loggerFactory) = (menuTabService, customRecipeService, craftingService, loggerFactory);
             CharacterUIPatches.AwakeBefore += CharacterUIPatches_AwakeBefore;
@@ -144,6 +144,10 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             TryAddRecipes();
         }
         public void RegisterCustomCrafter<T>(ICustomCrafter crafter)  where T : CustomCraftingMenu => _craftingService.AddOrUpdateCrafter<T>(crafter);
+        public void RegisterMenuIngredientFilters<T>(MenuIngredientFilters filter) where T : CustomCraftingMenu
+            => _craftingService.AddOrUpdateIngredientFilter<T>(filter);
+        public bool TryGetRegisteredIngredientFilters<T>(out MenuIngredientFilters filter) where T : CustomCraftingMenu
+            => _craftingService.TryGetIngredientFilter<T>(out filter);
         public void RegisterCompatibleIngredientMatcher<T>(ICompatibleIngredientMatcher matcher) where T : CustomCraftingMenu 
             => _craftingService.AddOrUpdateCompatibleIngredientMatcher<T>(matcher);
         public void RegisterConsumedItemSelector<T>(IConsumedItemSelector itemSelector) where T : CustomCraftingMenu

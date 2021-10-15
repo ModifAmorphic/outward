@@ -23,10 +23,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			set => _loggerFactory = value;
 		}
 		/// <summary>
-		/// Skips over the <see cref="CraftingMenu.AwakeInit"/> method in the dependency chain, invoking <see cref="Panel.AwakeInit"/> next instead.
-		/// </summary>
-		protected bool BypassCraftingMenuAwakeInit = false;
-		/// <summary>
 		/// Skips over the <see cref="CraftingMenu.Show"/> method in the dependency chain, invoking <see cref="MenuPanel.Show"/> next instead.
 		/// </summary>
 		//protected bool BypassCraftingMenuShow = false;
@@ -54,16 +50,16 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             } 
 		}
 
-		private Tag _inventoryFilterTag;
-		/// <summary>
-		/// Used to filter out items from inventory for crafting recipes. Uses this tag and the crafting ingredient tag. Defaults to
-		/// the crafting station, but can be set in an inherited class to any tag.
-		/// </summary>
-		public Tag InventoryFilterTag
-        {
-			get => _inventoryFilterTag;
-			protected set => _inventoryFilterTag = value;
-        }
+		//private Tag _inventoryFilterTag;
+		///// <summary>
+		///// Used to filter out items from inventory for crafting recipes. Uses this tag and the crafting ingredient tag. Defaults to
+		///// the crafting station, but can be set in an inherited class to any tag.
+		///// </summary>
+		//public Tag InventoryFilterTag
+  //      {
+		//	get => _inventoryFilterTag;
+		//	protected set => _inventoryFilterTag = value;
+  //      }
 		private bool _hideFreeCraftingRecipe = false;
 		public bool HideFreeCraftingRecipe
 		{
@@ -71,16 +67,16 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			protected set => _hideFreeCraftingRecipe = value;
 		}
 
-		private bool _includeEnchantedIngredients = false;
-		/// <summary>
-		/// Whether or not to include items that have been enchanted in the list of available ingredients for recipes. The 
-		/// base game code excludes all enchanted items from results.
-		/// </summary>
-		public bool IncludeEnchantedIngredients
-		{
-			get => _includeEnchantedIngredients;
-			protected set => _includeEnchantedIngredients = value;
-		}
+		//private bool _includeEnchantedIngredients = false;
+		///// <summary>
+		///// Whether or not to include items that have been enchanted in the list of available ingredients for recipes. The 
+		///// base game code excludes all enchanted items from results.
+		///// </summary>
+		//public bool IncludeEnchantedIngredients
+		//{
+		//	get => _includeEnchantedIngredients;
+		//	protected set => _includeEnchantedIngredients = value;
+		//}
 
 		public IngredientCraftData IngredientCraftData = new IngredientCraftData();
 
@@ -293,18 +289,17 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 					Logger.LogDebug($"CustomCraftingMenu::AwakeInit(): Set m_craftingStationType to {PermanentCraftingStationType}. Current value: {_craftingStationType}");
 				}
 
-				if (!BypassCraftingMenuAwakeInit)
-					base.AwakeInit();
-				else
-				{
+				base.AwakeInit();
+				//else
+				//{
 
-					Logger.LogDebug($"CustomCraftingMenu::AwakeInit() Bypassing CraftingMenu AwakeInit()");
+				//	Logger.LogDebug($"CustomCraftingMenu::AwakeInit() Bypassing CraftingMenu AwakeInit()");
 
-					var awakePtr = typeof(Panel).GetMethod("AwakeInit", BindingFlags.Instance | BindingFlags.NonPublic)
-						.MethodHandle.GetFunctionPointer();
-					var menuPanelAwakeInit = (Action)Activator.CreateInstance(typeof(Action), this, awakePtr);
-					menuPanelAwakeInit.Invoke();
-				}
+				//	var awakePtr = typeof(Panel).GetMethod("AwakeInit", BindingFlags.Instance | BindingFlags.NonPublic)
+				//		.MethodHandle.GetFunctionPointer();
+				//	var menuPanelAwakeInit = (Action)Activator.CreateInstance(typeof(Action), this, awakePtr);
+				//	menuPanelAwakeInit.Invoke();
+				//}
 			}
 			catch (Exception ex)
 			{
@@ -322,8 +317,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			base.StartInit();
 			//Reset it back to the original.
 			_craftingStationType = craftingStationType;
-			if (!_inventoryFilterTag.IsSet)
-				_inventoryFilterTag = TagSourceManager.GetCraftingIngredient(GetRecipeCraftingType());
+			//if (!_inventoryFilterTag.IsSet)
+			//	_inventoryFilterTag = TagSourceManager.GetCraftingIngredient(GetRecipeCraftingType());
 			if (HideFreeCraftingRecipe)
 			{
 				this._freeRecipeDisplay.gameObject.SetActive(false);
