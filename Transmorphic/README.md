@@ -12,7 +12,14 @@
 Alchemy | ![Alchemy menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverAlchemy.png?raw=true) | (Optional) Adds an Alchemy crafting menu. Mix potions without deploying an alchemy kit. Enable in settings.
 Cooking | ![Cooking menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverCooking.png?raw=true) | (Optional) Fully functional cooking from the character UI. Cook food without deploying a cooking pot. Enable in settings.
 &nbsp;
-# Video
+## New Recipes
+ Recipe | Ingredients
+--- | --- 
+Transmog Equipment | ![Armor Image](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/ArmorTiny.png?raw=true)Equipment + ![Gold Ingot Image](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/GoldIngotToonTiny.png?raw=true)Gold Ingot
+Remove Transmog | ![Armor Image](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/ArmorTiny.png?raw=true)Equipment + ![Hex Cleaner Image](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/GoldIngotToonTiny.png?raw=true)Hex Cleaner
+<br />
+<br />
+# Video (YouTube)
 [![Transmogrify Video](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/ReadmeVideoPreview.png?raw=true)](https://youtu.be/XwYYAvxiIBM)
 
 # Instructions
