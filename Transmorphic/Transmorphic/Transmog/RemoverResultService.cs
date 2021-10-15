@@ -30,7 +30,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
             if (removalTarget == null
                 || !(removalTarget is Armor || removalTarget is Weapon))
             {
-                Logger.LogWarning($"{nameof(RemoverResultService)}::{nameof(CalculateResult)}: Failed to Calculate result for " +
+                Logger.LogDebug($"{nameof(RemoverResultService)}::{nameof(CalculateResult)}: Failed to Calculate result for " +
                     $"Dynamic Result ItemID {craftingResult.ItemID} and recipe {recipe.Name}. No Armor or Weapons found in {ingredients.Count()} ingredients.");
                 craftingResult.SetDynamicItemID(-1);
                 return;

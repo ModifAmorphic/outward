@@ -32,7 +32,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
                 || visualWeapon == null
                 || weaponTarget.Type != visualWeapon.Type)
             {
-                Logger.LogWarning($"{nameof(WeaponResultService)}::{nameof(CalculateResult)}: Failed to Calculate result for " +
+                Logger.LogDebug($"{nameof(WeaponResultService)}::{nameof(CalculateResult)}: Failed to Calculate result for " +
                     $"Dynamic Result ItemID {craftingResult.ItemID} and recipe {recipe.Name}. No Weapon type '{weaponTarget?.Type}' found in list of {ingredients.Count()} ingredients.");
                 craftingResult.SetDynamicItemID(-1);
                 return;
