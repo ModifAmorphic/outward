@@ -32,8 +32,8 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
                 || visualArmor == null
                 || armorTarget.EquipSlot != visualArmor.EquipSlot)
             {
-                Logger.LogWarning($"{nameof(ArmorResultService)}::{nameof(CalculateResult)}: Failed to Calculate result for " +
-                    $"Dynamic Result ItemID {craftingResult.ItemID} and recipe {recipe.Name}. No Armor matching equipment slot {armorTarget.EquipSlot} found in list of {ingredients.Count()} ingredients.");
+                Logger.LogDebug($"{nameof(ArmorResultService)}::{nameof(CalculateResult)}: Failed to Calculate result for " +
+                    $"Dynamic Result ItemID {craftingResult.ItemID} and recipe {recipe.Name}. No Armor matching equipment slot {armorTarget?.EquipSlot} found in list of {ingredients.Count()} ingredients.");
                 craftingResult.SetDynamicItemID(-1);
                 return;
             }
