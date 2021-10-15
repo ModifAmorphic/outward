@@ -6,7 +6,7 @@ namespace = "ModifAmorphic"
 name = "Transmorphic"
 versionNumber = "${PACKAGE_VERSION}"
 description = "New Transmogrify Crafting System - Tired of running around looking like a freak in a bird mask? Transmogrify your equipment."
-websiteUrl = "https://github.com/ModifAmorphic/outward/tree/mods/transmorph"
+websiteUrl = "https://github.com/ModifAmorphic/outward/tree/master/Transmorphic"
 containsNsfwContent = false
 
 [package.dependencies]
