@@ -11,17 +11,18 @@
  Transmogrify | ![Transmogrify](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverTransmogrify.png?raw=true) | Customize your gear. Change the appearance of weapons or armor.
 Alchemy | ![Alchemy menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverAlchemy.png?raw=true) | (Optional) Adds an Alchemy crafting menu. Mix potions without deploying an alchemy kit. Enable in settings.
 Cooking | ![Cooking menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverCooking.png?raw=true) | (Optional) Fully functional cooking from the character UI. Cook food without deploying a cooking pot. Enable in settings.
-&nbsp;
 
-## New Recipes
+
+## **New Recipes**
 Recipe | |  | | | Result
 --- | --- | --- | --- | --- | ---
 **Transmog Equipment** | ![Equipment](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/ArmorTiny.png?raw=true) | ![Plus Sign](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/PlusSignTiny.png?raw=true) | ![Gold Ingot](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/GoldIngotToonTiny.png?raw=true) | ![Equals Sign](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/EqualsSignTiny.png?raw=true) | ![Transmog Equipment](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/ArmorTransmogTiny.png?raw=true)
 **Remove Transmog** | ![Transmog Equipment](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/ArmorTransmogTiny.png?raw=true) | ![Plus Sign](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/PlusSignTiny.png?raw=true) | ![Hex Cleaner Image](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/HexCleanerToonTiny.png?raw=true) | ![Equals Sign](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/EqualsSignTiny.png?raw=true) | ![Equipment](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/ArmorTiny.png?raw=true)
+
 <br />
-<br />
+
 # Video (YouTube)
-[![Transmogrify Video](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/ReadmeVideoPreview.png?raw=true)](https://youtu.be/XwYYAvxiIBM)
+[ ![Transmogrify YouTube Video](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/ReadmeVideoPreview.png?raw=true) ](https://youtu.be/XwYYAvxiIBM)
 
 # Instructions
 - Learn new Transmog recipes by equipping gear.
@@ -56,7 +57,7 @@ Transmorphic adds a new crafting system focused on customizing your equipment's 
 ![New Transmogrify Menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/CraftingMenuSmallest.png?raw=true)
 ## 3. Custom Icon Identifies Transmog Gear
 ![New Icons](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/NewTmogEquipmentSmallest.png?raw=true)
-## 4. Reequip Item
+## 4. Re-equip Item
 ![New Icons](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/HeadshotSmall.png?raw=true)
 
 # Change Logs
