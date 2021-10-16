@@ -2,9 +2,9 @@
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Items;
-using ModifAmorphic.Outward.Transmorph.Extensions;
-using ModifAmorphic.Outward.Transmorph.Patches;
-using ModifAmorphic.Outward.Transmorph.Settings;
+using ModifAmorphic.Outward.Transmorphic.Extensions;
+using ModifAmorphic.Outward.Transmorphic.Patches;
+using ModifAmorphic.Outward.Transmorphic.Settings;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.Transmorph.Transmog
+namespace ModifAmorphic.Outward.Transmorphic.Transmog
 {
     class TransmogItemListener
     {

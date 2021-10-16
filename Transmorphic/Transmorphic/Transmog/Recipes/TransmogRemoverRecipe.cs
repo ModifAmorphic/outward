@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Transmorph.Transmog.Recipes
+namespace ModifAmorphic.Outward.Transmorphic.Transmog.Recipes
 {
     internal class TransmogRemoverRecipe : CustomRecipe
     {

@@ -2,16 +2,16 @@
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Modules.Items;
-using ModifAmorphic.Outward.Transmorph.Extensions;
-using ModifAmorphic.Outward.Transmorph.Settings;
-using ModifAmorphic.Outward.Transmorph.Transmog.Models;
-using ModifAmorphic.Outward.Transmorph.Transmog.Recipes;
+using ModifAmorphic.Outward.Transmorphic.Extensions;
+using ModifAmorphic.Outward.Transmorphic.Settings;
+using ModifAmorphic.Outward.Transmorphic.Transmog.Models;
+using ModifAmorphic.Outward.Transmorphic.Transmog.Recipes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Transmorph.Transmog
+namespace ModifAmorphic.Outward.Transmorphic.Transmog
 {
     class TransmogCrafter : ICustomCrafter
     {

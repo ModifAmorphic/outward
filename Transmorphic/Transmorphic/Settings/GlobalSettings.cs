@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Transmorph.Settings
+namespace ModifAmorphic.Outward.Transmorphic.Settings
 {
     internal class GlobalSettings
     {

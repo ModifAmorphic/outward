@@ -1,12 +1,12 @@
 ﻿using BepInEx;
 using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Transmorph.Patches;
+using ModifAmorphic.Outward.Transmorphic.Patches;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Transmorph
+namespace ModifAmorphic.Outward.Transmorphic
 {
     [BepInDependency("com.bepis.bepinex.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("io.mefino.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]

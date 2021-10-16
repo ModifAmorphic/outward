@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Transmorph.Menu
+namespace ModifAmorphic.Outward.Transmorphic.Menu
 {
     internal class AdvancedCraftingMenu : CustomCraftingMenu
     {

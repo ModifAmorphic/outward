@@ -1,11 +1,11 @@
 ﻿using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Transmorph.Settings;
+using ModifAmorphic.Outward.Transmorphic.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Transmorph.Transmog.SaveData
+namespace ModifAmorphic.Outward.Transmorphic.Transmog.SaveData
 {
     internal class TransmogRecipeData
     {

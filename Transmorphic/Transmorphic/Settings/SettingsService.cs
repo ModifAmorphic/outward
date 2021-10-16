@@ -4,7 +4,7 @@ using ModifAmorphic.Outward.Config.Models;
 using ModifAmorphic.Outward.Logging;
 using System;
 
-namespace ModifAmorphic.Outward.Transmorph.Settings
+namespace ModifAmorphic.Outward.Transmorphic.Settings
 {
     internal class SettingsService
     {

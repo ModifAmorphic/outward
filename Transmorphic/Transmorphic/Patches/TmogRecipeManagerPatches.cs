@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Transmorph.Patches
+namespace ModifAmorphic.Outward.Transmorphic.Patches
 {
     [HarmonyPatch(typeof(RecipeManager))]
     internal static class TmogRecipeManagerPatches

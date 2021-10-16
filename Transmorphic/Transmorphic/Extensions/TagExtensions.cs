@@ -1,11 +1,11 @@
-﻿using ModifAmorphic.Outward.Transmorph.Settings;
+﻿using ModifAmorphic.Outward.Transmorphic.Settings;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using ModifAmorphic.Outward.Extensions;
 
-namespace ModifAmorphic.Outward.Transmorph.Extensions
+namespace ModifAmorphic.Outward.Transmorphic.Extensions
 {
     public static class TagExtensions
     {

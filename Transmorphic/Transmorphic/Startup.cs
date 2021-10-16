@@ -12,12 +12,13 @@ using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules;
 using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Modules.Items;
-using ModifAmorphic.Outward.Transmorph.Menu;
-using ModifAmorphic.Outward.Transmorph.Settings;
-using ModifAmorphic.Outward.Transmorph.Transmog;
-using ModifAmorphic.Outward.Transmorph.Transmog.SaveData;
+using ModifAmorphic.Outward.Transmorphic.Menu;
+using ModifAmorphic.Outward.Transmorphic.Settings;
+using ModifAmorphic.Outward.Transmorphic.Transmog;
+using ModifAmorphic.Outward.Transmorphic.Transmog.SaveData;
+using ModifAmorphic.Outward.Transmorphic.Transmog.MenuIngredientMatchers;
 
-namespace ModifAmorphic.Outward.Transmorph
+namespace ModifAmorphic.Outward.Transmorphic
 {
     internal class Startup
     {
@@ -64,14 +65,25 @@ namespace ModifAmorphic.Outward.Transmorph
                 .AddSingleton(new RemoverResultService(_services.GetService<IModifLogger>))
                 .AddSingleton(new ArmorResultService(_services.GetService<IModifLogger>))
                 .AddSingleton(new WeaponResultService(_services.GetService<IModifLogger>))
+                .AddSingleton(new BagResultService(_services.GetService<IModifLogger>))
+                .AddSingleton(new LexiconResultService(_services.GetService<IModifLogger>))
+                .AddSingleton(new LanternResultService(_services.GetService<IModifLogger>))
                 .AddSingleton(new TransmogRecipeData(System.IO.Path.GetDirectoryName(
                                                     _services.GetService<BaseUnityPlugin>().Config.ConfigFilePath),
                                                     _services.GetService<IModifLogger>)
                 )
-                .AddSingleton(new TmogRecipeService(_services.GetService<BaseUnityPlugin>(),
+                .AddSingleton(new TransmogRecipeGenerator(
                                 _services.GetService<RemoverResultService>(),
                                 _services.GetService<ArmorResultService>(),
                                 _services.GetService<WeaponResultService>(),
+                                _services.GetService<BagResultService>(),
+                                _services.GetService<LexiconResultService>(),
+                                _services.GetService<LanternResultService>(),
+                                _services.GetService<TransmogSettings>(),
+                                _services.GetService<IModifLogger>
+                    ))
+                .AddSingleton(new TransmogRecipeService(_services.GetService<BaseUnityPlugin>(),
+                                _services.GetService<TransmogRecipeGenerator>(),
                                 _services.GetService<CustomCraftingModule>(),
                                 _services.GetService<PreFabricator>(),
                                 _services.GetService<LevelCoroutines>(),
@@ -82,7 +94,18 @@ namespace ModifAmorphic.Outward.Transmorph
         }
         private void ConfigureCraftingMenus()
         {
-            _services.AddSingleton(new IngredientMatcher(_services.GetService<IModifLogger>))
+            _services.AddSingleton(new MenuIngredientMatcher(
+                                    new List<ITransmogMatcher>()
+                                    {
+                                        new ArmorMatcher(_services.GetService<IModifLogger>),
+                                        new WeaponMatcher(_services.GetService<IModifLogger>),
+                                        new BagMatcher(_services.GetService<IModifLogger>),
+                                        new LexiconMatcher(_services.GetService<IModifLogger>),
+                                        new LanternMatcher(_services.GetService<IModifLogger>),
+                                        new RemoverMatcher(_services.GetService<IModifLogger>)
+                                    }
+                                    , _services.GetService<IModifLogger>)
+                      )
                      .AddSingleton(new TransmogCrafter(_services.GetService<ItemVisualizer>(),
                                         _services.GetService<IModifLogger>)
                       );
@@ -103,20 +126,10 @@ namespace ModifAmorphic.Outward.Transmorph
 
             craftingModule.RegisterCraftingMenu<TransmogrifyMenu>("Transmogrify", TransmogSettings.TransmogMenuIcons);
 
-            craftingModule.RegisterCompatibleIngredientMatcher<TransmogrifyMenu>(_services.GetService<IngredientMatcher>());
-            craftingModule.RegisterConsumedItemSelector<TransmogrifyMenu>(_services.GetService<IngredientMatcher>());
+            craftingModule.RegisterCompatibleIngredientMatcher<TransmogrifyMenu>(_services.GetService<MenuIngredientMatcher>());
+            craftingModule.RegisterConsumedItemSelector<TransmogrifyMenu>(_services.GetService<MenuIngredientMatcher>());
             craftingModule.RegisterCustomCrafter<TransmogrifyMenu>(_services.GetService<TransmogCrafter>());
-            craftingModule.RegisterMenuIngredientFilters<TransmogrifyMenu>(
-                new MenuIngredientFilters()
-                {
-                    //BaseInventoryFilterTag = new Tag("70", "Item"),
-                    AdditionalInventoryIngredientFilter = null,
-                    EquippedIngredientFilter = new AvailableIngredientFilter()
-                    {
-                        EnchantFilter = AvailableIngredientFilter.EnchantFilters.IncludeEnchanted,
-                        ItemTypes = new HashSet<Type>() { typeof(Equipment) }
-                    },
-                });
+            craftingModule.RegisterMenuIngredientFilters<TransmogrifyMenu>(TransmogSettings.MenuFilters);
         }
         private void ToggleCraftingMenu<T>(bool isEnabled) where T : CustomCraftingMenu
         {
@@ -127,29 +140,6 @@ namespace ModifAmorphic.Outward.Transmorph
                 craftingModule.DisableCraftingMenu<T>();
         }
 #if DEBUG
-        private void TestUIDs(IModifLogger logger)
-        {
-            var random = new System.Random();
-            for (int i = 0; i < 50; i++)
-            {
-                var visualMap = new ItemVisualMap() { ItemID = random.Next(-99999999, 99999999), VisualItemID = random.Next(-99999999, 99999999) };
-
-                var morgUID = visualMap.ToUID();
-                logger.LogDebug($"{nameof(TestUIDs)}: VisualMap: {{ItemID = {visualMap.ItemID}, VisualItemID = {visualMap.VisualItemID}}}\n" +
-                    $"Generated UID: {morgUID}. Decoded UID (GUID): {UID.Decode(morgUID)}");
-
-                logger.LogDebug($"{nameof(TestUIDs)}: Generated UID: {morgUID}. UID IsTransMorg? {morgUID.IsTransmogrified()}");
-
-                var decodedVisualItemID = morgUID.ToVisualItemID();
-                logger.LogDebug($"{nameof(TestUIDs)}: Generated UID: {morgUID}\n" +
-                    $"VisualItemID = {decodedVisualItemID}");
-
-                morgUID.TryGetVisualItemID(out var tryVisualItemID);
-                logger.LogDebug($"{nameof(TestUIDs)}: Generated UID: {morgUID}\n" +
-                    $"VisualItemID = {tryVisualItemID}");
-            }
-
-        }
         private void AddAdvancedCraftingRecipes(BaseUnityPlugin plugin, CustomCraftingModule craftingModule, Func<IModifLogger> loggerFactory)
         {
             var armorRecipe = ScriptableObject.CreateInstance<Recipe>()
@@ -162,7 +152,11 @@ namespace ModifAmorphic.Outward.Transmorph
 
             var helmRecipe = ScriptableObject.CreateInstance<Recipe>()
                 .SetRecipeIDEx(-130310001)
-                .SetUID(UID.Encode(Guid.Parse("68bedd71-7b68-4365-a06c-d0e4fb2e6c23")))
+                .SetUID(UID.Encode(Guid.Parse(
+                
+                
+                
+                bedd71-7b68-4365-a06c-d0e4fb2e6c23")))
                 .SetNames("Blue Sand Helm")
                 .AddIngredient(ResourcesPrefabManager.Instance.GetItemPrefab("6400110") ?? ResourcesPrefabManager.Instance.GenerateItem("6400110"), 2)
                 .AddIngredient(ResourcesPrefabManager.Instance.GetItemPrefab("3000011") ?? ResourcesPrefabManager.Instance.GenerateItem("3000010"))
