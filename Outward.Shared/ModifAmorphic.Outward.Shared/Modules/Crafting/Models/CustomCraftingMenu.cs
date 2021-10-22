@@ -55,33 +55,12 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             } 
 		}
 
-		//private Tag _inventoryFilterTag;
-		///// <summary>
-		///// Used to filter out items from inventory for crafting recipes. Uses this tag and the crafting ingredient tag. Defaults to
-		///// the crafting station, but can be set in an inherited class to any tag.
-		///// </summary>
-		//public Tag InventoryFilterTag
-  //      {
-		//	get => _inventoryFilterTag;
-		//	protected set => _inventoryFilterTag = value;
-  //      }
-		private bool _hideFreeCraftingRecipe = false;
+			private bool _hideFreeCraftingRecipe = false;
 		public bool HideFreeCraftingRecipe
 		{
 			get => _hideFreeCraftingRecipe;
 			protected set => _hideFreeCraftingRecipe = value;
 		}
-
-		//private bool _includeEnchantedIngredients = false;
-		///// <summary>
-		///// Whether or not to include items that have been enchanted in the list of available ingredients for recipes. The 
-		///// base game code excludes all enchanted items from results.
-		///// </summary>
-		//public bool IncludeEnchantedIngredients
-		//{
-		//	get => _includeEnchantedIngredients;
-		//	protected set => _includeEnchantedIngredients = value;
-		//}
 
 		public IngredientCraftData IngredientCraftData = new IngredientCraftData();
 
@@ -259,15 +238,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
 		public CustomCraftingMenu()
         {
-			//CraftingMenuPatches.OnRecipeSelectedAfter += (args) => RefreshResult();
-            //CraftingMenuPatches.OnRecipeSelectedAfter += CraftingMenuPatches_OnRecipeSelectedAfter;
-			//CraftingMenuPatches.IngredientSelectorHasChangedAfter += (args) => RefreshResult();
+	
 		}
-
-		//internal void OnRecipeSelectedBeforeBase(int index, bool forceRefresh)
-  //      {
-		//	//ParentCraftingModule.RecipeDisplayService.ResetSlots(this);
-		//}
 
 		public bool TryOnIngredientSelectorClicked(int selectorIndex)
         {
@@ -345,23 +317,24 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			setCraftButtonEnable(craftButtonEnable);
 		}
 
-		public bool OnRecipeSelectedOverride(int _index, bool _forceRefresh = false)
+		public bool TryOnRecipeSelected(int _index, bool _forceRefresh = false)
 		{
 			if (!ParentCraftingModule.RecipeDisplayService.TryGetDisplayConfig(this.GetType(), out var displayConfig)
 				|| !(displayConfig.StaticIngredients?.Count > 0)
 				|| (_lastRecipeIndex == _index && !_forceRefresh)
 				|| _index == -1)
 				return false;
-
+			var lastRecipeIndex = _lastRecipeIndex;
 			var ingredientSelectors = _ingredientSelectors;
+			var recipeDisplays = _recipeDisplays;
 
 			if (IsCraftingInProgress)
 			{
 				cancelCrafting();
 			}
-			if (_lastRecipeIndex != -1)
+			if (lastRecipeIndex != -1)
 			{
-				_recipeDisplays[_lastRecipeIndex].SetHighlight(_highlight: false);
+				recipeDisplays[lastRecipeIndex].SetHighlight(_highlight: false);
 			}
 			else
 			{
@@ -371,9 +344,9 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			{
 				ingredientSelectors[i].Free(_resetUseCount: true);
 			}
-			_lastRecipeIndex = _index;
-			_itemDetailPanel.Show(_lastRecipeIndex != -1);
-			_freeRecipeDescriptionPanel.gameObject.SetActive(_lastRecipeIndex == -1);
+			lastRecipeIndex = _index;
+			_itemDetailPanel.Show(lastRecipeIndex != -1);
+			_freeRecipeDescriptionPanel.gameObject.SetActive(lastRecipeIndex == -1);
 
 			resetFreeRecipeLastIngredients();
 			setCraftButtonEnable(_recipeDisplays[_index].IsRecipeIngredientsComplete);
@@ -419,7 +392,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 					}
 				}
 			}
-			var recipeDisplays = _recipeDisplays;
 			var availableIngredients = _availableIngredients;
 			for (int slot = 0; slot < _selectorIngredientMap.Length; slot++)
 			{
@@ -460,15 +432,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			recipeDisplays[_index].SetHighlight(_highlight: true);
 			return true;
 		}
-		//internal void OnRecipeSelectedAfterBase(int index, bool forceRefresh)
-  //      {
-		//	if (index != -1)
-		//	{
-		//		Logger.LogDebug($"OnRecipeSelected: index: {index}");
-		//		ParentCraftingModule.RecipeDisplayService.SortIngredientSlots(this, _complexeRecipes[index].Value);
-		//	}
-		//	RefreshResult();
-		//}
+
 		internal new void IngredientSelectorHasChanged(int selectorIndex, int itemID)
         {
 			RefreshResult();
@@ -535,16 +499,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				base.AwakeInit();
 
 				_selectorIngredientMap = new int[_ingredientSelectors.Length];
-				//else
-				//{
-
-				//	Logger.LogDebug($"CustomCraftingMenu::AwakeInit() Bypassing CraftingMenu AwakeInit()");
-
-				//	var awakePtr = typeof(Panel).GetMethod("AwakeInit", BindingFlags.Instance | BindingFlags.NonPublic)
-				//		.MethodHandle.GetFunctionPointer();
-				//	var menuPanelAwakeInit = (Action)Activator.CreateInstance(typeof(Action), this, awakePtr);
-				//	menuPanelAwakeInit.Invoke();
-				//}
 			}
 			catch (Exception ex)
 			{
@@ -633,9 +587,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			Show(stationItem.gameObject.GetComponentInChildren<CraftingStation>());
 		}
 
-
-		//public Recipe GetSelectedRecipe() =>
-		//		_lastRecipeIndex != -1 ? _complexeRecipes[_lastRecipeIndex].Value : !HideFreeCraftingRecipe ? _complexeRecipes[_lastFreeRecipeIndex].Value : null;
 		public Recipe GetSelectedRecipe() =>
 				_lastRecipeIndex != -1 ? _complexeRecipes[_lastRecipeIndex].Value : null;
 		public List<CompatibleIngredient> GetSelectedIngredients() =>

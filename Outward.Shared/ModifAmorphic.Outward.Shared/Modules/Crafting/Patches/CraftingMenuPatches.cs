@@ -28,28 +28,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
             }
         }
 
-        //public static event Action<CustomCraftingMenu> CraftingDoneBefore;
-        //[HarmonyPatch("CraftingDone", MethodType.Normal)]
-        //[HarmonyPrefix]
-        //private static void CraftingDonePrefix(CraftingMenu __instance)
-        //{
-        //    try
-        //    {
-        //        if (!(__instance is CustomCraftingMenu customCraftingMenu))
-        //        {
-        //            Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(CraftingDonePrefix)}(): Menu is not a {nameof(CustomCraftingMenu)}. Not invoking {nameof(CraftingDoneBefore)}.");
-        //            return;
-        //        }
-        //        Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(CraftingDonePrefix)}(): Invoked on CraftingMenu type {customCraftingMenu?.GetType()}. Invoking " +
-        //            $"{nameof(CraftingDoneBefore)}({customCraftingMenu?.GetType()})");
-        //        CraftingDoneBefore?.Invoke(customCraftingMenu);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(CraftingDonePrefix)}(): Exception Invoking {nameof(CraftingDoneBefore)}().", ex);
-        //    }
-        //}
-
         public static event Func<(CustomCraftingMenu CraftingMenu, ItemReferenceQuantity Result, int ResultMultiplier), bool> GenerateResultOverride;
         [HarmonyPatch("GenerateResult", MethodType.Normal)]
         [HarmonyPrefix]
@@ -87,17 +65,16 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
                     return true;
                 }
                 Logger.LogDebug($"{nameof(CraftingMenuPatches)}::{nameof(OnRecipeSelectedPrefix)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Invoking " +
-                    $"{nameof(CustomCraftingMenu.OnRecipeSelectedOverride)}({_index}, {_forceRefresh})");
-                return !customMenu.OnRecipeSelectedOverride(_index, _forceRefresh);
+                    $"{nameof(CustomCraftingMenu.TryOnRecipeSelected)}({_index}, {_forceRefresh})");
+                return !customMenu.TryOnRecipeSelected(_index, _forceRefresh);
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(OnRecipeSelectedPrefix)}(): Exception Invoking {nameof(CustomCraftingMenu.OnRecipeSelectedOverride)}().", ex);
+                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(OnRecipeSelectedPrefix)}(): Exception Invoking {nameof(CustomCraftingMenu.TryOnRecipeSelected)}().", ex);
             }
             return true;
         }
 
-        //public static event Action<(CraftingMenu CraftingMenu, int Index, bool ForceRefresh)> OnRecipeSelectedAfter;
         [HarmonyPatch(nameof(CraftingMenu.OnRecipeSelected), MethodType.Normal)]
         [HarmonyPostfix]
         private static void OnRecipeSelectedPostfix(CraftingMenu __instance, int _index, bool _forceRefresh = false)
@@ -113,8 +90,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
                 Logger.LogDebug($"{nameof(CraftingMenuPatches)}::{nameof(OnRecipeSelectedPostfix)}(): Invoked on CraftingMenu type {menuType}. Invoking " +
                     $"{nameof(CustomCraftingMenu.RefreshResult)}()");
                 customMenu.RefreshResult();
-                //customMenu.OnRecipeSelectedAfterBase(_index, _forceRefresh);
-                //OnRecipeSelectedAfter?.Invoke((__instance, _index, _forceRefresh));
             }
             catch (Exception ex)
             {
@@ -144,7 +119,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
             return true;
         }
 
-        //public static event Action<(CraftingMenu CraftingMenu, int SelectorIndex, int ItemID)> IngredientSelectorHasChangedAfter;
         [HarmonyPatch(nameof(CraftingMenu.IngredientSelectorHasChanged), MethodType.Normal)]
         [HarmonyPostfix]
         private static void IngredientSelectorHasChangedPostfix(CraftingMenu __instance, int _selectorIndex, int _itemID)

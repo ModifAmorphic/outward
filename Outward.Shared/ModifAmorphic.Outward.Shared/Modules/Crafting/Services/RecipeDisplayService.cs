@@ -235,37 +235,5 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             rectTarget.position = new Vector3(rectXref.position.x, yRef.position.y);
             Logger.LogDebug($"{nameof(RecipeDisplayService)}::{nameof(SetSlotPosition)}: Source (X, Y) ({rectXref}: {rectXref.position.x}, {yRef}: {yRef.position.y}). Target (X, Y) ({rectTarget.position.x}, {rectTarget.position.y})");
         }
-
-        //public void ResetSlots(CustomCraftingMenu menu)
-        //{
-        //    if (menu._ingredientSelectors == null)
-        //        return;
-        //    if (!TryGetDisplayConfig(menu.GetType(), out var recipeDisplayConfig))
-        //        return;
-
-        //    var selectors = menu._ingredientSelectors;
-        //    recipeDisplayConfig.Sorter.Reset(selectors, Logger, false);
-        //    menu._ingredientSelectors = selectors;
-        //}
-        //public void SortIngredientSlots(CustomCraftingMenu menu, Recipe selectedRecipe)
-        //{
-        //    if (menu._ingredientSelectors == null || menu._ingredientSelectors[0] == null || selectedRecipe == null)
-        //        return;
-        //    if (!TryGetDisplayConfig(menu.GetType(), out var recipeDisplayConfig))
-        //        return;
-        //    if (recipeDisplayConfig.StaticIngredients == null || recipeDisplayConfig.StaticIngredients.Count < 1)
-        //        return;
-
-        //    var selectors = menu._ingredientSelectors;
-        //    recipeDisplayConfig.Sorter.SortSlots(selectedRecipe, selectors, recipeDisplayConfig.StaticIngredients, Logger);
-        //    menu._ingredientSelectors = selectors;
-        //}
-        //private void TryReorderSelectors(CustomCraftingMenu menu)
-        //{
-        //    if (!_displayConfigs.TryGetValue(menu.GetType(), out var config) || config.ExtraIngredientSlotOptions == ExtraIngredientSlotOptions.None)
-        //        return;
-
-        //    config.Sorter.SortExtraIngredients(menu._ingredientSelectors, ())
-        //}
     }
 }
