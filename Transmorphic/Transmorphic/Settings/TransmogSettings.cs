@@ -74,7 +74,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
             AdditionalInventoryIngredientFilter = null,
             EquippedIngredientFilter = new AvailableIngredientFilter()
             {
-                EnchantFilter = AvailableIngredientFilter.EnchantFilters.IncludeEnchanted,
+                EnchantFilter = AvailableIngredientFilter.FilterLogic.IncludeItems,
                 ItemTypes = new HashSet<Type>() { typeof(Equipment) }
             },
         };
@@ -123,6 +123,20 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
                 -1301008,
                 -1301010, //End Stash packs
             };
+
+        public event Action<bool> TransmogMenuEnabledChanged;
+        private bool _transmogMenuEnabled;
+        public bool TransmogMenuEnabled
+        {
+            get => _transmogMenuEnabled;
+            set
+            {
+                var oldValue = _transmogMenuEnabled;
+                _transmogMenuEnabled = value;
+                if (oldValue != _transmogMenuEnabled)
+                    TransmogMenuEnabledChanged?.Invoke(_transmogMenuEnabled);
+            }
+        }
 
         public event Action AllCharactersLearnRecipesEnabled;
         private bool _allCharactersLearnRecipes;

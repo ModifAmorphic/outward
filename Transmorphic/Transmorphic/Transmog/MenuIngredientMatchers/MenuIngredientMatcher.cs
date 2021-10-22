@@ -26,7 +26,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
 		public MenuIngredientMatcher(IEnumerable<ITransmogMatcher> menuIngredientMatchers, Func<IModifLogger> loggerFactory) =>
 			(_ingredientMatchers, _loggerFactory) = (menuIngredientMatchers.ToArray(), loggerFactory);
 		
-		public bool MatchRecipeStep(CompatibleIngredient potentialIngredient, RecipeIngredient ingredientFilter)
+		public bool TryMatchRecipeStep(CompatibleIngredient potentialIngredient, RecipeIngredient ingredientFilter, out bool isMatch)
         {
 			var ownedItems = potentialIngredient.GetPrivateField<CompatibleIngredient, List<Item>>("m_ownedItems");
 
@@ -34,34 +34,45 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
 				|| !ownedItems.Any()
 				|| !Enum.IsDefined(typeof(RecipeIngredient.ActionTypes), ingredientFilter.ActionType))
 			{
-				return false;
+				isMatch = false;
+				//A succesful not match - Still override base match.
+				return true; 
 			}
 
 			//Specific itemID check.
 			if (ingredientFilter.ActionType == RecipeIngredient.ActionTypes.AddSpecificIngredient)
 			{
-				Logger.LogTrace($"{nameof(MenuIngredientMatcher)}::{nameof(MatchRecipeStep)}() Specified ingredient filter is type AddSpecificIngredient. Matching on " +
+				Logger.LogTrace($"{nameof(MenuIngredientMatcher)}::{nameof(TryMatchRecipeStep)}() Specified ingredient filter is type AddSpecificIngredient. Matching on " +
 					$"ItemIDs. Filter ID: {ingredientFilter.AddedIngredient?.ItemID}, Potential Ingredient ID: {potentialIngredient.ItemID}.");
-				return ingredientFilter.AddedIngredient != null && 
+				isMatch = ingredientFilter.AddedIngredient != null && 
 					ingredientFilter.AddedIngredient.ItemID == potentialIngredient.ItemID;
+				return true;
 			}
 
 			var recipeTag = ingredientFilter.AddedIngredientType.Tag;
 			if (recipeTag == Tag.None || TransmogSettings.ExcludedItemIDs.Contains(potentialIngredient.ItemID))
-				return false;
+			{
+				isMatch = false;
+				return true;
+			}
 
 			if (!(ParentCraftingMenu.IngredientCraftData.MatchIngredientsRecipe is CustomRecipe recipe))
-				return false;
+			{
+				isMatch = false;
+				return true;
+			}
 
 			foreach (var matcher in _ingredientMatchers)
 			{
 				if (matcher.IsRecipeTag(recipeTag))
 				{
-					return matcher.IsMatch(recipe, recipeTag, potentialIngredient.ItemID, ownedItems);
+					isMatch = matcher.IsMatch(recipe, recipeTag, potentialIngredient.ItemID, ownedItems);
+					return true;
 				}
 			}
 
-			return false;
+			isMatch = false;
+			return true;
 		}
 
         public bool TryGetConsumedItems(CompatibleIngredient compatibleIngredient, bool useMultipler, ref int resultMultiplier, out IList<KeyValuePair<string, int>> consumedItems)
@@ -114,6 +125,12 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
 			Logger.LogDebug($"{nameof(MenuIngredientMatcher)}::{nameof(TryGetConsumedItems)}() Recipe '{recipe.Name}' is neither a Transmog or Transmog Remover recipe. Keeping base game selection for item " +
 					$"{compatibleIngredient.ItemID}. First owned item in list was {ownedItems[0].DisplayName} ({ownedItems[0].UID}) with RemainingAmount: {ownedItems[0].RemainingAmount}.");
 			return false;
+		}
+
+        public bool TryGetConsumedStaticItems(CompatibleIngredient compatibleIngredient, Guid staticIngredientID, bool useMultipler, ref int resultMultiplier, out IList<KeyValuePair<string, int>> consumedItems)
+        {
+			return TryGetConsumedItems(compatibleIngredient, useMultipler, ref resultMultiplier, out consumedItems);
+
 		}
     }
 }

@@ -9,7 +9,9 @@ namespace ModifAmorphic.Outward.Transmorphic.Menu
 {
     internal class TransmogrifyMenu : CustomCraftingMenu
     {
-        public new bool IsSurvivalCrafting => true;
+        private string _modId = ModInfo.ModId;
+        protected override string ModId { get => _modId; set => _modId = value; }
+
         public TransmogrifyMenu() => 
             (HideFreeCraftingRecipe, LoggerFactory) = 
             (

@@ -4,9 +4,9 @@ using System;
 
 namespace ModifAmorphic.Outward.Transmorphic.Settings
 {
-    internal class TransmorphConfigSettings
+    internal class ConfigSettings
     {
-        const string GeneralSection = "General Settings";
+        const string GeneralSection = "Cooking and Alchemy";
         const int GeneralTopOrder = int.MaxValue;
 
         public ConfigSetting<bool> CookingMenuEnabled { get; } = new ConfigSetting<bool>()
@@ -19,6 +19,16 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
             Order = GeneralTopOrder - 1,
             IsAdvanced = false
         };
+        public ConfigSetting<bool> DisableCookingKitFuelRequirement { get; } = new ConfigSetting<bool>()
+        {
+            Name = nameof(DisableCookingKitFuelRequirement),
+            DefaultValue = false,
+            Section = GeneralSection,
+            DisplayName = "  • Disable Extra Ingredients",
+            Description = $"Removes the cooking pot and fuel requirement from all recipes in the cooking menu.",
+            Order = GeneralTopOrder - 2,
+            IsAdvanced = false
+        };
 
         public ConfigSetting<bool> AlchemyMenuEnabled { get; } = new ConfigSetting<bool>()
         {
@@ -27,21 +37,42 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
             Section = GeneralSection,
             DisplayName = "Alchemy Crafting Menu Enabled",
             Description = $"Enables fully functional Alchemy crafting menu in the character / inventory UI.",
-            Order = GeneralTopOrder - 2,
+            Order = GeneralTopOrder - 3,
+            IsAdvanced = false
+        };
+        public ConfigSetting<bool> DisableAlchemyKitFuelRequirement { get; } = new ConfigSetting<bool>()
+        {
+            Name = nameof(DisableAlchemyKitFuelRequirement),
+            DefaultValue = false,
+            Section = GeneralSection,
+            DisplayName = "  • Disable Extra Ingredients",
+            Description = $"Removes the alchemy kit and fuel requirement from all recipes in the alchemy menu.",
+            Order = GeneralTopOrder - 4,
             IsAdvanced = false
         };
 
         const string TransmogSection = "Transmogrify Settings";
         const int TransmogTopOrder = GeneralTopOrder - 1000;
 
+        public ConfigSetting<bool> TransmogrifyMenuEnabled { get; } = new ConfigSetting<bool>()
+        {
+            Name = nameof(TransmogrifyMenuEnabled),
+            DefaultValue = true,
+            Section = TransmogSection,
+            DisplayName = "Transmogrify Crafting Menu Enabled",
+            Description = $"Enables or disables the Transmogrify crafting menu. Tranmog'd equipment will continue to function regardless of this setting.",
+            Order = TransmogTopOrder - 1,
+            IsAdvanced = false
+        };
+
         public ConfigSetting<bool> AllCharactersLearnRecipes { get; } = new ConfigSetting<bool>()
         {
             Name = nameof(AllCharactersLearnRecipes),
             DefaultValue = false,
             Section = TransmogSection,
-            DisplayName = "Recipes Unlocked for All Characters",
+            DisplayName = "  • Recipes Unlocked for All Characters",
             Description = $"If enabled, when a transmogrify recipe is unlocked by a character it will be made available to all other existing and future characters.",
-            Order = TransmogTopOrder - 1,
+            Order = TransmogTopOrder - 2,
             IsAdvanced = false
         };
 
