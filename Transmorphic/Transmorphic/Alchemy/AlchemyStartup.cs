@@ -41,7 +41,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Alchemy
             craftingModule.AllMenuTypesLoaded += (menusTypes) =>
             {
                 ToggleCraftingMenu<AlchemyMenu>(craftingModule, alchemySettings.AlchemyMenuEnabled);
-                if (!alchemySettings.DisableKitFuelRequirement)
+                if (alchemySettings.DisableKitFuelRequirement)
                     ToggleKitFuelRequirement(alchemySettings.DisableKitFuelRequirement);
             };
             

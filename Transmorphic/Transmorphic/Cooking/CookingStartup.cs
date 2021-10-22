@@ -41,7 +41,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Cooking
             craftingModule.AllMenuTypesLoaded += (menusTypes) =>
             {
                 ToggleCraftingMenu<CookingMenu>(craftingModule, cookingSettings.CookingMenuEnabled);
-                if (!cookingSettings.DisableKitFuelRequirement)
+                if (cookingSettings.DisableKitFuelRequirement)
                     ToggleKitFuelRequirement(cookingSettings.DisableKitFuelRequirement);
             };
         }
