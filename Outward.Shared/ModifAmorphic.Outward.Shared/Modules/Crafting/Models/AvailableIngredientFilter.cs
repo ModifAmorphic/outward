@@ -6,20 +6,20 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 {
     public class AvailableIngredientFilter
     {
-		public enum EnchantFilters
+		public enum FilterLogic
         {
 			/// <summary>
-			/// Exclude Enchanted items when filtering available ingredient.
+			/// Include items when filtering for available ingredients.
 			/// </summary>
-			ExcludeEnchanted,
+			IncludeItems,
 			/// <summary>
-			/// Include Enchanted items when filtiring for available ingredients.
+			/// Exclude items when filtering available ingredient.
 			/// </summary>
-			IncludeEnchanted,
+			ExcludeItems,
 			/// <summary>
-			/// Only include enchanted items when filtering for available ingredients.
+			/// Only include items when filtering for available ingredients.
 			/// </summary>
-			OnlyEnchanted
+			OnlyItems
 		}
 		/// <summary>
 		/// Used to filter items from inventory for all recipes. Base game code uses this tag 
@@ -31,7 +31,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 		/// <summary>
 		/// Whether or not enchanted items should be included.
 		/// </summary>
-		public EnchantFilters EnchantFilter { get; set; }
+		public FilterLogic EnchantFilter { get; set; } = FilterLogic.ExcludeItems;
 
 		/// <summary>
 		/// Allows for matching based on an Item's exact type and inheritance chain.
@@ -40,5 +40,14 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 		/// If no type is added, will default to typeof(<see cref="Item"/>) on first use.
 		/// </summary>
 		public HashSet<Type> ItemTypes { get; set; } = new HashSet<Type>();
+
+		/// <summary>
+		/// Whether or not specific items should be included.
+		/// </summary>
+		public FilterLogic SpecificItemFilter { get; set; } = FilterLogic.IncludeItems;
+		/// <summary>
+		/// 
+		/// </summary>
+		public HashSet<int> SpecificItemIDs { get; set; } = new HashSet<int>();
 	}
 }

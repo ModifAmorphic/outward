@@ -223,6 +223,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             return addedTagIds;
 
         }
+        
         public int AddIngredientTag()
         {
             return AddIngredientTags(1)[0];

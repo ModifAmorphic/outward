@@ -272,16 +272,29 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                 return false;
             }
             //Enchantment Checks
-            if (filter.EnchantFilter == AvailableIngredientFilter.EnchantFilters.ExcludeEnchanted && item.IsEnchanted)
+            if (filter.EnchantFilter == AvailableIngredientFilter.FilterLogic.ExcludeItems && item.IsEnchanted)
             {
                 Logger.LogTrace($"{nameof(CustomCraftingService)}::{nameof(ItemPassesFilter)}: Item {item.ItemID} - " +
-                        $"{item.Name} ({item.UID}) failed EnchantFilters.ExcludeEnchanted check.  Item.IsEnchanted result was {item.IsEnchanted}.");
+                        $"{item.Name} ({item.UID}) failed EnchantFilters.ExcludeItems check.  Item.IsEnchanted result was {item.IsEnchanted}.");
                 return false;
             }
-            if (filter.EnchantFilter == AvailableIngredientFilter.EnchantFilters.OnlyEnchanted && !item.IsEnchanted)
+            if (filter.EnchantFilter == AvailableIngredientFilter.FilterLogic.OnlyItems && !item.IsEnchanted)
             {
                 Logger.LogTrace($"{nameof(CustomCraftingService)}::{nameof(ItemPassesFilter)}: Item {item.ItemID} - " +
-                        $"{item.Name} ({item.UID}) failed EnchantFilters.OnlyEnchanted check.  Item.IsEnchanted result was {item.IsEnchanted}.");
+                        $"{item.Name} ({item.UID}) failed EnchantFilters.OnlyItems check.  Item.IsEnchanted result was {item.IsEnchanted}.");
+                return false;
+            }
+
+            if (filter.SpecificItemFilter == AvailableIngredientFilter.FilterLogic.ExcludeItems && filter.SpecificItemIDs.Contains(item.ItemID))
+            {
+                Logger.LogTrace($"{nameof(CustomCraftingService)}::{nameof(ItemPassesFilter)}: Item {item.ItemID} - " +
+                        $"{item.Name} ({item.UID}) failed SpecificItemFilter.ExcludeItems check. Item is in filters SpecificItemIDs collection.");
+                return false;
+            }
+            if (filter.SpecificItemFilter == AvailableIngredientFilter.FilterLogic.OnlyItems && !filter.SpecificItemIDs.Contains(item.ItemID))
+            {
+                Logger.LogTrace($"{nameof(CustomCraftingService)}::{nameof(ItemPassesFilter)}: Item {item.ItemID} - " +
+                        $"{item.Name} ({item.UID}) failed SpecificItemFilter.OnlyItems check. Item is not in filters SpecificItemIDs collection.");
                 return false;
             }
 
@@ -334,14 +347,19 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             _ingredientFilters.AddOrUpdate(typeof(T), filter, (k, v) => v = filter);
         public bool TryGetIngredientFilter<T>(out MenuIngredientFilters filter) =>
            _ingredientFilters.TryGetValue(typeof(T), out filter);
+        public bool TryRemoveIngredientFilter<T>() =>
+           _ingredientFilters.TryRemove(typeof(T), out _);
         
+
         public ICompatibleIngredientMatcher AddOrUpdateCompatibleIngredientMatcher<T>(ICompatibleIngredientMatcher matcher) =>
             _ingredientMatchers.AddOrUpdate(typeof(T), matcher, (k, v) => v = matcher);
 
         public bool TryGetCompatibleIngredientMatcher<T>(out ICompatibleIngredientMatcher matcher) =>
             _ingredientMatchers.TryGetValue(typeof(T), out matcher);
 
+        
         public IConsumedItemSelector AddOrUpdateConsumedItemSelector<T>(IConsumedItemSelector itemSelector) =>
            _itemSelectors.AddOrUpdate(typeof(T), itemSelector, (k, v) => v = itemSelector);
+        public bool TryRemoveConsumedItemSelector<T>() => _itemSelectors.TryRemove(typeof(T), out _);
     }
 }

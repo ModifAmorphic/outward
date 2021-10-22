@@ -61,6 +61,7 @@ namespace ModifAmorphic.Outward.Modules
             return ModuleService.GetModule<CustomCraftingModule>(modId, () =>
                 new CustomCraftingModule(
                     new CraftingMenuUIService(() => LoggerFactory.GetLogger(modId)),
+                    new RecipeDisplayService(() => LoggerFactory.GetLogger(modId)),
                     new CustomRecipeService(
                         () => RecipeManager.Instance,
                         () => LoggerFactory.GetLogger(modId)),
