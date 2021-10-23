@@ -1,5 +1,5 @@
 # Summary
-**Tired of running around looking like a freak in a bird mask? Change your gear's appearance with a new Transmogrify Crafting system!**
+**Change your gear's appearance with a new Transmogrify Crafting system! Added support for Backpacks, Lanterns and Lexicons. Plus balanced Alchemy and Cooking Menus.**
 &nbsp;
 - - - -
 &nbsp;
@@ -28,12 +28,13 @@ Recipe | |  | | | Result
 - Learn new Transmog recipes by equipping gear.
 - Transmogrify an Item (swap visuals with another).
   - \*\***Important**\*\* Equip the Item you want to change.
+    - Backpacks must be empty!
   - Open the Transmogrify Crafting Menu
   - Select the Transmog Recipe on the left.
   - Confirm the Selected Item is the item you wish to apply the transmog to.
   - Craft your new item.
     - Any Enchantments are carried over to the new item.
-- Remove a transmog from equipment with the "-Remove Transmogrify" recipe.
+- Remove a transmog from equipment with the "- Remove Transmogrify" recipe.
   - Equip Item you wish to remove the Transmogrify from.
   - Open the Transmogrify Crafting Menu.
   - Select the "- Remove Transmog" recipe at the top.
@@ -49,7 +50,7 @@ Transmorphic adds a new crafting system focused on customizing your equipment's 
 \**1h sword --> 1h sword, 2h axe --> 2h axe, Boots --> Boots, etc.*
 
 
-<p> Alchemy and Cooking crafting menus can also be enabled in the Character UI. They are disabled by default in the options / settings file. </p>
+<p> Alchemy and Cooking crafting menus can also be enabled in the Character UI. They are disabled by default in the options / settings file. Alchemy and Crafting menus now require 2 additional ingredients by default - Alchemy Kit or Cooking Pot and wood. The crafting kit is not consumed/destroyed on crafting. The new ingredient requirement can be disabled.</p>
 
 ## 1. Equip Item
 ![Equip Target Item](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/EquipItemSmallest.png?raw=true)
@@ -62,6 +63,14 @@ Transmorphic adds a new crafting system focused on customizing your equipment's 
 
 # Change Logs
 
-## Initial Release 1.0.0
-- Initial release.
+## Latest Release ${PACKAGE_VERSION}
+- Tranmogs for Backpacks, Lanterns and Lexicons
+  - As with Armor and Weapons, an item must be equipped before adding or removing a transmog.
+  - **Backpacks must be empty!**
+- Added 5th and 6th ingredients to Alchemy and Cooking reasons to try and balance them out.
+  - The 5th ingredient requires a crafting kit. Alchemy Kit or Cooking Pot. Light versions also apply. Kits are **not** consumed when crafting.
+  - The 6th ingredient is wood as a fuel source.
+  - The extra ingredients can be disabled in the menu.
+- Fixed issue new crafting menu(s) navigation order when using a controller.
+  - There's a minor bug with the Tranmogrify menu when using a controller. On first navigating to the menu, you can't navigate to any of the recipes in the list. As a workaround, switch to another menu and back. This only happens the first time the menu is opened.
 

@@ -32,19 +32,20 @@ namespace ModifAmorphic.Outward.Transmorphic.Alchemy
             //Register the menu and it's services, configs
             craftingModule.RegisterCraftingMenu<AlchemyMenu>("Alchemy", AlchemySettings.AlchemyMenuIcons);
             craftingModule.RegisterRecipeSelectorDisplayConfig<AlchemyMenu>(AlchemySettings.RecipeSelectorDisplayConfig);
-            craftingModule.RegisterMenuIngredientFilters<AlchemyMenu>(AlchemySettings.MenuFilters);
-            craftingModule.RegisterConsumedItemSelector<AlchemyMenu>(_services.GetService<AlchemyIngredientMatcher>());
+            ToggleKitFuelRequirement(false);
 
             //Set up Menu toggle events
             alchemySettings.AlchemyMenuEnabledChanged += (isEnabled) => ToggleCraftingMenu<AlchemyMenu>(craftingModule, isEnabled);
-            alchemySettings.DisableKitFuelReqChanged += ToggleKitFuelRequirement;
-            craftingModule.AllMenuTypesLoaded += (menusTypes) =>
+            craftingModule.MenuLoaded += (menu) =>
             {
-                ToggleCraftingMenu<AlchemyMenu>(craftingModule, alchemySettings.AlchemyMenuEnabled);
-                if (alchemySettings.DisableKitFuelRequirement)
-                    ToggleKitFuelRequirement(alchemySettings.DisableKitFuelRequirement);
+                if (menu is AlchemyMenu)
+                {
+                    ToggleCraftingMenu<AlchemyMenu>(craftingModule, true);
+                    if (alchemySettings.DisableKitFuelRequirement)
+                        ToggleKitFuelRequirement(alchemySettings.DisableKitFuelRequirement);
+                }
             };
-            
+            alchemySettings.DisableKitFuelReqChanged += ToggleKitFuelRequirement;
 
         }
         private void ToggleCraftingMenu<T>(CustomCraftingModule craftingModule, bool isEnabled) where T : CustomCraftingMenu
@@ -59,15 +60,17 @@ namespace ModifAmorphic.Outward.Transmorphic.Alchemy
             var craftingModule = _services.GetService<CustomCraftingModule>();
             if (kitFuelDisabled)
             {
-                craftingModule.UnregisterRecipeSelectorDisplayConfig<AlchemyMenu>();
+                craftingModule.UnregisterStaticIngredients<AlchemyMenu>();
                 craftingModule.UnregisterMenuIngredientFilters<AlchemyMenu>();
                 craftingModule.UnregisterConsumedItemSelector<AlchemyMenu>();
+                Logger.LogInfo("Disabled Alchemy Kit and Fuel Requirements for Alchemy Crafting menu.");
             }
             else
             {
-                craftingModule.RegisterRecipeSelectorDisplayConfig<AlchemyMenu>(AlchemySettings.RecipeSelectorDisplayConfig);
+                craftingModule.RegisterStaticIngredients<AlchemyMenu>(AlchemySettings.StaticIngredients);
                 craftingModule.RegisterMenuIngredientFilters<AlchemyMenu>(AlchemySettings.MenuFilters);
                 craftingModule.RegisterConsumedItemSelector<AlchemyMenu>(_services.GetService<AlchemyIngredientMatcher>());
+                Logger.LogInfo("Enabled Alchemy Kit and Fuel Requirements for Alchemy Crafting menu.");
             }
         }
     }

@@ -32,17 +32,19 @@ namespace ModifAmorphic.Outward.Transmorphic.Cooking
             //Register the menu and it's services, configs
             craftingModule.RegisterCraftingMenu<CookingMenu>("Cooking", CookingSettings.CookingMenuIcons);
             craftingModule.RegisterRecipeSelectorDisplayConfig<CookingMenu>(CookingSettings.RecipeSelectorDisplayConfig);
-            craftingModule.RegisterMenuIngredientFilters<CookingMenu>(CookingSettings.MenuFilters);
-            craftingModule.RegisterConsumedItemSelector<CookingMenu>(_services.GetService<CookingIngredientMatcher>());
+            ToggleKitFuelRequirement(false);
 
             //Set up Menu toggle events
             cookingSettings.CookingMenuEnabledChanged += (isEnabled) => ToggleCraftingMenu<CookingMenu>(craftingModule, isEnabled);
             cookingSettings.DisableKitFuelReqChanged += ToggleKitFuelRequirement;
-            craftingModule.AllMenuTypesLoaded += (menusTypes) =>
+            craftingModule.MenuLoaded += (menu) =>
             {
-                ToggleCraftingMenu<CookingMenu>(craftingModule, cookingSettings.CookingMenuEnabled);
-                if (cookingSettings.DisableKitFuelRequirement)
-                    ToggleKitFuelRequirement(cookingSettings.DisableKitFuelRequirement);
+                if (menu is CookingMenu)
+                {
+                    ToggleCraftingMenu<CookingMenu>(craftingModule, cookingSettings.CookingMenuEnabled);
+                    if (cookingSettings.DisableKitFuelRequirement)
+                        ToggleKitFuelRequirement(cookingSettings.DisableKitFuelRequirement);
+                }
             };
         }
         private void ToggleCraftingMenu<T>(CustomCraftingModule craftingModule, bool isEnabled) where T : CustomCraftingMenu
@@ -57,15 +59,17 @@ namespace ModifAmorphic.Outward.Transmorphic.Cooking
             var craftingModule = _services.GetService<CustomCraftingModule>();
             if (kitFuelDisabled)
             {
-                craftingModule.UnregisterRecipeSelectorDisplayConfig<CookingMenu>();
+                craftingModule.UnregisterStaticIngredients<CookingMenu>();
                 craftingModule.UnregisterMenuIngredientFilters<CookingMenu>();
                 craftingModule.UnregisterConsumedItemSelector<CookingMenu>();
+                Logger.LogInfo("Disabled Cooking Pot and Fuel Requirements for Cooking Crafting menu.");
             }
             else
             {
-                craftingModule.RegisterRecipeSelectorDisplayConfig<CookingMenu>(CookingSettings.RecipeSelectorDisplayConfig);
+                craftingModule.RegisterStaticIngredients<CookingMenu>(CookingSettings.StaticIngredients);
                 craftingModule.RegisterMenuIngredientFilters<CookingMenu>(CookingSettings.MenuFilters);
                 craftingModule.RegisterConsumedItemSelector<CookingMenu>(_services.GetService<CookingIngredientMatcher>());
+                Logger.LogInfo("Enabled Cooking Pot and Fuel Requirements for Cooking Crafting menu.");
             }
         }
     }

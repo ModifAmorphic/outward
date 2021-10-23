@@ -106,7 +106,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                                                                 TransmogSettings.RemoveRecipe.ResultItemName,
                                                                 TransmogSettings.RemoveRecipe.ResultItemDesc)
                               .ConfigureItemIcon(TransmogSettings.RemoveRecipe.IconFile);
-                Logger.LogInfo($"Added Transmog Remover Recipe placeholder prefab {removerResult.ItemID} - {removerResult.DisplayName}.");
+                Logger.LogDebug($"Added Transmog Remover Recipe placeholder prefab {removerResult.ItemID} - {removerResult.DisplayName}.");
             }
 
             //Add remover recipe
@@ -284,7 +284,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
 
             _recipeSaveData.SaveRecipe(recipe.VisualItemID, recipe.UID);
             _craftingModule.RegisterRecipe<TransmogrifyMenu>(recipe);
-            Logger.LogInfo($"Registered new Transmogrify recipe for {equipment.ItemID} - {equipment.DisplayName}. Equipment was a type of {equipType}");
+            Logger.LogDebug($"Registered new Transmogrify recipe for {equipment.ItemID} - {equipment.DisplayName}. Equipment was a type of {equipType}.");
             return recipe;
         }
         

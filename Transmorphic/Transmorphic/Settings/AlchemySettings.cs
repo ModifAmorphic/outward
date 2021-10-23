@@ -35,8 +35,9 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
         public const int FuelItemID = 6100010; //Wood
         public static RecipeSelectorDisplayConfig RecipeSelectorDisplayConfig = new RecipeSelectorDisplayConfig()
         {
-            ExtraIngredientSlotOption = ExtraIngredientSlotOptions.Both,
-            StaticIngredients = new List<StaticIngredient>()
+            ExtraIngredientSlotOption = ExtraIngredientSlotOptions.Both
+        };
+        public static List<StaticIngredient> StaticIngredients = new List<StaticIngredient>()
                 {
                     {
                         new StaticIngredient() {
@@ -54,8 +55,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
                             IngredientID = AlchemyKitCorelationID
                         }
                     }
-                }
-        };
+                };
 
         public readonly static HashSet<int> AlchemyKitItemIDs = new HashSet<int>() { 5010200, 5010205 }; //Alchemy Kit , Lightweight Alchemy Kit 
         public readonly static HashSet<int> AlchemyStaticItemIDs = new HashSet<int>() { 5010200, 5010205, FuelItemID };

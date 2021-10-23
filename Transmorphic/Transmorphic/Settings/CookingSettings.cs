@@ -45,28 +45,27 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
         public const int FuelItemID = 6100010; //Wood
         public static RecipeSelectorDisplayConfig RecipeSelectorDisplayConfig = new RecipeSelectorDisplayConfig()
         {
-            ExtraIngredientSlotOption = ExtraIngredientSlotOptions.Both,
-            StaticIngredients = new List<StaticIngredient>()
-                {
-                    {
-                        new StaticIngredient() {
-                            ActionType = RecipeIngredient.ActionTypes.AddSpecificIngredient,
-                            SpecificItemID = FuelItemID,
-                            IngredientSlotPosition = IngredientSlotPositions.BottomRight,
-                            IngredientID = Guid.NewGuid()
-                        }
-                    },
-                    {
-                        new StaticIngredient() {
-                            ActionType = RecipeIngredient.ActionTypes.AddGenericIngredient,
-                            IngredientTypeSelector = KitTagSourceSelector,
-                            IngredientSlotPosition = IngredientSlotPositions.BottomLeft,
-                            IngredientID = CookingKitCorelationID
-                        }
-                    }
-                }
+            ExtraIngredientSlotOption = ExtraIngredientSlotOptions.Both
         };
-
+        public static List<StaticIngredient> StaticIngredients = new List<StaticIngredient>()
+        {
+            {
+                new StaticIngredient() {
+                    ActionType = RecipeIngredient.ActionTypes.AddSpecificIngredient,
+                    SpecificItemID = FuelItemID,
+                    IngredientSlotPosition = IngredientSlotPositions.BottomRight,
+                    IngredientID = Guid.NewGuid()
+                }
+            },
+            {
+                new StaticIngredient() {
+                    ActionType = RecipeIngredient.ActionTypes.AddGenericIngredient,
+                    IngredientTypeSelector = KitTagSourceSelector,
+                    IngredientSlotPosition = IngredientSlotPositions.BottomLeft,
+                    IngredientID = CookingKitCorelationID
+                }
+            }
+        };
         public readonly static HashSet<int> CookingKitItemIDs = new HashSet<int>() { 5010100, 5010105 }; //Cooking Pot, Lightweight Cooking Pot
         public readonly static HashSet<int> CookingStaticItemIDs = new HashSet<int>() { 5010100, 5010105, FuelItemID };
 
