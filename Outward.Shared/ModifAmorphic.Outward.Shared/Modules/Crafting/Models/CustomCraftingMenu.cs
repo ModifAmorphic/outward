@@ -249,6 +249,9 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 		//TODO: Refactor all of these selector methods out of the model and into a service
 		public bool TryOnIngredientSelectorClicked(int selectorIndex)
         {
+			if (_selectorIngredientMap[selectorIndex] == -1)
+				return false;
+
 			IngredientSelector ingredientSelector = _ingredientSelectors[selectorIndex];
 			var ingredientSelectorCachedItems = _ingredientSelectorCachedItems;
 			ingredientSelectorCachedItems.Clear();
@@ -366,6 +369,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 					if (ingredIndex < recipeIngredients.Length)
 					{
 						_selectorIngredientMap[slot] = ingredIndex;
+						Logger.LogDebug($"SetSelectorIngredientMap:: _selectorIngredientMap Slot {slot}'s ingredient set to IngredientIndex {ingredIndex}");
 						ingredIndex++;
 					}
 				}
@@ -590,10 +594,14 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				refreshAutoRecipe();
 				var firstIndex = !HideFreeCraftingRecipe ? -1 : _recipeDisplays.Count > 0 ?  0 : -1;
 
-				if (firstIndex != -1)
-					_recipeDisplays[0].Button.Select();
-				else
-					OnRecipeSelected(firstIndex, _forceRefresh: true);
+				//reset selector ingredient map
+				for (int i = 0; i < _selectorIngredientMap.Length; i++)
+					_selectorIngredientMap[i] = -1;
+
+				//if (firstIndex != -1)
+				//	_recipeDisplays[0].Button.Select();
+				//else
+				//	OnRecipeSelected(firstIndex, _forceRefresh: true);
 
 				RecipeDisplayService.PositionSelectors(this, _ingredientSelectors);
 			}

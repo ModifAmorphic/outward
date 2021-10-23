@@ -357,7 +357,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                 
                 if (complexeRecipes[i].Value.IngredientCount - ignoredAmt > 1)
                 {
-                    trimComplexRecipes.Add(new KeyValuePair<int, Recipe>(index, complexeRecipes[i].Value));
+                    
+                    trimComplexRecipes.Add(new KeyValuePair<int, Recipe>(complexeRecipes[i].Key, complexeRecipes[i].Value));
                     var display = recipeDisplays[i];
                     display.onClick.RemoveAllListeners();
                     int selectIndex = index;
