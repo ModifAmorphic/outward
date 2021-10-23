@@ -56,7 +56,7 @@ namespace ModifAmorphic.Outward.Modules
         }
         public static CustomCraftingModule GetCustomCraftingModule(string modId)
         {
-            var menuTabService = new CraftingMenuService(() => LoggerFactory.GetLogger(modId));
+            var menuTabService = new CraftingMenuUIService(() => LoggerFactory.GetLogger(modId));
 
             return ModuleService.GetModule<CustomCraftingModule>(modId, () =>
                 new CustomCraftingModule(
