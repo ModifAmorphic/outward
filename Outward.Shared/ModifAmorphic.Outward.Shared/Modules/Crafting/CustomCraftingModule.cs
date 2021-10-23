@@ -60,8 +60,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             typeof(LocalizationManagerPatches)
         };
 
-        public delegate void AllMenuTypesLoadedDelegate(List<Type> menuTypes);
-        public event AllMenuTypesLoadedDelegate AllMenuTypesLoaded;
+        public delegate void MenuLoadedDelegate(CustomCraftingMenu menu);
+        public event MenuLoadedDelegate MenuLoaded;
 
         internal CustomCraftingModule(CraftingMenuUIService menuUIService, RecipeDisplayService recipeDisplayService, CustomRecipeService customRecipeService, CustomCraftingService craftingService, Func<IModifLogger> loggerFactory)
         {
@@ -70,18 +70,18 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             CharacterUIPatches.AwakeBefore += CharacterUIPatches_AwakeBefore;
             CraftingMenuPatches.AwakeInitAfter += CraftingMenuPatches_AwakeInitAfter;
         }
-
+        
         private void CraftingMenuPatches_AwakeInitAfter(CraftingMenu craftingMenu)
         {
-            //Needed to avoid infinite recursion
-            if (craftingMenu is CustomCraftingMenu customMenu)
+            if (craftingMenu is CustomCraftingMenu)
             {
-                _recipeDisplayService.ExtendIngredientSelectors(customMenu);
+                //Needed to avoid infinite recursion
                 return;
             }
 
             AddCustomCraftingMenus(craftingMenu);
         }
+        internal void RaiseMenuLoaded(CustomCraftingMenu menu) => MenuLoaded?.Invoke(menu);
 
         private void CharacterUIPatches_AwakeBefore(CharacterUI characterUI)
         {
@@ -167,10 +167,12 @@ namespace ModifAmorphic.Outward.Modules.Crafting
            => _craftingService.TryRemoveConsumedItemSelector<T>();
         public void RegisterRecipeSelectorDisplayConfig<T>(RecipeSelectorDisplayConfig config) where T : CustomCraftingMenu
             => _recipeDisplayService.AddUpdateDisplayConfig<T>(config);
-        public void UnregisterRecipeSelectorDisplayConfig<T>() where T : CustomCraftingMenu
-            => _recipeDisplayService.TryRemoveDisplayConfig<T>();
         public bool TryGetRegisteredRecipeDisplayConfig<T>(out RecipeSelectorDisplayConfig config) where T : CustomCraftingMenu
             => _recipeDisplayService.TryGetDisplayConfig<T>(out config);
+        public void RegisterStaticIngredients<T>(IEnumerable<StaticIngredient> ingredients) where T : CustomCraftingMenu
+            => _recipeDisplayService.AddOrUpdateStaticIngredients<T>(ingredients);
+        public void UnregisterStaticIngredients<T>() where T : CustomCraftingMenu
+            => _recipeDisplayService.TryRemoveStaticIngredients<T>();
 
 
         public void EnableCraftingMenu<T>() where T : CustomCraftingMenu
@@ -290,7 +292,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                 if (customMenu.IsCustomCraftingStation())
                     _customRecipeService.AddOrGetCraftingStationRecipes(customMenu.GetRecipeCraftingType());
             }
-            AllMenuTypesLoaded?.Invoke(_craftingMenus.Keys.ToList());
         }
     }
 }

@@ -37,7 +37,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
 
             var newUiMenuTab = newUiMenuTabGo.AddComponent<UIMenuTab>();
             newUiMenuTab.transform.SetAsLastSibling();
-            //Add new tab to the CharacterUI m_menuTabs array
+            
+            
             newUiMenuTab.LinkedMenuID = (CharacterUI.MenuScreens)menuId;
             var newMenuTab = new MenuTab()
             {
@@ -46,9 +47,25 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             };
             LocalizationService.RegisterLocalization(tabName, tabDisplayName);
 
-            Array.Resize(ref menuTabs, menuTabs.Length + 1);
-            menuTabs[menuTabs.Length - 1] = newMenuTab;
-            characterUI.SetPrivateField("m_menuTabs", menuTabs);
+            //Array.Resize(ref menuTabs, menuTabs.Length + 1);
+            //Insert new tab to the CharacterUI m_menuTabs array. The base game menu navigatation relies on the order
+            //so insert at the same location this is going to be displayed at. Otherwise navigating with LB-RB buttons will act like 
+            //the menus are always at the end of the row of buttons, even if they're not.
+            var tabSorter = new MenuTab[menuTabs.Length + 1];
+            var insertIndex = Array.FindIndex(menuTabs, t => t.Tab.name.Equals(orderAfterBtn, StringComparison.InvariantCultureIgnoreCase)) + 1;
+            for (int i = 0; i < tabSorter.Length; i++)
+            {
+                if (i < insertIndex)
+                    tabSorter[i] = menuTabs[i];
+                else if (i == insertIndex)
+                    tabSorter[i] = newMenuTab;
+                else
+                    tabSorter[i] = menuTabs[i - 1];
+
+            }
+
+            //menuTabs[menuTabs.Length - 1] = newMenuTab;
+            characterUI.SetPrivateField("m_menuTabs", tabSorter);
             
             Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(AddMenuTab)}: Resized m_menuTabs to {menuTabs.Length}");
 

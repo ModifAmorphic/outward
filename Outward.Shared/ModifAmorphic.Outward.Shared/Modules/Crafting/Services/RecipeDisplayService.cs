@@ -1,5 +1,6 @@
 ﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.Modules.Crafting.Patches;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -15,26 +16,37 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
     {
         private readonly ConcurrentDictionary<Type, RecipeSelectorDisplayConfig> _displayConfigs = new ConcurrentDictionary<Type, RecipeSelectorDisplayConfig>();
 
+        private readonly ConcurrentDictionary<Type, List<StaticIngredient>> _staticIngredients = new ConcurrentDictionary<Type, List<StaticIngredient>>();
+        
+
         private readonly Func<IModifLogger> _loggerFactory;
+        private int _baseSelectorLength = 4;
         private IModifLogger Logger => _loggerFactory.Invoke();
 
         public RecipeDisplayService(Func<IModifLogger> loggerFactory)
         {
             _loggerFactory = loggerFactory;
             //CraftingMenuPatches.GenerateResultOverride += TryGenerateResultOverride;
-
+            CraftingMenuPatches.RefreshAutoRecipeAfter += HideRecipes;
         }
+
         public void AddUpdateDisplayConfig<T>(RecipeSelectorDisplayConfig recipeDisplayConfig) where T : CustomCraftingMenu
         {
             var config = _displayConfigs.AddOrUpdate(typeof(T), recipeDisplayConfig, (k, v) => v = recipeDisplayConfig);
         }
-        public bool TryRemoveDisplayConfig<T>() where T : CustomCraftingMenu =>_displayConfigs.TryRemove(typeof(T), out _);
+        //public bool TryRemoveDisplayConfig<T>() where T : CustomCraftingMenu =>_displayConfigs.TryRemove(typeof(T), out _);
 
         public bool TryGetDisplayConfig<T>(out RecipeSelectorDisplayConfig config) where T : CustomCraftingMenu =>
            _displayConfigs.TryGetValue(typeof(T), out config);
         public bool TryGetDisplayConfig(Type menuType, out RecipeSelectorDisplayConfig config) =>
            _displayConfigs.TryGetValue(menuType, out config);
+        public bool TryGetStaticIngredients(Type menuType, out List<StaticIngredient> ingredients) =>
+           _staticIngredients.TryGetValue(menuType, out ingredients);
 
+        public void AddOrUpdateStaticIngredients<T>(IEnumerable<StaticIngredient> ingredients) => _staticIngredients.AddOrUpdate(typeof(T), ingredients.ToList(), (k , v) => v = ingredients.ToList());
+
+        public bool TryRemoveStaticIngredients<T>() =>
+           _staticIngredients.TryRemove(typeof(T), out _);
 
         public void ExtendIngredientSelectors(CustomCraftingMenu menu)
         {
@@ -43,6 +55,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                 return;
 
             var extras = config.ExtraIngredientSlotOption == ExtraIngredientSlotOptions.Both ? 2 : 1;
+
+            Logger.LogDebug($"RecipeDisplayService::ExtendIngredientSelectors(): Extending menu {menu.GetType()} ingredient slots by {extras} selectors.");
 
             //Expand last free ingredients otherwise will throw out of range
             var freeIngredientIDs = menu._lastFreeRecipeIngredientIDs;
@@ -65,17 +79,59 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             if (config.ExtraIngredientSlotOption == ExtraIngredientSlotOptions.BottomLeft || config.ExtraIngredientSlotOption == ExtraIngredientSlotOptions.Both)
             {
                 slots[index] = GetIngredientSelector(menu, template, extraIngredsRect, index);
-                SetBottomLeftNav(slots, index, craftButton, config.ExtraIngredientSlotOption);
                 index++;
             }
 
             if (config.ExtraIngredientSlotOption == ExtraIngredientSlotOptions.BottomRight || config.ExtraIngredientSlotOption == ExtraIngredientSlotOptions.Both)
             {
                 slots[index] = GetIngredientSelector(menu, template, extraIngredsRect, index);
-                SetBottomRightNav(slots, index, craftButton, config.ExtraIngredientSlotOption);
             }
 
+            SetSelectorNavigation(config.ExtraIngredientSlotOption, craftButton, slots);
+
             menu._ingredientSelectors = slots;
+        }
+        internal void SetSelectorNavigation(ExtraIngredientSlotOptions extraIngredientSlotOptions, Button craftButton, IngredientSelector[] selectors)
+        {
+            if (craftButton != null)
+            {
+                var craftNav = craftButton.navigation;
+                craftNav.selectOnLeft = null;
+                craftNav.selectOnRight = null;
+                craftNav.selectOnUp = selectors[0].Button;
+                craftButton.navigation = craftNav;
+            }
+
+            for (int i = 0; i < _baseSelectorLength; i++)
+            {
+                //var leftSelector = i > 0 ? selectors[i - 1] : null;
+                var selector = selectors[i];
+                var leftSelector = i > 0 ? selectors[i - 1] : null;
+
+                var nav = selector.navigation;
+                nav.mode = Navigation.Mode.Explicit;
+                nav.selectOnLeft = selector.Button.interactable ? leftSelector?.Button : null;
+                nav.selectOnDown = selector.Button.interactable ? craftButton : null;
+                selector.navigation = nav;
+
+                if (leftSelector != null)
+                {
+                    var leftNav = leftSelector.navigation;
+                    leftNav.selectOnRight = selector.Button.interactable ? selector.Button : null;
+                    leftSelector.navigation = leftNav;
+                }
+            }
+
+            var bottomIndex = _baseSelectorLength;
+            if (extraIngredientSlotOptions == ExtraIngredientSlotOptions.BottomLeft || extraIngredientSlotOptions == ExtraIngredientSlotOptions.Both)
+            {
+                SetBottomLeftNav(bottomIndex, craftButton, extraIngredientSlotOptions, selectors);
+                bottomIndex++;
+            }
+            if (extraIngredientSlotOptions == ExtraIngredientSlotOptions.BottomRight || extraIngredientSlotOptions == ExtraIngredientSlotOptions.Both)
+            {
+                SetBottomRightNav(bottomIndex, craftButton, extraIngredientSlotOptions, selectors);
+            }
         }
         private RectTransform CreateBottomIngredientRect(CustomCraftingMenu menu)
         {
@@ -83,15 +139,10 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             var top = menu.transform.Find("Content/Ingredients").GetComponent<RectTransform>();
             var result = menu.transform.Find("Content/CraftingResult").GetComponent<RectTransform>();
 
-
-
             var bottomGo = new GameObject("ExtraIngredients");
             bottomGo.transform.SetParent(content);
             var bottom = bottomGo.AddComponent<RectTransform>();
-            //bottom.name = "ExtraIngredients";
             bottom.pivot = new Vector2(result.pivot.x, result.pivot.y);
-            //bottom.anchoredPosition = new Vector2(result.anchoredPosition.x, result.anchoredPosition.y);
-            //bottom.anchoredPosition3D = new Vector3(result.anchoredPosition3D.x, result.anchoredPosition3D.y, result.anchoredPosition3D.z);
             bottom.localScale = top.localScale;
             bottom.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, top.rect.width);
             bottom.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, top.rect.height);
@@ -101,8 +152,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
         }
         private IngredientSelector GetIngredientSelector(CustomCraftingMenu menu, IngredientSelector selectorTemplate, Transform parent, int index)
         {
-
-
             var selector = UnityEngine.Object.Instantiate(selectorTemplate);
             selector.transform.SetParent(parent);
             selector.transform.ResetLocal();
@@ -114,70 +163,112 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             });
             return selector;
         }
-        private void SetBottomLeftNav(IngredientSelector[] slots, int index, Button craftButton, ExtraIngredientSlotOptions slotOptions)
+        private void SetBottomLeftNav(int index, Button craftButton, ExtraIngredientSlotOptions slotOptions, IngredientSelector[] slots)
         {
+            if (!slots[index].Button.interactable)
+            {
+                Logger.LogDebug($"SetBottomLeftNav: Index slot {index} button was not interactable.");
+                return;
+            }
+            Logger.LogDebug($"SetBottomLeftNav: Index slot {index} button was interactable.");
             var navigation = slots[index].navigation;
-            //left goes to previous slot (top right)
-            navigation.selectOnLeft = slots[index - 1].Button;
+            var bottomRightSel = slotOptions == ExtraIngredientSlotOptions.Both ? slots.Last() : null;
+            
+            navigation.mode = Navigation.Mode.Explicit;
+            
+            var leftIndex = Array.FindLastIndex(slots, _baseSelectorLength - 1, _baseSelectorLength, s => s.Button.interactable);
+            
+            navigation.selectOnLeft = null;
+            navigation.selectOnRight = craftButton;
+            navigation.selectOnDown = null;
+            
             if (craftButton != null)
             {
-                navigation.selectOnDown = craftButton;
+                var craftNavigation = craftButton.navigation;
+                craftNavigation.selectOnLeft = slots[index].Button.interactable ? slots[index].Button : null;
+                craftButton.navigation = craftNavigation;
             }
-            //Up goes directly to first item (top left).
-            navigation.selectOnUp = slots[0].Button;
-            //Configure top right slot.  Right goes to next line, this bottom left slot.
-            var prevNavigation = slots[index - 1].navigation;
-            prevNavigation.selectOnRight = slots[index].Button;
-
+            
             var navDownIndex = slotOptions == ExtraIngredientSlotOptions.BottomLeft ? 4 : 2;
             //change top slots down navigation to go to this slot. If there is a Bottom right slot enabled,
             //then only the first 2 should go to this slot. Otherwise, down takes all 4 here.
+            bool upSet = false;
             for (var top = 0; top < navDownIndex; top++)
             {
-                var topNavigation = slots[top].navigation;
-                topNavigation.selectOnDown = slots[index].Button;
-                //just to make it clearer what we're doing here.
-                slots[top].navigation = topNavigation;
+                if (slots[top].Button.interactable)
+                {
+                    var topNavigation = slots[top].navigation;
+                    topNavigation.selectOnDown = slots[index].Button.interactable ? slots[index].Button : null;
+                    slots[top].navigation = topNavigation;
+                    if (!upSet && slots[index].Button.interactable)
+                    {
+                        upSet = true;
+                        navigation.selectOnUp = slots[top].Button;
+                    }
+                }
             }
+
+            slots[index].navigation = navigation;
         }
-        private void SetBottomRightNav(IngredientSelector[] slots, int index, Button craftButton, ExtraIngredientSlotOptions slotOptions)
+        private void SetBottomRightNav(int index, Button craftButton, ExtraIngredientSlotOptions slotOptions, IngredientSelector[] slots)
         {
+            if (!slots[index].Button.interactable)
+            {
+                Logger.LogDebug($"SetBottomRightNav: Index slot {index} button was not interactable.");
+                return;
+            }
+            Logger.LogDebug($"SetBottomRightNav: Index slot {index} button was interactable.");
             var navigation = slots[index].navigation;
-            //left goes to previous slot (top right)
-            navigation.selectOnLeft = slots[index - 1].Button;
-            //if there's a craft button, both right and down go to it
+            navigation.mode = Navigation.Mode.Explicit;
+            //Get the closest active button on the right
+            var leftSelector = slotOptions == ExtraIngredientSlotOptions.Both ? slots[4] : null;
+
+            navigation.selectOnDown = null;
+            navigation.selectOnRight = null;
+
             if (craftButton != null)
             {
-                navigation.selectOnDown = craftButton;
-                navigation.selectOnRight = craftButton;
+                navigation.selectOnLeft = craftButton;
+                var craftNavigation = craftButton.navigation;
+                craftNavigation.selectOnRight = slots[index].Button.interactable ? slots[index].Button : null;
+                craftButton.navigation = craftNavigation;
             }
-            //Up goes directly to last top item (top right).
-            navigation.selectOnUp = slots[3].Button;
-
-            //Configure right nav for previous slot (top right or bottom left if configured)
-            //right goes to this slot.
-            var prevNavigation = slots[index - 1].navigation;
-            prevNavigation.selectOnRight = slots[index].Button;
-
+            else if (leftSelector != null)
+            {
+                navigation.selectOnLeft = leftSelector.Button;
+                var leftNavigation = leftSelector.navigation;
+                leftNavigation.selectOnRight = slots[index].Button.interactable ? slots[index].Button : null;
+                leftSelector.navigation = leftNavigation;
+            }
+            
             //change top slots down navigation to go to this slot. If there is a Bottom left slot enabled,
             //then only the last 2 should go to this slot. Otherwise, down takes all 4 here.
             var navDownIndex = slotOptions == ExtraIngredientSlotOptions.BottomRight ? 0 : 2;
-            for (var top = navDownIndex; top < 4; top++)
+            for (var top = navDownIndex; top < _baseSelectorLength; top++)
             {
-                var topNavigation = slots[top].navigation;
-                topNavigation.selectOnDown = slots[index].Button;
-                //just to make it clearer what we're doing here.
-                slots[top].navigation = topNavigation;
+                if (slots[top].Button.interactable)
+                {
+                    var topNavigation = slots[top].navigation;
+                    topNavigation.selectOnDown = slots[index].Button.interactable ? slots[index].Button : null;
+                    slots[top].navigation = topNavigation;
+                    
+                }
             }
+            //set the up to the last active on the top row
+            for (var i = 0; i < _baseSelectorLength; i++)
+                if (slots[i].Button.interactable)
+                    navigation.selectOnUp = slots[i].Button;
+
+            slots[index].navigation = navigation;
         }
 
         public void AddStaticIngredients(CustomCraftingMenu menu, ref List<Recipe> recipes)
         {
-            if (TryGetDisplayConfig(menu.GetType(), out var recipeDisplayConfig))
+            if (TryGetStaticIngredients(menu.GetType(), out var staticIngredients))
             {
-                if (recipeDisplayConfig.StaticIngredients != null && recipeDisplayConfig.StaticIngredients.Count > 0)
+                if (staticIngredients != null && staticIngredients.Count > 0)
                 {
-                    var specificItems = recipeDisplayConfig.StaticIngredients.Where(i => i.ActionType == RecipeIngredient.ActionTypes.AddSpecificIngredient);
+                    var specificItems = staticIngredients.Where(i => i.ActionType == RecipeIngredient.ActionTypes.AddSpecificIngredient);
                     var prefabs = new Item[specificItems.Count()];
 
                     int pid = 0;
@@ -191,7 +282,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                     {
                         var modRecipe = UnityEngine.Object.Instantiate(recipe);
                         int prefabIndex = 0;
-                        foreach (var staticIngredient in recipeDisplayConfig.StaticIngredients)
+                        foreach (var staticIngredient in staticIngredients)
                         {
                             if (staticIngredient.ActionType == RecipeIngredient.ActionTypes.AddSpecificIngredient)
                             {
@@ -234,6 +325,69 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             rectTarget.pivot = new Vector2(yRef.pivot.x, yRef.pivot.y);
             rectTarget.position = new Vector3(rectXref.position.x, yRef.position.y);
             Logger.LogDebug($"{nameof(RecipeDisplayService)}::{nameof(SetSlotPosition)}: Source (X, Y) ({rectXref}: {rectXref.position.x}, {yRef}: {yRef.position.y}). Target (X, Y) ({rectTarget.position.x}, {rectTarget.position.y})");
+        }
+
+        private void HideRecipes(CustomCraftingMenu menu)
+        {
+            var menuType = menu.GetType();
+            if (!TryGetDisplayConfig(menuType, out var config) || config.ExtraIngredientSlotOption == ExtraIngredientSlotOptions.None
+                || !TryGetStaticIngredients(menuType, out var staticIngredients))
+                return;
+
+            var ignoredAmt = staticIngredients.Count(s => !s.CountAsIngredient);
+            if (ignoredAmt < 1)
+                return;
+
+            var complexeRecipes = menu.GetPrivateField<CraftingMenu, List<KeyValuePair<int, Recipe>>>("m_complexeRecipes");
+            if (complexeRecipes.Count < 1)
+                return;
+
+            //verify statics have actually been added
+            if (!complexeRecipes[0].Value.Ingredients.Any(r => r is CustomRecipeIngredient cri && cri.CustomRecipeIngredientID != Guid.Empty))
+                return;
+
+            var recipeDisplays = menu.GetPrivateField<CraftingMenu, List<RecipeDisplay>>("m_recipeDisplays");
+
+            var trimComplexRecipes = new List<KeyValuePair<int, Recipe>>();
+            var trimRecipeDisplays = new List<RecipeDisplay>();
+
+            int index = 0;
+            for (int i = 0; i < complexeRecipes.Count; i++)
+            {
+                
+                if (complexeRecipes[i].Value.IngredientCount - ignoredAmt > 1)
+                {
+                    trimComplexRecipes.Add(new KeyValuePair<int, Recipe>(index, complexeRecipes[i].Value));
+                    var display = recipeDisplays[i];
+                    display.onClick.RemoveAllListeners();
+                    int selectIndex = index;
+                    display.onClick.AddListener(delegate
+                     {
+                         menu.OnRecipeSelected(selectIndex);
+                     });
+                    trimRecipeDisplays.Add(display);
+                    index++;
+                }
+                else
+                {
+                    Logger.LogDebug($"HideRecipes: Removed Recipe index:{i}, {complexeRecipes[i].Value.Name}. Destroying " +
+                        $"display. Recipe had {complexeRecipes[i].Value.IngredientCount} ingredients, but {ignoredAmt} were ignored. ");
+                    recipeDisplays[i].transform.SetParent(null);
+                    recipeDisplays[i].Hide();
+                    recipeDisplays[i].gameObject.SetActive(false);
+                    UnityEngine.Object.Destroy(recipeDisplays[i]);
+                }
+            }
+            for (int i = complexeRecipes.Count; i < recipeDisplays.Count; i++)
+            {
+                trimRecipeDisplays.Add(recipeDisplays[i]);
+            }
+
+            menu.SetPrivateField<CraftingMenu, List<KeyValuePair<int, Recipe>>>("m_complexeRecipes", trimComplexRecipes);
+            menu.SetPrivateField<CraftingMenu, List<RecipeDisplay>>("m_recipeDisplays", trimRecipeDisplays);
+
+            Logger.LogDebug($"HideRecipes: m_complexeRecipes trimmed from {complexeRecipes.Count} to {menu.GetPrivateField<CraftingMenu, List<KeyValuePair<int, Recipe>>>("m_complexeRecipes").Count}." +
+                $" m_recipeDisplays trimmed from {complexeRecipes.Count} to {menu.GetPrivateField<CraftingMenu, List<RecipeDisplay>>("m_recipeDisplays").Count}.");
         }
     }
 }

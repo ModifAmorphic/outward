@@ -28,6 +28,29 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
             }
         }
 
+        //[HarmonyPatch(nameof(CraftingMenu.IsSurvivalCrafting), MethodType.Getter)]
+        //[HarmonyPostfix]
+        //private static void IsSurvivalCraftingPostfix(CraftingMenu __instance, ref bool __result)
+        //{
+        //    try
+        //    {
+        //        var menuType = __instance?.GetType();
+        //        if (!(__instance is CustomCraftingMenu customMenu))
+        //        {
+        //            Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(IsSurvivalCraftingPostfix)}(): Menu {menuType} is not a {nameof(CustomCraftingMenu)}.");
+        //            return;
+        //        }
+        //        Logger.LogDebug($"{nameof(CraftingMenuPatches)}::{nameof(IsSurvivalCraftingPostfix)}(): Invoked on CraftingMenu type {menuType}. Invoking " +
+        //            $"{nameof(CustomCraftingMenu.TryGetIsSurvivalCrafting)}()");
+        //        //if (customMenu.TryGetIsSurvivalCrafting(out var isSurvivalCrafting))
+        //        //    __result = isSurvivalCrafting;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(IsSurvivalCraftingPostfix)}(): Exception Invoking {nameof(CustomCraftingMenu.TryGetIsSurvivalCrafting)}().", ex);
+        //    }
+        //}
+
         public static event Func<(CustomCraftingMenu CraftingMenu, ItemReferenceQuantity Result, int ResultMultiplier), bool> GenerateResultOverride;
         [HarmonyPatch("GenerateResult", MethodType.Normal)]
         [HarmonyPrefix]
@@ -88,12 +111,36 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
                     return;
                 }
                 Logger.LogDebug($"{nameof(CraftingMenuPatches)}::{nameof(OnRecipeSelectedPostfix)}(): Invoked on CraftingMenu type {menuType}. Invoking " +
-                    $"{nameof(CustomCraftingMenu.RefreshResult)}()");
+                    $"{nameof(CustomCraftingMenu.SetSelectorsNavigation)}() and {nameof(CustomCraftingMenu.RefreshResult)}()");
+                customMenu.SetSelectorsNavigation(_index);
                 customMenu.RefreshResult();
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(OnRecipeSelectedPostfix)}(): Exception Invoking {nameof(CustomCraftingMenu.RefreshResult)}().", ex);
+                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(OnRecipeSelectedPostfix)}(): Exception Invoking " +
+                    $"{nameof(CustomCraftingMenu.SetSelectorsNavigation)}() or {nameof(CustomCraftingMenu.RefreshResult)}().", ex);
+            }
+        }
+
+        public static event Action<CustomCraftingMenu> RefreshAutoRecipeAfter;
+        [HarmonyPatch("RefreshAutoRecipe", MethodType.Normal)]
+        [HarmonyPostfix]
+        private static void RefreshAutoRecipePostfix(CraftingMenu __instance)
+        {
+            try
+            {
+                if (!(__instance is CustomCraftingMenu customMenu))
+                {
+                    Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoRecipePostfix)}(): Menu is not a {nameof(CustomCraftingMenu)}.");
+                    return;
+                }
+                Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoRecipePostfix)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Invoking " +
+                    $"{nameof(RefreshAutoRecipeAfter)}()");
+                RefreshAutoRecipeAfter?.Invoke(customMenu);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoRecipePostfix)}(): Exception Invoking {nameof(RefreshAutoRecipeAfter)}().", ex);
             }
         }
 
