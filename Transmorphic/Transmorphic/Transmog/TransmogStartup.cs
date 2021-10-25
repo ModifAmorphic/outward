@@ -113,9 +113,15 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
         private void ToggleCraftingMenu<T>(CustomCraftingModule craftingModule, bool isEnabled) where T : CustomCraftingMenu
         {
             if (isEnabled)
+            {
                 craftingModule.EnableCraftingMenu<T>();
+                Logger.LogInfo("Enabled Transmogrify Crafting menu.");
+            }
             else
+            {
                 craftingModule.DisableCraftingMenu<T>();
+                Logger.LogInfo("Disabled Transmogrify Crafting menu.");
+            }
         }
     }
 }

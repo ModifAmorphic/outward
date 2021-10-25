@@ -40,7 +40,8 @@ namespace ModifAmorphic.Outward.Transmorphic.Alchemy
             {
                 if (menu is AlchemyMenu)
                 {
-                    ToggleCraftingMenu<AlchemyMenu>(craftingModule, true);
+                    ToggleCraftingMenu<AlchemyMenu>(craftingModule, alchemySettings.AlchemyMenuEnabled);
+
                     if (alchemySettings.DisableKitFuelRequirement)
                         ToggleKitFuelRequirement(alchemySettings.DisableKitFuelRequirement);
                 }
@@ -51,9 +52,15 @@ namespace ModifAmorphic.Outward.Transmorphic.Alchemy
         private void ToggleCraftingMenu<T>(CustomCraftingModule craftingModule, bool isEnabled) where T : CustomCraftingMenu
         {
             if (isEnabled)
+            {
                 craftingModule.EnableCraftingMenu<T>();
+                Logger.LogInfo("Enabled Alchemy Crafting menu.");
+            }
             else
+            {
                 craftingModule.DisableCraftingMenu<T>();
+                Logger.LogInfo("Disabled Alchemy Crafting menu.");
+            }
         }
         private void ToggleKitFuelRequirement(bool kitFuelDisabled)
         {

@@ -14,6 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\outward-shared\outward\Outward.Shared\ModifAmorphic.Outward.Shared\ModifAmorphic.Outward.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>..\..\outward-shared-assemblies\0Harmony.dll</HintPath>
       <Private>false</Private>

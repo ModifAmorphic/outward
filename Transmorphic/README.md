@@ -67,10 +67,16 @@ Transmorphic adds a new crafting system focused on customizing your equipment's 
 - Tranmogs for Backpacks, Lanterns and Lexicons
   - As with Armor and Weapons, an item must be equipped before adding or removing a transmog.
   - **Backpacks must be empty!**
+- Splitscreen support. All Menus should now work for the 2nd player as well.
 - Added 5th and 6th ingredients to Alchemy and Cooking reasons to try and balance them out.
   - The 5th ingredient requires a crafting kit. Alchemy Kit or Cooking Pot. Light versions also apply. Kits are **not** consumed when crafting.
   - The 6th ingredient is wood as a fuel source.
   - The extra ingredients can be disabled in the menu.
-- Fixed issue new crafting menu(s) navigation order when using a controller.
-  - There's a minor bug with the Tranmogrify menu when using a controller. On first navigating to the menu, you can't navigate to any of the recipes in the list. As a workaround, switch to another menu and back. This only happens the first time the menu is opened.
+- Fixed issue where Alchemy menu could be shown even if it was disabled.
+- Fixed issue with "Craft" footer not displaying if save is loaded with menu disabled and then its enabled.
+- Controller Navigation fixes
+  - Fixed issue new crafting menu(s) navigation order when using a controller.
+    - There's a minor bug with the Tranmogrify menu when using a controller. On first navigating to the menu, you can't navigate to any of the recipes in the list. As a workaround, switch to another menu and back. This only happens the first time the menu is opened.
+  - Fixed issue with disabled menus still being selected when navigating with LB/RB.
+  
 
