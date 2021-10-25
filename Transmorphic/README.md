@@ -67,7 +67,7 @@ Transmorphic adds a new crafting system focused on customizing your equipment's 
 - Tranmogs for Backpacks, Lanterns and Lexicons
   - As with Armor and Weapons, an item must be equipped before adding or removing a transmog.
   - **Backpacks must be empty!**
-- Splitscreen support - Transmogrify, Alchemy and Cooking menus should now work for the 2nd player.
+- Splitscreen support - Transmogrify, Alchemy and Cooking menus now work for the 2nd player in local co-op.
 - Equipment is now automatically equipped after a transmog or remove transmog craft.
 - Added 5th and 6th ingredients to Alchemy and Cooking reasons to try and balance them out.
   - The 5th ingredient requires a crafting kit. Alchemy Kit or Cooking Pot. Light versions also apply. Kits are **not** consumed when crafting.
