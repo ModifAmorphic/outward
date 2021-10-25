@@ -71,12 +71,12 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             {
                 Logger.LogTrace($"{nameof(CustomCraftingService)}::{nameof(GenerateResultOverride)}(): " +
                     $"Trying to craft item from recipe {craftingMenu.GetSelectedRecipe().Name} and result ItemID {result.ItemID};");
-                if (crafter.TryCraftItem(craftingMenu.GetSelectedRecipe(), result, out var craftedItem))
+                if (crafter.TryCraftItem(craftingMenu.GetSelectedRecipe(), result, out var craftedItem, out var tryEquipItem))
                 {
                     Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(GenerateResultOverride)}(): " +
                         $"New item '{craftedItem.Name}' crafted from recipe {craftingMenu.GetSelectedRecipe().Name} and result ItemID {result.ItemID};");
                     craftedAny = true;
-                    characterInventory.TakeItem(craftedItem, false);
+                    characterInventory.TakeItem(craftedItem, tryEquipItem);
                     characterInventory.NotifyItemTake(craftedItem, 1);
                 }
             }
