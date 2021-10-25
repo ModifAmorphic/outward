@@ -23,7 +23,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
         public TransmogCrafter(ItemVisualizer itemVisualizer, Func<IModifLogger> loggerFactory) =>
             (_itemVisualizer, _loggerFactory) = (itemVisualizer, loggerFactory);
 
-        public bool TryCraftItem(Recipe recipe, ItemReferenceQuantity recipeResult, out Item item)
+        public bool TryCraftItem(Recipe recipe, ItemReferenceQuantity recipeResult, out Item item, out bool tryEquipItem)
         {
             if (!(recipe is TransmogRecipe || recipe is TransmogRemoverRecipe) 
                 || !(recipeResult is DynamicCraftingResult dynamicResult)
@@ -35,6 +35,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                         $"recipeResult is DynamicCraftingResult? {recipeResult is DynamicCraftingResult}. " +
                         $"DynamicItemID: {(recipeResult as DynamicCraftingResult)?.DynamicItemID}");
                 item = null;
+                tryEquipItem = false;
                 return false;
             }
 
@@ -46,7 +47,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
             {
                 TryCraftRemoveTransmog((TransmogRemoverRecipe)recipe, dynamicResult, out item);
             }
-
+            tryEquipItem = true;
             return true;
         }
 
