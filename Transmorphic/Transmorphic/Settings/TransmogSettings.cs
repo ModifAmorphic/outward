@@ -1,13 +1,13 @@
 ﻿using BepInEx;
 using ModifAmorphic.Outward.Modules.Crafting;
-using ModifAmorphic.Outward.Transmorph.Extensions;
+using ModifAmorphic.Outward.Transmorphic.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.Transmorph.Settings
+namespace ModifAmorphic.Outward.Transmorphic.Settings
 {
     internal class TransmogSettings
     {
@@ -36,7 +36,48 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
         public static TagSourceSelector TagSelector = new TagSourceSelector(
             new Tag("Axfc-kYcGEOguAqCUHh_fg", "transmog"));
 
+        private static Tag _backpackTag;
+        public static Tag BackpackTag
+        {
+            get
+            {
+                if (!_backpackTag.IsSet)
+                    _backpackTag = TagSourceManager.Instance.GetTag("68");
+                return _backpackTag;
+            }
+        }
+        private static Tag _lanternTag;
+        public static Tag LanternTag
+        {
+            get
+            {
+                if (!_lanternTag.IsSet)
+                    _lanternTag = TagSourceManager.Instance.GetTag("37");
+                return _lanternTag;
+            }
+        }
+        private static Tag _lexiconTag;
+        public static Tag LexiconTag
+        {
+            get { 
+                if (!_lexiconTag.IsSet)
+                    _lexiconTag = TagSourceManager.Instance.GetTag("161");
+                return _lexiconTag;
+            }
+        }
+
         public const int TransmogRecipeSecondaryItemID = 6300030;
+           
+        public static MenuIngredientFilters MenuFilters = new MenuIngredientFilters()
+        {
+            //BaseInventoryFilterTag = new Tag("70", "Item"),
+            AdditionalInventoryIngredientFilter = null,
+            EquippedIngredientFilter = new AvailableIngredientFilter()
+            {
+                EnchantFilter = AvailableIngredientFilter.FilterLogic.IncludeItems,
+                ItemTypes = new HashSet<Type>() { typeof(Equipment) }
+            },
+        };
 
         public static class RemoveRecipe
         {
@@ -71,6 +112,31 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
                 //(3100060, typeof(Armor)),       //Palladium Armor 
                 //(3100191, typeof(Armor)),       //Master Kazite Oni Mask 
         };
+
+        public static HashSet<int> ExcludedItemIDs =
+            new HashSet<int>()
+            {
+                -1301000,  //Stash Packs
+                -1301002,
+                -1301004,
+                -1301006,
+                -1301008,
+                -1301010, //End Stash packs
+            };
+
+        public event Action<bool> TransmogMenuEnabledChanged;
+        private bool _transmogMenuEnabled;
+        public bool TransmogMenuEnabled
+        {
+            get => _transmogMenuEnabled;
+            set
+            {
+                var oldValue = _transmogMenuEnabled;
+                _transmogMenuEnabled = value;
+                if (oldValue != _transmogMenuEnabled)
+                    TransmogMenuEnabledChanged?.Invoke(_transmogMenuEnabled);
+            }
+        }
 
         public event Action AllCharactersLearnRecipesEnabled;
         private bool _allCharactersLearnRecipes;

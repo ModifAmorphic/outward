@@ -1,11 +1,11 @@
 ﻿using ModifAmorphic.Outward.Extensions;
-using ModifAmorphic.Outward.Transmorph.Transmog.Recipes;
+using ModifAmorphic.Outward.Transmorphic.Transmog.Recipes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Transmorph.Extensions
+namespace ModifAmorphic.Outward.Transmorphic.Extensions
 {
     internal static class TransmogRecipeExtensions
     {

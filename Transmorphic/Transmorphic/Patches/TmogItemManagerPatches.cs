@@ -1,11 +1,11 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Transmorph.Settings;
+using ModifAmorphic.Outward.Transmorphic.Settings;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Transmorph.Patches
+namespace ModifAmorphic.Outward.Transmorphic.Patches
 {
     [HarmonyPatch(typeof(ItemManager))]
     internal static class TmogItemManagerPatches
@@ -82,7 +82,7 @@ namespace ModifAmorphic.Outward.Transmorph.Patches
                     return;
 
                 var item = __instance.WorldItems[itemUID];
-                Logger.LogTrace($"{nameof(TmogItemManagerPatches)}::{nameof(AddStaticItemUIDPostfix)}(): Invoked for Item {item.ItemID} - {item.DisplayName} ({item.UID}). Invoking {nameof(TransmogItemAdded)}().");
+                Logger.LogTrace($"{nameof(TmogItemManagerPatches)}::{nameof(CreateItemFromDataPostfix)}(): Invoked for Item {item.ItemID} - {item.DisplayName} ({item.UID}). Invoking {nameof(TransmogItemAdded)}().");
                 TransmogItemAdded?.Invoke(item);
             }
             catch (Exception ex)

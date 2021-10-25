@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Transmorph.Transmog.Models
+namespace ModifAmorphic.Outward.Transmorphic.Transmog.Models
 {
     public class ItemVisualMap
     {

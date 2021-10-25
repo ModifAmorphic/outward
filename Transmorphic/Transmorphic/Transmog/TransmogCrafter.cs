@@ -2,16 +2,16 @@
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Modules.Items;
-using ModifAmorphic.Outward.Transmorph.Extensions;
-using ModifAmorphic.Outward.Transmorph.Settings;
-using ModifAmorphic.Outward.Transmorph.Transmog.Models;
-using ModifAmorphic.Outward.Transmorph.Transmog.Recipes;
+using ModifAmorphic.Outward.Transmorphic.Extensions;
+using ModifAmorphic.Outward.Transmorphic.Settings;
+using ModifAmorphic.Outward.Transmorphic.Transmog.Models;
+using ModifAmorphic.Outward.Transmorphic.Transmog.Recipes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Transmorph.Transmog
+namespace ModifAmorphic.Outward.Transmorphic.Transmog
 {
     class TransmogCrafter : ICustomCrafter
     {
@@ -23,7 +23,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
         public TransmogCrafter(ItemVisualizer itemVisualizer, Func<IModifLogger> loggerFactory) =>
             (_itemVisualizer, _loggerFactory) = (itemVisualizer, loggerFactory);
 
-        public bool TryCraftItem(Recipe recipe, ItemReferenceQuantity recipeResult, out Item item)
+        public bool TryCraftItem(Recipe recipe, ItemReferenceQuantity recipeResult, out Item item, out bool tryEquipItem)
         {
             if (!(recipe is TransmogRecipe || recipe is TransmogRemoverRecipe) 
                 || !(recipeResult is DynamicCraftingResult dynamicResult)
@@ -35,6 +35,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
                         $"recipeResult is DynamicCraftingResult? {recipeResult is DynamicCraftingResult}. " +
                         $"DynamicItemID: {(recipeResult as DynamicCraftingResult)?.DynamicItemID}");
                 item = null;
+                tryEquipItem = false;
                 return false;
             }
 
@@ -46,7 +47,7 @@ namespace ModifAmorphic.Outward.Transmorph.Transmog
             {
                 TryCraftRemoveTransmog((TransmogRemoverRecipe)recipe, dynamicResult, out item);
             }
-
+            tryEquipItem = true;
             return true;
         }
 

@@ -4,7 +4,7 @@ using ModifAmorphic.Outward.Config.Models;
 using ModifAmorphic.Outward.Logging;
 using System;
 
-namespace ModifAmorphic.Outward.Transmorph.Settings
+namespace ModifAmorphic.Outward.Transmorphic.Settings
 {
     internal class SettingsService
     {
@@ -23,9 +23,9 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
             (_configManagerService, _configService, _minConfigVersion) = (new ConfigManagerService(plugin), new ConfigSettingsService(plugin), minConfigVersion);
         }
 
-        public TransmorphConfigSettings ConfigureSettings()
+        public ConfigSettings ConfigureSettings()
         {
-            var settings = new TransmorphConfigSettings();
+            var settings = new ConfigSettings();
 
             if (!MeetsMinimumVersion(_minConfigVersion))
             {
@@ -49,31 +49,57 @@ namespace ModifAmorphic.Outward.Transmorph.Settings
 
             return settings;
         }
-        public GlobalSettings ConfigureGlobalSettings(TransmorphConfigSettings settings)
-        {
-            var globalSettings = new GlobalSettings();
-
-            _configService.BindConfigSetting(settings.AlchemyMenuEnabled,
-                (SettingValueChangedArgs<bool> args) => globalSettings.AlchemyMenuEnabled = args.NewValue, true);
-
-            _configService.BindConfigSetting(settings.CookingMenuEnabled,
-                (SettingValueChangedArgs<bool> args) => globalSettings.CookingMenuEnabled = args.NewValue, true);
-
-            return globalSettings;
-        }
-        public TransmogSettings ConfigureTransmogrifySettings(TransmorphConfigSettings settings)
+        public TransmogSettings ConfigureTransmogrifySettings(ConfigSettings settings)
         {
             var tmogSettings = new TransmogSettings();
 
             _configService.BindConfigSetting(settings.AllCharactersLearnRecipes,
                 (SettingValueChangedArgs<bool> args) => tmogSettings.AllCharactersLearnRecipes = args.NewValue, true);
 
+            _configService.BindConfigSetting(settings.TransmogrifyMenuEnabled,
+                (SettingValueChangedArgs<bool> args) =>
+                {
+                    tmogSettings.TransmogMenuEnabled = args.NewValue;
+                    _configService.ToggleShowHideAndRefresh(settings.AllCharactersLearnRecipes, tmogSettings.TransmogMenuEnabled);
+                }, true);
+
             return tmogSettings;
         }
+        public CookingSettings ConfigureCookingSettings(ConfigSettings settings)
+        {
+            var cookingSettings = new CookingSettings();
 
+            _configService.BindConfigSetting(settings.DisableCookingKitFuelRequirement,
+                (SettingValueChangedArgs<bool> args) => cookingSettings.DisableKitFuelRequirement = args.NewValue, true);
+
+            _configService.BindConfigSetting(settings.CookingMenuEnabled,
+                (SettingValueChangedArgs<bool> args) =>
+                {
+                    cookingSettings.CookingMenuEnabled = args.NewValue;
+                    _configService.ToggleShowHideAndRefresh(settings.DisableCookingKitFuelRequirement, cookingSettings.CookingMenuEnabled);
+                }, true);
+
+            return cookingSettings;
+        }
+        public AlchemySettings ConfigureAlchemySettings(ConfigSettings settings)
+        {
+            var alchemySettings = new AlchemySettings();
+
+            _configService.BindConfigSetting(settings.DisableAlchemyKitFuelRequirement,
+                (SettingValueChangedArgs<bool> args) => alchemySettings.DisableKitFuelRequirement = args.NewValue, true);
+
+            _configService.BindConfigSetting(settings.AlchemyMenuEnabled,
+                (SettingValueChangedArgs<bool> args) =>
+                {
+                    alchemySettings.AlchemyMenuEnabled = args.NewValue;
+                    _configService.ToggleShowHideAndRefresh(settings.DisableAlchemyKitFuelRequirement, alchemySettings.AlchemyMenuEnabled);
+                }, true);
+
+            return alchemySettings;
+        }
         private bool MeetsMinimumVersion(string minimumVersion)
         {
-            var configVersionValue = _configService.PeekSavedConfigValue(new TransmorphConfigSettings().ConfigVersion);
+            var configVersionValue = _configService.PeekSavedConfigValue(new ConfigSettings().ConfigVersion);
             if (string.IsNullOrWhiteSpace(configVersionValue))
             {
                 return false;

@@ -1,13 +1,18 @@
 ﻿using ModifAmorphic.Outward.Modules.Crafting;
+using ModifAmorphic.Outward.Transmorphic.Settings;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Transmorph
+namespace ModifAmorphic.Outward.Transmorphic
 {
     internal class CookingMenu : CustomCraftingMenu
     {
+        private string _modId = ModInfo.ModId;
+        protected override string ModId { get => _modId; set => _modId = value; }
+
         public CookingMenu() =>
-            (PermanentCraftingStationType, LoggerFactory) = (Recipe.CraftingType.Cooking, () => Logging.LoggerFactory.GetLogger(ModInfo.ModId));
+            (PermanentCraftingStationType, LoggerFactory) = 
+                    (Recipe.CraftingType.Cooking, () => Logging.LoggerFactory.GetLogger(ModInfo.ModId));
     }
 }

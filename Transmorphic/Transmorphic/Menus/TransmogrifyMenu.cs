@@ -1,15 +1,17 @@
 ﻿using ModifAmorphic.Outward.Modules.Crafting;
-using ModifAmorphic.Outward.Transmorph.Settings;
+using ModifAmorphic.Outward.Transmorphic.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Transmorph.Menu
+namespace ModifAmorphic.Outward.Transmorphic.Menu
 {
     internal class TransmogrifyMenu : CustomCraftingMenu
     {
-        public new bool IsSurvivalCrafting => true;
+        private string _modId = ModInfo.ModId;
+        protected override string ModId { get => _modId; set => _modId = value; }
+
         public TransmogrifyMenu() => 
             (HideFreeCraftingRecipe, LoggerFactory) = 
             (

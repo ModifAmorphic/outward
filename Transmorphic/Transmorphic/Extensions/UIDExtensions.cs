@@ -1,17 +1,35 @@
-﻿using ModifAmorphic.Outward.Transmorph.Transmog.Models;
-using ModifAmorphic.Outward.Transmorph.Settings;
+﻿using ModifAmorphic.Outward.Transmorphic.Transmog.Models;
+using ModifAmorphic.Outward.Transmorphic.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Transmorph.Extensions
+namespace ModifAmorphic.Outward.Transmorphic.Extensions
 {
     public static class UIDExtensions
     {
+        public static bool TryDecode(this UID uid, out Guid guid)
+        {
+            var rawValue = uid.Value;
+            guid = default;
+            if (rawValue.Length < 22)
+                return false;
+            
+            try
+            {
+                guid = UID.Decode(rawValue.Substring(0, 22));
+                return true;
+            }
+            catch { }
+
+            return false;
+        }
         public static bool IsTransmogrified(this UID uid)
         {
-            var guid = UID.Decode(uid.Value);
+            if (!uid.TryDecode(out var guid))
+                return false;
+
             return guid.ToByteArray().Take(4)
                        .SequenceEqual(TransmogSettings.BytePrefixUID);
         }
@@ -31,7 +49,12 @@ namespace ModifAmorphic.Outward.Transmorph.Extensions
         /// <returns></returns>
         public static bool TryGetVisualItemID(this UID uid, out int visualItemID)
         {
-            var uidBytes = UID.Decode(uid.Value).ToByteArray();
+            if (!uid.TryDecode(out var guid))
+            {
+                visualItemID = default;
+                return false;
+            }
+            var uidBytes = guid.ToByteArray();
 
             if (!uidBytes.Take(4)
                          .SequenceEqual(TransmogSettings.BytePrefixUID))
