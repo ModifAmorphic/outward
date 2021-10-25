@@ -1,5 +1,5 @@
 # Summary
-**Change your gear's appearance with a new Transmogrify Crafting system! Added support for Backpacks, Lanterns and Lexicons. Plus balanced Alchemy and Cooking Menus.**
+**Transmogrify your equipment with a new crafting system. Weapons, Armor and now Backpacks, Lanterns and Lexicons. Plus balanced Alchemy and Cooking Menus.**
 &nbsp;
 - - - -
 &nbsp;
@@ -64,7 +64,7 @@ Transmorphic adds a new crafting system focused on customizing your equipment's 
 # Change Logs
 
 ## Latest Release ${PACKAGE_VERSION}
-- Tranmogs for Backpacks, Lanterns and Lexicons
+- Transmogs for Backpacks, Lanterns and Lexicons
   - As with Armor and Weapons, an item must be equipped before adding or removing a transmog.
   - **Backpacks must be empty!**
 - Splitscreen support - Transmogrify, Alchemy and Cooking menus now work for the 2nd player in local co-op.
@@ -72,7 +72,7 @@ Transmorphic adds a new crafting system focused on customizing your equipment's 
 - Added 5th and 6th ingredients to Alchemy and Cooking reasons to try and balance them out.
   - The 5th ingredient requires a crafting kit. Alchemy Kit or Cooking Pot. Light versions also apply. Kits are **not** consumed when crafting.
   - The 6th ingredient is wood as a fuel source.
-  - The extra ingredients can be disabled in the menu.
+  - The extra ingredients can be disabled in the configuration.
 - Fixed issue where Alchemy menu could be shown even if it was disabled.
 - Fixed issue with "Craft" footer not displaying if save is loaded with menu disabled and then its enabled.
 - Controller Navigation fixes
@@ -80,4 +80,3 @@ Transmorphic adds a new crafting system focused on customizing your equipment's 
     - There's a minor bug with the Tranmogrify menu when using a controller. On first navigating to the menu, you can't navigate to any of the recipes in the list. As a workaround, switch to another menu and back. This only happens the first time the menu is opened.
   - Fixed issue with disabled menus still being selected when navigating with LB/RB.
   
-
