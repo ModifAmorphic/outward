@@ -9,8 +9,11 @@ namespace ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients
 {
     internal class CustomCompatibleIngredient : CompatibleIngredient
     {
+        internal Guid StaticIngredientID;
+
         private readonly Func<IModifLogger> _loggerFactory;
         private IModifLogger Logger => _loggerFactory.Invoke();
+
 
         private readonly ICompatibleIngredientMatcher _ingredientMatcher;
         private readonly IConsumedItemSelector _consumedItemSelector;
@@ -22,21 +25,12 @@ namespace ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients
         {
             if (_ingredientMatcher != null)
             {
-                isMatchResult = _ingredientMatcher.MatchRecipeStep(this, recipeIngredient);
-                return true;
+                return _ingredientMatcher.TryMatchRecipeStep(this, recipeIngredient, out isMatchResult);
             }
             isMatchResult = false;
             return false;
         }
 
-        public List<Item> GetOwnedItems()
-        {
-            return this.GetPrivateField<CompatibleIngredient, List<Item>>("m_ownedItems");
-        }
-        public void SetOwnedItems(List<Item> ownedItems)
-        {
-            this.SetPrivateField<CompatibleIngredient, List<Item>>("m_ownedItems", ownedItems);
-        }
         public bool TryGetConsumedItems(bool useMultipler, ref int resultMultiplier, out IList<KeyValuePair<string, int>> consumedItems)
         {
             if (_consumedItemSelector == null)
@@ -45,8 +39,10 @@ namespace ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients
                 consumedItems = default;
                 return false;
             }
-
-            return _consumedItemSelector.TryGetConsumedItems(this, useMultipler, ref resultMultiplier, out consumedItems);
+            if (StaticIngredientID == Guid.Empty)
+                return _consumedItemSelector.TryGetConsumedItems(this, useMultipler, ref resultMultiplier, out consumedItems);
+            else
+                return _consumedItemSelector.TryGetConsumedStaticItems(this, StaticIngredientID, useMultipler, ref resultMultiplier, out consumedItems);
         }
         public void CaptureConsumedItems(IList<KeyValuePair<string, int>> consumedItems)
         {

@@ -1,7 +1,9 @@
 ﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Localization;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.Modules.Crafting.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -22,7 +24,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
         {
             var menuTabs = characterUI.GetPrivateField<CharacterUI, MenuTab[]>("m_menuTabs");
             
-
             //Get the existing crafting tab and clone it
             var craftingTabGo = menuTabs.First(t => t.TabName == "PlayerMenu_Tab_Crafting").Tab.gameObject;
             var isActive = craftingTabGo.activeSelf;
@@ -37,7 +38,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
 
             var newUiMenuTab = newUiMenuTabGo.AddComponent<UIMenuTab>();
             newUiMenuTab.transform.SetAsLastSibling();
-            //Add new tab to the CharacterUI m_menuTabs array
+            
+            
             newUiMenuTab.LinkedMenuID = (CharacterUI.MenuScreens)menuId;
             var newMenuTab = new MenuTab()
             {
@@ -46,9 +48,25 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             };
             LocalizationService.RegisterLocalization(tabName, tabDisplayName);
 
-            Array.Resize(ref menuTabs, menuTabs.Length + 1);
-            menuTabs[menuTabs.Length - 1] = newMenuTab;
-            characterUI.SetPrivateField("m_menuTabs", menuTabs);
+            //Array.Resize(ref menuTabs, menuTabs.Length + 1);
+            //Insert new tab to the CharacterUI m_menuTabs array. The base game menu navigatation relies on the order
+            //so insert at the same location this is going to be displayed at. Otherwise navigating with LB-RB buttons will act like 
+            //the menus are always at the end of the row of buttons, even if they're not.
+            var tabSorter = new MenuTab[menuTabs.Length + 1];
+            var insertIndex = Array.FindIndex(menuTabs, t => t.Tab.name.Equals(orderAfterBtn, StringComparison.InvariantCultureIgnoreCase)) + 1;
+            for (int i = 0; i < tabSorter.Length; i++)
+            {
+                if (i < insertIndex)
+                    tabSorter[i] = menuTabs[i];
+                else if (i == insertIndex)
+                    tabSorter[i] = newMenuTab;
+                else
+                    tabSorter[i] = menuTabs[i - 1];
+
+            }
+
+            //menuTabs[menuTabs.Length - 1] = newMenuTab;
+            characterUI.SetPrivateField("m_menuTabs", tabSorter);
             
             Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(AddMenuTab)}: Resized m_menuTabs to {menuTabs.Length}");
 
@@ -62,15 +80,29 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
 
             return newUiMenuTabGo;
         }
-        public void EnableMenuTab(GameObject menuTab)
+        ConcurrentDictionary<UID, ConcurrentDictionary<int, MenuPanel>> _disabledMenus = new ConcurrentDictionary<UID, ConcurrentDictionary<int, MenuPanel>>();
+        public void EnableMenuTab(CharacterUI characterUI, CraftingMenuMetadata meta)
         {
-            if (!menuTab.activeSelf)
-                menuTab.SetActive(true);
+            var uIMenuTab = meta.MenuTab.GetComponent<UIMenuTab>();
+            Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(DisableMenuTab)}: Enabling Menu Toggle Tab {meta.MenuTab.name} ({meta.MenuName}) for player ID {characterUI.RewiredID}.");
+
+            meta.MenuTab.SetActive(true);
+            var m_menus = characterUI.GetPrivateField<CharacterUI, MenuPanel[]>("m_menus");
+            m_menus[(int)uIMenuTab.LinkedMenuID] = meta.MenuPanel;
+            meta.MenuFooter.SetActive(true);
         }
-        public void DisableMenuTab(GameObject menuTab)
+        public void DisableMenuTab(CharacterUI characterUI, CraftingMenuMetadata meta)
         {
-            if (menuTab.activeSelf)
-                menuTab.SetActive(false);
+            meta.MenuFooter.SetActive(false);
+
+            var uIMenuTab = meta.MenuTab.GetComponent<UIMenuTab>();
+            Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(DisableMenuTab)}: Disabling Menu Toggle Tab {meta.MenuTab.name} ({meta.MenuName}) for player ID {characterUI.RewiredID}.");
+            meta.MenuTab.SetActive(false);
+            var m_menus = characterUI.GetPrivateField<CharacterUI, MenuPanel[]>("m_menus");
+            m_menus[(int)uIMenuTab.LinkedMenuID] = null;
+
+            Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(DisableMenuTab)}: Set m_menus[{(int)uIMenuTab.LinkedMenuID}] to " +
+                $"{(m_menus[(int)uIMenuTab.LinkedMenuID] == null ? "null" : "not null")} for player ID {characterUI.RewiredID}.");
         }
         private void SetMenuIcons(GameObject menuBtn, MenuIcons menuIcons)
         {
@@ -153,6 +185,10 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
 
             return customCraftFooter;
         }
+        public GameObject GetFooter(CharacterUI characterUI, string footerName)
+        {
+            return characterUI.transform.Find($"Canvas/GameplayPanels/Menus/CharacterMenus/MainPanel/Content/BottomPanel/{footerName}").gameObject;
+        }
         public GameObject AddCustomMenu(CraftingMenu baseCraftingMenu, CraftingMenuMetadata menuMeta)
         {
             var menuParentXform = baseCraftingMenu.transform.parent;
@@ -223,6 +259,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             return addedTagIds;
 
         }
+        
         public int AddIngredientTag()
         {
             return AddIngredientTags(1)[0];

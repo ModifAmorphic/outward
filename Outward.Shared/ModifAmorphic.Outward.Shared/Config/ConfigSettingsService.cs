@@ -150,6 +150,25 @@ namespace ModifAmorphic.Outward.Config
             }
         }
 
+
+        /// <summary>
+        /// Convenience method that calls <see cref="ShowSettingAndRefresh{T}(ConfigSetting{T})"/>
+        /// or <see cref="HideSettingAndRefresh{T}(ConfigSetting{T})"/> depending on the value of <paramref name="show"/>
+        /// </summary>
+        /// <typeparam name="T">The type of ConfigSetting</typeparam>
+        /// <param name="configSetting">The ConfigSetting to show or hide.</param>
+        /// <param name="show">Whether or not the config setting should be shown.</param>
+        public void ToggleShowHideAndRefresh<T>(ConfigSetting<T> configSetting, bool show)
+        {
+            if (show)
+            {
+                ShowSettingAndRefresh<T>(configSetting);
+            }
+            else
+            {
+                HideSettingAndRefresh<T>(configSetting);
+            }
+        }
         /// <summary>
         /// If the setting is currently visible, hides the setting and refreshes the configuration manager.  If the setting is already hidden, no action is taken.
         /// </summary>

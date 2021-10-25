@@ -14,7 +14,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients
         /// </summary>
         /// <param name="compatibleIngredient">The ingredient to match.</param>
         /// <param name="recipeStep">The Recipe filter criteria to match against.</param>
-        /// <returns></returns>
-        bool MatchRecipeStep(CompatibleIngredient compatibleIngredient, RecipeIngredient recipeStep);
+        /// <param name="isMatch">Whether or not an appropriate item match was made.</param>
+        /// <returns>true if the result of this match should be used. false, if the base game code's match logic should be used instead.</returns>
+        bool TryMatchRecipeStep(CompatibleIngredient compatibleIngredient, RecipeIngredient recipeStep, out bool isMatch);
     }
 }
