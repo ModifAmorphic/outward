@@ -5,6 +5,7 @@ using ModifAmorphic.Outward.Modules.Crafting.Models;
 using ModifAmorphic.Outward.Modules.Crafting.Patches;
 using ModifAmorphic.Outward.Modules.Crafting.Services;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -246,270 +247,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 		}
 		//public virtual bool TryGetIsSurvivalCrafting(out bool isSurvivalCrafting) => isSurvivalCrafting = true;
 
-		//TODO: Refactor all of these selector methods out of the model and into a service
-		public bool TryOnIngredientSelectorClicked(int selectorIndex)
-        {
-			if (_selectorIngredientMap[selectorIndex] == -1)
-				return false;
-
-			IngredientSelector ingredientSelector = _ingredientSelectors[selectorIndex];
-			var ingredientSelectorCachedItems = _ingredientSelectorCachedItems;
-			ingredientSelectorCachedItems.Clear();
-			var availableIngredients = _availableIngredients;
-			var ingredientIndex = _selectorIngredientMap[selectorIndex];
-			var lastRecipeIndex = _lastRecipeIndex;
-			if (lastRecipeIndex != -1)
-			{
-				if (_complexeRecipes[lastRecipeIndex].Value.Ingredients[ingredientIndex].ActionType == RecipeIngredient.ActionTypes.AddGenericIngredient)
-				{
-					IList<int> stepCompatibleIngredients = _recipeDisplays[lastRecipeIndex].GetStepCompatibleIngredients(ingredientIndex);
-					for (int i = 0; i < stepCompatibleIngredients.Count; i++)
-					{
-						if (availableIngredients.TryGetValue(stepCompatibleIngredients[i], out var compatibleIngredient) && compatibleIngredient.AvailableQty > 0)
-						{
-							ingredientSelectorCachedItems.Add(compatibleIngredient.ItemID);
-						}
-					}
-				}
-			}
-			else
-			{
-				for (int i = 0; i < availableIngredients.Count; i++)
-				{
-					if (availableIngredients.Values[i].AvailableQty > 0 || ingredientSelector.AssignedIngredient == availableIngredients.Values[i])
-					{
-						ingredientSelectorCachedItems.Add(availableIngredients.Values[i].ItemID);
-					}
-				}
-			}
-			if (ingredientSelectorCachedItems.Count <= 0)
-			{
-				return true;
-			}
-			_tempSelectorWindow = m_characterUI.GetListSelector();
-			var tempSelectorWindow = _tempSelectorWindow;
-			if ((bool)_tempSelectorWindow)
-			{
-				tempSelectorWindow.onItemHovered = RefreshItemDetailDisplay;
-				tempSelectorWindow.onItemClicked = delegate (IItemDisplay _display)
-				{
-					IngredientSelectorChanged(selectorIndex, _display?.RefItem.ItemID ?? (-1));
-					closeItemSelectionWindow();
-				};
-				tempSelectorWindow.Position = _selectorWindowPos ? _selectorWindowPos.position : transform.position;
-				tempSelectorWindow.Title = ingredientSelector.Text;
-				tempSelectorWindow.ShowSelector(ingredientSelectorCachedItems, ingredientSelector.gameObject, lastRecipeIndex == -1);
-			}
-			return true;
-		}
-
-		private void IngredientSelectorChanged(int selectorIndex, int itemID)
-        {
-			_availableIngredients.TryGetValue(itemID, out var _outValue);
-			var ingredientIndex = _selectorIngredientMap[selectorIndex];
-			var ingredientSelectors = _ingredientSelectors;
-			RecipeIngredient recipeIngredient = ((_lastRecipeIndex != -1) ? _complexeRecipes[_lastRecipeIndex].Value.Ingredients[ingredientIndex] : null);
-			ingredientSelectors[selectorIndex].Set(recipeIngredient, _outValue);
-			if (_lastRecipeIndex != -1)
-			{
-				return;
-			}
-			refreshFreeRecipeResult();
-			bool craftButtonEnable = false;
-			for (int i = 0; i < ingredientSelectors.Length; i++)
-			{
-				if (ingredientSelectors[i].AssignedIngredient != null)
-				{
-					craftButtonEnable = true;
-				}
-			}
-			setCraftButtonEnable(craftButtonEnable);
-		}
-		private void SetSelectorIngredientMap(int recipeIndex, List<StaticIngredient> ingredients)
-        {
-			var lastRecipeIndex = _lastRecipeIndex;
-			var ingredientSelectors = _ingredientSelectors;
-
-			var recipeIngredients = _complexeRecipes[recipeIndex].Value.Ingredients;
-			var staticIngredients = ingredients.ToDictionary(s => s.IngredientID, s => s);
-
-			//Reset the current map
-			for (int i = 0; i < _selectorIngredientMap.Length; i++)
-				_selectorIngredientMap[i] = -1;
-
-			//Set any static ingredeint selectors to their corresponding ingredient indexes
-			for (int ingIndex = 0; ingIndex < _selectorIngredientMap.Length; ingIndex++)
-			{
-#if DEBUG
-				Logger.LogDebug($"OnRecipeSelectedOverride:: ingIndex:{ingIndex}, recipeIngredients.Length: {recipeIngredients.Length}");
-				if (recipeIngredients.Length > ingIndex)
-				{
-					Logger.LogDebug($"OnRecipeSelectedOverride:: recipeIngredients[ingIndex] is CustomRecipeIngredient: {recipeIngredients[ingIndex] is CustomRecipeIngredient}");
-					if (recipeIngredients[ingIndex] is CustomRecipeIngredient)
-						Logger.LogDebug($"staticIngredients.TryGetValue(customIngredient.CustomRecipeIngredientID, out var staticConfig): {staticIngredients.TryGetValue(((CustomRecipeIngredient)recipeIngredients[ingIndex]).CustomRecipeIngredientID, out _)}");
-				}
-#endif
-				if (recipeIngredients.Length > ingIndex &&
-					recipeIngredients[ingIndex] is CustomRecipeIngredient customIngredient &&
-					staticIngredients.TryGetValue(customIngredient.CustomRecipeIngredientID, out var staticConfig))
-				{
-					int staticPosition = (int)staticConfig.IngredientSlotPosition;
-					_selectorIngredientMap[staticPosition] = ingIndex;
-				}
-			}
-
-			//fill in the remaining mappings, accounting for the statics above
-			var ingredIndex = 0;
-			for (int slot = 0; slot < _selectorIngredientMap.Length; slot++)
-			{
-				if (_selectorIngredientMap[slot] == -1)
-				{
-					while (_selectorIngredientMap.Contains(ingredIndex))
-						ingredIndex++;
-					if (ingredIndex < recipeIngredients.Length)
-					{
-						_selectorIngredientMap[slot] = ingredIndex;
-						Logger.LogDebug($"SetSelectorIngredientMap:: _selectorIngredientMap Slot {slot}'s ingredient set to IngredientIndex {ingredIndex}");
-						ingredIndex++;
-					}
-				}
-			}
-
-		}
-		internal void SetSelectorsNavigation(int recipeIndex)
-        {
-			if (!RecipeDisplayService.TryGetDisplayConfig(this.GetType(), out var displayConfig) || recipeIndex == -1)
-				return;
-
-			var ingredientSelectors = _ingredientSelectors;
-			var craftButton = _recipeResultDisplay?.GetComponent<Button>();
-			RecipeDisplayService.SetSelectorNavigation(displayConfig.ExtraIngredientSlotOption, craftButton, ingredientSelectors);
-		}
-		public bool TryOnRecipeSelected(int recipeIndex, bool forceRefresh = false)
-		{
-			if (_lastRecipeIndex == recipeIndex && !forceRefresh
-					|| recipeIndex == -1
-					|| !RecipeDisplayService.TryGetStaticIngredients(this.GetType(), out var staticIngredients)
-					|| (staticIngredients.Count < 1))
-				return false;
-
-			var lastRecipeIndex = _lastRecipeIndex;
-			var ingredientSelectors = _ingredientSelectors;
-			var recipeDisplays = _recipeDisplays;
-
-			if (IsCraftingInProgress)
-				cancelCrafting();
-
-			if (lastRecipeIndex != -1)
-			{
-				recipeDisplays[lastRecipeIndex].SetHighlight(_highlight: false);
-			}
-			else
-			{
-				if (!HideFreeCraftingRecipe)
-					_freeRecipeDisplay.SetHighlight(false);
-			}
-
-			for (int i = 0; i < ingredientSelectors.Length; i++)
-			{
-				ingredientSelectors[i].Free(_resetUseCount: true);
-			}
-			lastRecipeIndex = _lastRecipeIndex = recipeIndex;
-			_itemDetailPanel.Show(lastRecipeIndex != -1);
-			_freeRecipeDescriptionPanel.gameObject.SetActive(lastRecipeIndex == -1);
-
-			resetFreeRecipeLastIngredients();
-			setCraftButtonEnable(_recipeDisplays[recipeIndex].IsRecipeIngredientsComplete);
-			_recipeResultDisplay.SetRecipeResult(_complexeRecipes[recipeIndex].Value.Results[0]);
-			RefreshItemDetailDisplay(_recipeResultDisplay);
-
-			SetSelectorIngredientMap(recipeIndex, staticIngredients);
-
-			var availableIngredients = _availableIngredients;
-			var recipeIngredients = _complexeRecipes[recipeIndex].Value.Ingredients;
-
-			for (int slot = 0; slot < _selectorIngredientMap.Length; slot++)
-			{
-				Logger.LogDebug($"TryOnRecipeSelected:: Slot {slot} set to IngredientIndex {_selectorIngredientMap[slot]}");
-				var ingredientIndex = _selectorIngredientMap[slot];
-
-				if (ingredientIndex > -1)
-				{
-                    ingredientSelectors[slot].Button.interactable = (true);
-					int bestIngredientIndex = recipeDisplays[recipeIndex].BestIngredientsPerStep[ingredientIndex];
-					var bestIngredient = bestIngredientIndex != -1 ? availableIngredients[bestIngredientIndex] : null;
-					if (bestIngredient != null 
-							&& bestIngredient is CustomCompatibleIngredient ccIng
-							&& recipeIngredients[ingredientIndex] is CustomRecipeIngredient crIng)
-                    {
-						ccIng.StaticIngredientID = crIng.CustomRecipeIngredientID;
-					}
-
-					ingredientSelectors[slot].Set(recipeIngredients[ingredientIndex], bestIngredient);
-				}
-				else
-				{
-					ingredientSelectors[slot].Clear();
-                    ingredientSelectors[slot].Button.interactable = (false);
-				}
-			}
-			recipeDisplays[recipeIndex].SetHighlight(_highlight: true);
-
-			var craftButton = _recipeResultDisplay?.GetComponent<Button>();
-			
-			SetSelectorsNavigation(recipeIndex);
-
-			return true;
-		}
-
-		internal new void IngredientSelectorHasChanged(int selectorIndex, int itemID)
-        {
-			RefreshResult();
-		}
-
-		internal void RefreshResult()
-        {
-			try
-			{
-				if (!CanCustomCraft())
-					return;
-
-				((CustomRecipeResultDisplay)_recipeResultDisplay).SetCustomRecipeResult(GetSelectedRecipe().Results[0]);
-			}
-			catch (Exception ex)
-            {
-				Logger.LogException($"CustomCraftingMenu::RefreshResult() Exception.\n", ex);
-			}
-        }
-
-		public bool CanCustomCraft()
-        {
-			var recipe = GetSelectedRecipe();
-			var ingredients = GetSelectedIngredients();
-			if (!(recipe != null
-				&& recipe.Results.Any()
-				&& recipe.Results[0] is DynamicCraftingResult
-				&& ingredients != null
-				&& ingredients.Any()
-				&& _recipeResultDisplay is CustomRecipeResultDisplay))
-            {
-				//Logger.LogTrace($"{nameof(CustomCraftingMenu)}::{nameof(CanCustomCraft)}: Result: false\n" +
-				//	$"\trecipe != null? {recipe != null}\n" +
-				//	$"\trecipe.Results.Any()? {recipe?.Results?.Any()}\n" +
-				//	$"\tingredients != null? {ingredients != null}\n" +
-				//	$"\tingredients.Any()? {ingredients?.Any()}\n" +
-				//	$"\t_recipeResultDisplay is CustomRecipeResultDisplay? { _recipeResultDisplay is CustomRecipeResultDisplay}");
-				return false;
-            }
-			return true;
-		}
-        public bool IsCustomCraftingStation() => PermanentCraftingStationType == null && CustomCraftingType != default;
-
-		public Recipe.CraftingType GetRecipeCraftingType()
-        {
-			//Priority order, Permanent > Custom > builtin m_craftingStationType
-			return PermanentCraftingStationType ?? (CustomCraftingType.IsDefinedValue() ? _craftingStationType : CustomCraftingType);
-		}
         protected override void AwakeInit()
 		{
 			Logger.LogDebug($"CustomCraftingMenu::AwakeInit() called on type {this.GetType().Name}");
@@ -518,6 +255,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 					$"A CustomCraftingMenu must have it's {nameof(ModId)} configured before it can be used.");
 			try
 			{
+
 				ParentCraftingModule = ModifModules.GetCustomCraftingModule(ModId);
 				if (PermanentCraftingStationType != null)
 				{
@@ -531,7 +269,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
 				_selectorIngredientMap = new int[_ingredientSelectors.Length];
 
-				ParentCraftingModule.RaiseMenuLoaded(this);
+				//ParentCraftingModule.RaiseMenuLoaded(this);
 			}
 			catch (Exception ex)
 			{
@@ -556,7 +294,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				this._freeRecipeDisplay.gameObject.SetActive(false);
 			}
 		}
-		
 
 		private bool showRecurseCheck = false;
 		public override void Show()
@@ -640,7 +377,272 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				.Where(s => s?.AssignedIngredient != null && !s.IsMissingIngredient)
 				.Select(s => s.AssignedIngredient).ToList();
 
-#region Copies of Base Methods for Debugging 
+		//TODO: Refactor all of these selector methods out of the model and into a service
+		public bool TryOnIngredientSelectorClicked(int selectorIndex)
+		{
+			if (_selectorIngredientMap[selectorIndex] == -1)
+				return false;
+
+			IngredientSelector ingredientSelector = _ingredientSelectors[selectorIndex];
+			var ingredientSelectorCachedItems = _ingredientSelectorCachedItems;
+			ingredientSelectorCachedItems.Clear();
+			var availableIngredients = _availableIngredients;
+			var ingredientIndex = _selectorIngredientMap[selectorIndex];
+			var lastRecipeIndex = _lastRecipeIndex;
+			if (lastRecipeIndex != -1)
+			{
+				if (_complexeRecipes[lastRecipeIndex].Value.Ingredients[ingredientIndex].ActionType == RecipeIngredient.ActionTypes.AddGenericIngredient)
+				{
+					IList<int> stepCompatibleIngredients = _recipeDisplays[lastRecipeIndex].GetStepCompatibleIngredients(ingredientIndex);
+					for (int i = 0; i < stepCompatibleIngredients.Count; i++)
+					{
+						if (availableIngredients.TryGetValue(stepCompatibleIngredients[i], out var compatibleIngredient) && compatibleIngredient.AvailableQty > 0)
+						{
+							ingredientSelectorCachedItems.Add(compatibleIngredient.ItemID);
+						}
+					}
+				}
+			}
+			else
+			{
+				for (int i = 0; i < availableIngredients.Count; i++)
+				{
+					if (availableIngredients.Values[i].AvailableQty > 0 || ingredientSelector.AssignedIngredient == availableIngredients.Values[i])
+					{
+						ingredientSelectorCachedItems.Add(availableIngredients.Values[i].ItemID);
+					}
+				}
+			}
+			if (ingredientSelectorCachedItems.Count <= 0)
+			{
+				return true;
+			}
+			_tempSelectorWindow = m_characterUI.GetListSelector();
+			var tempSelectorWindow = _tempSelectorWindow;
+			if ((bool)_tempSelectorWindow)
+			{
+				tempSelectorWindow.onItemHovered = RefreshItemDetailDisplay;
+				tempSelectorWindow.onItemClicked = delegate (IItemDisplay _display)
+				{
+					IngredientSelectorChanged(selectorIndex, _display?.RefItem.ItemID ?? (-1));
+					closeItemSelectionWindow();
+				};
+				tempSelectorWindow.Position = _selectorWindowPos ? _selectorWindowPos.position : transform.position;
+				tempSelectorWindow.Title = ingredientSelector.Text;
+				tempSelectorWindow.ShowSelector(ingredientSelectorCachedItems, ingredientSelector.gameObject, lastRecipeIndex == -1);
+			}
+			return true;
+		}
+
+		private void IngredientSelectorChanged(int selectorIndex, int itemID)
+		{
+			_availableIngredients.TryGetValue(itemID, out var _outValue);
+			var ingredientIndex = _selectorIngredientMap[selectorIndex];
+			var ingredientSelectors = _ingredientSelectors;
+			RecipeIngredient recipeIngredient = ((_lastRecipeIndex != -1) ? _complexeRecipes[_lastRecipeIndex].Value.Ingredients[ingredientIndex] : null);
+			ingredientSelectors[selectorIndex].Set(recipeIngredient, _outValue);
+			if (_lastRecipeIndex != -1)
+			{
+				return;
+			}
+			refreshFreeRecipeResult();
+			bool craftButtonEnable = false;
+			for (int i = 0; i < ingredientSelectors.Length; i++)
+			{
+				if (ingredientSelectors[i].AssignedIngredient != null)
+				{
+					craftButtonEnable = true;
+				}
+			}
+			setCraftButtonEnable(craftButtonEnable);
+		}
+		private void SetSelectorIngredientMap(int recipeIndex, List<StaticIngredient> ingredients)
+		{
+			var lastRecipeIndex = _lastRecipeIndex;
+			var ingredientSelectors = _ingredientSelectors;
+
+			var recipeIngredients = _complexeRecipes[recipeIndex].Value.Ingredients;
+			var staticIngredients = ingredients.ToDictionary(s => s.IngredientID, s => s);
+
+			//Reset the current map
+			for (int i = 0; i < _selectorIngredientMap.Length; i++)
+				_selectorIngredientMap[i] = -1;
+
+			//Set any static ingredeint selectors to their corresponding ingredient indexes
+			for (int ingIndex = 0; ingIndex < _selectorIngredientMap.Length; ingIndex++)
+			{
+#if DEBUG
+				Logger.LogDebug($"OnRecipeSelectedOverride:: ingIndex:{ingIndex}, recipeIngredients.Length: {recipeIngredients.Length}");
+				if (recipeIngredients.Length > ingIndex)
+				{
+					Logger.LogDebug($"OnRecipeSelectedOverride:: recipeIngredients[ingIndex] is CustomRecipeIngredient: {recipeIngredients[ingIndex] is CustomRecipeIngredient}");
+					if (recipeIngredients[ingIndex] is CustomRecipeIngredient)
+						Logger.LogDebug($"staticIngredients.TryGetValue(customIngredient.CustomRecipeIngredientID, out var staticConfig): {staticIngredients.TryGetValue(((CustomRecipeIngredient)recipeIngredients[ingIndex]).CustomRecipeIngredientID, out _)}");
+				}
+#endif
+				if (recipeIngredients.Length > ingIndex &&
+					recipeIngredients[ingIndex] is CustomRecipeIngredient customIngredient &&
+					staticIngredients.TryGetValue(customIngredient.CustomRecipeIngredientID, out var staticConfig))
+				{
+					int staticPosition = (int)staticConfig.IngredientSlotPosition;
+					_selectorIngredientMap[staticPosition] = ingIndex;
+				}
+			}
+
+			//fill in the remaining mappings, accounting for the statics above
+			var ingredIndex = 0;
+			for (int slot = 0; slot < _selectorIngredientMap.Length; slot++)
+			{
+				if (_selectorIngredientMap[slot] == -1)
+				{
+					while (_selectorIngredientMap.Contains(ingredIndex))
+						ingredIndex++;
+					if (ingredIndex < recipeIngredients.Length)
+					{
+						_selectorIngredientMap[slot] = ingredIndex;
+						Logger.LogDebug($"SetSelectorIngredientMap:: _selectorIngredientMap Slot {slot}'s ingredient set to IngredientIndex {ingredIndex}");
+						ingredIndex++;
+					}
+				}
+			}
+
+		}
+		internal void SetSelectorsNavigation(int recipeIndex)
+		{
+			if (!RecipeDisplayService.TryGetDisplayConfig(this.GetType(), out var displayConfig) || recipeIndex == -1)
+				return;
+
+			var ingredientSelectors = _ingredientSelectors;
+			var craftButton = _recipeResultDisplay?.GetComponent<Button>();
+			RecipeDisplayService.SetSelectorNavigation(displayConfig.ExtraIngredientSlotOption, craftButton, ingredientSelectors);
+		}
+		public bool TryOnRecipeSelected(int recipeIndex, bool forceRefresh = false)
+		{
+			if (_lastRecipeIndex == recipeIndex && !forceRefresh
+					|| recipeIndex == -1
+					|| !RecipeDisplayService.TryGetStaticIngredients(this.GetType(), out var staticIngredients)
+					|| (staticIngredients.Count < 1))
+				return false;
+
+			var lastRecipeIndex = _lastRecipeIndex;
+			var ingredientSelectors = _ingredientSelectors;
+			var recipeDisplays = _recipeDisplays;
+
+			if (IsCraftingInProgress)
+				cancelCrafting();
+
+			if (lastRecipeIndex != -1)
+			{
+				recipeDisplays[lastRecipeIndex].SetHighlight(_highlight: false);
+			}
+			else
+			{
+				if (!HideFreeCraftingRecipe)
+					_freeRecipeDisplay.SetHighlight(false);
+			}
+
+			for (int i = 0; i < ingredientSelectors.Length; i++)
+			{
+				ingredientSelectors[i].Free(_resetUseCount: true);
+			}
+			lastRecipeIndex = _lastRecipeIndex = recipeIndex;
+			_itemDetailPanel.Show(lastRecipeIndex != -1);
+			_freeRecipeDescriptionPanel.gameObject.SetActive(lastRecipeIndex == -1);
+
+			resetFreeRecipeLastIngredients();
+			setCraftButtonEnable(_recipeDisplays[recipeIndex].IsRecipeIngredientsComplete);
+			_recipeResultDisplay.SetRecipeResult(_complexeRecipes[recipeIndex].Value.Results[0]);
+			RefreshItemDetailDisplay(_recipeResultDisplay);
+
+			SetSelectorIngredientMap(recipeIndex, staticIngredients);
+
+			var availableIngredients = _availableIngredients;
+			var recipeIngredients = _complexeRecipes[recipeIndex].Value.Ingredients;
+
+			for (int slot = 0; slot < _selectorIngredientMap.Length; slot++)
+			{
+				Logger.LogDebug($"TryOnRecipeSelected:: Slot {slot} set to IngredientIndex {_selectorIngredientMap[slot]}");
+				var ingredientIndex = _selectorIngredientMap[slot];
+
+				if (ingredientIndex > -1)
+				{
+					ingredientSelectors[slot].Button.interactable = (true);
+					int bestIngredientIndex = recipeDisplays[recipeIndex].BestIngredientsPerStep[ingredientIndex];
+					var bestIngredient = bestIngredientIndex != -1 ? availableIngredients[bestIngredientIndex] : null;
+					if (bestIngredient != null
+							&& bestIngredient is CustomCompatibleIngredient ccIng
+							&& recipeIngredients[ingredientIndex] is CustomRecipeIngredient crIng)
+					{
+						ccIng.StaticIngredientID = crIng.CustomRecipeIngredientID;
+					}
+
+					ingredientSelectors[slot].Set(recipeIngredients[ingredientIndex], bestIngredient);
+				}
+				else
+				{
+					ingredientSelectors[slot].Clear();
+					ingredientSelectors[slot].Button.interactable = (false);
+				}
+			}
+			recipeDisplays[recipeIndex].SetHighlight(_highlight: true);
+
+			var craftButton = _recipeResultDisplay?.GetComponent<Button>();
+
+			SetSelectorsNavigation(recipeIndex);
+
+			return true;
+		}
+
+		internal new void IngredientSelectorHasChanged(int selectorIndex, int itemID)
+		{
+			RefreshResult();
+		}
+
+		internal void RefreshResult()
+		{
+			try
+			{
+				if (!CanCustomCraft())
+					return;
+
+				((CustomRecipeResultDisplay)_recipeResultDisplay).SetCustomRecipeResult(GetSelectedRecipe().Results[0]);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogException($"CustomCraftingMenu::RefreshResult() Exception.\n", ex);
+			}
+		}
+
+		public bool CanCustomCraft()
+		{
+			var recipe = GetSelectedRecipe();
+			var ingredients = GetSelectedIngredients();
+			if (!(recipe != null
+				&& recipe.Results.Any()
+				&& recipe.Results[0] is DynamicCraftingResult
+				&& ingredients != null
+				&& ingredients.Any()
+				&& _recipeResultDisplay is CustomRecipeResultDisplay))
+			{
+				//Logger.LogTrace($"{nameof(CustomCraftingMenu)}::{nameof(CanCustomCraft)}: Result: false\n" +
+				//	$"\trecipe != null? {recipe != null}\n" +
+				//	$"\trecipe.Results.Any()? {recipe?.Results?.Any()}\n" +
+				//	$"\tingredients != null? {ingredients != null}\n" +
+				//	$"\tingredients.Any()? {ingredients?.Any()}\n" +
+				//	$"\t_recipeResultDisplay is CustomRecipeResultDisplay? { _recipeResultDisplay is CustomRecipeResultDisplay}");
+				return false;
+			}
+			return true;
+		}
+		public bool IsCustomCraftingStation() => PermanentCraftingStationType == null && CustomCraftingType != default;
+
+		public Recipe.CraftingType GetRecipeCraftingType()
+		{
+			//Priority order, Permanent > Custom > builtin m_craftingStationType
+			return PermanentCraftingStationType ?? (CustomCraftingType.IsDefinedValue() ? _craftingStationType : CustomCraftingType);
+		}
+
+		#region Copies of Base Methods for Debugging 
 #if DEBUG
 		private void DebugShow()
 		{
@@ -1074,6 +1076,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			}
 		}
 #endif
-#endregion
+		#endregion
 	}
 }
