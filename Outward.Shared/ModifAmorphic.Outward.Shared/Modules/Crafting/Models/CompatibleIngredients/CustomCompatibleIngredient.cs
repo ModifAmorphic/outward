@@ -31,20 +31,21 @@ namespace ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients
             return false;
         }
 
-        public bool TryGetConsumedItems(bool useMultipler, ref int resultMultiplier, out IList<KeyValuePair<string, int>> consumedItems)
+        public bool TryGetConsumedItems(bool useMultipler, ref int resultMultiplier, out IList<KeyValuePair<string, int>> consumedItems, out List<Item> preservedItems)
         {
             if (_consumedItemSelector == null)
             {
                 resultMultiplier = default;
                 consumedItems = default;
+                preservedItems = default;
                 return false;
             }
             if (StaticIngredientID == Guid.Empty)
-                return _consumedItemSelector.TryGetConsumedItems(this, useMultipler, ref resultMultiplier, out consumedItems);
+                return _consumedItemSelector.TryGetConsumedItems(this, useMultipler, ref resultMultiplier, out consumedItems, out preservedItems);
             else
-                return _consumedItemSelector.TryGetConsumedStaticItems(this, StaticIngredientID, useMultipler, ref resultMultiplier, out consumedItems);
+                return _consumedItemSelector.TryGetConsumedStaticItems(this, StaticIngredientID, useMultipler, ref resultMultiplier, out consumedItems, out preservedItems);
         }
-        public void CaptureConsumedItems(IList<KeyValuePair<string, int>> consumedItems)
+        public void CaptureConsumedItems(IList<KeyValuePair<string, int>> consumedItems, List<Item> preservedItems)
         {
             if (_ingredientMatcher != null)
             {
@@ -66,6 +67,9 @@ namespace ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients
                         $"Capturing soon to be consumed item {kvp.Value} ({kvp.Key}).");
                     itemQuantities.Add(kvp.Key, kvp.Value);
                 }
+
+                if (preservedItems != default)
+                    menuCraftData.PreservedItems.AddRange(preservedItems);
             }
         }
         private void StashIngredientEnchantData(IList<KeyValuePair<string, int>> consumedItems)

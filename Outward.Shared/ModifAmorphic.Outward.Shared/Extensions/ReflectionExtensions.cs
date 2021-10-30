@@ -55,5 +55,28 @@ namespace ModifAmorphic.Outward.Extensions
             var method = parent.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
             return (R)method.Invoke(parent, args);
         }
+        public static void CopyFieldsTo<T>(this T source, T target)
+        {
+            var sourceFields = typeof(T).GetFields(System.Reflection.BindingFlags.Public
+                | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance
+                | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.FlattenHierarchy);
+
+            for (int i = 0; i < sourceFields.Length; i++)
+            {
+                object value;
+                //statics but no constants
+                if (sourceFields[i].IsStatic && !(sourceFields[i].IsLiteral && !sourceFields[i].IsInitOnly))
+                {
+                    value = sourceFields[i].GetValue(null);
+                    sourceFields[i].SetValue(source.GetType(), value, System.Reflection.BindingFlags.FlattenHierarchy, null, null);
+                }
+                else if (!sourceFields[i].IsStatic)
+                {
+                    value = sourceFields[i].GetValue(source);
+                    sourceFields[i].SetValue(target, value, System.Reflection.BindingFlags.FlattenHierarchy, null, null);
+                }
+                //Logger.LogTrace($"{sourceFields[i].Name} set to '{value?.GetType()}' value: '{value}'");
+            }
+        }
     }
 }

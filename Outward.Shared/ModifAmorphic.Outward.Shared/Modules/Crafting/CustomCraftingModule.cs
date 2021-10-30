@@ -176,6 +176,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                 });
             TryAddRecipes();
         }
+        public List<Recipe> GetRegisteredRecipes<T>() => _customRecipes.TryGetValue(typeof(T), out var recipes) ? recipes.Values.Select(r => r.Recipe).ToList() : new List<Recipe>();
         public void RegisterCustomCrafter<T>(ICustomCrafter crafter)  where T : CustomCraftingMenu => _craftingService.AddOrUpdateCrafter<T>(crafter);
         public void RegisterMenuIngredientFilters<T>(MenuIngredientFilters filter) where T : CustomCraftingMenu
             => _craftingService.AddOrUpdateIngredientFilter<T>(filter);

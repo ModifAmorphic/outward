@@ -281,6 +281,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                     foreach (var recipe in recipes)
                     {
                         var modRecipe = UnityEngine.Object.Instantiate(recipe);
+                        //necessary to carry over DynamicCraftingResult(s)
+                        modRecipe.SetResults(recipe.Results);
                         int prefabIndex = 0;
                         foreach (var staticIngredient in staticIngredients)
                         {

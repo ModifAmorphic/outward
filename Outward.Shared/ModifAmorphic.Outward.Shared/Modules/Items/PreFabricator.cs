@@ -55,16 +55,20 @@ namespace ModifAmorphic.Outward.Modules.Items
             if (item.TryGetCustomIcon(out var icon))
                 item.SetItemIcon(icon);
         }
-
-        public Item CreatePrefab(int baseItemID, int newItemID, string name, string description)
+        public T CreatePrefab<T>(int baseItemID, int newItemID, string name, string description, bool copyRefs = false) where T : Item
         {
-            var basePrefab = PrefabManager.GetItemPrefab(baseItemID);
+            var basePrefab = (T)PrefabManager.GetItemPrefab(baseItemID);
             
-            return CreatePrefab(basePrefab, newItemID, name, description);
+            return CreatePrefab(basePrefab, newItemID, name, description, copyRefs);
         }
-        public Item CreatePrefab(Item basePrefab, int newItemID, string name, string description)
+        public T CreatePrefab<T>(T basePrefab, int newItemID, string name, string description, bool copyRefs = false) where T : Item
         {
+            if (string.IsNullOrEmpty(description))
+                description = basePrefab.Description;
+
             var prefab = UnityEngine.Object.Instantiate(basePrefab, GetParentTransform(), false);
+            if (copyRefs)
+                basePrefab.CopyFieldsTo(prefab);
             prefab.ItemID = newItemID;
             prefab.IsPrefab = true;
             prefab.SetNames(name)
