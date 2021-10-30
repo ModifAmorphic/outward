@@ -17,7 +17,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog.MenuIngredientMatchers
 
         public BagMatcher(Func<IModifLogger> loggerFactory) => (_loggerFactory) = (loggerFactory);
 
-        public bool IsRecipeTag(Tag recipeTag) => recipeTag.GetTagType() == Tag.TagTypes.Custom && recipeTag == TransmogSettings.BackpackTag;
+        public bool IsRecipeTag(Tag recipeTag) => recipeTag.GetTagType() == Tag.TagTypes.Custom && recipeTag == ItemTags.BackpackTag;
 
         public bool IsMatch<T>(T recipe, Tag recipeTag, int ingredientItemID, IEnumerable<Item> ingredientItems) where T : CustomRecipe
         {
@@ -32,7 +32,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog.MenuIngredientMatchers
                                             && bag.ContainedSilver < 1 && !bag.Container.GetContainedItems().Any()
                                             && (bagRecipe == null || i.ItemID != bagRecipe.VisualItemID));
             Logger.LogTrace($"{nameof(BagMatcher)}::{nameof(IsMatch)}<> Potential Ingredient ItemID: {ingredientItemID} is {(isMatch ? "" : "NOT ")}a match. " +
-                $"Filter is AddGenericIngredient and TagType is '{ TransmogSettings.BackpackTag}'. " +
+                $"Filter is AddGenericIngredient and TagType is '{ ItemTags.BackpackTag}'. " +
                 $"Matching on Potential Ingredient Type: {firstItem?.GetType()}, Name: {firstItem?.DisplayName}, Slot: {(firstItem as Bag)?.EquipSlot}, and any Non Transmog Owned Item UID.");
 
             return isMatch;

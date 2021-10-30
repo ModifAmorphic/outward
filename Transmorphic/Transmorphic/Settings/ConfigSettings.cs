@@ -51,8 +51,33 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
             IsAdvanced = false
         };
 
+        const string EnchantingSection = "Enchanting Settings";
+        const int EnchantingTopOrder = GeneralTopOrder - 1000;
+
+        public ConfigSetting<bool> EnchantingMenuEnabled { get; } = new ConfigSetting<bool>()
+        {
+            Name = nameof(EnchantingMenuEnabled),
+            DefaultValue = true,
+            Section = EnchantingSection,
+            DisplayName = "Enchanting Crafting Menu Enabled",
+            Description = $"Enables or disables the Enchanting crafting menu.",
+            Order = EnchantingTopOrder - 1,
+            IsAdvanced = false
+        };
+
+        public ConfigSetting<bool> AllEnchantRecipesLearned { get; } = new ConfigSetting<bool>()
+        {
+            Name = nameof(AllEnchantRecipesLearned),
+            DefaultValue = true,
+            Section = EnchantingSection,
+            DisplayName = "  • Recipes Unlocked for All Characters",
+            Description = $"If enabled, all enchantment recipes will automatically be learned by all characters..",
+            Order = EnchantingTopOrder - 2,
+            IsAdvanced = false
+        };
+
         const string TransmogSection = "Transmogrify Settings";
-        const int TransmogTopOrder = GeneralTopOrder - 1000;
+        const int TransmogTopOrder = EnchantingTopOrder - 1000;
 
         public ConfigSetting<bool> TransmogrifyMenuEnabled { get; } = new ConfigSetting<bool>()
         {

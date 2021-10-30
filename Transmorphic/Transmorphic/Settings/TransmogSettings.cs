@@ -36,36 +36,6 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
         public static TagSourceSelector TagSelector = new TagSourceSelector(
             new Tag("Axfc-kYcGEOguAqCUHh_fg", "transmog"));
 
-        private static Tag _backpackTag;
-        public static Tag BackpackTag
-        {
-            get
-            {
-                if (!_backpackTag.IsSet)
-                    _backpackTag = TagSourceManager.Instance.GetTag("68");
-                return _backpackTag;
-            }
-        }
-        private static Tag _lanternTag;
-        public static Tag LanternTag
-        {
-            get
-            {
-                if (!_lanternTag.IsSet)
-                    _lanternTag = TagSourceManager.Instance.GetTag("37");
-                return _lanternTag;
-            }
-        }
-        private static Tag _lexiconTag;
-        public static Tag LexiconTag
-        {
-            get { 
-                if (!_lexiconTag.IsSet)
-                    _lexiconTag = TagSourceManager.Instance.GetTag("161");
-                return _lexiconTag;
-            }
-        }
-
         public const int TransmogRecipeSecondaryItemID = 6300030;
            
         public static MenuIngredientFilters MenuFilters = new MenuIngredientFilters()

@@ -49,6 +49,22 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
 
             return settings;
         }
+        public EnchantingSettings ConfigureEnchantingSettings(ConfigSettings settings)
+        {
+            var enchantingSettings = new EnchantingSettings();
+
+            _configService.BindConfigSetting(settings.AllEnchantRecipesLearned,
+                (SettingValueChangedArgs<bool> args) => enchantingSettings.AllEnchantRecipesLearned = args.NewValue, true);
+
+            _configService.BindConfigSetting(settings.EnchantingMenuEnabled,
+                (SettingValueChangedArgs<bool> args) =>
+                {
+                    enchantingSettings.EnchantingMenuEnabled = args.NewValue;
+                    _configService.ToggleShowHideAndRefresh(settings.AllEnchantRecipesLearned, enchantingSettings.EnchantingMenuEnabled);
+                }, true);
+
+            return enchantingSettings;
+        }
         public TransmogSettings ConfigureTransmogrifySettings(ConfigSettings settings)
         {
             var tmogSettings = new TransmogSettings();

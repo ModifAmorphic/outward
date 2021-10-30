@@ -26,7 +26,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                 return;
 
             var bookTarget = ingredients.FirstOrDefault(i => i?.ItemPrefab is Equipment 
-                                                            && (i?.HasTag(TransmogSettings.LexiconTag) ?? false))?.ItemPrefab as Equipment;
+                                                            && (i?.HasTag(ItemTags.LexiconTag) ?? false))?.ItemPrefab as Equipment;
             var visualBook = craftingResult.RefItem as Equipment;
 
             if (bookTarget == null
