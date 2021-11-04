@@ -36,6 +36,9 @@ namespace ModifAmorphic.Outward.Transmorphic
                 harmony.PatchAll(typeof(TmogCharacterRecipeKnowledgePatches));
                 harmony.PatchAll(typeof(TmogCharacterEquipmentPatches));
                 harmony.PatchAll(typeof(TmogItemManagerPatches));
+                harmony.PatchAll(typeof(EnchantCharacterRecipeKnowledgePatches));
+
+                //harmony.PatchAll(typeof(WeaponPatches));
                 //harmony.PatchAll(typeof(TmogItemDisplayPatches));
                 
                 //harmony.PatchAll(typeof(TransmogCraftingMenuPatches));

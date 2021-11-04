@@ -45,6 +45,8 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
                 .FirstOrDefault(i => i is Equipment && dynamicResult.DynamicItemID == i.ItemID);
             if (equipment == default)
             {
+                Logger.LogError($"{nameof(EnchantCrafter)}::{nameof(TryCraftEnchant)}(): " +
+                        $"Could not enchant item. Unable to locate source equipment itemID {dynamicResult.DynamicItemID} in list of preservered ingredients.");
                 item = null;
                 return false;
             }
@@ -52,8 +54,6 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
             var enchantment = ResourcesPrefabManager.Instance.GetEnchantmentPrefab(recipe.BaseEnchantmentRecipe.ResultID);
             equipment.AddEnchantment(enchantment.PresetID);
             equipment.LoadedVisual.ApplyVisualModifications();
-            //so visuals get applied for virgin armor, anything else that changes when enchanted
-            //_reEquip(equipment.OwnerCharacter.Inventory, equipment);
             item = equipment;
 
             Logger.LogInfo($"Applied enchant '{enchantment.Name}' to item {item.ItemID} - '{item.DisplayName}'.");

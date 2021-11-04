@@ -42,14 +42,18 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting
         private void ConfigureRecipes()
         {
             _services
-                .AddSingleton(new EnchantResultService(_services.GetService<IModifLogger>))
+                .AddSingleton(new EnchantPrefabs(_services.GetService<PreFabricator>(),
+                                                 _services.GetService<EnchantingSettings>(),
+                                                 _services.GetService<IModifLogger>))
+                .AddSingleton(new EnchantResultService(_services.GetService<EnchantPrefabs>(),
+                                                        _services.GetService<IModifLogger>))
                 .AddSingleton(new EnchantRecipeData(System.IO.Path.GetDirectoryName(
                                                     _services.GetService<BaseUnityPlugin>().Config.ConfigFilePath),
                                                     _services.GetService<IModifLogger>)
                 )
                 .AddSingleton(new EnchantRecipeGenerator(
                                 _services.GetService<EnchantResultService>(),
-                                _services.GetService<PreFabricator>(),
+                                _services.GetService<EnchantPrefabs>(),
                                 _services.GetService<EnchantingSettings>(),
                                 _services.GetService<IModifLogger>
                     ))

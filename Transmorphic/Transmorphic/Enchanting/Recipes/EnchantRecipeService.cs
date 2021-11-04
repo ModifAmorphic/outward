@@ -53,7 +53,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
             var savedUids = _saveData.GetAllRecipes();
             foreach (var r in recipes)
             {
-                var recipeId = _recipeGenerator.GetRecipeID(r.RecipeID);
+                var recipeId = EnchantRecipeGenerator.GetRecipeID(r.RecipeID);
                 
                 if (!TryGetLoadedRecipe(recipeId, out EnchantRecipe enchantRecipe))
                 {

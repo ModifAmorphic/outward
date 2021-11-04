@@ -13,10 +13,11 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
     {
         public const int RecipeStartID = -1303100000;
         public const int RecipeResultStartID = -1303100000;
+                                                 //9400233
         public const int VirginHelmetID = 3100261;
         public const int VirginArmorID = 3100260;
         public const int VirginBootsID = 3100262;
-        public const int IronSwordID = 2000010;
+        public const int IronSwordID = 2010000; //2000010;
         public const int SimpleBowID = 2200000;
         public const int FlintlockPistolID = 5110100;
         public const int RondelDaggerID = 5110000;
@@ -37,9 +38,9 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
 
         public static MenuIcons EnchantMenuIcons = new MenuIcons()
         {
-            UnpressedIcon = new MenuIcon() { IconFilePath = Path.Combine(PluginPath, Path.Combine("assets", "tex_men_iconsUnpressedTransmogrify.png")) },
-            HoverIcon = new MenuIcon() { IconFilePath = Path.Combine(PluginPath, Path.Combine("assets", "tex_men_iconsHoverTransmogrify.png")) },
-            PressedIcon = new MenuIcon() { IconFilePath = Path.Combine(PluginPath, Path.Combine("assets", "tex_men_iconsPressedTransmogrify.png")) }
+            UnpressedIcon = new MenuIcon() { IconFilePath = Path.Combine(PluginPath, Path.Combine("assets", "tex_men_iconsUnpressedEnchanting.png")) },
+            HoverIcon = new MenuIcon() { IconFilePath = Path.Combine(PluginPath, Path.Combine("assets", "tex_men_iconsHoverEnchanting.png")) },
+            PressedIcon = new MenuIcon() { IconFilePath = Path.Combine(PluginPath, Path.Combine("assets", "tex_men_iconsPressedEnchanting.png")) }
         };
 
         public static RecipeSelectorDisplayConfig RecipeSelectorDisplayConfig = new RecipeSelectorDisplayConfig()
