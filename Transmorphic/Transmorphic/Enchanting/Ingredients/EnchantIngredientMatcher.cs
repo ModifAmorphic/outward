@@ -67,6 +67,8 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Ingredients
             }
 
             isMatch = recipe.BaseEnchantmentRecipe.CompatibleEquipments.Match(potentialIngredient.ItemPrefab);
+            //Logger.LogDebug($"EnchantIngredientMatcher::TryMatchRecipeStep: potentialIngredient {potentialIngredient.ItemID} - {potentialIngredient.ItemPrefab.DisplayName} " +
+            //        $"was {(isMatch ? "a" : "not a")} match for recipe {recipe.RecipeID} - {recipe.Name}.");
 #if DEBUG
             Logger.LogTrace($"EnchantIngredientMatcher::TryMatchRecipeStep: compatibleIngredient {potentialIngredient.ItemID} - {potentialIngredient.ItemPrefab.DisplayName} " +
                     $"was {(isMatch ? "a" : "not a")} match for recipe step.");

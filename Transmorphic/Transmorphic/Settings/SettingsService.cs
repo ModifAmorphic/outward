@@ -53,14 +53,42 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
         {
             var enchantingSettings = new EnchantingSettings();
 
-            _configService.BindConfigSetting(settings.AllEnchantRecipesLearned,
-                (SettingValueChangedArgs<bool> args) => enchantingSettings.AllEnchantRecipesLearned = args.NewValue, true);
+            //_configService.BindConfigSetting(settings.AllEnchantRecipesLearned,
+            //    (SettingValueChangedArgs<bool> args) => enchantingSettings.AllEnchantRecipesLearned = args.NewValue, true);
 
             _configService.BindConfigSetting(settings.EnchantingMenuEnabled,
                 (SettingValueChangedArgs<bool> args) =>
                 {
                     enchantingSettings.EnchantingMenuEnabled = args.NewValue;
-                    _configService.ToggleShowHideAndRefresh(settings.AllEnchantRecipesLearned, enchantingSettings.EnchantingMenuEnabled);
+                    //_configService.ToggleShowHideAndRefresh(settings.AllEnchantRecipesLearned, enchantingSettings.EnchantingMenuEnabled);
+                }, true);
+
+
+
+            _configService.BindConfigSetting(settings.EnchantingConditionQuest,
+                (SettingValueChangedArgs<bool> args) => enchantingSettings.EnchantingConditionQuest = args.NewValue, true);
+            _configService.BindConfigSetting(settings.EnchantingConditionRegion,
+                (SettingValueChangedArgs<bool> args) => enchantingSettings.EnchantingConditionRegion = args.NewValue, true);
+            _configService.BindConfigSetting(settings.EnchantingConditionTemperature,
+                (SettingValueChangedArgs<bool> args) => enchantingSettings.EnchantingConditionTemperature = args.NewValue, true);
+            _configService.BindConfigSetting(settings.EnchantingConditionTime,
+                (SettingValueChangedArgs<bool> args) => enchantingSettings.EnchantingConditionTime = args.NewValue, true);
+            _configService.BindConfigSetting(settings.EnchantingConditionWeather,
+                (SettingValueChangedArgs<bool> args) => enchantingSettings.EnchantingConditionWeather = args.NewValue, true);
+            _configService.BindConfigSetting(settings.EnchantingConditionWindAltarState,
+                (SettingValueChangedArgs<bool> args) => enchantingSettings.EnchantingConditionWindAltarState = args.NewValue, true);
+
+
+            _configService.BindConfigSetting(settings.ConditionalEnchantingEnabled,
+                (SettingValueChangedArgs<bool> args) =>
+                {
+                    enchantingSettings.ConditionalEnchantingEnabled = args.NewValue;
+                    _configService.ToggleShowHideAndRefresh(settings.EnchantingConditionQuest, enchantingSettings.ConditionalEnchantingEnabled);
+                    _configService.ToggleShowHideAndRefresh(settings.EnchantingConditionRegion, enchantingSettings.ConditionalEnchantingEnabled);
+                    _configService.ToggleShowHideAndRefresh(settings.EnchantingConditionTemperature, enchantingSettings.ConditionalEnchantingEnabled);
+                    _configService.ToggleShowHideAndRefresh(settings.EnchantingConditionTime, enchantingSettings.ConditionalEnchantingEnabled);
+                    _configService.ToggleShowHideAndRefresh(settings.EnchantingConditionWeather, enchantingSettings.ConditionalEnchantingEnabled);
+                    _configService.ToggleShowHideAndRefresh(settings.EnchantingConditionWindAltarState, enchantingSettings.ConditionalEnchantingEnabled);
                 }, true);
 
             return enchantingSettings;

@@ -15,7 +15,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Menu
         public EnchantingMenu() => 
             (HideFreeCraftingRecipe, LoggerFactory) = 
             (
-                false,
+                true,
                 () => Logging.LoggerFactory.GetLogger(ModInfo.ModId)
             );
     }

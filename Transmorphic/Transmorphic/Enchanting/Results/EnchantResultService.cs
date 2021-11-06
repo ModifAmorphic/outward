@@ -39,36 +39,25 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
                 return;
             }
 
-            Equipment prefab;
+            Equipment resultEquipment;
             if (lastIngredient.ItemPrefab is Equipment equipment)
             {
                 Logger.LogDebug($"{nameof(EnchantResultService)}::{nameof(CalculateResult)}: Calculate result for selected ingredient {equipment?.ItemID}");
-                prefab = _enchantPrefabs.GetOrCreateResultPrefab(enchantRecipe.BaseEnchantmentRecipe, equipment.ItemID, true);
+                resultEquipment = _enchantPrefabs.GenerateEnchantRecipeResult(enchantRecipe.BaseEnchantmentRecipe, equipment.ItemID);
             }
             else
             {
-                prefab = _enchantPrefabs.GetOrCreateResultPrefab(enchantRecipe.BaseEnchantmentRecipe, true);
+                resultEquipment = _enchantPrefabs.GetOrCreateResultPrefab(enchantRecipe.BaseEnchantmentRecipe);
             }
-            if (craftingResult.ItemID == prefab.ItemID)
-                return;
-
-            Logger.LogDebug($"{nameof(EnchantResultService)}::{nameof(CalculateResult)}: Calculate result for selected ingredient {prefab?.ItemID}");
-            if (craftingResult.ItemID == prefab.ItemID)
-                return;
 
             craftingResult.SetDynamicItemID(lastIngredient.ItemID);
             var dynamicResult = craftingResult.DynamicRefItem;
-            craftingResult.ItemID = prefab.ItemID;
-            craftingResult.SetPrivateField<ItemReferenceQuantity, Item>("m_item", prefab);
+            craftingResult.ItemID = resultEquipment.ItemID;
+            craftingResult.SetPrivateField<ItemReferenceQuantity, Item>("m_item", resultEquipment);
             
-            
-            //if (craftingResult.RefItem is Weapon weapon)
-            //    weapon.InvokePrivateMethod("RefreshEnchantmentModifiers");
-            //else
-            //    ((Equipment)craftingResult.RefItem).InvokePrivateMethod("RefreshEnchantmentModifiers");
-
             Logger.LogDebug($"{nameof(EnchantResultService)}::{nameof(CalculateResult)}: Calculated Result " +
-                $"is a {dynamicResult?.DisplayName} ({craftingResult.ItemID}) Enchanted with {enchantRecipe.RecipeName}.");
+                $"is a {craftingResult.RefItem?.DisplayName} ({craftingResult.ItemID}) Enchanted with {enchantRecipe.RecipeName}. " +
+                $"Active Enchants: {(craftingResult.RefItem as Equipment)?.ActiveEnchantmentIDs?.Count}");
         }
 
         public void SetDynamicItemID(DynamicCraftingResult craftingResult, int newItemId, ref int itemID, ref Item item)

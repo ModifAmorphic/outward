@@ -109,16 +109,109 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
             }
         }
 
-        public event Action AllEnchantRecipesLearnedEnabled;
-        private bool _allEnchantRecipesLearned;
-        public bool AllEnchantRecipesLearned
+        //public event Action AllEnchantRecipesLearnedEnabled;
+        //private bool _allEnchantRecipesLearned;
+        //public bool AllEnchantRecipesLearned
+        //{
+        //    get => _allEnchantRecipesLearned;
+        //    set
+        //    {
+        //        _allEnchantRecipesLearned = value;
+        //        if (_allEnchantRecipesLearned)
+        //            AllEnchantRecipesLearnedEnabled?.Invoke();
+        //    }
+        //}
+
+        public event Action<bool> ConditionalEnchantingEnabledChanged;
+        private bool _conditionalEnchantingEnabled;
+        public bool ConditionalEnchantingEnabled
         {
-            get => _allEnchantRecipesLearned;
+            get => _conditionalEnchantingEnabled;
             set
             {
-                _allEnchantRecipesLearned = value;
-                if (_allEnchantRecipesLearned)
-                    AllEnchantRecipesLearnedEnabled?.Invoke();
+                var prevValue = _conditionalEnchantingEnabled;
+                _conditionalEnchantingEnabled = value;
+                if (_conditionalEnchantingEnabled != prevValue)
+                    ConditionalEnchantingEnabledChanged?.Invoke(_conditionalEnchantingEnabled);
+            }
+        }
+
+        public event Action<bool> EnchantingConditionTimeChanged;
+        private bool _enchantingConditionTime;
+        public bool EnchantingConditionTime
+        {
+            get => _enchantingConditionTime;
+            set
+            {
+                var prevValue = _enchantingConditionTime;
+                _enchantingConditionTime = value;
+                if (_enchantingConditionTime != prevValue)
+                    EnchantingConditionTimeChanged?.Invoke(_enchantingConditionTime);
+            }
+        }
+        public event Action<bool> EnchantingConditionWindAltarStateChanged;
+        private bool _enchantingConditionWindAltarState;
+        public bool EnchantingConditionWindAltarState
+        {
+            get => _enchantingConditionWindAltarState;
+            set
+            {
+                var prevValue = _enchantingConditionWindAltarState;
+                _enchantingConditionWindAltarState = value;
+                if (_enchantingConditionWindAltarState != prevValue)
+                    EnchantingConditionWindAltarStateChanged?.Invoke(_enchantingConditionWindAltarState);
+            }
+        }
+        public event Action<bool> EnchantingConditionRegionChanged;
+        private bool _enchantingConditionRegion;
+        public bool EnchantingConditionRegion
+        {
+            get => _enchantingConditionRegion;
+            set
+            {
+                var prevValue = _enchantingConditionRegion;
+                _enchantingConditionRegion = value;
+                if (_enchantingConditionRegion != prevValue)
+                    EnchantingConditionRegionChanged?.Invoke(_enchantingConditionRegion);
+            }
+        }
+        public event Action<bool> EnchantingConditionTemperatureChanged;
+        private bool _enchantingConditionTemperature;
+        public bool EnchantingConditionTemperature
+        {
+            get => _enchantingConditionTemperature;
+            set
+            {
+                var prevValue = _enchantingConditionTemperature;
+                _enchantingConditionTemperature = value;
+                if (_enchantingConditionTemperature != prevValue)
+                    EnchantingConditionTemperatureChanged?.Invoke(_enchantingConditionTemperature);
+            }
+        }
+        public event Action<bool> EnchantingConditionWeatherChanged;
+        private bool _enchantingConditionWeather;
+        public bool EnchantingConditionWeather
+        {
+            get => _enchantingConditionWeather;
+            set
+            {
+                var prevValue = _enchantingConditionWeather;
+                _enchantingConditionWeather = value;
+                if (_enchantingConditionWeather != prevValue)
+                    EnchantingConditionWeatherChanged?.Invoke(_enchantingConditionWeather);
+            }
+        }
+        public event Action<bool> EnchantingConditionQuestChanged;
+        private bool _enchantingConditionQuest;
+        public bool EnchantingConditionQuest
+        {
+            get => _enchantingConditionQuest;
+            set
+            {
+                var prevValue = _enchantingConditionQuest;
+                _enchantingConditionQuest = value;
+                if (_enchantingConditionQuest != prevValue)
+                    EnchantingConditionQuestChanged?.Invoke(_enchantingConditionQuest);
             }
         }
     }

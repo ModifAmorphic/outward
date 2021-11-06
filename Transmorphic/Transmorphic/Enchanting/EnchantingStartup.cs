@@ -59,12 +59,17 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting
                     ))
                 .AddSingleton(new EnchantRecipeService(_services.GetService<BaseUnityPlugin>(),
                                 _services.GetService<EnchantRecipeGenerator>(),
+                                _services.GetService<EnchantPrefabs>(),
                                 _services.GetService<CustomCraftingModule>(),
                                 _services.GetService<LevelCoroutines>(),
                                 _services.GetService<EnchantRecipeData>(),
                                 _services.GetService<EnchantingSettings>(),
                                 _services.GetService<IModifLogger>
-                ));
+                ))
+                .AddSingleton(new RecipeVisibleService(
+                                _services.GetService<EnchantingSettings>(),
+                                _services.GetService<IModifLogger>
+                    ));
         }
         private void ReEquip(CharacterInventory inventory, Equipment equipment)
         {
@@ -81,21 +86,6 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting
         }
         private void ConfigureMenu()
         {
-            //_services.AddSingleton(new MenuIngredientMatcher(
-            //                        new List<ITransmogMatcher>()
-            //                        {
-            //                            new ArmorMatcher(_services.GetService<IModifLogger>),
-            //                            new WeaponMatcher(_services.GetService<IModifLogger>),
-            //                            new BagMatcher(_services.GetService<IModifLogger>),
-            //                            new LexiconMatcher(_services.GetService<IModifLogger>),
-            //                            new LanternMatcher(_services.GetService<IModifLogger>),
-            //                            new RemoverMatcher(_services.GetService<IModifLogger>)
-            //                        }
-            //                        , _services.GetService<IModifLogger>)
-            //          )
-            //         .AddSingleton(new TransmogCrafter(_services.GetService<ItemVisualizer>(),
-            //                            _services.GetService<IModifLogger>)
-            //          );
             _services.AddSingleton(new EnchantIngredientMatcher(_services.GetService<IModifLogger>))
                      .AddSingleton(new EnchantCrafter(ReEquip, _services.GetService<IModifLogger>));
 
@@ -105,6 +95,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting
             craftingModule.RegisterCraftingMenu<EnchantingMenu>("Enchant", EnchantingSettings.EnchantMenuIcons);
             craftingModule.RegisterMenuIngredientFilters<EnchantingMenu>(EnchantingSettings.MenuFilters);
             craftingModule.RegisterRecipeSelectorDisplayConfig<EnchantingMenu>(EnchantingSettings.RecipeSelectorDisplayConfig);
+            craftingModule.RegisterRecipeVisibiltyController<EnchantingMenu>(_services.GetService<RecipeVisibleService>());
             craftingModule.RegisterStaticIngredients<EnchantingMenu>(EnchantingSettings.StaticIngredients);
             craftingModule.RegisterCompatibleIngredientMatcher<EnchantingMenu>(_services.GetService<EnchantIngredientMatcher>());
 
@@ -113,7 +104,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting
 
 
             settings.EnchantingMenuEnabledChanged += (isEnabled) => ToggleCraftingMenu<EnchantingMenu>(craftingModule, isEnabled);
-            craftingModule.MenuLoaded += (menu) =>
+            craftingModule.CraftingMenuEvents.MenuLoaded += (menu) =>
             {
                 if (menu is EnchantingMenu)
                 {

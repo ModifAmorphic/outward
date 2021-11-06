@@ -29,18 +29,15 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
                 (enchantResultService, enchantResultFabricator, settings, getLogger);
 
         }
-
         public EnchantRecipe GetEnchantRecipe(EnchantmentRecipe enchantmentRecipe)
         {
             var enchantment = ResourcesPrefabManager.Instance.GetEnchantmentPrefab(enchantmentRecipe.ResultID);
             var enchantRecipe = ScriptableObject.CreateInstance<EnchantRecipe>();
             var enchantResultPrefab = _enchantResultFabricator.GetOrCreateResultPrefab(enchantmentRecipe, enchantment);
             Logger.LogDebug($"Got prefab {enchantResultPrefab.name}. GenerateItemNetwork({enchantResultPrefab.ItemID})");
-            var resultItem = (Equipment)ItemManager.Instance.GenerateItemNetwork(enchantResultPrefab.ItemID);
-            Logger.LogDebug($"Created item {resultItem.name} from prefab {enchantResultPrefab.name}.");
-            var recipe = ConfigureEnchantRecipe<EnchantRecipe>(enchantmentRecipe, enchantment, resultItem, enchantRecipe);
-            resultItem.gameObject.SetActive(true);
-            Logger.LogDebug($"Configured recipe {recipe.Name} with result item {resultItem.name} from prefab {enchantResultPrefab.name}.");
+            Logger.LogDebug($"Created item {enchantResultPrefab.name} from prefab {enchantResultPrefab.name}.");
+            var recipe = ConfigureEnchantRecipe<EnchantRecipe>(enchantmentRecipe, enchantment, enchantResultPrefab, enchantRecipe);
+            Logger.LogDebug($"Configured recipe {recipe.Name} with result item {enchantResultPrefab.name} from prefab {enchantResultPrefab.name}.");
             return recipe;
         }
         public T ConfigureEnchantRecipe<T>(EnchantmentRecipe recipeSource, Enchantment enchantment, Equipment equipment, T recipe) where T : EnchantRecipe
@@ -69,6 +66,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
                 .SetNames(enchantment.Name + $" ({equipTypeName})")
                 .AddDynamicResult(_enchantResultService, equipment.ItemID, 1);
 
+            recipe.DefaultCraftingResult = new DynamicCraftingResult(_enchantResultService, equipment.ItemID, 1);
             recipe.SetRecipeIngredients(pillarIngredients.ToArray());
             recipe.BaseEnchantmentRecipe = recipeSource;
 

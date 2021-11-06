@@ -104,7 +104,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
             craftingModule.RegisterCustomCrafter<TransmogrifyMenu>(_services.GetService<TransmogCrafter>());
             
             transmogSettings.TransmogMenuEnabledChanged += (isEnabled) => ToggleCraftingMenu<TransmogrifyMenu>(craftingModule, isEnabled);
-            craftingModule.MenuLoaded += (menu) =>
+            craftingModule.CraftingMenuEvents.MenuLoaded += (menu) =>
             {
                 if (menu is TransmogrifyMenu)
                     ToggleCraftingMenu<TransmogrifyMenu>(craftingModule, transmogSettings.TransmogMenuEnabled);

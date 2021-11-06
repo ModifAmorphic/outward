@@ -4,6 +4,7 @@ using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Crafting;
+using ModifAmorphic.Outward.Transmorphic.Enchanting.Results;
 using ModifAmorphic.Outward.Transmorphic.Enchanting.SaveData;
 using ModifAmorphic.Outward.Transmorphic.Menu;
 using ModifAmorphic.Outward.Transmorphic.Patches;
@@ -25,25 +26,28 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
 
         private readonly BaseUnityPlugin _baseUnityPlugin;
         private readonly EnchantRecipeGenerator _recipeGenerator;
+        private readonly EnchantPrefabs _enchantPrefabs;
         private readonly CustomCraftingModule _craftingModule;
         private readonly LevelCoroutines _coroutine;
         private readonly EnchantRecipeData _saveData;
 
         public EnchantRecipeService(BaseUnityPlugin baseUnityPlugin,
                                 EnchantRecipeGenerator recipeGenerator,
+                                EnchantPrefabs enchantPrefabs,
                                 CustomCraftingModule craftingModule,
                                 LevelCoroutines coroutine,
                                 EnchantRecipeData saveData,
                                 EnchantingSettings settings, Func<IModifLogger> getLogger)
         {
-            (_baseUnityPlugin, _recipeGenerator, _craftingModule, _coroutine, _saveData, _settings, _getLogger) =
-                (baseUnityPlugin, recipeGenerator, craftingModule, coroutine, saveData, settings, getLogger);
+            (_baseUnityPlugin, _recipeGenerator, _enchantPrefabs, _craftingModule, _coroutine, _saveData, _settings, _getLogger) =
+                (baseUnityPlugin, recipeGenerator, enchantPrefabs, craftingModule, coroutine, saveData, settings, getLogger);
             if (!SideLoaderEx.TryHookOnPacksLoaded(this, RegisterEnchantRecipes))
                 TransmorphRecipeManagerPatches.LoadCraftingRecipeAfter += (r) => RegisterEnchantRecipes();
             TransmorphNetworkLevelLoaderPatches.MidLoadLevelAfter += (n) => _coroutine.InvokeAfterLevelAndPlayersLoaded(n, LearnEnchantRecipes, 300, 1);
 
-            _settings.AllEnchantRecipesLearnedEnabled += LearnEnchantRecipes;
+            //_settings.AllEnchantRecipesLearnedEnabled += LearnEnchantRecipes;
             EnchantCharacterRecipeKnowledgePatches.LearnRecipeBefore += TryLearnRecipeWithoutAchievements;
+            craftingModule.CraftingMenuEvents.MenuHiding += RemoveTemporaryItems;
         }
 
         private static Dictionary<string, Recipe> _loadedRecipesRef;
@@ -85,17 +89,17 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
         }
         private void LearnEnchantRecipes()
         {
-            if (_settings.AllEnchantRecipesLearned)
+            //if (_settings.AllEnchantRecipesLearned)
+            //{
+            var characters = SplitScreenManager.Instance.LocalPlayers.Select(p => p.AssignedCharacter);
+            var allRecipes = _craftingModule.GetRegisteredRecipes<EnchantingMenu>();
+            Logger.LogInfo($"Setting [AllEnchantRecipesLearned] is enabled. {characters?.Count() ?? 0} Characters will learn all {allRecipes.Count} enchantment recipes.");
+            foreach (var c in characters)
             {
-                var characters = SplitScreenManager.Instance.LocalPlayers.Select(p => p.AssignedCharacter);
-                var allRecipes = _craftingModule.GetRegisteredRecipes<EnchantingMenu>();
-                Logger.LogInfo($"Setting [AllEnchantRecipesLearned] is enabled. {characters?.Count() ?? 0} Characters will learn all {allRecipes.Count} enchantment recipes.");
-                foreach (var c in characters)
-                {
-                    foreach(var r in allRecipes)
-                        TryLearnRecipe(c.Inventory, r);
-                }
+                foreach(var r in allRecipes)
+                    TryLearnRecipe(c.Inventory, r);
             }
+            //}
         }
         private bool TryLearnRecipe(CharacterInventory inventory, Recipe recipe)
         {
@@ -126,6 +130,24 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
                 //Exclude acheivement tracking since these are so simple to come by
             }
         }
+
+        private void RemoveTemporaryItems(CustomCraftingMenu menu)
+        {
+            if (!(menu is EnchantingMenu))
+                return;
+
+            _enchantPrefabs.RemoveTemporaryItems();
+            ResetRecipesResults();
+        }
+        private void ResetRecipesResults()
+        {
+            foreach (var recipe in _craftingModule.GetRegisteredRecipes<EnchantingMenu>())
+            {
+                var enchantRecipe = (EnchantRecipe)recipe;
+                enchantRecipe.SetResults(enchantRecipe.GetDefaultCraftingResults());
+            }
+        }
+
         private Dictionary<int, EnchantmentRecipeItem> GetEnchantmentRecipeItem()
         {
             var field = typeof(ResourcesPrefabManager).GetField("ITEM_PREFABS", BindingFlags.NonPublic | BindingFlags.Static);
@@ -158,5 +180,6 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
                 recipesItems.Add(54, filter); //54_Filter(Boots)_EnchantmentRecipe
             }
         }
+        
     }
 }

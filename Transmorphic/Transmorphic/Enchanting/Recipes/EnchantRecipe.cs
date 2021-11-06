@@ -10,5 +10,12 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
     {
         [SerializeField]
         public EnchantmentRecipe BaseEnchantmentRecipe;
+
+        [SerializeField]
+        public DynamicCraftingResult DefaultCraftingResult;
+
+        public ItemReferenceQuantity[] GetDefaultCraftingResults() =>
+            new ItemReferenceQuantity[] { new DynamicCraftingResult(DefaultCraftingResult.ResultService, DefaultCraftingResult.ItemID, DefaultCraftingResult.Quantity) };
+
     }
 }

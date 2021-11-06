@@ -6,13 +6,14 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
 {
     internal class ConfigSettings
     {
+        #region Cooking and Alchemy
         const string GeneralSection = "Cooking and Alchemy";
         const int GeneralTopOrder = int.MaxValue;
 
         public ConfigSetting<bool> CookingMenuEnabled { get; } = new ConfigSetting<bool>()
         {
             Name = nameof(CookingMenuEnabled),
-            DefaultValue = false,
+            DefaultValue = true,
             Section = GeneralSection,
             DisplayName = "Cooking Crafting Menu Enabled",
             Description = $"Enables fully functional Cooking menu in the character / inventory UI.",
@@ -33,7 +34,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
         public ConfigSetting<bool> AlchemyMenuEnabled { get; } = new ConfigSetting<bool>()
         {
             Name = nameof(AlchemyMenuEnabled),
-            DefaultValue = false,
+            DefaultValue = true,
             Section = GeneralSection,
             DisplayName = "Alchemy Crafting Menu Enabled",
             Description = $"Enables fully functional Alchemy crafting menu in the character / inventory UI.",
@@ -50,7 +51,9 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
             Order = GeneralTopOrder - 4,
             IsAdvanced = false
         };
+        #endregion
 
+#region Enchanting Settings
         const string EnchantingSection = "Enchanting Settings";
         const int EnchantingTopOrder = GeneralTopOrder - 1000;
 
@@ -65,17 +68,91 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
             IsAdvanced = false
         };
 
-        public ConfigSetting<bool> AllEnchantRecipesLearned { get; } = new ConfigSetting<bool>()
+        //public ConfigSetting<bool> AllEnchantRecipesLearned { get; } = new ConfigSetting<bool>()
+        //{
+        //    Name = nameof(AllEnchantRecipesLearned),
+        //    DefaultValue = true,
+        //    Section = EnchantingSection,
+        //    DisplayName = "  • Recipes Unlocked for All Characters",
+        //    Description = $"If enabled, all enchantment recipes will automatically be learned by all characters.",
+        //    Order = EnchantingTopOrder - 2,
+        //    IsAdvanced = false
+        //};
+        public ConfigSetting<bool> ConditionalEnchantingEnabled{ get; } = new ConfigSetting<bool>()
         {
-            Name = nameof(AllEnchantRecipesLearned),
+            Name = nameof(ConditionalEnchantingEnabled),
             DefaultValue = true,
             Section = EnchantingSection,
-            DisplayName = "  • Recipes Unlocked for All Characters",
-            Description = $"If enabled, all enchantment recipes will automatically be learned by all characters..",
-            Order = EnchantingTopOrder - 2,
+            DisplayName = "  + Conditional Requirements Enabled",
+            Description = $"When enabled, any additional conditions selected from the list below must also be met before" +
+            $"an enchanting recipe can be used.",
+            Order = EnchantingTopOrder - 3,
             IsAdvanced = false
         };
+        public ConfigSetting<bool> EnchantingConditionQuest { get; } = new ConfigSetting<bool>()
+        {
+            Name = nameof(EnchantingConditionQuest),
+            DefaultValue = true,
+            Section = EnchantingSection,
+            DisplayName = "    • Quest(s) Completed",
+            Description = "Quest condition of recipe must be matched. The Enchanting Guild being built is a quest condition as well.",
+            Order = EnchantingTopOrder - 4,
+            IsAdvanced = false
+        };
+        public ConfigSetting<bool> EnchantingConditionRegion { get; } = new ConfigSetting<bool>()
+        {
+            Name = nameof(EnchantingConditionRegion),
+            DefaultValue = false,
+            Section = EnchantingSection,
+            DisplayName = "    • Player in Region",
+            Description = "If enabled, player must be in correct region for a recipe (if applicable).",
+            Order = EnchantingTopOrder - 5,
+            IsAdvanced = false
+        };
+        public ConfigSetting<bool> EnchantingConditionTime { get; } = new ConfigSetting<bool>()
+        {
+            Name = nameof(EnchantingConditionTime),
+            DefaultValue = false,
+            Section = EnchantingSection,
+            DisplayName = "    • Time of Day",
+            Description = $"For recipes with a specific time of day condition.",
+            Order = EnchantingTopOrder - 6,
+            IsAdvanced = false
+        };
+        public ConfigSetting<bool> EnchantingConditionTemperature { get; } = new ConfigSetting<bool>()
+        {
+            Name = nameof(EnchantingConditionTemperature),
+            DefaultValue = false,
+            Section = EnchantingSection,
+            DisplayName = "    • Temperature",
+            Description = "Temperature condition of recipe must be matched.",
+            Order = EnchantingTopOrder - 7,
+            IsAdvanced = false
+        };
+        public ConfigSetting<bool> EnchantingConditionWeather { get; } = new ConfigSetting<bool>()
+        {
+            Name = nameof(EnchantingConditionWeather),
+            DefaultValue = false,
+            Section = EnchantingSection,
+            DisplayName = "    • Weather",
+            Description = "Weather condition of recipe must be matched.",
+            Order = EnchantingTopOrder - 8,
+            IsAdvanced = false
+        };
+        public ConfigSetting<bool> EnchantingConditionWindAltarState { get; } = new ConfigSetting<bool>()
+        {
+            Name = nameof(EnchantingConditionWindAltarState),
+            DefaultValue = false,
+            Section = EnchantingSection,
+            DisplayName = "    • Wind Altar Enabled",
+            Description = $"Wind Altar must be in correct state for a recipe, if applicable.",
+            Order = EnchantingTopOrder - 9,
+            IsAdvanced = false
+        };
+        
+        #endregion
 
+        #region Transmogrify Settings
         const string TransmogSection = "Transmogrify Settings";
         const int TransmogTopOrder = EnchantingTopOrder - 1000;
 
@@ -103,7 +180,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
 
         const string AdvancedSection = "zz--Advanced Settings--zz";
         const int AdvancedTopOrder = TransmogTopOrder - 1000;
-
+        #endregion
         public ConfigSetting<LogLevel> LogLevel { get; } = new ConfigSetting<LogLevel>()
         {
             Name = nameof(LogLevel),
