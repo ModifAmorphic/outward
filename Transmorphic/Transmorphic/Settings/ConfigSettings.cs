@@ -144,7 +144,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
             Name = nameof(EnchantingConditionWindAltarState),
             DefaultValue = false,
             Section = EnchantingSection,
-            DisplayName = "    • Wind Altar Enabled",
+            DisplayName = "    • Wind Altar Activated",
             Description = $"Wind Altar must be in correct state for a recipe, if applicable.",
             Order = EnchantingTopOrder - 9,
             IsAdvanced = false

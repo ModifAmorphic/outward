@@ -14,9 +14,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
         private readonly Func<IModifLogger> _loggerFactory;
         private IModifLogger Logger => _loggerFactory.Invoke();
 
-        private readonly Action<CharacterInventory, Equipment> _reEquip;
-
-        public EnchantCrafter(Action<CharacterInventory, Equipment> reEquip,  Func<IModifLogger> loggerFactory) => (_reEquip, _loggerFactory) = (reEquip, loggerFactory);
+        public EnchantCrafter(Func<IModifLogger> loggerFactory) => (_loggerFactory) = (loggerFactory);
 
         public bool TryCraftItem(Recipe recipe, ItemReferenceQuantity recipeResult, out Item item, out bool tryEquipItem)
         {

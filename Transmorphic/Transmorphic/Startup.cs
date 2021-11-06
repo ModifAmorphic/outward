@@ -42,8 +42,7 @@ namespace ModifAmorphic.Outward.Transmorphic
             TryStartMenu(services.GetService<CookingStartup>());
             TryStartMenu(services.GetService<AlchemyStartup>());
             TryStartMenu(services.GetService<TransmogStartup>());
-            if (StoreManager.Instance.IsDlcInstalled(OTWStoreAPI.DLCs.Soroboreans))
-                TryStartMenu(services.GetService<EnchantingStartup>());
+            TryStartMenu(services.GetService<EnchantingStartup>());
 
         }
         private void TryStartMenu(IStartable menuStartup)

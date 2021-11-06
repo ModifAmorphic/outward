@@ -5,7 +5,7 @@ schemaVersion = "0.0.1"
 namespace = "ModifAmorphic"
 name = "Transmorphic"
 versionNumber = "${PACKAGE_VERSION}"
-description = "Transmogrify your equipment with a new crafting system. Support for Weapons, Armor, Backpacks, Lanterns and Lexicons. Plus balanced Alchemy and Cooking Menus."
+description = "*New Enchanting Menu* Transmogrify your equipment with a new crafting system. Enables Alchemy, Cooking and Enchanting menus."
 websiteUrl = "https://github.com/ModifAmorphic/outward/tree/master/Transmorphic"
 containsNsfwContent = false
 

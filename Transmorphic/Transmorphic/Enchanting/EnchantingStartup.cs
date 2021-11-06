@@ -33,9 +33,38 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting
         public void Start()
         {
             _loggerFactory = _services.GetServiceFactory<IModifLogger>();
+            var coroutines = _services.GetService<LevelCoroutines>();
+            bool startWhen() => StoreManager.Instance != null && StoreManager.Instance.IsInitialized;
+
+            coroutines.StartRoutine(
+                coroutines.InvokeAfter(startWhen, DelayedStart, 86400)
+                );
+        }
+        //private void ReEquip(CharacterInventory inventory, Equipment equipment)
+        //{
+        //    var coroutines = _services.GetService<LevelCoroutines>();
+        //    Func<bool> isUnequipped = () =>
+        //    {
+        //        return !(equipment.IsEquipped && inventory.Equipment.IsHandFree(equipment));
+        //    };
+        //    Action reEquip = () => inventory.EquipItem(equipment);
+
+        //    coroutines.StartRoutine(
+        //        coroutines.InvokeAfter(isUnequipped, reEquip, 5, .1f)
+        //    );
+        //}
+        public void DelayedStart()
+        {
+            if (!StoreManager.Instance.IsDlcInstalled(OTWStoreAPI.DLCs.Soroboreans))
+            {
+                Logger.LogInfo("Soroboreans DLC not found. Enchanting Crafting Menu will not be loaded.");
+                return;
+            }
+
+            Logger.LogInfo("Soroboreans DLC found. Loading Enchanting Crafting Menu.");
             _services
                .AddSingleton(_settingsService.ConfigureEnchantingSettings(_config));
-            
+
             ConfigureRecipes();
             ConfigureMenu();
         }
@@ -71,23 +100,24 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting
                                 _services.GetService<IModifLogger>
                     ));
         }
-        private void ReEquip(CharacterInventory inventory, Equipment equipment)
-        {
-            var coroutines = _services.GetService<LevelCoroutines>();
-            Func<bool> isUnequipped = () =>
-            {
-                return !(equipment.IsEquipped && inventory.Equipment.IsHandFree(equipment));
-            };
-            Action reEquip = () => inventory.EquipItem(equipment);
+        //private void ReEquip(CharacterInventory inventory, Equipment equipment)
+        //{
+        //    var coroutines = _services.GetService<LevelCoroutines>();
+        //    Func<bool> isUnequipped = () =>
+        //    {
+        //        return !(equipment.IsEquipped && inventory.Equipment.IsHandFree(equipment));
+        //    };
+        //    Action reEquip = () => inventory.EquipItem(equipment);
 
-            coroutines.StartRoutine(
-                coroutines.InvokeAfter(isUnequipped, reEquip, 5, .1f)
-            );
-        }
+        //    coroutines.StartRoutine(
+        //        coroutines.InvokeAfter(isUnequipped, reEquip, 5, .1f)
+        //    );
+        //}
         private void ConfigureMenu()
         {
+
             _services.AddSingleton(new EnchantIngredientMatcher(_services.GetService<IModifLogger>))
-                     .AddSingleton(new EnchantCrafter(ReEquip, _services.GetService<IModifLogger>));
+                     .AddSingleton(new EnchantCrafter(_services.GetService<IModifLogger>));
 
             var craftingModule = _services.GetService<CustomCraftingModule>();
             var settings = _services.GetService<EnchantingSettings>();
@@ -109,7 +139,9 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting
                 if (menu is EnchantingMenu)
                 {
                     ToggleCraftingMenu<EnchantingMenu>(craftingModule, settings.EnchantingMenuEnabled);
+#if DEBUG
                     DumpEnchantments();
+#endif
                 }
             };
 
@@ -127,6 +159,8 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting
                 Logger.LogInfo("Disabled Enchanting Crafting menu.");
             }
         }
+
+#if DEBUG
         private Dictionary<int, EnchantmentRecipeItem> GetEnchantmentRecipeItem()
         {
             var field = typeof(ResourcesPrefabManager).GetField("ITEM_PREFABS", BindingFlags.NonPublic | BindingFlags.Static);
@@ -162,6 +196,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting
                 recipesItems.Add(54, filter); //54_Filter(Boots)_EnchantmentRecipe
             }
         }
+
         private void DumpEnchantments()
         {
             var recipeItems = GetEnchantmentRecipeItem();
@@ -169,13 +204,14 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting
             var sb = new StringBuilder();
             sb.AppendLine("Start Enchantment Recipe Dump:");
             var recipes = RecipeManager.Instance.GetEnchantmentRecipes();
-            sb.AppendLine("RecipeName, RecipeID, RecipeItemID, RecipeItemName, Pillar1Ingredient, Pillar1Type, Pillar1IngredientName, Pillar2Ingredient, Pillar2Type, Pillar2IngredientName, " +
+            sb.AppendLine("RecipeName, RecipeID, RecipeItemID, RecipeItemName, HasQuestCondition, Pillar1Ingredient, Pillar1Type, Pillar1IngredientName, Pillar2Ingredient, Pillar2Type, Pillar2IngredientName, " +
                 "Pillar3Ingredient, Pillar3Type, Pillar3IngredientName, Pillar4Ingredient, Pillar4Type, Pillar4IngredientName, " +
                 "EquipmentTag, IngredientType, SpecificItemID, SpecificItem, IngredientTag");
             foreach (var r in recipes)
             {
                 recipeItems.TryGetValue(r.RecipeID, out var recipeItem);
                 sb.Append($"\"{r.name}\", {r.RecipeID}, {recipeItem?.ItemID}, {recipeItem?.DisplayName ?? "No Recipe Item Found"}");
+                sb.Append(", " + (r.QuestEvent != null && !r.QuestEvent.IsEventUIDNull).ToString());
                 for (var i = 0; i < 4; i++)
                 {
                     if (r.PillarDatas.Length > i
@@ -215,5 +251,6 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting
 
             Logger.LogDebug(sb.ToString());
         }
+#endif
     }
 }
