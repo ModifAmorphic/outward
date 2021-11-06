@@ -16,6 +16,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
     {
         private readonly ConcurrentDictionary<Type, RecipeSelectorDisplayConfig> _displayConfigs = new ConcurrentDictionary<Type, RecipeSelectorDisplayConfig>();
 
+        private readonly ConcurrentDictionary<Type, IRecipeVisibiltyController> _visibiltyControllers = new ConcurrentDictionary<Type, IRecipeVisibiltyController>();
+
         private readonly ConcurrentDictionary<Type, List<StaticIngredient>> _staticIngredients = new ConcurrentDictionary<Type, List<StaticIngredient>>();
         
 
@@ -23,28 +25,40 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
         private int _baseSelectorLength = 4;
         private IModifLogger Logger => _loggerFactory.Invoke();
 
+        public event Action<CustomCraftingMenu> MenuHiding;
         public RecipeDisplayService(Func<IModifLogger> loggerFactory)
         {
             _loggerFactory = loggerFactory;
             //CraftingMenuPatches.GenerateResultOverride += TryGenerateResultOverride;
-            CraftingMenuPatches.RefreshAutoRecipeAfter += HideRecipes;
+            CraftingMenuPatches.RefreshAutoRecipeAfter += menu =>
+            {
+                HideSingleIngredientRecipes(menu);
+                ProcessAdditionRecipeChecks(menu);
+            };
         }
 
         public void AddUpdateDisplayConfig<T>(RecipeSelectorDisplayConfig recipeDisplayConfig) where T : CustomCraftingMenu
         {
             var config = _displayConfigs.AddOrUpdate(typeof(T), recipeDisplayConfig, (k, v) => v = recipeDisplayConfig);
         }
-        //public bool TryRemoveDisplayConfig<T>() where T : CustomCraftingMenu =>_displayConfigs.TryRemove(typeof(T), out _);
-
         public bool TryGetDisplayConfig<T>(out RecipeSelectorDisplayConfig config) where T : CustomCraftingMenu =>
            _displayConfigs.TryGetValue(typeof(T), out config);
         public bool TryGetDisplayConfig(Type menuType, out RecipeSelectorDisplayConfig config) =>
            _displayConfigs.TryGetValue(menuType, out config);
+
+        public void AddOrUpdateRecipeVisibiltyController<T>(IRecipeVisibiltyController visibiltyController) where T : CustomCraftingMenu =>
+                    _visibiltyControllers.AddOrUpdate(typeof(T), visibiltyController, (k, v) => v = visibiltyController);
+        public bool TryGetRecipeVisibiltyController<T>(out IRecipeVisibiltyController visibiltyController) where T : CustomCraftingMenu =>
+           _visibiltyControllers.TryGetValue(typeof(T), out visibiltyController);
+        public bool TryGetRecipeVisibiltyController(Type menuType, out IRecipeVisibiltyController visibiltyController) =>
+           _visibiltyControllers.TryGetValue(menuType, out visibiltyController);
+        public bool TryRemoveRecipeVisibiltyController<T>() =>
+           _visibiltyControllers.TryRemove(typeof(T), out _);
+
         public bool TryGetStaticIngredients(Type menuType, out List<StaticIngredient> ingredients) =>
            _staticIngredients.TryGetValue(menuType, out ingredients);
 
         public void AddOrUpdateStaticIngredients<T>(IEnumerable<StaticIngredient> ingredients) => _staticIngredients.AddOrUpdate(typeof(T), ingredients.ToList(), (k , v) => v = ingredients.ToList());
-
         public bool TryRemoveStaticIngredients<T>() =>
            _staticIngredients.TryRemove(typeof(T), out _);
 
@@ -133,6 +147,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                 SetBottomRightNav(bottomIndex, craftButton, extraIngredientSlotOptions, selectors);
             }
         }
+        internal void OnMenuHiding(CustomCraftingMenu menu) => MenuHiding?.Invoke(menu);
         private RectTransform CreateBottomIngredientRect(CustomCraftingMenu menu)
         {
             var content = menu.transform.Find("Content");
@@ -328,8 +343,71 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             rectTarget.position = new Vector3(rectXref.position.x, yRef.position.y);
             Logger.LogDebug($"{nameof(RecipeDisplayService)}::{nameof(SetSlotPosition)}: Source (X, Y) ({rectXref}: {rectXref.position.x}, {yRef}: {yRef.position.y}). Target (X, Y) ({rectTarget.position.x}, {rectTarget.position.y})");
         }
+        private void ProcessAdditionRecipeChecks(CustomCraftingMenu menu)
+        {
+            if (!menu.BaseShowDone)
+                return;
 
-        private void HideRecipes(CustomCraftingMenu menu)
+            var menuType = menu.GetType();
+            if (!TryGetRecipeVisibiltyController(menuType, out var visibiltyController))
+                return;
+
+            var complexeRecipes = menu.GetPrivateField<CraftingMenu, List<KeyValuePair<int, Recipe>>>("m_complexeRecipes");
+            if (complexeRecipes.Count < 1)
+                return;
+            
+            var controllerType = visibiltyController.GetType();
+            Logger.LogDebug($"{menuType.Name}::ProcessAdditionRecipeChecks: Found registered {nameof(IRecipeVisibiltyController)} type {controllerType} for menu. " +
+                $"Setting visibilty of {complexeRecipes.Count} recipes.");
+
+            var recipeDisplays = menu.GetPrivateField<CraftingMenu, List<RecipeDisplay>>("m_recipeDisplays");
+
+            var trimComplexRecipes = new List<KeyValuePair<int, Recipe>>();
+            var trimRecipeDisplays = new List<RecipeDisplay>();
+
+            int index = 0;
+            int lastRecipeIndex = menu.GetLastRecipeIndex();
+            
+            for (int i = 0; i < complexeRecipes.Count; i++)
+            {
+                if (i == lastRecipeIndex)
+                    menu.SetLastRecipeIndex(index);
+                if (visibiltyController.GetRecipeIsVisible(menu, complexeRecipes[i].Value))
+                {
+                    trimComplexRecipes.Add(new KeyValuePair<int, Recipe>(complexeRecipes[i].Key, complexeRecipes[i].Value));
+                    var display = recipeDisplays[i];
+                    display.onClick.RemoveAllListeners();
+                    int selectIndex = index;
+                    display.onClick.AddListener(delegate
+                    {
+                        menu.OnRecipeSelected(selectIndex);
+                    });
+                    trimRecipeDisplays.Add(display);
+                    index++;
+                }
+                else
+                {
+                    Logger.LogDebug($"{menuType.Name}::ProcessAdditionRecipeChecks: Removed Recipe index:{i}, {complexeRecipes[i].Value.Name}. Destroying " +
+                        $"display. Recipe was deemed not visible by {controllerType} {nameof(IRecipeVisibiltyController.GetRecipeIsVisible)}().");
+                    recipeDisplays[i].transform.SetParent(null);
+                    recipeDisplays[i].Hide();
+                    recipeDisplays[i].gameObject.SetActive(false);
+                    UnityEngine.Object.Destroy(recipeDisplays[i]);
+                }
+            }
+            for (int i = complexeRecipes.Count; i < recipeDisplays.Count; i++)
+            {
+                recipeDisplays[i].Hide();
+                trimRecipeDisplays.Add(recipeDisplays[i]);
+            }
+            
+            menu.SetPrivateField<CraftingMenu, List<KeyValuePair<int, Recipe>>>("m_complexeRecipes", trimComplexRecipes);
+            menu.SetPrivateField<CraftingMenu, List<RecipeDisplay>>("m_recipeDisplays", trimRecipeDisplays);
+
+            Logger.LogDebug($"{menuType.Name}::ProcessAdditionRecipeChecks: m_complexeRecipes trimmed from {complexeRecipes.Count} to {menu.GetPrivateField<CraftingMenu, List<KeyValuePair<int, Recipe>>>("m_complexeRecipes").Count}." +
+                $" m_recipeDisplays trimmed from {complexeRecipes.Count} to {menu.GetPrivateField<CraftingMenu, List<RecipeDisplay>>("m_recipeDisplays").Count}.");
+        }
+        private void HideSingleIngredientRecipes(CustomCraftingMenu menu)
         {
             var menuType = menu.GetType();
             if (!TryGetDisplayConfig(menuType, out var config) || config.ExtraIngredientSlotOption == ExtraIngredientSlotOptions.None
@@ -354,12 +432,15 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             var trimRecipeDisplays = new List<RecipeDisplay>();
 
             int index = 0;
+            int lastRecipeIndex = menu.GetLastRecipeIndex();
+
             for (int i = 0; i < complexeRecipes.Count; i++)
             {
-                
+                if (i == lastRecipeIndex)
+                    menu.SetLastRecipeIndex(index);
+
                 if (complexeRecipes[i].Value.IngredientCount - ignoredAmt > 1)
                 {
-                    
                     trimComplexRecipes.Add(new KeyValuePair<int, Recipe>(complexeRecipes[i].Key, complexeRecipes[i].Value));
                     var display = recipeDisplays[i];
                     display.onClick.RemoveAllListeners();
@@ -373,7 +454,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                 }
                 else
                 {
-                    Logger.LogDebug($"HideRecipes: Removed Recipe index:{i}, {complexeRecipes[i].Value.Name}. Destroying " +
+                    Logger.LogDebug($"HideSingleIngredientRecipes: Removed Recipe index:{i}, {complexeRecipes[i].Value.Name}. Destroying " +
                         $"display. Recipe had {complexeRecipes[i].Value.IngredientCount} ingredients, but {ignoredAmt} were ignored. ");
                     recipeDisplays[i].transform.SetParent(null);
                     recipeDisplays[i].Hide();
@@ -383,13 +464,14 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             }
             for (int i = complexeRecipes.Count; i < recipeDisplays.Count; i++)
             {
+                recipeDisplays[i].Hide();
                 trimRecipeDisplays.Add(recipeDisplays[i]);
             }
 
             menu.SetPrivateField<CraftingMenu, List<KeyValuePair<int, Recipe>>>("m_complexeRecipes", trimComplexRecipes);
             menu.SetPrivateField<CraftingMenu, List<RecipeDisplay>>("m_recipeDisplays", trimRecipeDisplays);
 
-            Logger.LogDebug($"HideRecipes: m_complexeRecipes trimmed from {complexeRecipes.Count} to {menu.GetPrivateField<CraftingMenu, List<KeyValuePair<int, Recipe>>>("m_complexeRecipes").Count}." +
+            Logger.LogDebug($"HideSingleIngredientRecipes: m_complexeRecipes trimmed from {complexeRecipes.Count} to {menu.GetPrivateField<CraftingMenu, List<KeyValuePair<int, Recipe>>>("m_complexeRecipes").Count}." +
                 $" m_recipeDisplays trimmed from {complexeRecipes.Count} to {menu.GetPrivateField<CraftingMenu, List<RecipeDisplay>>("m_recipeDisplays").Count}.");
         }
     }

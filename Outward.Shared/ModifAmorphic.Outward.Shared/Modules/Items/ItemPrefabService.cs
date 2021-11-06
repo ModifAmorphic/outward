@@ -54,10 +54,10 @@ namespace ModifAmorphic.Outward.Modules.Items
             if (string.IsNullOrEmpty(description))
                 description = basePrefab.Description;
 
-            //var baseActiveStatus = basePrefab.gameObject.activeSelf;
-            //basePrefab.gameObject.SetActive(false);
+            var baseActiveStatus = basePrefab.gameObject.activeSelf;
+            basePrefab.gameObject.SetActive(false);
             var prefab = (T)GameObject.Instantiate(basePrefab.gameObject, _itemPrefabParent, false).GetComponent<Item>();
-            prefab.gameObject.SetActive(false);
+            basePrefab.gameObject.SetActive(baseActiveStatus);
             prefab.transform.ResetLocal();
             //UnityEngine.Object.DontDestroyOnLoad(prefab.gameObject);
             //basePrefab.gameObject.SetActive(baseActiveStatus);
@@ -90,6 +90,7 @@ namespace ModifAmorphic.Outward.Modules.Items
                 if (basePrefab is Armor sArmor && prefab is Armor tarmor)
                     ProcessArmorFields(sArmor, tarmor);
             }
+            prefab.SetDLC(basePrefab.DLCID);
             prefab.ItemID = newItemID;
             prefab.IsPrefab = true;
             prefab.SetNames(name)

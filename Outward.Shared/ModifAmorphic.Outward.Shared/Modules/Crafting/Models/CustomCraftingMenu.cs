@@ -204,11 +204,26 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			get => this.GetPrivateField<CraftingMenu, int>("m_lastRecipeIndex");
 			set => this.SetPrivateField<CraftingMenu, int>("m_lastRecipeIndex", value);
 		}
+		internal int GetLastRecipeIndex() => _lastRecipeIndex;
+		internal int SetLastRecipeIndex(int lastRecipeIndex) => _lastRecipeIndex = lastRecipeIndex;
+
+		
+		protected RecipeDisplay _recipeDisplayTemplate
+		{
+			get => this.GetPrivateField<CraftingMenu, RecipeDisplay>("m_recipeDisplayTemplate");
+			set => this.SetPrivateField<CraftingMenu, RecipeDisplay>("m_recipeDisplayTemplate", value);
+		}
 		protected List<RecipeDisplay> _recipeDisplays
 		{
 			get => this.GetPrivateField<CraftingMenu, List<RecipeDisplay>>("m_recipeDisplays");
 			set => this.SetPrivateField<CraftingMenu, List<RecipeDisplay>>("m_recipeDisplays", value);
 		}
+		protected RectTransform _recipeSeparator
+		{
+			get => this.GetPrivateField<CraftingMenu, RectTransform>("m_recipeSeparator");
+			set => this.SetPrivateField<CraftingMenu, RectTransform>("m_recipeSeparator", value);
+		}
+		
 		internal RecipeResultDisplay _recipeResultDisplay
 		{
 			get => this.GetPrivateField<CraftingMenu, RecipeResultDisplay>("m_recipeResultDisplay");
@@ -294,13 +309,13 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				this._freeRecipeDisplay.gameObject.SetActive(false);
 			}
 		}
-
+		internal bool BaseShowDone { get; private set; }
 		private bool showRecurseCheck = false;
 		public override void Show()
         {
 			var logPrefix = this.GetType().Name + "::Show():";
 			try
-            {
+			{
 				Logger.LogDebug($"{logPrefix} Started.");
 				if (PermanentCraftingStationType != null
 					&& PermanentCraftingStationType.Value.IsDefinedValue()
@@ -318,7 +333,9 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				//enable this, disable base.Show() to debug menu Show() methods
 				//DebugShow()
 				Logger.LogDebug($"{logPrefix} Before base.Show(). _lastRecipeIndex: {_lastRecipeIndex}");
+				BaseShowDone = false;
 				base.Show();
+				BaseShowDone = true;
 				Logger.LogDebug($"{logPrefix} After base.Show(). _lastRecipeIndex: {_lastRecipeIndex}");
 
 				resetFreeRecipeLastIngredients();
@@ -329,23 +346,62 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				_allRecipes = allRecipes;
 				_refreshComplexeRecipeRequired = true;
 				refreshAutoRecipe();
-				var firstIndex = !HideFreeCraftingRecipe ? -1 : _recipeDisplays.Count > 0 ?  0 : -1;
+				//var firstIndex = !HideFreeCraftingRecipe ? -1 : _recipeDisplays.Count > 0 ? 0 : -1;
 
 				//reset selector ingredient map
 				for (int i = 0; i < _selectorIngredientMap.Length; i++)
 					_selectorIngredientMap[i] = -1;
 
-				//if (firstIndex != -1)
-				//	_recipeDisplays[0].Button.Select();
-				//else
-				//	OnRecipeSelected(firstIndex, _forceRefresh: true);
-
 				RecipeDisplayService.PositionSelectors(this, _ingredientSelectors);
+
+				var scrollRect = _recipeDisplayTemplate.GetComponentInParent<ScrollRect>();
+				scrollRect.verticalNormalizedPosition = 1f;
+
+				ResetRecipeDisplaySelection();
 			}
 			catch (Exception ex)
             {
                 Logger.LogException($"{logPrefix} Exception.", ex);
             }
+		}
+		private void ResetRecipeDisplaySelection()
+        {
+			if (!HideFreeCraftingRecipe)
+				return;
+			else
+				_freeRecipeDisplay.transform.SetAsLastSibling();
+
+			int firstIndex = -1;
+			var lowestSibling = int.MaxValue;
+
+			//base game code doesn't like free recipe missing and screws the sibling order up for the first
+			//recipe if it's not complete
+			if (!_recipeDisplays[0].IsRecipeIngredientsComplete)
+            {
+				var sepIndex = _recipeSeparator.GetSiblingIndex();
+				_recipeDisplays[0].transform.SetSiblingIndex(sepIndex + 1);
+			}
+			for (int i = 0; i < _recipeDisplays.Count; i++)
+			{
+				_recipeDisplays[i].SetHighlight(false);
+				_recipeDisplays[i].transform.ResetLocal();
+				if (_recipeDisplays[i].transform.GetSiblingIndex() < lowestSibling && _recipeDisplays[i].IsRecipeIngredientsComplete)
+				{
+					lowestSibling = _recipeDisplays[i].transform.GetSiblingIndex();
+					firstIndex = i;
+				}
+			}
+			
+			if (_lastRecipeIndex == -1)
+			{
+				Logger.LogDebug($"{this.GetType().Name}::{nameof(ResetRecipeDisplaySelection)}: Set _lastRecipeIndex from {_lastRecipeIndex} to {firstIndex}.");
+				_lastRecipeIndex = firstIndex;
+			}
+			//var label = _recipeDisplays[firstIndex].GetComponentInChildren<Text>();
+			//Logger.LogDebug($"{this.GetType().Name}::{nameof(ResetRecipeDisplaySelection)}: Highlighting and invokeing onClick of recipe index {firstIndex}, {label.text}.");
+			//_recipeDisplays[firstIndex].SetHighlight(true);
+			//_recipeDisplays[firstIndex].onClick.Invoke();
+			OnRecipeSelected(firstIndex, true);
 		}
 		private void Show(Recipe.CraftingType craftingStationType)
 		{
@@ -368,6 +424,19 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				stationItem = ResourcesPrefabManager.Instance.GenerateItem(stationId.ToString());
 
 			Show(stationItem.gameObject.GetComponentInChildren<CraftingStation>());
+		}
+
+		protected override void OnHide()
+        {
+			try
+			{
+				RecipeDisplayService.OnMenuHiding(this);
+			}
+			catch (Exception ex)
+            {
+				Logger.LogException($"{this.GetType().Name}::{nameof(OnHide)}: Error invoking RecipeDisplayService.OnMenuHiding(this).", ex);
+            }
+			base.OnHide();
 		}
 
 		public Recipe GetSelectedRecipe() =>

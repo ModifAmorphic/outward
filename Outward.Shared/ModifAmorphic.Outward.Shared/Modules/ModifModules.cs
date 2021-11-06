@@ -72,6 +72,7 @@ namespace ModifAmorphic.Outward.Modules
                         () => RecipeManager.Instance,
                         () => LoggerFactory.GetLogger(modId)),
                     new CustomCraftingService(() => LoggerFactory.GetLogger(modId)),
+                    new CraftingMenuEvents(),
                     () => LoggerFactory.GetLogger(modId)));
         }
     }
