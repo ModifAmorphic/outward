@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.Extensions;
+﻿using ModifAmorphic.Outward.Coroutines;
+using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes;
@@ -14,7 +15,8 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
         private readonly Func<IModifLogger> _loggerFactory;
         private IModifLogger Logger => _loggerFactory.Invoke();
 
-        public EnchantCrafter(Func<IModifLogger> loggerFactory) => (_loggerFactory) = (loggerFactory);
+        private readonly ModifCoroutine _coroutine;
+        public EnchantCrafter(ModifCoroutine coroutine, Func<IModifLogger> loggerFactory) => (_coroutine, _loggerFactory) = (coroutine, loggerFactory);
 
         public bool TryCraftItem(Recipe recipe, ItemReferenceQuantity recipeResult, out Item item, out bool tryEquipItem)
         {
@@ -33,6 +35,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
             }
 
             TryCraftEnchant(enchantRecipe, dynamicResult, out item);
+            DelayedReEquip(item.OwnerCharacter.Inventory, (Equipment)item);
             tryEquipItem = true;
             return true;
         }
@@ -48,15 +51,30 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
                 item = null;
                 return false;
             }
-            
+
+            equipment.OwnerCharacter.Inventory.UnequipItem(equipment, false);
+
             var enchantment = ResourcesPrefabManager.Instance.GetEnchantmentPrefab(recipe.BaseEnchantmentRecipe.ResultID);
             equipment.AddEnchantment(enchantment.PresetID);
-            equipment.LoadedVisual.ApplyVisualModifications();
+            //equipment.LoadedVisual.ApplyVisualModifications();
             item = equipment;
 
             Logger.LogInfo($"Applied enchant '{enchantment.Name}' to item {item.ItemID} - '{item.DisplayName}'.");
 
             return true;
+        }
+
+        private void DelayedReEquip(CharacterInventory inventory, Equipment equipment)
+        {
+            Func<bool> isUnequipped = () =>
+            {
+                return !(equipment.IsEquipped && inventory.Equipment.IsHandFree(equipment));
+            };
+            Action reEquip = () => inventory.EquipItem(equipment);
+
+            _coroutine.StartRoutine(
+                _coroutine.InvokeAfter(isUnequipped, reEquip, 5, .1f)
+            );
         }
     }
 }

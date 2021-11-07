@@ -117,7 +117,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting
         {
 
             _services.AddSingleton(new EnchantIngredientMatcher(_services.GetService<IModifLogger>))
-                     .AddSingleton(new EnchantCrafter(_services.GetService<IModifLogger>));
+                     .AddSingleton(new EnchantCrafter(_services.GetService<LevelCoroutines>(), _services.GetService<IModifLogger>));
 
             var craftingModule = _services.GetService<CustomCraftingModule>();
             var settings = _services.GetService<EnchantingSettings>();
