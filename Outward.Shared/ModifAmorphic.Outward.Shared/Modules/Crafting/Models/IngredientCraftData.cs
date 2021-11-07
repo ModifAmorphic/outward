@@ -14,6 +14,11 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Models
         /// --Quantity<br />
         /// </summary>
         public Dictionary<int, Dictionary<string, int>> ConsumedItems { get; protected set; } = new Dictionary<int, Dictionary<string, int>>();
+        /// <summary>
+        /// Preserved Items are in game, realized <see cref="Item"/>s that were not consumed / destroyed prior to crafting. This List will be populated
+        /// with any unconsumed items after the craft button has been pressed until after the item has been crafted.
+        /// </summary>
+        public List<Item> PreservedItems { get; protected set; } = new List<Item>();
 
         public Recipe MatchIngredientsRecipe { get; internal set; }
 
@@ -21,6 +26,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Models
         {
             IngredientEnchantData.Clear();
             ConsumedItems.Clear();
+            PreservedItems.Clear();
             MatchIngredientsRecipe = null;
         }
     }
