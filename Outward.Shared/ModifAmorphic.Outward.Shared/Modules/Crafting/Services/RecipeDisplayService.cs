@@ -34,6 +34,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             {
                 HideSingleIngredientRecipes(menu);
                 ProcessAdditionRecipeChecks(menu);
+                ResetRecipeDisplaySelection(menu);
             };
         }
 
@@ -473,6 +474,60 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
 
             Logger.LogDebug($"HideSingleIngredientRecipes: m_complexeRecipes trimmed from {complexeRecipes.Count} to {menu.GetPrivateField<CraftingMenu, List<KeyValuePair<int, Recipe>>>("m_complexeRecipes").Count}." +
                 $" m_recipeDisplays trimmed from {complexeRecipes.Count} to {menu.GetPrivateField<CraftingMenu, List<RecipeDisplay>>("m_recipeDisplays").Count}.");
+        }
+
+        internal void ResetRecipeDisplaySelection(CustomCraftingMenu menu, bool resetSelection = false)
+        {
+            if (!menu.HideFreeCraftingRecipe)
+                return;
+            else
+                menu._freeRecipeDisplay.transform.SetAsLastSibling();
+
+            int firstIndex = -1;
+
+            int activeIndex = 0;
+            var recipeDisplays = menu._recipeDisplays;
+            for (int i = 0; i < recipeDisplays.Count; i++)
+            {
+                recipeDisplays[i].SetHighlight(false);
+                recipeDisplays[i].transform.ResetLocal();
+
+                if (recipeDisplays[i].IsRecipeIngredientsComplete)
+                {
+                    recipeDisplays[i].transform.SetSiblingIndex(activeIndex);
+                    if (firstIndex == -1)
+                        firstIndex = i;
+                    activeIndex++;
+                }
+            }
+            menu._recipeSeparator.SetAsLastSibling();
+
+            for (int i = 0; i < recipeDisplays.Count; i++)
+            {
+                recipeDisplays[i].SetHighlight(false);
+                recipeDisplays[i].transform.ResetLocal();
+
+                if (!recipeDisplays[i].IsRecipeIngredientsComplete)
+                {
+                    recipeDisplays[i].transform.SetAsLastSibling();
+                }
+            }
+
+            if (menu.GetLastRecipeIndex() == -1)
+            {
+                Logger.LogDebug($"{this.GetType().Name}::{nameof(ResetRecipeDisplaySelection)}: Set _lastRecipeIndex from -1 to {firstIndex}.");
+                menu.SetLastRecipeIndex(firstIndex);
+            }
+            //var label = _recipeDisplays[firstIndex].GetComponentInChildren<Text>();
+            //Logger.LogDebug($"{this.GetType().Name}::{nameof(ResetRecipeDisplaySelection)}: Highlighting and invokeing onClick of recipe index {firstIndex}, {label.text}.");
+            //_recipeDisplays[firstIndex].SetHighlight(true);
+            //_recipeDisplays[firstIndex].onClick.Invoke();
+            if (resetSelection)
+            {
+                var scrollRect = menu._recipeDisplayTemplate.GetComponentInParent<ScrollRect>();
+                scrollRect.verticalNormalizedPosition = 1f;
+                menu.OnRecipeSelected(firstIndex, true);
+            }
         }
     }
 }

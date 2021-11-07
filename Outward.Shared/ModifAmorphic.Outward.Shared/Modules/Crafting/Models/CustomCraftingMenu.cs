@@ -207,39 +207,39 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 		internal int GetLastRecipeIndex() => _lastRecipeIndex;
 		internal int SetLastRecipeIndex(int lastRecipeIndex) => _lastRecipeIndex = lastRecipeIndex;
 
-		
-		protected RecipeDisplay _recipeDisplayTemplate
+
+		internal RecipeDisplay _recipeDisplayTemplate
 		{
 			get => this.GetPrivateField<CraftingMenu, RecipeDisplay>("m_recipeDisplayTemplate");
 			set => this.SetPrivateField<CraftingMenu, RecipeDisplay>("m_recipeDisplayTemplate", value);
 		}
-		protected List<RecipeDisplay> _recipeDisplays
+		internal List<RecipeDisplay> _recipeDisplays
 		{
 			get => this.GetPrivateField<CraftingMenu, List<RecipeDisplay>>("m_recipeDisplays");
 			set => this.SetPrivateField<CraftingMenu, List<RecipeDisplay>>("m_recipeDisplays", value);
 		}
-		protected RectTransform _recipeSeparator
+		internal RectTransform _recipeSeparator
 		{
 			get => this.GetPrivateField<CraftingMenu, RectTransform>("m_recipeSeparator");
 			set => this.SetPrivateField<CraftingMenu, RectTransform>("m_recipeSeparator", value);
 		}
-		
+
 		internal RecipeResultDisplay _recipeResultDisplay
 		{
 			get => this.GetPrivateField<CraftingMenu, RecipeResultDisplay>("m_recipeResultDisplay");
 			set => this.SetPrivateField<CraftingMenu, RecipeResultDisplay>("m_recipeResultDisplay", value);
 		}
-		protected RecipeDisplay _freeRecipeDisplay
+		internal RecipeDisplay _freeRecipeDisplay
 		{
 			get => this.GetPrivateField<CraftingMenu, RecipeDisplay>("m_freeRecipeDisplay");
 			set => this.SetPrivateField<CraftingMenu, RecipeDisplay>("m_freeRecipeDisplay", value);
 		}
-		protected ItemDetailsDisplay _itemDetailPanel
+		internal ItemDetailsDisplay _itemDetailPanel
 		{
 			get => this.GetPrivateField<CraftingMenu, ItemDetailsDisplay>("m_itemDetailPanel");
 			set => this.SetPrivateField<CraftingMenu, ItemDetailsDisplay>("m_itemDetailPanel", value);
 		}
-		protected GameObject _freeRecipeDescriptionPanel
+		internal GameObject _freeRecipeDescriptionPanel
 		{
 			get => this.GetPrivateField<CraftingMenu, GameObject>("m_freeRecipeDescriptionPanel");
 			set => this.SetPrivateField<CraftingMenu, GameObject>("m_freeRecipeDescriptionPanel", value);
@@ -354,55 +354,14 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
 				RecipeDisplayService.PositionSelectors(this, _ingredientSelectors);
 
-				var scrollRect = _recipeDisplayTemplate.GetComponentInParent<ScrollRect>();
-				scrollRect.verticalNormalizedPosition = 1f;
-
-				ResetRecipeDisplaySelection();
+				RecipeDisplayService.ResetRecipeDisplaySelection(this, true);
 			}
 			catch (Exception ex)
             {
                 Logger.LogException($"{logPrefix} Exception.", ex);
             }
 		}
-		private void ResetRecipeDisplaySelection()
-        {
-			if (!HideFreeCraftingRecipe)
-				return;
-			else
-				_freeRecipeDisplay.transform.SetAsLastSibling();
-
-			int firstIndex = -1;
-			var lowestSibling = int.MaxValue;
-
-			//base game code doesn't like free recipe missing and screws the sibling order up for the first
-			//recipe if it's not complete
-			if (!_recipeDisplays[0].IsRecipeIngredientsComplete)
-            {
-				var sepIndex = _recipeSeparator.GetSiblingIndex();
-				_recipeDisplays[0].transform.SetSiblingIndex(sepIndex + 1);
-			}
-			for (int i = 0; i < _recipeDisplays.Count; i++)
-			{
-				_recipeDisplays[i].SetHighlight(false);
-				_recipeDisplays[i].transform.ResetLocal();
-				if (_recipeDisplays[i].transform.GetSiblingIndex() < lowestSibling && _recipeDisplays[i].IsRecipeIngredientsComplete)
-				{
-					lowestSibling = _recipeDisplays[i].transform.GetSiblingIndex();
-					firstIndex = i;
-				}
-			}
-			
-			if (_lastRecipeIndex == -1)
-			{
-				Logger.LogDebug($"{this.GetType().Name}::{nameof(ResetRecipeDisplaySelection)}: Set _lastRecipeIndex from {_lastRecipeIndex} to {firstIndex}.");
-				_lastRecipeIndex = firstIndex;
-			}
-			//var label = _recipeDisplays[firstIndex].GetComponentInChildren<Text>();
-			//Logger.LogDebug($"{this.GetType().Name}::{nameof(ResetRecipeDisplaySelection)}: Highlighting and invokeing onClick of recipe index {firstIndex}, {label.text}.");
-			//_recipeDisplays[firstIndex].SetHighlight(true);
-			//_recipeDisplays[firstIndex].onClick.Invoke();
-			OnRecipeSelected(firstIndex, true);
-		}
+		
 		private void Show(Recipe.CraftingType craftingStationType)
 		{
 			if (craftingStationType != Recipe.CraftingType.Alchemy
