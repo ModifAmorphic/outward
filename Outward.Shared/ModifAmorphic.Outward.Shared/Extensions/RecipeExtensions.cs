@@ -136,6 +136,13 @@ namespace ModifAmorphic.Outward.Extensions
             return recipe;
         }
 
+        public static T SetResults<T>(this T recipe, ItemReferenceQuantity[] results) where T : Recipe
+        {
+            recipe.SetPrivateField<Recipe, ItemReferenceQuantity[]>("m_results", results);
+
+            return recipe;
+        }
+
         public static T SetNames<T>(this T recipe, string recipeName) where T : Recipe
         {
             if (recipe.RecipeID == default)

@@ -53,12 +53,13 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
 
                 Logger.LogTrace($"{nameof(CompatibleIngredientPatches)}::{nameof(GetConsumedItemsPostfix)}(): Capturing {__result?.Count} consumed items.");
                 var resultMulti = _resultMultiplier;
-                if (customIngredient.TryGetConsumedItems(_useMultipler, ref resultMulti, out var consumedIngredients))
+                List<Item> preservedItems;
+                if (customIngredient.TryGetConsumedItems(_useMultipler, ref resultMulti, out var consumedIngredients, out preservedItems))
                 {
                     _resultMultiplier = resultMulti;
                     __result = consumedIngredients;
                 }
-                customIngredient.CaptureConsumedItems(__result);
+                customIngredient.CaptureConsumedItems(__result, preservedItems);
             }
             catch (Exception ex)
             {

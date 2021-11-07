@@ -9,6 +9,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
     public class DynamicCraftingResult : ItemReferenceQuantity
     {
         IDynamicResultService _resultService;
+        public IDynamicResultService ResultService => _resultService;
 
         private int _dynamicItemID = -1;
         public int DynamicItemID { get => _dynamicItemID; private set => _dynamicItemID = value; }
