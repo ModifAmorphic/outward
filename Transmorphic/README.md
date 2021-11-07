@@ -1,16 +1,17 @@
 # Summary
-**Transmogrify your equipment with a new crafting system. Weapons, Armor and now Backpacks, Lanterns and Lexicons. Plus balanced Alchemy and Cooking Menus.**
+**⚡New Enchanting Menu⚡ Transmogrify your equipment with a new crafting system. Weapons, Armor and now Backpacks, Lanterns and Lexicons. Plus Enchanting, Alchemy and Cooking crafting menus.**
 &nbsp;
 - - - -
 &nbsp;
 
-## **Adds 3 New Crafting Menus**
+## **Adds 4 New Crafting Menus**
 
  Menu | | Description
 --- | --- | --- 
  Transmogrify | ![Transmogrify](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverTransmogrify.png?raw=true) | Customize your gear. Change the appearance of weapons or armor.
-Alchemy | ![Alchemy menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverAlchemy.png?raw=true) | (Optional) Adds an Alchemy crafting menu. Mix potions without deploying an alchemy kit. Enable in settings.
-Cooking | ![Cooking menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverCooking.png?raw=true) | (Optional) Fully functional cooking from the character UI. Cook food without deploying a cooking pot. Enable in settings.
+Enchanting | ![Enchanting menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverEnchanting.png?raw=true) | ⚡New⚡ Adds an Enchanting crafting menu. Hassle free enchanting without the log rolling. Several configuration options.
+Alchemy | ![Alchemy menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverAlchemy.png?raw=true) | Adds an Alchemy crafting menu. Mix potions without deploying an alchemy kit. Enable or Disable in settings.
+Cooking | ![Cooking menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverCooking.png?raw=true) | Fully functional cooking from the character UI. Cook food without deploying a cooking pot. Enable or Disable in settings.
 
 
 ## **New Recipes**
@@ -24,7 +25,7 @@ Recipe | |  | | | Result
 # Video (YouTube)
 [ ![Transmogrify YouTube Video](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/ReadmeVideoPreview.png?raw=true) ](https://youtu.be/XwYYAvxiIBM)
 
-# Instructions
+# Transmogrify
 - Learn new Transmog recipes by equipping gear.
 - Transmogrify an Item (swap visuals with another).
   - \*\***Important**\*\* Equip the Item you want to change.
@@ -41,6 +42,22 @@ Recipe | |  | | | Result
   - Select the Equipped Item you wish to remove the Transmog from.
   - Craft your new item with the transmog removed.
     - Any Enchantments are carried over to the new item.
+
+# Enchanting
+- A new Enchanting Menu is now available as a replacement to the game's crafting sytem.
+  - Equip the piece of gear you wish to enchant.
+  - Open the Enchanting Crafting Menu
+  - Select the Enchantment Recipe on the left.
+  - Confirm the item in the bottom right corner is the one you wish to enchant.
+  - Click craft to Enchant your item.
+- Conditional Enchanting
+  - The new enchanting menu can be configured to respect or ignore the build in conditions if desired. Only the Quest condition is enabled by default. Not all enchants have additional conditions. For additional information on enchantment conditions, consult the Outward Wiki.
+    - Quest(s) Completed: Enchants that require Quest completion or Enchanting Guild upgrades.
+    - Player in Region
+    - Time of Day
+    - Temperature
+    - Weather
+    - Wind Altar Activated
 
 # Description
 <p>
@@ -64,6 +81,10 @@ Transmorphic adds a new crafting system focused on customizing your equipment's 
 # Change Logs
 
 ## Latest Release ${PACKAGE_VERSION}
+  - Added Enchanting Crafting Menu.
+  - Fixed issue recipe list where scrollbar appeared to be at the top of the list when it was not after closing reopening a menu.
+
+## Release 1.0.1
 - Transmogs for Backpacks, Lanterns and Lexicons
   - As with Armor and Weapons, an item must be equipped before adding or removing a transmog.
   - **Backpacks must be empty!**

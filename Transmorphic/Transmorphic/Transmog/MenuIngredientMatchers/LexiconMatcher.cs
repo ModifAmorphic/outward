@@ -17,7 +17,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog.MenuIngredientMatchers
 
         public LexiconMatcher(Func<IModifLogger> loggerFactory) => (_loggerFactory) = (loggerFactory);
 
-        public bool IsRecipeTag(Tag recipeTag) => recipeTag.GetTagType() == Tag.TagTypes.Custom && recipeTag == TransmogSettings.LexiconTag;
+        public bool IsRecipeTag(Tag recipeTag) => recipeTag.GetTagType() == Tag.TagTypes.Custom && recipeTag == ItemTags.LexiconTag;
 
         public bool IsMatch<T>(T recipe, Tag recipeTag, int ingredientItemID, IEnumerable<Item> ingredientItems) where T : CustomRecipe
         {
@@ -29,10 +29,10 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog.MenuIngredientMatchers
             var isMatch = ingredientItems.Any(i => i is Equipment equip
                                             && !((UID)equip.UID).IsTransmogrified()
                                             && equip.IsEquipped
-                                            && equip.HasTag(TransmogSettings.LexiconTag)
+                                            && equip.HasTag(ItemTags.LexiconTag)
                                             && (lexRecipe == null || i.ItemID != lexRecipe.VisualItemID));
             Logger.LogTrace($"{nameof(LexiconMatcher)}::{nameof(IsMatch)}<> Potential Ingredient ItemID: {ingredientItemID} is {(isMatch ? "" : "NOT ")}a match. " +
-                $"Filter is AddGenericIngredient and TagType is '{TransmogSettings.LexiconTag}'. Matching on Potential Ingredient Type: {firstItem?.GetType()}, " +
+                $"Filter is AddGenericIngredient and TagType is '{ItemTags.LexiconTag}'. Matching on Potential Ingredient Type: {firstItem?.GetType()}, " +
                 $"Name: {firstItem?.DisplayName}, Slot: {(firstItem as Equipment)?.EquipSlot}," +
                 $" and any Non Transmog Owned Item UID.");
 

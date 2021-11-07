@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using ModifAmorphic.Outward.Coroutines;
+using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Modules.Items;
@@ -103,7 +104,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
             craftingModule.RegisterCustomCrafter<TransmogrifyMenu>(_services.GetService<TransmogCrafter>());
             
             transmogSettings.TransmogMenuEnabledChanged += (isEnabled) => ToggleCraftingMenu<TransmogrifyMenu>(craftingModule, isEnabled);
-            craftingModule.MenuLoaded += (menu) =>
+            craftingModule.CraftingMenuEvents.MenuLoaded += (menu) =>
             {
                 if (menu is TransmogrifyMenu)
                     ToggleCraftingMenu<TransmogrifyMenu>(craftingModule, transmogSettings.TransmogMenuEnabled);

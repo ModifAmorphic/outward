@@ -26,7 +26,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                 return;
 
             var lanternTarget = ingredients.FirstOrDefault(i => i?.ItemPrefab is Equipment 
-                                                            && (i?.HasTag(TransmogSettings.LanternTag) ?? false))?.ItemPrefab as Equipment;
+                                                            && (i?.HasTag(ItemTags.LanternTag) ?? false))?.ItemPrefab as Equipment;
             var visualLantern = craftingResult.RefItem as Equipment;
 
             if (lanternTarget == null

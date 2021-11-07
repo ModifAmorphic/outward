@@ -75,11 +75,11 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
 			return true;
 		}
 
-        public bool TryGetConsumedItems(CompatibleIngredient compatibleIngredient, bool useMultipler, ref int resultMultiplier, out IList<KeyValuePair<string, int>> consumedItems)
+        public bool TryGetConsumedItems(CompatibleIngredient compatibleIngredient, bool useMultipler, ref int resultMultiplier, out IList<KeyValuePair<string, int>> consumedItems, out List<Item> preservedItems)
         {
 			var ownedItems = compatibleIngredient.GetPrivateField<CompatibleIngredient, List<Item>>("m_ownedItems");
 			consumedItems = new List<KeyValuePair<string, int>>();
-
+			preservedItems = default;
 			if (ownedItems == null || ownedItems.Count == 0)
 				return false;
 					
@@ -127,9 +127,9 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
 			return false;
 		}
 
-        public bool TryGetConsumedStaticItems(CompatibleIngredient compatibleIngredient, Guid staticIngredientID, bool useMultipler, ref int resultMultiplier, out IList<KeyValuePair<string, int>> consumedItems)
+        public bool TryGetConsumedStaticItems(CompatibleIngredient compatibleIngredient, Guid staticIngredientID, bool useMultipler, ref int resultMultiplier, out IList<KeyValuePair<string, int>> consumedItems, out List<Item> preservedItems)
         {
-			return TryGetConsumedItems(compatibleIngredient, useMultipler, ref resultMultiplier, out consumedItems);
+			return TryGetConsumedItems(compatibleIngredient, useMultipler, ref resultMultiplier, out consumedItems, out preservedItems);
 
 		}
     }

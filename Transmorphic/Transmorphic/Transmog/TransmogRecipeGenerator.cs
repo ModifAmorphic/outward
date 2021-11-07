@@ -68,7 +68,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                 return null;
             }
 
-            return ConfigureTransmogRecipe(bagSource, TransmogSettings.BackpackTag, ScriptableObject.CreateInstance<TransmogBagRecipe>(), _bagResultService);
+            return ConfigureTransmogRecipe(bagSource, ItemTags.BackpackTag, ScriptableObject.CreateInstance<TransmogBagRecipe>(), _bagResultService);
         }
         public TransmogLanternRecipe GetTransmogLanternRecipe(Equipment equipSource)
         {
@@ -77,7 +77,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                 return null;
             }
 
-            return ConfigureTransmogRecipe(equipSource, TransmogSettings.LanternTag, ScriptableObject.CreateInstance<TransmogLanternRecipe>(), _lanternResultService);
+            return ConfigureTransmogRecipe(equipSource, ItemTags.LanternTag, ScriptableObject.CreateInstance<TransmogLanternRecipe>(), _lanternResultService);
         }
         public TransmogLexiconRecipe GetTransmogLexiconRecipe(Equipment equipSource)
         {
@@ -86,7 +86,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                 return null;
             }
 
-            return ConfigureTransmogRecipe(equipSource, TransmogSettings.LexiconTag, ScriptableObject.CreateInstance<TransmogLexiconRecipe>(), _lexiconResultService);
+            return ConfigureTransmogRecipe(equipSource, ItemTags.LexiconTag, ScriptableObject.CreateInstance<TransmogLexiconRecipe>(), _lexiconResultService);
         }
 
         public TransmogRemoverRecipe GetRemoverRecipe()
@@ -100,7 +100,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                 .SetNames(TransmogSettings.RemoveRecipe.RecipeName)
                 .AddIngredient(new TagSourceSelector(TransmogSettings.RemoveRecipe.TransmogTag))
                 .AddIngredient(secondaryIngredient)
-                .AddDynamicResult(_removerResultService, -1303000001);
+                .AddDynamicResult(_removerResultService, TransmogSettings.RemoveRecipe.ResultItemID);
 
             return recipe;
         }
