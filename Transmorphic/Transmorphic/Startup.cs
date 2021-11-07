@@ -8,6 +8,7 @@ using ModifAmorphic.Outward.Transmorphic.Cooking;
 using ModifAmorphic.Outward.Transmorphic.Alchemy;
 using BepInEx;
 using System;
+using ModifAmorphic.Outward.Transmorphic.Enchanting;
 
 namespace ModifAmorphic.Outward.Transmorphic
 {
@@ -33,13 +34,15 @@ namespace ModifAmorphic.Outward.Transmorphic
                                                   services.GetService<IModifLogger>))
                 .AddSingleton(new CookingStartup(services, settingsService, confSettings))
                 .AddSingleton(new AlchemyStartup(services, settingsService, confSettings))
-                .AddSingleton(new TransmogStartup(services, settingsService, confSettings));
+                .AddSingleton(new TransmogStartup(services, settingsService, confSettings))
+                .AddSingleton(new EnchantingStartup(services, settingsService, confSettings));
 
             _loggerFactory = services.GetServiceFactory<IModifLogger>();
 
             TryStartMenu(services.GetService<CookingStartup>());
             TryStartMenu(services.GetService<AlchemyStartup>());
             TryStartMenu(services.GetService<TransmogStartup>());
+            TryStartMenu(services.GetService<EnchantingStartup>());
 
         }
         private void TryStartMenu(IStartable menuStartup)

@@ -37,7 +37,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Cooking
             //Set up Menu toggle events
             cookingSettings.CookingMenuEnabledChanged += (isEnabled) => ToggleCraftingMenu<CookingMenu>(craftingModule, isEnabled);
             cookingSettings.DisableKitFuelReqChanged += ToggleKitFuelRequirement;
-            craftingModule.MenuLoaded += (menu) =>
+            craftingModule.CraftingMenuEvents.MenuLoaded += (menu) =>
             {
                 if (menu is CookingMenu)
                 {

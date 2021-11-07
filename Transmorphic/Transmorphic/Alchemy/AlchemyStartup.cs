@@ -36,7 +36,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Alchemy
 
             //Set up Menu toggle events
             alchemySettings.AlchemyMenuEnabledChanged += (isEnabled) => ToggleCraftingMenu<AlchemyMenu>(craftingModule, isEnabled);
-            craftingModule.MenuLoaded += (menu) =>
+            craftingModule.CraftingMenuEvents.MenuLoaded += (menu) =>
             {
                 if (menu is AlchemyMenu)
                 {

@@ -62,17 +62,17 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             typeof(CompatibleIngredientPatches),
             typeof(LocalizationManagerPatches)
         };
-
-        public delegate void MenuLoadedDelegate(CustomCraftingMenu menu);
-        public event MenuLoadedDelegate MenuLoaded;
-
-        internal CustomCraftingModule(CraftingMenuUIService menuUIService, RecipeDisplayService recipeDisplayService, CustomRecipeService customRecipeService, CustomCraftingService craftingService, Func<IModifLogger> loggerFactory)
+        
+        public readonly CraftingMenuEvents CraftingMenuEvents;
+        internal CustomCraftingModule(CraftingMenuUIService menuUIService, RecipeDisplayService recipeDisplayService, CustomRecipeService customRecipeService, CustomCraftingService craftingService, CraftingMenuEvents craftingMenuEvents, Func<IModifLogger> loggerFactory)
         {
-            (_menuUiService, _recipeDisplayService, _customRecipeService, _craftingService, _loggerFactory) = 
-                (menuUIService, recipeDisplayService, customRecipeService, craftingService, loggerFactory);
+            (_menuUiService, _recipeDisplayService, _customRecipeService, _craftingService, CraftingMenuEvents, _loggerFactory) = 
+                (menuUIService, recipeDisplayService, customRecipeService, craftingService, craftingMenuEvents, loggerFactory);
             CharacterUIPatches.AwakeBefore += CharacterUIPatches_AwakeBefore;
             CharacterUIPatches.RegisterMenuAfter += CharacterUIPatches_RegisterMenuAfter;
             CraftingMenuPatches.AwakeInitAfter += CraftingMenuPatches_AwakeInitAfter;
+
+            recipeDisplayService.MenuHiding += (menu) => CraftingMenuEvents.InvokeMenuHiding(menu);
         }
 
         private void CraftingMenuPatches_AwakeInitAfter(CraftingMenu craftingMenu)
@@ -109,7 +109,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             var metas = _characterMenus.GetOrAdd(playerID, new List<CraftingMenuMetadata>());
             metas.Add(meta);
 
-            MenuLoaded?.Invoke(craftingMenu);
+            CraftingMenuEvents?.InvokeMenuLoading(craftingMenu);
         }
 
         /// <summary>
@@ -176,6 +176,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                 });
             TryAddRecipes();
         }
+        public List<Recipe> GetRegisteredRecipes<T>() => _customRecipes.TryGetValue(typeof(T), out var recipes) ? recipes.Values.Select(r => r.Recipe).ToList() : new List<Recipe>();
         public void RegisterCustomCrafter<T>(ICustomCrafter crafter)  where T : CustomCraftingMenu => _craftingService.AddOrUpdateCrafter<T>(crafter);
         public void RegisterMenuIngredientFilters<T>(MenuIngredientFilters filter) where T : CustomCraftingMenu
             => _craftingService.AddOrUpdateIngredientFilter<T>(filter);
@@ -183,6 +184,10 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             => _craftingService.TryRemoveIngredientFilter<T>();
         public bool TryGetRegisteredIngredientFilters<T>(out MenuIngredientFilters filter) where T : CustomCraftingMenu
             => _craftingService.TryGetIngredientFilter<T>(out filter);
+        public void RegisterRecipeVisibiltyController<T>(IRecipeVisibiltyController visibiltyController) where T : CustomCraftingMenu
+            => _recipeDisplayService.AddOrUpdateRecipeVisibiltyController<T>(visibiltyController);
+        public void UnregisterRecipeVisibiltyController<T>() where T : CustomCraftingMenu
+            => _recipeDisplayService.TryRemoveRecipeVisibiltyController<T>();
         public void RegisterCompatibleIngredientMatcher<T>(ICompatibleIngredientMatcher matcher) where T : CustomCraftingMenu 
             => _craftingService.AddOrUpdateCompatibleIngredientMatcher<T>(matcher);
         public void RegisterConsumedItemSelector<T>(IConsumedItemSelector itemSelector) where T : CustomCraftingMenu

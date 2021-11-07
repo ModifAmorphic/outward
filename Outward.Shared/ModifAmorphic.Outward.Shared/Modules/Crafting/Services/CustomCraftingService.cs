@@ -76,7 +76,26 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                     Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(GenerateResultOverride)}(): " +
                         $"New item '{craftedItem.Name}' crafted from recipe {craftingMenu.GetSelectedRecipe().Name} and result ItemID {result.ItemID};");
                     craftedAny = true;
-                    characterInventory.TakeItem(craftedItem, tryEquipItem);
+
+                    //Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(GenerateResultOverride)}(): " +
+                    //        $"tryEquipItem: {tryEquipItem}. Item '{craftedItem.Name}' crafted from recipe {craftingMenu.GetSelectedRecipe().Name}." +
+                    //        $"\n\t !craftedItem.IsEquipped && !characterInventory.IsItemInBag(craftedItem) && !characterInventory.IsItemInPouch(craftedItem) == {!craftedItem.IsEquipped && !characterInventory.IsItemInBag(craftedItem) && !characterInventory.IsItemInPouch(craftedItem)} \n" +
+                    //        $"\t(characterInventory.IsItemInBag(craftedItem) || characterInventory.IsItemInPouch(craftedItem)) == {(characterInventory.IsItemInBag(craftedItem) || characterInventory.IsItemInPouch(craftedItem))}\n" +
+                    //        $"\tcraftedItem is Equipment == {craftedItem is Equipment equip}\n" +
+                    //        $"\tcharacterInventory.Equipment.IsHandFree(craftedItem as Equipment) == {characterInventory.Equipment.IsHandFree(craftedItem as Equipment)}");
+                    //if not equipped or in inventory already, take it into inventory.
+                    if (!craftedItem.IsEquipped && !characterInventory.IsItemInBag(craftedItem) && !characterInventory.IsItemInPouch(craftedItem))
+                    {
+                        characterInventory.TakeItem(craftedItem, tryEquipItem);
+                    }
+                    //If item is in inventory or pouch already and tryEquipItem is specified, try to equip it.
+                    else if (tryEquipItem 
+                        && (characterInventory.IsItemInBag(craftedItem) || characterInventory.IsItemInPouch(craftedItem))
+                        && craftedItem is Equipment equipment)
+                    {
+                        characterInventory.EquipItem(equipment);
+                    }
+
                     characterInventory.NotifyItemTake(craftedItem, 1);
                 }
             }

@@ -7,7 +7,7 @@ using System.Text;
 namespace ModifAmorphic.Outward.Transmorphic.Patches
 {
     [HarmonyPatch(typeof(NetworkLevelLoader))]
-    internal static class TmogNetworkLevelLoaderPatches
+    internal static class TransmorphNetworkLevelLoaderPatches
     {
         private static IModifLogger Logger => LoggerFactory.GetLogger(ModInfo.ModId);
 
@@ -18,12 +18,12 @@ namespace ModifAmorphic.Outward.Transmorphic.Patches
         {
             try
             {
-                Logger?.LogTrace($"{nameof(TmogNetworkLevelLoaderPatches)}::{nameof(MidLoadLevelPrefix)} called. Invoking {nameof(MidLoadLevelAfter)}.");
+                Logger?.LogTrace($"{nameof(TransmorphNetworkLevelLoaderPatches)}::{nameof(MidLoadLevelPrefix)} called. Invoking {nameof(MidLoadLevelAfter)}.");
                 MidLoadLevelAfter?.Invoke(__instance);
             }
             catch (Exception ex)
             {
-                Logger?.LogException($"Exception in {nameof(TmogNetworkLevelLoaderPatches)}::{nameof(MidLoadLevelPrefix)}.", ex);
+                Logger?.LogException($"Exception in {nameof(TransmorphNetworkLevelLoaderPatches)}::{nameof(MidLoadLevelPrefix)}.", ex);
             }
         }
     }

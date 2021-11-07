@@ -8,6 +8,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 {
     public class CustomRecipe : Recipe
     {
+        public string RecipeName => this.GetPrivateField<Recipe, string>("m_name");
+        public string ResultName => Results.Length > 0 ? Results[0].RefItem?.DisplayName : string.Empty;
 
         public void SetRecipeResults(IEnumerable<ItemReferenceQuantity> results)
         {

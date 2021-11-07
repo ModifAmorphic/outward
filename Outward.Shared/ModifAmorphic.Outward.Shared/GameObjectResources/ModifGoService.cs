@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ModifAmorphic.Outward.GameObjectResources
 {
@@ -46,6 +47,7 @@ namespace ModifAmorphic.Outward.GameObjectResources
                 root = new GameObject(RootPath);
                 root.SetActive(true);
                 root.hideFlags = HideFlags.HideAndDontSave;
+                UnityEngine.Object.DontDestroyOnLoad(root);
             }
             return root;
         }
@@ -58,6 +60,7 @@ namespace ModifAmorphic.Outward.GameObjectResources
                 activable.transform.SetParent(ModifRoot.transform);
                 activable.SetActive(true);
                 activable.hideFlags = HideFlags.HideAndDontSave;
+                //UnityEngine.Object.DontDestroyOnLoad(activable);
             }
             return activable;
         }
@@ -70,6 +73,7 @@ namespace ModifAmorphic.Outward.GameObjectResources
                 inactivable.transform.SetParent(ModifRoot.transform);
                 inactivable.SetActive(false);
                 inactivable.hideFlags = HideFlags.HideAndDontSave;
+                //UnityEngine.Object.DontDestroyOnLoad(inactivable);
             }
             return inactivable;
         }
@@ -82,6 +86,7 @@ namespace ModifAmorphic.Outward.GameObjectResources
                 activable.transform.SetParent(Activable.transform);
                 activable.SetActive(true);
                 activable.hideFlags = HideFlags.HideAndDontSave;
+                //UnityEngine.Object.DontDestroyOnLoad(activable);
             }
             return activable;
         }
@@ -94,6 +99,7 @@ namespace ModifAmorphic.Outward.GameObjectResources
                 inactivable.transform.SetParent(Inactivable.transform);
                 inactivable.SetActive(false);
                 inactivable.hideFlags = HideFlags.HideAndDontSave;
+                //UnityEngine.Object.DontDestroyOnLoad(inactivable);
             }
             return inactivable;
         }

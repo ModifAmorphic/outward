@@ -31,11 +31,14 @@ namespace ModifAmorphic.Outward.Transmorphic
                 logger = LoggerFactory.ConfigureLogger(ModInfo.ModId, ModInfo.ModName, LogLevel.Info);
                 logger.LogInfo($"Patching...");
 
-                harmony.PatchAll(typeof(TmogNetworkLevelLoaderPatches));
-                harmony.PatchAll(typeof(TmogRecipeManagerPatches));
+                harmony.PatchAll(typeof(TransmorphNetworkLevelLoaderPatches));
+                harmony.PatchAll(typeof(TransmorphRecipeManagerPatches));
                 harmony.PatchAll(typeof(TmogCharacterRecipeKnowledgePatches));
                 harmony.PatchAll(typeof(TmogCharacterEquipmentPatches));
                 harmony.PatchAll(typeof(TmogItemManagerPatches));
+                harmony.PatchAll(typeof(EnchantCharacterRecipeKnowledgePatches));
+
+                //harmony.PatchAll(typeof(WeaponPatches));
                 //harmony.PatchAll(typeof(TmogItemDisplayPatches));
                 
                 //harmony.PatchAll(typeof(TransmogCraftingMenuPatches));

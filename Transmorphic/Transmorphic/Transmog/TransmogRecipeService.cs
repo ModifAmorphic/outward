@@ -43,8 +43,8 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                 (baseUnityPlugin, recipeGen, craftingModule, preFabricator, coroutine, recipeSaveData, settings, getLogger);
 
             if (!SideLoaderEx.TryHookOnPacksLoaded(this, LoadRecipesFromSave))
-                TmogRecipeManagerPatches.LoadCraftingRecipeAfter += (r) => LoadRecipesFromSave();
-            TmogNetworkLevelLoaderPatches.MidLoadLevelAfter += (n) => _coroutine.InvokeAfterLevelAndPlayersLoaded(n, LearnCharacterRecipesFromSave, 300, 1);
+                TransmorphRecipeManagerPatches.LoadCraftingRecipeAfter += (r) => LoadRecipesFromSave();
+            TransmorphNetworkLevelLoaderPatches.MidLoadLevelAfter += (n) => _coroutine.InvokeAfterLevelAndPlayersLoaded(n, LearnCharacterRecipesFromSave, 300, 1);
             TmogCharacterEquipmentPatches.EquipItemBefore += (equipArgs) => CheckAddTmogRecipe(equipArgs.Character.Inventory, equipArgs.Equipment);
             TmogCharacterRecipeKnowledgePatches.LearnRecipeBefore += TryLearnTransmogRecipe;
 
@@ -101,7 +101,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
         {
             if (!ResourcesPrefabManager.Instance.ContainsItemPrefab(TransmogSettings.RemoveRecipe.ResultItemID.ToString()))
             {
-                var removerResult = _preFabricator.CreatePrefab(TransmogSettings.RemoveRecipe.SourceResultItemID,
+                var removerResult = _preFabricator.CreatePrefab<Item>(TransmogSettings.RemoveRecipe.SourceResultItemID,
                                                                 TransmogSettings.RemoveRecipe.ResultItemID,
                                                                 TransmogSettings.RemoveRecipe.ResultItemName,
                                                                 TransmogSettings.RemoveRecipe.ResultItemDesc)
@@ -267,12 +267,12 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                 recipe = _recipeGen.GetTransmogBagRecipe(bag);
                 equipType = "Bag";
             }
-            else if (equipment.HasTag(TransmogSettings.LanternTag))
+            else if (equipment.HasTag(ItemTags.LanternTag))
             {
                 recipe = _recipeGen.GetTransmogLanternRecipe(equipment);
                 equipType = "Lantern";
             }
-            else if (equipment.HasTag(TransmogSettings.LexiconTag))
+            else if (equipment.HasTag(ItemTags.LexiconTag))
             {
                 recipe = _recipeGen.GetTransmogLexiconRecipe(equipment);
                 equipType = "Lexicon";
