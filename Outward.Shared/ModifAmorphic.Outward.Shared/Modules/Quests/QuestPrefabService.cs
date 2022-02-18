@@ -11,9 +11,9 @@ using System.Reflection;
 using System.Text;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.Modules.Items
+namespace ModifAmorphic.Outward.Modules.Quests
 {
-    internal class ItemPrefabService
+    internal class QuestPrefabService
     {
         private readonly string _modId;
         private readonly Func<IModifLogger> _loggerFactory;
@@ -27,7 +27,7 @@ namespace ModifAmorphic.Outward.Modules.Items
 
         private readonly Dictionary<int, ItemLocalization> _itemLocalizations = new Dictionary<int, ItemLocalization>();
 
-        internal ItemPrefabService(string modId, ModifGoService modifGoService, Func<ResourcesPrefabManager> prefabManagerFactory, Func<IModifLogger> loggerFactory)
+        internal QuestPrefabService(string modId, ModifGoService modifGoService, Func<ResourcesPrefabManager> prefabManagerFactory, Func<IModifLogger> loggerFactory)
         {
             this._modId = modId;
             this._loggerFactory = loggerFactory;
@@ -36,20 +36,20 @@ namespace ModifAmorphic.Outward.Modules.Items
             this._prefabManagerFactory = prefabManagerFactory;
 
             LocalizationManagerPatches.LoadItemLocalizationAfter += RegisterItemLocalizations;
-            ItemPatches.GetItemIconBefore += SetCustomItemIcon;
+            //ItemPatches.GetItemIconBefore += SetCustomItemIcon;
         }
         private void SetCustomItemIcon(Item item)
         {
             if (item.TryGetCustomIcon(out var icon))
                 item.SetItemIcon(icon);
         }
-        public T CreatePrefab<T>(int baseItemID, int newItemID, string name, string description, bool setFields) where T : Item
+        public T CreatePrefab<T>(int baseItemID, int newItemID, string name, string description, bool setFields) where T : Quest
         {
             var basePrefab = (T)PrefabManager.GetItemPrefab(baseItemID);
 
             return CreatePrefab(basePrefab, newItemID, name, description, setFields);
         }
-        public T CreatePrefab<T>(T basePrefab, int newItemID, string name, string description, bool setFields) where T : Item
+        public T CreatePrefab<T>(T basePrefab, int newItemID, string name, string description, bool setFields) where T : Quest
         {
             if (string.IsNullOrEmpty(description))
                 description = basePrefab.Description;
@@ -59,9 +59,6 @@ namespace ModifAmorphic.Outward.Modules.Items
             var prefab = (T)GameObject.Instantiate(basePrefab.gameObject, _itemPrefabParent, false).GetComponent<Item>();
             basePrefab.gameObject.SetActive(baseActiveStatus);
             prefab.transform.ResetLocal();
-            //UnityEngine.Object.DontDestroyOnLoad(prefab.gameObject);
-            //basePrefab.gameObject.SetActive(baseActiveStatus);
-            //prefab.hideFlags |= HideFlags.HideAndDontSave;
             prefab.gameObject.DeCloneNames();
 
             if (setFields)
@@ -83,12 +80,6 @@ namespace ModifAmorphic.Outward.Modules.Items
                     prefab.SetPrivateField<Item, ItemDetailsDisplay.DisplayedInfos[]>("m_displayedInfos", prefabDisplayedInfos);
                     prefab.SetPrivateField<Item, bool>("m_displayedInfoInitialzed", false);
                 }
-                if (basePrefab is Equipment sEquip && prefab is Equipment tEquip)
-                    ProcessEquipmentFields(sEquip, tEquip);
-                if (prefab is Weapon weapon)
-                    ProcessWeaponFields(weapon);
-                if (basePrefab is Armor sArmor && prefab is Armor tarmor)
-                    ProcessArmorFields(sArmor, tarmor);
             }
             prefab.SetDLC(basePrefab.DLCID);
             prefab.ItemID = newItemID;
@@ -116,29 +107,6 @@ namespace ModifAmorphic.Outward.Modules.Items
             weapon.SetPrivateField("m_imbueStack", new DictionaryExt<string, ImbueStack>());
             weapon.SetPrivateField("tmpattackTags", new List<Tag>());
             weapon.SetPrivateField<Weapon, DamageList>("baseDamage", null);
-        }
-        private void ProcessArmorFields(Armor sourceArmor, Armor targetArmor)
-        {
-            var sourceBaseData = sourceArmor.GetPrivateField<Armor, ArmorBaseData>("m_baseData");
-            if (sourceBaseData == null)
-                return;
-
-            var targetBaseData = new ArmorBaseData()
-            {
-                Class = sourceBaseData.Class,
-                ColdProtection = sourceBaseData.ColdProtection,
-                DamageReduction = sourceBaseData.DamageReduction?.ToList(),
-                DamageResistance = sourceBaseData.DamageResistance?.ToList()
-            };
-            targetArmor.SetPrivateField<Armor, ArmorBaseData>("m_baseData", targetBaseData);
-        }
-        private void ProcessEquipmentFields(Equipment source, Equipment target)
-        {
-            target.AssociatedEquipment = null;
-            target.SetPrivateField("m_activeEnchantments", source.GetPrivateField<Equipment, List<Enchantment>>("m_activeEnchantments")?.ToList());
-            target.SetPrivateField("m_appliedAffectStats", source.GetPrivateField<Equipment, List<Effect>>("m_appliedAffectStats")?.ToList());
-            target.SetPrivateField("m_enchantmentIDs", source.GetPrivateField<Equipment, List<int>>("m_enchantmentIDs")?.ToList());
-            target.SetPrivateField<Equipment, SummonedEquipment>("m_summonedEquipment", null);
         }
         private Dictionary<string, Item> _itemPrefabs;
         public Dictionary<string, Item> GetItemPrefabs()

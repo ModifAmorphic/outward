@@ -99,5 +99,33 @@ namespace ModifAmorphic.Outward
             logger = (IModifLogger)serviceDelegate.DynamicInvoke();
             return logger != null;
         }
+
+        public bool TryRemoveService<T>(out T service)
+        {
+#if DEBUG
+            Logger.LogTrace($"{nameof(ServicesProvider)}::{nameof(TryRemoveService)}<T>: Type: {typeof(T).Name}");
+#endif
+            if (_serviceFactories.TryRemove(typeof(T), out var serviceDelegate))
+            {
+                service = (T)serviceDelegate.DynamicInvoke();
+                return true;
+            }
+            service = default;
+            return false;
+        }
+
+        public bool TryRemoveService(Type serviceType, out object service)
+        {
+#if DEBUG
+            Logger.LogTrace($"{nameof(ServicesProvider)}::{nameof(TryRemoveService)}: Type: {serviceType.Name}");
+#endif
+            if (_serviceFactories.TryRemove(serviceType, out var serviceDelegate))
+            {
+                service = serviceDelegate.DynamicInvoke();
+                return true;
+            }
+            service = default;
+            return false;
+        }
     }
 }
