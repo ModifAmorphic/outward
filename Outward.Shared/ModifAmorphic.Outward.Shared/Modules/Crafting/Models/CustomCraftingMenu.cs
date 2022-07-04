@@ -15,8 +15,8 @@ using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Modules.Crafting
 {
-    public class CustomCraftingMenu : CraftingMenu
-    {
+	public class CustomCraftingMenu : CraftingMenu
+	{
 		public CustomCraftingModule ParentCraftingModule { get; private set; }
 
 		private RecipeDisplayService RecipeDisplayService => ParentCraftingModule.RecipeDisplayService;
@@ -50,17 +50,18 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 		}
 
 		Recipe.CraftingType _customCraftingType;
-		public Recipe.CraftingType CustomCraftingType {
+		public Recipe.CraftingType CustomCraftingType
+		{
 			get => _customCraftingType;
 			internal set
-            {
+			{
 				if (value.IsDefinedValue())
 					throw new ArgumentOutOfRangeException("Value must not be one of the built in Recipe.CraftingType values.");
 				_customCraftingType = value;
-            } 
+			}
 		}
 
-			private bool _hideFreeCraftingRecipe = false;
+		private bool _hideFreeCraftingRecipe = false;
 		public bool HideFreeCraftingRecipe
 		{
 			get => _hideFreeCraftingRecipe;
@@ -193,14 +194,14 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			get => this.GetPrivateField<CraftingMenu, bool>("m_refreshComplexeRecipeRequired");
 			set => this.SetPrivateField<CraftingMenu, bool>("m_refreshComplexeRecipeRequired", value);
 		}
-		
+
 		protected int _lastFreeRecipeIndex
 		{
 			get => this.GetPrivateField<CraftingMenu, int>("m_lastFreeRecipeIndex");
 			set => this.SetPrivateField<CraftingMenu, int>("m_lastFreeRecipeIndex", value);
 		}
 		protected int _lastRecipeIndex
-        {
+		{
 			get => this.GetPrivateField<CraftingMenu, int>("m_lastRecipeIndex");
 			set => this.SetPrivateField<CraftingMenu, int>("m_lastRecipeIndex", value);
 		}
@@ -244,7 +245,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			get => this.GetPrivateField<CraftingMenu, GameObject>("m_freeRecipeDescriptionPanel");
 			set => this.SetPrivateField<CraftingMenu, GameObject>("m_freeRecipeDescriptionPanel", value);
 		}
-		
+
 		#endregion
 
 		#region Reflected CraftingMenu Methods
@@ -257,12 +258,12 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 		#endregion
 
 		public CustomCraftingMenu()
-        {
-	
+		{
+
 		}
 		//public virtual bool TryGetIsSurvivalCrafting(out bool isSurvivalCrafting) => isSurvivalCrafting = true;
 
-        protected override void AwakeInit()
+		protected override void AwakeInit()
 		{
 			Logger.LogDebug($"CustomCraftingMenu::AwakeInit() called on type {this.GetType().Name}");
 			if (string.IsNullOrEmpty(ModId))
@@ -291,8 +292,18 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				Logger.LogException($"CustomCraftingMenu::AwakeInit() Exception.", ex);
 			}
 		}
-        protected override void StartInit()
-        {
+		protected override void StartInit()
+		{
+			var logPrefix = this.GetType().Name + "::StartInit():";
+			try
+			{
+				ParentCraftingModule.CraftingMenuEvents.InvokeMenuStarting(this);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogException($"{logPrefix} Exception invoking event with InvokeMenuStarting().", ex);
+			}
+
 			//flip the craftingStationType over to a custom one (if configured), so that stations
 			//recipes are retrieved. (Last thing CraftingMenu.StartInit() does is setting all recipes
 			//code: m_allRecipes = RecipeManager.Instance.GetRecipes(m_craftingStationType, base.LocalCharacter);
@@ -312,11 +323,20 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 		internal bool BaseShowDone { get; private set; }
 		private bool showRecurseCheck = false;
 		public override void Show()
-        {
+		{
 			var logPrefix = this.GetType().Name + "::Show():";
 			try
 			{
 				Logger.LogDebug($"{logPrefix} Started.");
+				try
+				{
+					ParentCraftingModule.CraftingMenuEvents.InvokeMenuShowing(this);
+				}
+				catch (Exception ex)
+				{
+					Logger.LogException($"{logPrefix} Exception invoking event with InvokeMenuShowing().", ex);
+				}
+
 				if (PermanentCraftingStationType != null
 					&& PermanentCraftingStationType.Value.IsDefinedValue()
 					&& !showRecurseCheck)
@@ -357,19 +377,19 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				RecipeDisplayService.ResetRecipeDisplaySelection(this, true);
 			}
 			catch (Exception ex)
-            {
-                Logger.LogException($"{logPrefix} Exception.", ex);
-            }
+			{
+				Logger.LogException($"{logPrefix} Exception.", ex);
+			}
 		}
-		
+
 		private void Show(Recipe.CraftingType craftingStationType)
 		{
 			if (craftingStationType != Recipe.CraftingType.Alchemy
 				&& craftingStationType != Recipe.CraftingType.Cooking
 				&& craftingStationType != Recipe.CraftingType.Survival)
-            {
+			{
 				throw new ArgumentException($"Invalid CraftingType. Allowed CraftingTypes are Cooking, Alchemy and Survival.", nameof(craftingStationType));
-            }
+			}
 
 			const int stationaryAlchemyStation = 1900003;
 			const int stationaryCookingStation = 1900004;
@@ -386,15 +406,15 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 		}
 
 		protected override void OnHide()
-        {
+		{
 			try
 			{
 				RecipeDisplayService.OnMenuHiding(this);
 			}
 			catch (Exception ex)
-            {
+			{
 				Logger.LogException($"{this.GetType().Name}::{nameof(OnHide)}: Error invoking RecipeDisplayService.OnMenuHiding(this).", ex);
-            }
+			}
 			base.OnHide();
 		}
 
