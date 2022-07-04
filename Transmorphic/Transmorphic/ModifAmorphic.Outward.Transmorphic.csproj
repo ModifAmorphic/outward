@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Outward.Shared\ModifAmorphic.Outward.Shared\ModifAmorphic.Outward.Shared.csproj" />
+    <PackageReference Include="ModifAmorphic.Outward" Version="0.5.6" />
   </ItemGroup>
 
   <ItemGroup>

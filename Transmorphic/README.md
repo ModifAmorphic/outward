@@ -1,18 +1,15 @@
 # Summary
-**⚡New Enchanting Menu⚡ Transmogrify your equipment with a new crafting system. Weapons, Armor and now Backpacks, Lanterns and Lexicons. Plus Enchanting, Alchemy and Cooking crafting menus.**
+**⚡Definitive Edition⚡ Transmogrify your equipment with a new crafting system. Weapons, Armor and now Backpacks, Lanterns and Lexicons. Plus an Enchanting menu.**
 &nbsp;
 - - - -
 &nbsp;
 
-## **Adds 4 New Crafting Menus**
+## **Adds 2 New Crafting Menus**
 
  Menu | | Description
 --- | --- | --- 
  Transmogrify | ![Transmogrify](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverTransmogrify.png?raw=true) | Customize your gear. Change the appearance of weapons or armor.
-Enchanting | ![Enchanting menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverEnchanting.png?raw=true) | ⚡New⚡ Adds an Enchanting crafting menu. Hassle free enchanting without the log rolling. Several configuration options.
-Alchemy | ![Alchemy menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverAlchemy.png?raw=true) | Adds an Alchemy crafting menu. Mix potions without deploying an alchemy kit. Enable or Disable in settings.
-Cooking | ![Cooking menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverCooking.png?raw=true) | Fully functional cooking from the character UI. Cook food without deploying a cooking pot. Enable or Disable in settings.
-
+Enchanting | ![Enchanting menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverEnchanting.png?raw=true) | Adds an Enchanting crafting menu. Hassle free enchanting without the log rolling. 
 
 ## **New Recipes**
 Recipe | |  | | | Result
@@ -67,8 +64,6 @@ Transmorphic adds a new crafting system focused on customizing your equipment's 
 \**1h sword --> 1h sword, 2h axe --> 2h axe, Boots --> Boots, etc.*
 
 
-<p> Alchemy and Cooking crafting menus can also be enabled in the Character UI. They are disabled by default in the options / settings file. Alchemy and Crafting menus now require 2 additional ingredients by default - Alchemy Kit or Cooking Pot and wood. The crafting kit is not consumed/destroyed on crafting. The new ingredient requirement can be disabled.</p>
-
 ## 1. Equip Item
 ![Equip Target Item](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/EquipItemSmallest.png?raw=true)
 ## 2. Transmog in New Crafting Menu
@@ -80,7 +75,13 @@ Transmorphic adds a new crafting system focused on customizing your equipment's 
 
 # Change Logs
 
+
 ## Latest Release ${PACKAGE_VERSION}
+  - Fixes for Definitive Edition.
+  - Removed Cooking and Alchemy menus.
+  - Added option to specify secondary ingredient that is consumed for transmogs
+
+## Release 1.0.2
   - Added Enchanting Crafting Menu.
   - Fixed issue recipe list where scrollbar appeared to be at the top of the list when it was not after closing reopening a menu.
 
