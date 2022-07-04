@@ -13,7 +13,7 @@ namespace ModifAmorphic.Outward.Modules.QuickSlots
         private readonly Func<IModifLogger> _loggerFactory;
         private IModifLogger Logger => _loggerFactory.Invoke();
 
-        private CustomKeybindings _customKeyBindings;
+        //private CustomKeybindings CustomKeybindings;
 
         private bool _lazyInitNeeded = true;
         private const string ActionNamePrefix = "QS_Instant";
@@ -46,22 +46,22 @@ namespace ModifAmorphic.Outward.Modules.QuickSlots
         {
             this._loggerFactory = loggerFactory;
         }
-        internal void LazyInit()
-        {
-            if (_lazyInitNeeded)
-            {
-                if (_customKeyBindings == null)
-                    this._customKeyBindings = new CustomKeybindings(); //new CustomKeyBindings(this.logger);
-                _lazyInitNeeded = false;
-            }
-        }
+        //internal void LazyInit()
+        //{
+        //    if (_lazyInitNeeded)
+        //    {
+        //        if (CustomKeybindings == null)
+        //            this.CustomKeybindings = CustomKeybindings(); //new CustomKeyBindings(this.logger);
+        //        _lazyInitNeeded = false;
+        //    }
+        //}
 
 
         public void ExtendQuickSlots(Queue<string> menuDescriptions)
         {
             try
             {
-                LazyInit();
+                //LazyInit();
                 var extendAmount = menuDescriptions.Count;
                 var x = 0;
                 var exQuickSlots = new List<ExtendedQuickSlot>();

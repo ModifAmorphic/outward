@@ -107,8 +107,12 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
                     _configService.ToggleShowHideAndRefresh(settings.AllCharactersLearnRecipes, tmogSettings.TransmogMenuEnabled);
                 }, true);
 
+            _configService.BindConfigSetting(settings.SecondaryTransmogIngredient,
+                (SettingValueChangedArgs<int> args) => tmogSettings.TransmogRecipeSecondaryItemID = args.NewValue, true);
+
             return tmogSettings;
         }
+
         public CookingSettings ConfigureCookingSettings(ConfigSettings settings)
         {
             var cookingSettings = new CookingSettings();

@@ -89,10 +89,10 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			get => this.GetPrivateField<CraftingMenu, bool>("m_simpleMode");
 			set => this.SetPrivateField<CraftingMenu, bool>("m_simpleMode", value);
 		}
-		protected Recipe.CraftingType _craftingStationType
+		protected Recipe.CraftingType _currentlyDisplayedCraftingType
 		{
-			get => this.GetPrivateField<CraftingMenu, Recipe.CraftingType>("m_craftingStationType");
-			set => this.SetPrivateField<CraftingMenu, Recipe.CraftingType>("m_craftingStationType", value);
+			get => this.GetPrivateField<CraftingMenu, Recipe.CraftingType>("m_currentlyDisplayedCraftingType");
+			set => this.SetPrivateField<CraftingMenu, Recipe.CraftingType>("m_currentlyDisplayedCraftingType", value);
 		}
 		protected Sprite _survivalCraftingBg
 		{
@@ -274,8 +274,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				ParentCraftingModule = ModifModules.GetCustomCraftingModule(ModId);
 				if (PermanentCraftingStationType != null)
 				{
-					_craftingStationType = (Recipe.CraftingType)PermanentCraftingStationType;
-					Logger.LogDebug($"CustomCraftingMenu::AwakeInit(): Set m_craftingStationType to {PermanentCraftingStationType}. Current value: {_craftingStationType}");
+					_currentlyDisplayedCraftingType = (Recipe.CraftingType)PermanentCraftingStationType;
+					Logger.LogDebug($"CustomCraftingMenu::AwakeInit(): Set m_craftingStationType to {PermanentCraftingStationType}. Current value: {_currentlyDisplayedCraftingType}");
 				}
 
 				base.AwakeInit();
@@ -296,11 +296,11 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			//flip the craftingStationType over to a custom one (if configured), so that stations
 			//recipes are retrieved. (Last thing CraftingMenu.StartInit() does is setting all recipes
 			//code: m_allRecipes = RecipeManager.Instance.GetRecipes(m_craftingStationType, base.LocalCharacter);
-			var craftingStationType = _craftingStationType;
-			_craftingStationType = GetRecipeCraftingType();
+			var craftingStationType = _currentlyDisplayedCraftingType;
+			_currentlyDisplayedCraftingType = GetRecipeCraftingType();
 			base.StartInit();
 			//Reset it back to the original.
-			_craftingStationType = craftingStationType;
+			_currentlyDisplayedCraftingType = craftingStationType;
 			//if (!_inventoryFilterTag.IsSet)
 			//	_inventoryFilterTag = TagSourceManager.GetCraftingIngredient(GetRecipeCraftingType());
 			if (HideFreeCraftingRecipe)
@@ -667,7 +667,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 		public Recipe.CraftingType GetRecipeCraftingType()
 		{
 			//Priority order, Permanent > Custom > builtin m_craftingStationType
-			return PermanentCraftingStationType ?? (CustomCraftingType.IsDefinedValue() ? _craftingStationType : CustomCraftingType);
+			return PermanentCraftingStationType ?? (CustomCraftingType.IsDefinedValue() ? _currentlyDisplayedCraftingType : CustomCraftingType);
 		}
 
 		#region Copies of Base Methods for Debugging 
@@ -869,7 +869,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			if (_craftingStation == null)
 			{
 				//if (_craftingStationType <= Enum.GetValues(typeof(Recipe.CraftingType)).Cast<Recipe.CraftingType>().Max())
-				_craftingStationType = Recipe.CraftingType.Survival;
+				_currentlyDisplayedCraftingType = Recipe.CraftingType.Survival;
 
 				Logger.LogDebug($"CustomShow: 1:A:1");
 				if ((bool)(UnityEngine.Object)(object)_lblStationName)
@@ -908,7 +908,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			int num = -1;
 			Sprite overrideSprite = null;
 			Logger.LogDebug($"CustomShow: 6");
-			switch (_craftingStationType)
+			switch (_currentlyDisplayedCraftingType)
 			{
 				case Recipe.CraftingType.Survival:
 					num = 1;
@@ -936,7 +936,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 					break;
 				default:
 					num = 1;
-					overrideSprite = _craftingBackgrounds.TryGetValue(_craftingStationType, out var customSprite) ?
+					overrideSprite = _craftingBackgrounds.TryGetValue(_currentlyDisplayedCraftingType, out var customSprite) ?
 						customSprite : _survivalCraftingBg;
 					break;
 
