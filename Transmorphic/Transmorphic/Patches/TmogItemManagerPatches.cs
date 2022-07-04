@@ -74,7 +74,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Patches
 
         [HarmonyPatch("CreateItemFromData", MethodType.Normal)]
         [HarmonyPostfix]
-        public static void CreateItemFromDataPostfix(ItemManager __instance, string itemUID, string[] itemInfos, bool _characterItem, ref bool __result)
+        public static void CreateItemFromDataPostfix(ItemManager __instance, string itemUID, string[] itemInfos, ItemManager.ItemSyncType _syncType, string _ownerUID, ref bool __result)
         {
             try
             {

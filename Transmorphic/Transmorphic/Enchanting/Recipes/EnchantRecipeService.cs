@@ -43,6 +43,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
                 (baseUnityPlugin, recipeGenerator, enchantPrefabs, craftingModule, coroutine, saveData, settings, getLogger);
             if (!SideLoaderEx.TryHookOnPacksLoaded(this, RegisterEnchantRecipes))
                 TransmorphRecipeManagerPatches.LoadCraftingRecipeAfter += (r) => RegisterEnchantRecipes();
+
             TransmorphNetworkLevelLoaderPatches.MidLoadLevelAfter += (n) => _coroutine.InvokeAfterLevelAndPlayersLoaded(n, LearnEnchantRecipes, 300, 1);
 
             //_settings.AllEnchantRecipesLearnedEnabled += LearnEnchantRecipes;
