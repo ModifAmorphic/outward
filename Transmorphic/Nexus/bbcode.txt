@@ -1,21 +1,25 @@
 [size=3][b]Summary[/b][/size]
 
-Tired of running around looking like a freak in a bird mask? Change your gear's appearance with a new Transmogrify Crafting system!  
+[size=3]Transmogrify your equipment with a new crafting system. Weapons, Armor and now Backpacks, Lanterns and Lexicons. Plus an Enchanting Menu.[/size]
 
-[line] 
+[line] 
 
-[size=3][b]Adds 3 New Crafting Menus[/b][/size]
-[img]https://github.com/ModifAmorphic/outward/tree/mods/transmorphic/Transmorphic/Nexus/Menus.png?raw=true[/img]
+[size=3][b]Adds 2 New Crafting Menus[/b][/size]
+[img]https://staticdelivery.nexusmods.com/mods/2775/images/232/232-1656968940-2112407700.png[/img]
 
 [size=3][b]New Recipes[/b][/size]
-[img]https://github.com/ModifAmorphic/outward/tree/mods/transmorphic/Transmorphic/Nexus/RecipeTable.png?raw=true[/img]
+[img]https://staticdelivery.nexusmods.com/mods/2775/images/232/232-1634328926-603496712.png[/img]
 
+[b][size=4]Video Demo[/size][/b]
 [youtube]XwYYAvxiIBM[/youtube]
 
-[size=3][b]Instructions[/b][/size][list]
+[size=3][b]Transmogrify[/b][/size]
+[list]
 [*]Learn new Transmog recipes by equipping gear.
 [*]Transmogrify an Item (swap visuals with another).[list]
-[*]**Important** Equip the Item you want to change.
+[*]**[b]Important[/b]** Equip the Item you want to change.[list]
+[*]Backpacks must be empty!
+[/list]
 [*]Open the Transmogrify Crafting Menu
 [*]Select the Transmog Recipe on the left.
 [*]Confirm the Selected Item is the item you wish to apply the transmog to.
@@ -23,37 +27,88 @@ Tired of running around looking like a freak in a bird mask? Change your gear's 
 [*]Any Enchantments are carried over to the new item.
 [/list]
 [/list]
-[*]Remove a transmog from equipment with the "-Remove Transmogrify" recipe.[list]
+[*]Remove a transmog from equipment with the "- Remove Transmogrify" recipe.
+[list]
 [*]Equip Item you wish to remove the Transmogrify from.
 [*]Open the Transmogrify Crafting Menu.
 [*]Select the "- Remove Transmog" recipe at the top.
 [*]Select the Equipped Item you wish to remove the Transmog from.
-[*]Craft your new item with the transmog removed.[list]
+[*]Craft your new item with the transmog removed.
+[list]
 [*]Any Enchantments are carried over to the new item.
+[/list][/list][/list][size=3][b]Enchanting[/b][/size][list][*]A new Enchanting Menu is now available as a replacement to the game's crafting sytem.[list]
+[*]Equip the piece of gear you wish to enchant.
+[*]Open the Enchanting Crafting Menu
+[*]Select the Enchantment Recipe on the left.
+[*]Confirm the item in the bottom right corner is the one you wish to enchant.
+[*]Click craft to Enchant your item.
+[/list]
+[*]Conditional Enchanting[list]
+[*]The new enchanting menu can be configured to respect or ignore the build in conditions if desired. Only the Quest condition is enabled by default. Not all enchants have additional conditions. For additional information on enchantment conditions, consult the Outward Wiki.[list]
+[*]Quest(s) Completed: Enchants that require Quest completion or Enchanting Guild upgrades.
+[*]Player in Region
+[*]Time of Day
+[*]Temperature
+[*]Weather
+[*]Wind Altar Activated
 [/list]
 [/list]
-[/list]
-
-[size=3][b]Description[/b][/size]
-Transmorphic adds a new crafting system focused on customizing your equipment's visuals. Transmog Recipes (equipment appearances) are unlocking by finding and equipping gear. Once a transmog recipe is learned, any equipment item of the same type* can have its appearance altered to look like it in the new Transmogrify crafting menu. Only equipped items are selectable in the Transmogrify crafting menu. If the item you want to transmog (or remove) is not available to select in the new crafting menu, make sure you have it equipped.
-*[i]1h sword --> 1h sword, 2h axe --> 2h axe, Boots --> Boots, etc.[/i]
-
-Alchemy and Cooking crafting menus can also be enabled in the Character UI. They are disabled by default in the options / settings file.
-
+[/list][size=3][b]Description[/b][/size]
+Transmorphic adds a new crafting system focused on customizing your equipment's visuals. Transmog Recipes (equipment appearances) are unlocking by finding and equipping gear. Once a transmog recipe is learned, any equipment item of the same type* can have its appearance altered to look like it in the new Transmogrify crafting menu. Only equipped items are selectable in the Transmogrify crafting menu. If the item you want to transmog (or remove) is not available to select in the new crafting menu, make sure you have it equipped.*[i]1h sword --> 1h sword, 2h axe --> 2h axe, Boots --> Boots, etc.[/i]All menus can be enabled or disabled in the options / settings file. The Enchanting menu requires an enchanting table, but it is not consumed.
 [b][size=4]1. Equip Item[/size][/b]
-[img]https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/EquipItemSmallest.png?raw=true[/img]
+[img]https://staticdelivery.nexusmods.com/mods/2775/images/232/232-1634328579-403641691.png[/img]
 
 [size=4][b]2. Transmog in New Crafting Menu[/b][/size]
-[img]https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/CraftingMenuSmallest.png?raw=true[/img]
+[img]https://staticdelivery.nexusmods.com/mods/2775/images/232/232-1634328595-87619544.png[/img]
 
 [b][size=4]3. Custom Icon Identifies Transmog Gear[/size][/b]
-[img]https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/NewTmogEquipmentSmallest.png?raw=true[/img]
+[img]https://staticdelivery.nexusmods.com/mods/2775/images/232/232-1634328610-1878697472.png[/img]
 
 [b][size=4]4. Re-equip Item[/size][/b]
-[img]https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/HeadshotSmall.png?raw=true[/img]
+[img]https://staticdelivery.nexusmods.com/mods/2775/images/232/232-1634328649-1452874075.png[/img]
+
+[size=5]Installation / Configuration Instructions[/size]
+PreReqs:
+[list=1]
+[*]GOG or Steam set to use mono branch. See [url=https://outward.fandom.com/wiki/Installing_Mods#Modding_Branch]Modding Branch[/url] for details.
+[*]BepInEx﻿ Installed - [url=https://outward.fandom.com/wiki/Installing_Mods#BepInEx_.28Manual_installation.29]BepInEx (Manual installation)[/url]
+[/list]Manual Installation:
+[list=1]
+[*]Download the latest Transmorphic.zip.
+[*]Place Transmorphic.zip into the root of your Outward installation folder (Outward\Transmorphic.zip).
+[*]Extract the file here.  It will merge into the Outward\BepInEx\plugins\ folder, creating a new Outward\BepInEx\plugins\ folder\ModifAmorphic-Transmorphic.
+[/list]
 
 [size=4]Change Logs[/size]
-[size=3]Initial Release 1.0.0
-[/size][list]
-[*]Initial release - Tranmogrify Crafting + Alchemy & Cooking tabs
+
+[size=3]Latest Release 1.0.3[/size][list]
+[*][size=2]Fixes for Definitive Edition.[/size]
+[*][size=2]Removed Cooking and Alchemy menus.[/size]
+[*][size=2]Added option to specify secondary ingredient that is consumed for transmogs.[/size][/list]
+
+[size=3]Release 1.0.2[/size][list]
+[*][size=2]Added Enchanting Crafting Menu.[/size]
+[*][size=2]Fixed issue recipe list where scrollbar appeared to be at the top of the list when it was not after closing reopening a menu.[/size][/list]
+
+[size=3]Release 1.0.1[/size][list]
+[*]Transmogs for Backpacks, Lanterns and Lexicons[list]
+[*]As with Armor and Weapons, an item must be equipped before adding or removing a transmog.
+[*][b]Backpacks must be empty![/b]
 [/list]
+[*]Splitscreen support - Transmogrify, Alchemy and Cooking menus now work for the 2nd player in local co-op.
+[*]Equipment is now automatically equipped after a transmog or remove transmog craft.
+[*]Added 5th and 6th ingredients to Alchemy and Cooking reasons to try and balance them out.[list]
+[*]The 5th ingredient requires a crafting kit. Alchemy Kit or Cooking Pot. Light versions also apply. Kits are [b]not[/b] consumed when crafting.
+[*]The 6th ingredient is wood as a fuel source.
+[*]The extra ingredients can be disabled in the configuration.
+[/list]
+[*]Fixed issue where Alchemy menu could be shown even if it was disabled.
+[*]Fixed issue with "Craft" footer not displaying if save is loaded with menu disabled and then its enabled.
+[*]Controller Navigation fixes[list]
+[*]Fixed issue new crafting menu(s) navigation order when using a controller.[list]
+[*]There's a minor bug with the Tranmogrify menu when using a controller. On first navigating to the menu, you can't navigate to any of the recipes in the list. As a workaround, switch to another menu and back. This only happens the first time the menu is opened.
+[/list]
+[*]Fixed issue with disabled menus still being selected when navigating with LB/RB.[/list][/list]
+
+[size=3]Initial Release 1.0.0[/size][list]
+[*]Initial release - Tranmogrify Crafting + Alchemy & Cooking tabs[/list]
