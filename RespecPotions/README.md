@@ -17,5 +17,8 @@ Adds Blackout Potions to each town's local alchemist stock. For existing saves, 
 
 # Change Logs
 
+## Latest Release ${PACKAGE_VERSION}
+- Updated for Definitive Edition.
+
 ## Initial Release 1.0.0
 - Initial release.
