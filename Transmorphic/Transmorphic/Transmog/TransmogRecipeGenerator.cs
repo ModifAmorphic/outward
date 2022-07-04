@@ -112,7 +112,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                 .SetVisualItemID(transmogSource.ItemID)
                 .SetNames("Transmogrify - " + transmogSource.DisplayName)
                 .AddIngredient(new TagSourceSelector(transmogTag))
-                .AddIngredient(ResourcesPrefabManager.Instance.GetItemPrefab(TransmogSettings.TransmogRecipeSecondaryItemID) ?? ResourcesPrefabManager.Instance.GenerateItem(TransmogSettings.TransmogRecipeSecondaryItemID.ToString()))
+                .AddIngredient(ResourcesPrefabManager.Instance.GetItemPrefab(_settings.TransmogRecipeSecondaryItemID) ?? ResourcesPrefabManager.Instance.GenerateItem(_settings.TransmogRecipeSecondaryItemID.ToString()))
                 .AddDynamicResult(resultService, transmogSource.ItemID, 1);
 
             return recipe;

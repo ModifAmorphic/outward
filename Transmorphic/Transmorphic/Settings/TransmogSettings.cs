@@ -36,7 +36,6 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
         public static TagSourceSelector TagSelector = new TagSourceSelector(
             new Tag("Axfc-kYcGEOguAqCUHh_fg", "transmog"));
 
-        public const int TransmogRecipeSecondaryItemID = 6300030;
            
         public static MenuIngredientFilters MenuFilters = new MenuIngredientFilters()
         {
@@ -118,6 +117,20 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
                 if (_allCharactersLearnRecipes)
                     AllCharactersLearnRecipesEnabled?.Invoke();
             } 
+        }
+
+        public event Action<int> TransmogRecipeSecondaryItemIDChanged;
+        private int _transmogRecipeSecondaryItemID;
+        public int TransmogRecipeSecondaryItemID
+        {
+            get => _transmogRecipeSecondaryItemID;
+            set
+            {
+                var oldValue = _transmogRecipeSecondaryItemID;
+                _transmogRecipeSecondaryItemID = value;
+                if (oldValue != _transmogRecipeSecondaryItemID)
+                    TransmogRecipeSecondaryItemIDChanged?.Invoke(_transmogRecipeSecondaryItemID);
+            }
         }
     }
 }

@@ -34,7 +34,6 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
             var enchantment = ResourcesPrefabManager.Instance.GetEnchantmentPrefab(enchantmentRecipe.ResultID);
             var enchantRecipe = ScriptableObject.CreateInstance<EnchantRecipe>();
             var enchantResultPrefab = _enchantResultFabricator.GetOrCreateResultPrefab(enchantmentRecipe, enchantment);
-            Logger.LogDebug($"Got prefab {enchantResultPrefab.name}. GenerateItemNetwork({enchantResultPrefab.ItemID})");
             Logger.LogDebug($"Created item {enchantResultPrefab.name} from prefab {enchantResultPrefab.name}.");
             var recipe = ConfigureEnchantRecipe<EnchantRecipe>(enchantmentRecipe, enchantment, enchantResultPrefab, enchantRecipe);
             Logger.LogDebug($"Configured recipe {recipe.Name} with result item {enchantResultPrefab.name} from prefab {enchantResultPrefab.name}.");

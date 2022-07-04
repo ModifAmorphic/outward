@@ -58,11 +58,27 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
             {
                 if (dynamicResult.IngredientCraftData.IngredientEnchantData.TryGetValue(item.ItemID, out var enchantData))
                 {
-                    tmogEquip.ApplyEnchantmentsFromSaveData(enchantData);
-                    Logger.LogDebug($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): " +
-                        $"Ingredient {item.ItemID} was enchanted. " +
-                        $"Adding echantments to new transmog item.\n" +
-                        $"\tEnchantmentData: {enchantData}");
+                    try
+                    {
+                        Logger.LogDebug($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): " +
+                            $"Ingredient {item.ItemID} was enchanted. " +
+                            $"Adding echantments to new transmog item.\n" +
+                            $"\tEnchantmentData: {enchantData}");
+                        var enchantIds = enchantData.Split(';');
+                        foreach (var enchantId in enchantIds)
+                        {
+                            Logger.LogTrace($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): Processing enchant ID '{enchantId}' for ItemID '{tmogEquip?.ItemID}'");
+                            if (int.TryParse(enchantId, out int id))
+                                tmogEquip.AddEnchantment(id, true);
+                            else
+                                Logger.LogWarning($"Unexpected enchant Id '{enchantId}'. Expected an integer.");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogException($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): Could not re-enchant item {tmogEquip.ItemID}({tmogEquip.UID}).", ex);
+
+                    }
                 }
             }
 
@@ -114,11 +130,27 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
             {
                 if (dynamicResult.IngredientCraftData.IngredientEnchantData.TryGetValue(item.ItemID, out var enchantData))
                 {
-                    equip.ApplyEnchantmentsFromSaveData(enchantData);
-                    Logger.LogDebug($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): " +
-                        $"Ingredient {item.ItemID} was enchanted. " +
-                        $"Adding echantments to new transmog item.\n" +
-                        $"\tEnchantmentData: {enchantData}");
+                    try
+                    {
+                        Logger.LogDebug($"{nameof(TransmogCrafter)}::{nameof(TryCraftRemoveTransmog)}(): " +
+                            $"Ingredient {item.ItemID} was enchanted. " +
+                            $"Adding echantments to untransmog'd item.\n" +
+                            $"\tEnchantmentData: {enchantData}");
+                        var enchantIds = enchantData.Split(';');
+                        foreach (var enchantId in enchantIds)
+                        {
+                            Logger.LogTrace($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): Processing enchant ID '{enchantId}' for ItemID '{equip?.ItemID}'");
+                            if (int.TryParse(enchantId, out int id))
+                                equip.AddEnchantment(id, true);
+                            else
+                                Logger.LogWarning($"Unexpected enchant Id '{enchantId}'. Expected an integer.");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogException($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): Could not re-enchant item {equip.ItemID}({equip.UID}).", ex);
+
+                    }
                 }
             }
 

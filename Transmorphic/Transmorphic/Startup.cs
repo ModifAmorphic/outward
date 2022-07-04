@@ -39,8 +39,8 @@ namespace ModifAmorphic.Outward.Transmorphic
 
             _loggerFactory = services.GetServiceFactory<IModifLogger>();
 
-            TryStartMenu(services.GetService<CookingStartup>());
-            TryStartMenu(services.GetService<AlchemyStartup>());
+            //TryStartMenu(services.GetService<CookingStartup>());
+            //TryStartMenu(services.GetService<AlchemyStartup>());
             TryStartMenu(services.GetService<TransmogStartup>());
             TryStartMenu(services.GetService<EnchantingStartup>());
 

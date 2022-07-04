@@ -177,6 +177,16 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
             Order = TransmogTopOrder - 2,
             IsAdvanced = false
         };
+        public ConfigSetting<int> SecondaryTransmogIngredient { get; } = new ConfigSetting<int>()
+        {
+            Name = nameof(SecondaryTransmogIngredient),
+            DefaultValue = 6300030,
+            Section = TransmogSection,
+            DisplayName = "  • Secondary Transmogrify Ingredient",
+            Description = $"Secondary ingredient which is consumed when transmogrifying an item.  Default is a Gold Ingot (6300030). A valid item ID is required. Requires restart before change is applied.",
+            Order = TransmogTopOrder - 3,
+            IsAdvanced = false
+        };
 
         const string AdvancedSection = "zz--Advanced Settings--zz";
         const int AdvancedTopOrder = TransmogTopOrder - 1000;
