@@ -4,7 +4,7 @@ using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Models;
-using ModifAmorphic.Outward.Modules.Character;
+using ModifAmorphic.Outward.Modules.CharacterMods;
 using ModifAmorphic.Outward.Modules.Items;
 using ModifAmorphic.Outward.Modules.Merchants;
 using ModifAmorphic.Outward.RespecPotions.Effects;
@@ -83,7 +83,7 @@ namespace ModifAmorphic.Outward.RespecPotions
                             //&& _services.TryGetService<ResourcesPrefabManager>(out var prefabManager) 
                             && _resourcesPrefabManager.Loaded;
             Action addForgetPotions = () => AddForgetPotionPrefabs(_characterInstances);
-            var coroutine = new ModifCoroutine(_getLogger);
+            var coroutine = new ModifCoroutine(_baseUnityPlugin, _getLogger);
             Func<IEnumerator> loadPotionsAfter = () => coroutine.InvokeAfter(isPrefabAndSkillsLoaded, addForgetPotions, timeoutSecs, .5f);
 
             _baseUnityPlugin.StartCoroutine(loadPotionsAfter.Invoke());
@@ -113,7 +113,7 @@ namespace ModifAmorphic.Outward.RespecPotions
 
                     Logger.LogDebug($"{nameof(PotionItemService)}::{nameof(AddForgetPotionPrefabs)}: Created '{potionPrefab.Name}' prefab with ItemID {potionPrefab.ItemID}.");
                     potionPrefab.ClearEffects()
-                        .ConfigureCustomIcon(Path.Combine(iconDir, iconFileName))
+                        .ConfigureItemIcon(Path.Combine(iconDir, iconFileName))
                         .AddEffect<ForgetSchoolEffect>()
                         .SchoolIndex = schoolIndex;
                     potionPrefab.AddEffect<AutoKnock>();
