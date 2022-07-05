@@ -19,6 +19,7 @@ Adds Blackout Potions to each town's local alchemist stock. For existing saves, 
 
 ## Latest Release ${PACKAGE_VERSION}
 - Updated for Definitive Edition.
+- Removed Health Loss on consuming a potion. Was buggy when forgetting skills that added to health.
 
 ## Initial Release 1.0.0
 - Initial release.
