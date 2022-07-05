@@ -56,13 +56,15 @@ namespace ModifAmorphic.Outward.Modules.Items
 
             var baseActiveStatus = basePrefab.gameObject.activeSelf;
             basePrefab.gameObject.SetActive(false);
-            var prefab = (T)GameObject.Instantiate(basePrefab.gameObject, _itemPrefabParent, false).GetComponent<Item>();
-            basePrefab.gameObject.SetActive(baseActiveStatus);
+            var prefab = (T)GameObject.Instantiate(basePrefab, _itemPrefabParent, false).GetComponent<Item>();
+            prefab.gameObject.DeCloneNames();
             prefab.transform.ResetLocal();
+            basePrefab.gameObject.SetActive(baseActiveStatus);
+            
             //UnityEngine.Object.DontDestroyOnLoad(prefab.gameObject);
             //basePrefab.gameObject.SetActive(baseActiveStatus);
             //prefab.hideFlags |= HideFlags.HideAndDontSave;
-            prefab.gameObject.DeCloneNames();
+            
 
             if (setFields)
             {
