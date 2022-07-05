@@ -108,6 +108,8 @@ namespace ModifAmorphic.Outward.RespecPotions
                     var potionDesc = RespecConstants.PotionDescFormat.Replace("{SchoolName}", skillSchools[schoolIndex].Name);
 
                     var potionPrefab = _preFabricator.CreatePrefab(basePrefab, RespecConstants.ItemStartID - schoolIndex, potionName, potionDesc);
+                    Logger.LogTrace($"{nameof(PotionItemService)}::{nameof(AddForgetPotionPrefabs)}: potionPrefab.gameObject.activeSelf={potionPrefab.gameObject.activeSelf}.");
+                    //potionPrefab.gameObject.SetActive(true);
 
                     var iconFileName = GetIconFilePath(skillSchools[schoolIndex].name, iconDir);
 
@@ -117,10 +119,10 @@ namespace ModifAmorphic.Outward.RespecPotions
                         .AddEffect<ForgetSchoolEffect>()
                         .SchoolIndex = schoolIndex;
                     potionPrefab.AddEffect<AutoKnock>();
-                    potionPrefab.AddEffect<BurnHealthEffect>()
-                        .AffectQuantity = .75f;
+                    //potionPrefab.AddEffect<BurnHealthEffect>()
+                    //    .AffectQuantity = .25f;
                     potionPrefab.AddEffect<BurnStaminaEffect>()
-                        .AffectQuantity = .99f;
+                        .AffectQuantity = .25f;
 
                     var itemStats = potionPrefab.gameObject.GetOrAddComponent<ItemStats>();
                     itemStats.SetBaseValue(_settings.PotionValue.Value);
