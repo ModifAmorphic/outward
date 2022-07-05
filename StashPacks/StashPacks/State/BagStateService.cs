@@ -70,6 +70,7 @@ namespace ModifAmorphic.Outward.StashPacks.State
             RemoveTracking(bagItemID);
         }
 
+        public bool TryGetContentChangesTracked(int itemID, out bool isTracked) => _contentChangesTracked.TryGetValue(itemID, out isTracked);
         public bool IsContentChangesTracked(int itemID) => _contentChangesTracked.GetOrAdd(itemID, true);
 
         public void EnableContentChangeTracking(int itemID)

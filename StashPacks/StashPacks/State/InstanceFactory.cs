@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.StashPacks.Extensions;
 using ModifAmorphic.Outward.StashPacks.Network;
@@ -28,7 +29,7 @@ namespace ModifAmorphic.Outward.StashPacks.State
 
 
         private readonly StashPackHostSettings _localHostSettings;
-        private StashPackHostSettings _hostSettings;
+        private readonly StashPackHostSettings _hostSettings;
         public StashPackHostSettings HostSettings => _hostSettings;
 
         private readonly StashPackNet _stashPackNet;
@@ -36,7 +37,7 @@ namespace ModifAmorphic.Outward.StashPacks.State
 
         private ItemManager _itemManager;
 
-
+        private readonly Dictionary<Type, ModifCoroutine> _coroutines;
 
         public IReadOnlyDictionary<AreaManager.AreaEnum, (string StashUID, int ItemId)> StashIds => StashPacksConstants.PermenantStashUids;
 
@@ -52,14 +53,16 @@ namespace ModifAmorphic.Outward.StashPacks.State
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
-        public InstanceFactory(BaseUnityPlugin unityPlugin, StashPacksConfigSettings stashPackSettings, StashPackHostSettings localHostSettings, StashPackNet stashPackNet, Func<IModifLogger> getLogger)
+        public InstanceFactory(ServicesProvider services)
         {
-            _unityPlugin = unityPlugin;
-            _getLogger = getLogger;
-            _stashPacksSettings = stashPackSettings;
-            _localHostSettings = localHostSettings;
-            _hostSettings = localHostSettings.Clone();
-            _stashPackNet = stashPackNet;
+            _unityPlugin = services.GetService<BaseUnityPlugin>();
+            _getLogger = services.GetService<IModifLogger>;
+            _stashPacksSettings = services.GetService<StashPacksConfigSettings>();
+            _localHostSettings = services.GetService<StashPackHostSettings>();
+            _hostSettings = _localHostSettings.Clone();
+            _stashPackNet = services.GetService<StashPackNet>();
+            _coroutines = services.GetServices<ModifCoroutine>()
+                            .ToDictionary(c => c.GetType(), c => c);
             RoutePatchEvents();
         }
 
@@ -172,6 +175,8 @@ namespace ModifAmorphic.Outward.StashPacks.State
 
             return (StashSaveExecuter)_characterSingletons[characterUID][typeof(StashSaveExecuter)];
         }
+
+        public T GetCoroutine<T>() where T : ModifCoroutine => (T)_coroutines[typeof(T)];
 
     }
 }

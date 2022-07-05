@@ -9,31 +9,43 @@ namespace ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients
 {
     internal class CustomCompatibleIngredient : CompatibleIngredient
     {
+        internal Guid StaticIngredientID;
+
         private readonly Func<IModifLogger> _loggerFactory;
         private IModifLogger Logger => _loggerFactory.Invoke();
 
-        private readonly ICompatibleIngredientMatcher _ingredientMatcher;
 
-        public CustomCompatibleIngredient(int itemID, ICompatibleIngredientMatcher ingredientMatcher, Func<IModifLogger> loggerFactory) : base(itemID) =>
-            (_ingredientMatcher, _loggerFactory) = (ingredientMatcher, loggerFactory);
+        private readonly ICompatibleIngredientMatcher _ingredientMatcher;
+        private readonly IConsumedItemSelector _consumedItemSelector;
+
+        public CustomCompatibleIngredient(int itemID, ICompatibleIngredientMatcher ingredientMatcher, IConsumedItemSelector consumedItemSelector, Func<IModifLogger> loggerFactory) : base(itemID) =>
+            (_ingredientMatcher, _consumedItemSelector, _loggerFactory) = (ingredientMatcher, consumedItemSelector, loggerFactory);
 
         public bool MatchRecipeStepOverride(RecipeIngredient recipeIngredient, out bool isMatchResult)
         {
             if (_ingredientMatcher != null)
             {
-                isMatchResult = _ingredientMatcher.MatchRecipeStep(this, recipeIngredient);
-                return true;
+                return _ingredientMatcher.TryMatchRecipeStep(this, recipeIngredient, out isMatchResult);
             }
             isMatchResult = false;
             return false;
         }
 
-        public void SetOwnedItems(List<Item> ownedItems)
+        public bool TryGetConsumedItems(bool useMultipler, ref int resultMultiplier, out IList<KeyValuePair<string, int>> consumedItems, out List<Item> preservedItems)
         {
-            this.SetPrivateField<CompatibleIngredient, List<Item>>("m_ownedItems", ownedItems);
+            if (_consumedItemSelector == null)
+            {
+                resultMultiplier = default;
+                consumedItems = default;
+                preservedItems = default;
+                return false;
+            }
+            if (StaticIngredientID == Guid.Empty)
+                return _consumedItemSelector.TryGetConsumedItems(this, useMultipler, ref resultMultiplier, out consumedItems, out preservedItems);
+            else
+                return _consumedItemSelector.TryGetConsumedStaticItems(this, StaticIngredientID, useMultipler, ref resultMultiplier, out consumedItems, out preservedItems);
         }
-
-        public void CaptureConsumedItems(IList<KeyValuePair<string, int>> consumedItems)
+        public void CaptureConsumedItems(IList<KeyValuePair<string, int>> consumedItems, List<Item> preservedItems)
         {
             if (_ingredientMatcher != null)
             {
@@ -55,6 +67,9 @@ namespace ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients
                         $"Capturing soon to be consumed item {kvp.Value} ({kvp.Key}).");
                     itemQuantities.Add(kvp.Key, kvp.Value);
                 }
+
+                if (preservedItems != default)
+                    menuCraftData.PreservedItems.AddRange(preservedItems);
             }
         }
         private void StashIngredientEnchantData(IList<KeyValuePair<string, int>> consumedItems)

@@ -32,9 +32,15 @@ namespace ModifAmorphic.Outward.Modules
         }
         public static PreFabricator GetPreFabricatorModule(string modId)
         {
+            var itemPrefabService =
+                new ItemPrefabService(modId,
+                                    new GameObjectResources.ModifGoService(
+                                        () => LoggerFactory.GetLogger(modId)),
+                                    () => ResourcesPrefabManager.Instance,
+                                    () => LoggerFactory.GetLogger(modId));
             return ModuleService.GetModule<PreFabricator>(modId, () =>
-                new PreFabricator(modId, 
-                    () => ResourcesPrefabManager.Instance, 
+                new PreFabricator(modId,
+                    itemPrefabService, 
                     () => LoggerFactory.GetLogger(modId)));
         }
         public static ItemVisualizer GetItemVisualizerModule(string modId)
@@ -56,15 +62,17 @@ namespace ModifAmorphic.Outward.Modules
         }
         public static CustomCraftingModule GetCustomCraftingModule(string modId)
         {
-            var menuTabService = new CraftingMenuService(() => LoggerFactory.GetLogger(modId));
+            var menuTabService = new CraftingMenuUIService(() => LoggerFactory.GetLogger(modId));
 
             return ModuleService.GetModule<CustomCraftingModule>(modId, () =>
                 new CustomCraftingModule(
-                    new CraftingMenuService(() => LoggerFactory.GetLogger(modId)),
+                    new CraftingMenuUIService(() => LoggerFactory.GetLogger(modId)),
+                    new RecipeDisplayService(() => LoggerFactory.GetLogger(modId)),
                     new CustomRecipeService(
                         () => RecipeManager.Instance,
                         () => LoggerFactory.GetLogger(modId)),
                     new CustomCraftingService(() => LoggerFactory.GetLogger(modId)),
+                    new CraftingMenuEvents(),
                     () => LoggerFactory.GetLogger(modId)));
         }
     }

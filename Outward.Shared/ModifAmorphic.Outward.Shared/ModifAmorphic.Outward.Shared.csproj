@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>ModifAmorphic.Outward.Shared.v0_0_0_7</AssemblyName>
+    <AssemblyName>ModifAmorphic.Outward.Shared.v0_0_0_8</AssemblyName>
     <RootNamespace>ModifAmorphic.Outward</RootNamespace>
     <Authors>ModifAmorphic.Outward</Authors>
     <Product>ModifAmorphic.Outward</Product>

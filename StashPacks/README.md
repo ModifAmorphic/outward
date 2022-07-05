@@ -1,5 +1,5 @@
 # Summary
-StashPacks adds special Stash linked BackPacks to the game. Drop a StashPack on the ground and access your stash from almost anywhere, including other people's games!
+StashPacks adds special backpacks that link to player stashes. Drop a StashPack on the ground to access a stash from almost anywhere, including other people's games!
 &nbsp;
 - - - -
 &nbsp;
@@ -30,7 +30,7 @@ StashPacks works by retrieving the contents of a stash whenever a stashpack is d
 
 
 # Important Notes
-- StashPacks work in multiplayer, even when you're not the host, allowing you to access your stashes wile in someone elses game.
+- StashPacks work in multiplayer, even when you're not the host, allowing you to access your stashes while in someone else's game.
 - A StashPack will not work in its home scenario/area if you are the host. This is by design. Use the Stash in the area instead.
 - StashPacks are not usable from inside your inventory, or other containers.
 - Pressing the equip button when a StashPack is on the ground will automatically add it to your inventory.
@@ -38,12 +38,19 @@ StashPacks works by retrieving the contents of a stash whenever a stashpack is d
 - By default, stash packs are only usable in towns. There is a configuration option to enable them in all areas. Don't forget most areas outside towns reset after 7 days though!
 - Duplicate dropped stashpacks will not work for the same player. This just means if you have the same bag dropped more than once, only the last bag you dropped will be linked to its home stash.
 - If you "cheat" a stashpack into the game, make sure you pick it up before using. Stashpacks only work if they've been "owned" before.
-- In multipleyer, the host controls a couple settings for compatibilty. The Enabling/Disabling of stashpack functionality outside of towns and the scaling and rotation of bags.
+- In multiplayer, the host controls a couple settings for compatibility. The Enabling/Disabling of stashpack functionality outside of towns and the scaling and rotation of bags.
 
 
 # Change Logs
+## Latest Release ${PACKAGE_VERSION}
+- Fixed bug where taking a pack before it fully synced could cause it to stop working as a stash pack.
+- Lots of fine tuning, internal rework of timed events around bags dropping, syncing and being picked up.
+- Fixed issue with error being logged when main host left the game.
+- Corrected a few typos.
+- Removed Dependency on Mefino-Outward_Config_Manager.
+- Fixed bug with ConfigurationManager install being required. A ConfigurationManager is now truly optional.
+- *Internal* - Using BepInEx logger.
+- *Internal* - ModifAmorphic.Outward.dll dependency packaged inside mod dll instead of a separate file.
 
 ## Initial Release 1.0.1
 - Initial release.
-
-

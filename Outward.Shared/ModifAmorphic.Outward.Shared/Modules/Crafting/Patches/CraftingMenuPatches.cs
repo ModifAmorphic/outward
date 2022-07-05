@@ -28,25 +28,26 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
             }
         }
 
-        //public static event Action<CustomCraftingMenu> CraftingDoneBefore;
-        //[HarmonyPatch("CraftingDone", MethodType.Normal)]
-        //[HarmonyPrefix]
-        //private static void CraftingDonePrefix(CraftingMenu __instance)
+        //[HarmonyPatch(nameof(CraftingMenu.IsSurvivalCrafting), MethodType.Getter)]
+        //[HarmonyPostfix]
+        //private static void IsSurvivalCraftingPostfix(CraftingMenu __instance, ref bool __result)
         //{
         //    try
         //    {
-        //        if (!(__instance is CustomCraftingMenu customCraftingMenu))
+        //        var menuType = __instance?.GetType();
+        //        if (!(__instance is CustomCraftingMenu customMenu))
         //        {
-        //            Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(CraftingDonePrefix)}(): Menu is not a {nameof(CustomCraftingMenu)}. Not invoking {nameof(CraftingDoneBefore)}.");
+        //            Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(IsSurvivalCraftingPostfix)}(): Menu {menuType} is not a {nameof(CustomCraftingMenu)}.");
         //            return;
         //        }
-        //        Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(CraftingDonePrefix)}(): Invoked on CraftingMenu type {customCraftingMenu?.GetType()}. Invoking " +
-        //            $"{nameof(CraftingDoneBefore)}({customCraftingMenu?.GetType()})");
-        //        CraftingDoneBefore?.Invoke(customCraftingMenu);
+        //        Logger.LogDebug($"{nameof(CraftingMenuPatches)}::{nameof(IsSurvivalCraftingPostfix)}(): Invoked on CraftingMenu type {menuType}. Invoking " +
+        //            $"{nameof(CustomCraftingMenu.TryGetIsSurvivalCrafting)}()");
+        //        //if (customMenu.TryGetIsSurvivalCrafting(out var isSurvivalCrafting))
+        //        //    __result = isSurvivalCrafting;
         //    }
         //    catch (Exception ex)
         //    {
-        //        Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(CraftingDonePrefix)}(): Exception Invoking {nameof(CraftingDoneBefore)}().", ex);
+        //        Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(IsSurvivalCraftingPostfix)}(): Exception Invoking {nameof(CustomCraftingMenu.TryGetIsSurvivalCrafting)}().", ex);
         //    }
         //}
 
@@ -75,73 +76,135 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
             return true;
         }
 
-        public static event Action<(CraftingMenu CraftingMenu, int Index, bool ForceRefresh)> OnRecipeSelectedAfter;
+        [HarmonyPatch(nameof(CraftingMenu.OnRecipeSelected), MethodType.Normal)]
+        [HarmonyPrefix]
+        private static bool OnRecipeSelectedPrefix(CraftingMenu __instance, int _index, bool _forceRefresh = false)
+        {
+            try
+            {
+                if (!(__instance is CustomCraftingMenu customMenu))
+                {
+                    Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(OnRecipeSelectedPrefix)}(): Menu is not a {nameof(CustomCraftingMenu)}..");
+                    return true;
+                }
+                Logger.LogDebug($"{nameof(CraftingMenuPatches)}::{nameof(OnRecipeSelectedPrefix)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Invoking " +
+                    $"{nameof(CustomCraftingMenu.TryOnRecipeSelected)}({_index}, {_forceRefresh})");
+                return !customMenu.TryOnRecipeSelected(_index, _forceRefresh);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(OnRecipeSelectedPrefix)}(): Exception Invoking {nameof(CustomCraftingMenu.TryOnRecipeSelected)}().", ex);
+            }
+            return true;
+        }
+
         [HarmonyPatch(nameof(CraftingMenu.OnRecipeSelected), MethodType.Normal)]
         [HarmonyPostfix]
         private static void OnRecipeSelectedPostfix(CraftingMenu __instance, int _index, bool _forceRefresh = false)
         {
             try
             {
-                if (!(__instance is CustomCraftingMenu))
+                var menuType = __instance?.GetType();
+                if (!(__instance is CustomCraftingMenu customMenu))
                 {
-                    Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(OnRecipeSelectedPostfix)}(): Menu is not a {nameof(CustomCraftingMenu)}. Not invoking {nameof(OnRecipeSelectedAfter)}.");
+                    Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(OnRecipeSelectedPostfix)}(): Menu {menuType} is not a {nameof(CustomCraftingMenu)}.");
                     return;
                 }
-                Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(OnRecipeSelectedPostfix)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Invoking " +
-                    $"{nameof(OnRecipeSelectedAfter)}({_index}, {_forceRefresh})");
-                OnRecipeSelectedAfter?.Invoke((__instance, _index, _forceRefresh));
+                Logger.LogDebug($"{nameof(CraftingMenuPatches)}::{nameof(OnRecipeSelectedPostfix)}(): Invoked on CraftingMenu type {menuType}. Invoking " +
+                    $"{nameof(CustomCraftingMenu.SetSelectorsNavigation)}() and {nameof(CustomCraftingMenu.RefreshResult)}()");
+                customMenu.SetSelectorsNavigation(_index);
+                customMenu.RefreshResult();
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(OnRecipeSelectedPostfix)}(): Exception Invoking {nameof(OnRecipeSelectedAfter)}().", ex);
+                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(OnRecipeSelectedPostfix)}(): Exception Invoking " +
+                    $"{nameof(CustomCraftingMenu.SetSelectorsNavigation)}() or {nameof(CustomCraftingMenu.RefreshResult)}().", ex);
             }
         }
 
-        public static event Action<(CraftingMenu CraftingMenu, int SelectorIndex, int ItemID)> IngredientSelectorHasChangedAfter;
+        public static event Action<CustomCraftingMenu> RefreshAutoRecipeAfter;
+        [HarmonyPatch("RefreshAutoRecipe", MethodType.Normal)]
+        [HarmonyPostfix]
+        private static void RefreshAutoRecipePostfix(CraftingMenu __instance)
+        {
+            try
+            {
+                if (!(__instance is CustomCraftingMenu customMenu))
+                {
+                    Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoRecipePostfix)}(): Menu is not a {nameof(CustomCraftingMenu)}.");
+                    return;
+                }
+                Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoRecipePostfix)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Invoking " +
+                    $"{nameof(RefreshAutoRecipeAfter)}()");
+                RefreshAutoRecipeAfter?.Invoke(customMenu);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoRecipePostfix)}(): Exception Invoking {nameof(RefreshAutoRecipeAfter)}().", ex);
+            }
+        }
+
+        [HarmonyPatch(nameof(CraftingMenu.OnIngredientSelectorClicked), MethodType.Normal)]
+        [HarmonyPrefix]
+        private static bool OnIngredientSelectorClickedPrefix(CraftingMenu __instance, int _selectorIndex)
+        {
+            try
+            {
+                if (!(__instance is CustomCraftingMenu customMenu))
+                {
+                    Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(OnIngredientSelectorClickedPrefix)}(): Menu is not a {nameof(CustomCraftingMenu)}..");
+                    return true;
+                }
+                Logger.LogDebug($"{nameof(CraftingMenuPatches)}::{nameof(OnIngredientSelectorClickedPrefix)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Invoking " +
+                    $"{nameof(CustomCraftingMenu.TryOnIngredientSelectorClicked)}({_selectorIndex})");
+                return !customMenu.TryOnIngredientSelectorClicked(_selectorIndex);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(OnIngredientSelectorClickedPrefix)}(): Exception Invoking {nameof(CustomCraftingMenu.TryOnIngredientSelectorClicked)}().", ex);
+            }
+            return true;
+        }
+
         [HarmonyPatch(nameof(CraftingMenu.IngredientSelectorHasChanged), MethodType.Normal)]
         [HarmonyPostfix]
         private static void IngredientSelectorHasChangedPostfix(CraftingMenu __instance, int _selectorIndex, int _itemID)
         {
             try
             {
-                if (!(__instance is CustomCraftingMenu))
+                if (!(__instance is CustomCraftingMenu customMenu))
                 {
-                    Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(IngredientSelectorHasChangedPostfix)}(): Menu is not a {nameof(CustomCraftingMenu)}. Not invoking {nameof(IngredientSelectorHasChangedAfter)}.");
+                    Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(IngredientSelectorHasChangedPostfix)}(): Menu is not a {nameof(CustomCraftingMenu)}.");
                     return;
                 }
                 Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(IngredientSelectorHasChangedPostfix)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Invoking " +
-                    $"{nameof(IngredientSelectorHasChangedAfter)}({_selectorIndex}, {_itemID})");
-                IngredientSelectorHasChangedAfter?.Invoke((__instance, _selectorIndex, _itemID));
+                    $"{nameof(CustomCraftingMenu.IngredientSelectorHasChanged)}({_selectorIndex}, {_itemID})");
+                customMenu.IngredientSelectorHasChanged(_selectorIndex, _itemID);
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(IngredientSelectorHasChangedPostfix)}(): Exception Invoking {nameof(IngredientSelectorHasChangedAfter)}().", ex);
+                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(IngredientSelectorHasChangedPostfix)}(): Exception Invoking {nameof(CustomCraftingMenu.IngredientSelectorHasChanged)}().", ex);
             }
         }
 
-        public static event Func<CustomCraftingMenu, bool> RefreshAvailableIngredientsOverridden;
+        public static event Action<CustomCraftingMenu> RefreshAvailableIngredientsAfter;
         [HarmonyPatch("RefreshAvailableIngredients", MethodType.Normal)]
-        [HarmonyPrefix]
-        private static bool RefreshAvailableIngredientsPrefix(CraftingMenu __instance)
+        [HarmonyPostfix]
+        private static void RefreshAvailableIngredientsPostfix(CraftingMenu __instance)
         {
             try
             {
-                Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAvailableIngredientsPrefix)}(): Invoked on CraftingMenu type {__instance?.GetType()}.");
-                if (__instance is CustomCraftingMenu menu
-                    && (RefreshAvailableIngredientsOverridden?.Invoke(menu) ?? false))
-                {
-                    Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAvailableIngredientsPrefix)}(): {nameof(RefreshAvailableIngredientsOverridden)}() result: was true. Returning false to override base method.");
-                    return false;
-                }
-
+                if (!(__instance is CustomCraftingMenu customCraftingMenu))
+                    return;
+                
+                Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAvailableIngredientsPostfix)}(): Invoked on CraftingMenu type {customCraftingMenu?.GetType()}.  Invoking {nameof(RefreshAvailableIngredientsAfter)}().");
+                RefreshAvailableIngredientsAfter?.Invoke(customCraftingMenu);
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAvailableIngredientsPrefix)}(): Exception Invoking {nameof(RefreshAvailableIngredientsOverridden)}({__instance?.GetType()}).", ex);
+                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAvailableIngredientsPostfix)}(): Exception Invoking {nameof(RefreshAvailableIngredientsAfter)}({__instance?.GetType()}).", ex);
             }
-            return true;
         }
-
 
         [HarmonyPatch("RefreshAutoIngredients", MethodType.Normal)]
         [HarmonyPrefix]
@@ -186,30 +249,5 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
             }
         }
 
-        //public delegate void RefreshAutoIngredients(CraftingMenu craftingMenu, Recipe recipe, ref IList<int>[] allMatches, ref IList<int> bestIngredientsMatch);
-        //public static event RefreshAutoIngredients RefreshAutoIngredientsAfter;
-        //[HarmonyPatch("RefreshAutoIngredients", MethodType.Normal)]
-        //[HarmonyPostfix]
-        //private static void RefreshAutoIngredientsPostfix(CraftingMenu __instance, Recipe _recipe, ref IList<int>[] _allMatches, ref IList<int> _bestIngredientsMatch)
-        //{
-        //    try
-        //    {
-        //        Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredientsPostfix)}(): Invoked on CraftingMenu type {__instance?.GetType()}.");
-        //        if (!(__instance is CustomCraftingMenu)
-        //            || _recipe == null
-        //            || _recipe.Results == null || _recipe.Results.Length == 0
-        //            || !(_recipe.Results[0] is DynamicCraftingResult))
-        //        {
-        //            return;
-        //        }
-        //        Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredientsPostfix)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Invoking " +
-        //            $"{nameof(IngredientSelectorHasChangedAfter)}() for recipe {_recipe.Name}");
-        //        RefreshAutoIngredientsAfter?.Invoke(__instance, _recipe, ref _allMatches, ref _bestIngredientsMatch);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAutoIngredientsPostfix)}(): Exception Invoking {nameof(RefreshAutoIngredientsAfter)}().", ex);
-        //    }
-        //}
     }
 }

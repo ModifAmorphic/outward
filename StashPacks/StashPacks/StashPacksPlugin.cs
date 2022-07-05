@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using HarmonyLib;
+using ModifAmorphic.Outward.Logging;
 using System;
 
 namespace ModifAmorphic.Outward.StashPacks
@@ -13,19 +14,23 @@ namespace ModifAmorphic.Outward.StashPacks
     {
         internal void Awake()
         {
+            IModifLogger logger = null;
+            
             var harmony = new Harmony(ModInfo.ModId);
             try
             {
-                UnityEngine.Debug.Log($"[{ModInfo.ModName}][Info] - Patching...");
+                logger = LoggerFactory.ConfigureLogger(ModInfo.ModId, ModInfo.ModName, LogLevel.Info);
+                logger.LogInfo($"Patching...");
                 harmony.PatchAll();
 
                 var startup = new Startup();
-                UnityEngine.Debug.Log($"[{ModInfo.ModName}][Info] - Starting...");
-                startup.Start(this);
+                logger.LogInfo($"Starting {ModInfo.ModName} {ModInfo.ModVersion}...");
+                var servicesProvider = new ServicesProvider(this);
+                startup.Start(servicesProvider);
             }
             catch (Exception ex)
             {
-                UnityEngine.Debug.LogError($"[{ModInfo.ModName}][Error] Failed to enable {ModInfo.ModId} {ModInfo.ModName}. Exception: {ex}");
+                logger?.LogException($"Failed to enable {ModInfo.ModId} {ModInfo.ModName} {ModInfo.ModVersion}.", ex);
                 harmony.UnpatchSelf();
                 throw;
             }

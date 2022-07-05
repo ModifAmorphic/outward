@@ -59,6 +59,50 @@ namespace ModifAmorphic.Outward.Extensions
 
             return recipe;
         }
+        public static T AddIngredient<T>(this T recipe, RecipeIngredient ingredient) where T : Recipe
+        {
+            var ingredients = recipe.Ingredients?.ToList() ?? new List<RecipeIngredient>();
+            ingredients.Add(ingredient);
+
+            recipe.SetRecipeIngredients(ingredients.ToArray());
+
+            return recipe;
+        }
+        public static T AddCustomIngredient<T>(this T recipe, Guid guid, Item ingredient) where T : Recipe
+        {
+            var ingredients = recipe.Ingredients?.ToList() ?? new List<RecipeIngredient>();
+            ingredients.Add(new CustomRecipeIngredient()
+            {
+                ActionType = RecipeIngredient.ActionTypes.AddSpecificIngredient,
+                AddedIngredient = ingredient,
+                CustomRecipeIngredientID = guid
+            });
+
+            recipe.SetRecipeIngredients(ingredients.ToArray());
+
+            return recipe;
+        }
+        public static T AddCustomIngredient<T>(this T recipe, Guid guid, Item ingredient, int quantity) where T : Recipe
+        {
+            for (int i = 0; i < quantity; i++)
+                recipe.AddCustomIngredient(guid, ingredient);
+
+            return recipe;
+        }
+        public static T AddCustomIngredient<T>(this T recipe, Guid guid, TagSourceSelector ingredientTypeSelector) where T : Recipe
+        {
+            var ingredients = recipe.Ingredients?.ToList() ?? new List<RecipeIngredient>();
+            ingredients.Add(new CustomRecipeIngredient()
+            {
+                ActionType = RecipeIngredient.ActionTypes.AddGenericIngredient,
+                AddedIngredientType = ingredientTypeSelector,
+                CustomRecipeIngredientID = guid
+            });
+
+            recipe.SetRecipeIngredients(ingredients.ToArray());
+
+            return recipe;
+        }
         public static T SetUID<T>(this T recipe, UID uid) where T : Recipe
         {
             recipe.SetPrivateField<Recipe, UID>("m_uid", uid);
@@ -88,6 +132,13 @@ namespace ModifAmorphic.Outward.Extensions
             var result = new DynamicCraftingResult(service, itemID, quantity);
 
             recipe.SetRecipeResult(result);
+
+            return recipe;
+        }
+
+        public static T SetResults<T>(this T recipe, ItemReferenceQuantity[] results) where T : Recipe
+        {
+            recipe.SetPrivateField<Recipe, ItemReferenceQuantity[]>("m_results", results);
 
             return recipe;
         }
