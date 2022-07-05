@@ -1,7 +1,7 @@
 ﻿using BepInEx;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules;
-using ModifAmorphic.Outward.Modules.Character;
+using ModifAmorphic.Outward.Modules.CharacterMods;
 using ModifAmorphic.Outward.Modules.Items;
 using ModifAmorphic.Outward.Modules.Merchants;
 using ModifAmorphic.Outward.RespecPotions.Settings;

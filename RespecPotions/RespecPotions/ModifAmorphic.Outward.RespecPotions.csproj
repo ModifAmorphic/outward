@@ -5,9 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ModifAmorphic.Outward" Version="0.4.8">
-      <PrivateAssets></PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="ModifAmorphic.Outward" Version="0.5.7" />
   </ItemGroup>
 
   <ItemGroup>
