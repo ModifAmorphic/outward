@@ -24,7 +24,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Cooking
             _loggerFactory = _services.GetServiceFactory<IModifLogger>();
             _services
                .AddSingleton(_settingsService.ConfigureCookingSettings(_config))
-               .AddSingleton(new CookingIngredientMatcher());
+               .AddSingleton(new CookingIngredientMatcher(_loggerFactory));
 
             var cookingSettings = _services.GetService<CookingSettings>();
             var craftingModule = _services.GetService<CustomCraftingModule>();
