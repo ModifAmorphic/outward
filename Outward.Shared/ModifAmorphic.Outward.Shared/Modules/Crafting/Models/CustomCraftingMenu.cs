@@ -391,8 +391,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				throw new ArgumentException($"Invalid CraftingType. Allowed CraftingTypes are Cooking, Alchemy and Survival.", nameof(craftingStationType));
 			}
 
-			const int stationaryAlchemyStation = 1900003;
-			const int stationaryCookingStation = 1900004;
+			const int stationaryAlchemyStation = 5010205;
+			const int stationaryCookingStation = 1900001;
 
 			var stationId = stationaryAlchemyStation;
 			if (craftingStationType == Recipe.CraftingType.Cooking)
