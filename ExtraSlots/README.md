@@ -36,7 +36,11 @@ Extra QuickSlots enables additional Keyboard QuickSlots and repositioning of the
 
 &nbsp;
 # Change Logs
+
 ## Latest Version ${PACKAGE_VERSION}
+- Built using Definitive Edition Dlls.
+
+## Version 1.0.2
 - Removed Dependency on Mefino-Outward_Config_Manager.
 - Fixed bug with ConfigurationManager install being required. A ConfigurationManager is now truly optional.
 

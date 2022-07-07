@@ -1,4 +1,4 @@
-﻿using ModifAmorphic.Outward.Modules.Character;
+﻿using ModifAmorphic.Outward.Modules.CharacterMods;
 using System;
 using System.Collections.Generic;
 using System.Linq;
