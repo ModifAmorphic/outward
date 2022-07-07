@@ -1,5 +1,5 @@
 # Summary
-**⚡Definitive Edition⚡ Transmogrify your equipment with a new crafting system. Weapons, Armor and now Backpacks, Lanterns and Lexicons. Plus an Enchanting menu.**
+**⚡Definitive Edition⚡ Transmogrify your equipment with a new crafting system. Weapons, Armor and now Backpacks, Lanterns and Lexicons. Plus Enchanting, Cooking and Alchemy crafting menus.**
 &nbsp;
 - - - -
 &nbsp;
@@ -10,6 +10,8 @@
 --- | --- | --- 
  Transmogrify | ![Transmogrify](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverTransmogrify.png?raw=true) | Customize your gear. Change the appearance of weapons or armor.
 Enchanting | ![Enchanting menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverEnchanting.png?raw=true) | Adds an Enchanting crafting menu. Hassle free enchanting without the log rolling. 
+Alchemy | ![Alchemy menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverAlchemy.png?raw=true) | Adds an Alchemy crafting menu. Mix potions without deploying an alchemy kit. Enable or Disable in settings.
+Cooking | ![Cooking menu](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/Assets/assets/tex_men_iconsHoverCooking.png?raw=true) | Fully functional cooking from the character UI. Cook food without deploying a cooking pot. Enable or Disable in settings.
 
 ## **New Recipes**
 Recipe | |  | | | Result
@@ -63,6 +65,7 @@ Transmorphic adds a new crafting system focused on customizing your equipment's 
 
 \**1h sword --> 1h sword, 2h axe --> 2h axe, Boots --> Boots, etc.*
 
+<p> Alchemy and Cooking crafting menus can also be enabled or disabled in the Character UI. Alchemy and Crafting menus now require 2 additional ingredients by default - Alchemy Kit or Cooking Pot and wood. The crafting kit is not consumed on crafting, however the wood is. The new ingredient "fuel" requirement can be disabled.</p>
 
 ## 1. Equip Item
 ![Equip Target Item](https://github.com/ModifAmorphic/outward/blob/mods/transmorphic/Transmorphic/RawAssets/EquipItemSmallest.png?raw=true)
@@ -75,8 +78,12 @@ Transmorphic adds a new crafting system focused on customizing your equipment's 
 
 # Change Logs
 
-
 ## Latest Release ${PACKAGE_VERSION}
+  - Fixed Cooking and Alchemy menus for DE and enabled again.
+  - Fix for Cooking and Alchemy menus incorrectly consuming the cooking pot / alchemy kit when manually crafting a recipe that hasn't been learned yet.
+  - Added option to specify secondary ingredient that is consumed for transmogs
+
+## Release 1.0.3
   - Fixes for Definitive Edition.
   - Removed Cooking and Alchemy menus.
   - Added option to specify secondary ingredient that is consumed for transmogs
