@@ -1,30 +1,30 @@
 ﻿using HarmonyLib;
-using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Logging;
 using System;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
-{ 
+{
+    //TODO:Remember what this actually does because the current summary is useless.
     /// <summary>
     /// This class is responsible for adding extra quickslots to the character's QuickSlotManager.
     /// </summary>
-[HarmonyPatch(typeof(CharacterQuickSlotManager), "Awake")]
+    [HarmonyPatch(typeof(CharacterQuickSlotManager), "Awake")]
     internal static class CharacterQuickSlotManagerPatches
     {
         private static int _quickslotsToAdd;
+        private static bool _isAwakened = false;
+
+        public static void Configure(int qsToAdd)
+        {
+            if (_isAwakened)
+                throw new InvalidOperationException($"{nameof(CharacterQuickSlotManagerPatches)}.{nameof(Configure)} cannot be called after the {nameof(CharacterQuickSlotManager)}'s Awake method has been called.");
+
+            _quickslotsToAdd = qsToAdd;
+        }
+
         [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
-        private static void QuickSlotExtenderEvents_SlotsChanged(object sender, QuickSlotExtendedArgs e) => (_quickslotsToAdd) = (e.ExtendedQuickSlots.Count());
-
-        [EventSubscription]
-        public static void SubscribeToEvents()
-        {
-            //LoggerEvents.LoggerConfigured += LoggerEvents_LoggerLoaded;
-            QuickSlotExtenderEvents.SlotsChanged += QuickSlotExtenderEvents_SlotsChanged;
-        }
 
         /// <summary>
         /// Add extra quickslots to the CharacterQuickSlotManager QuickSlots transform.
@@ -33,6 +33,7 @@ namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
         [HarmonyPrefix]
         public static void OnAwake_AddQuickSlots(CharacterQuickSlotManager __instance)
         {
+            _isAwakened = true;
             if (_quickslotsToAdd < 1)
                 return;
 

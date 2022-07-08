@@ -1,14 +1,12 @@
 ﻿using ModifAmorphic.Outward.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Extensions
 {
     public static class DropTableExtensions
     {
-        public static List<GuaranteedDrop> GetAllGuaranteedDrops(this Dropable dropable) => 
+        public static List<GuaranteedDrop> GetAllGuaranteedDrops(this Dropable dropable) =>
             dropable.GetPrivateField<Dropable, List<GuaranteedDrop>>("m_allGuaranteedDrops");
 
         public static List<BasicItemDrop> GetItemDrops(this GuaranteedDrop guaranteedDrop) =>

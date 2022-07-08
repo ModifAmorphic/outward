@@ -1,8 +1,6 @@
 ﻿using BepInEx;
 using ModifAmorphic.Outward.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Coroutines
 {
@@ -26,7 +24,7 @@ namespace ModifAmorphic.Outward.Coroutines
         }
         public void InvokeAfterLevelAndPlayersLoaded(NetworkLevelLoader networkLevelLoader, Func<bool> additonalCondition, Action action, int timeoutSecs, float ticSeconds = DefaultTicSeconds, Func<bool> cancelCondition = null)
         {
-            Func<bool> levelLoadedcondition = () => (networkLevelLoader.IsOverallLoadingDone 
+            Func<bool> levelLoadedcondition = () => (networkLevelLoader.IsOverallLoadingDone
                                                     && networkLevelLoader.AllPlayerDoneLoading
                                                     && additonalCondition.Invoke());
 

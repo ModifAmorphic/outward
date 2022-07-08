@@ -1,6 +1,5 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
-using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Config.Extensions;
 using ModifAmorphic.Outward.Config.Models;
 using System;
@@ -46,7 +45,8 @@ namespace ModifAmorphic.Outward.Config
             _logger.LogDebug($"Bound ConfigSetting: {configSetting.Name} to ConfigEntry {configEntry.Definition.Key} with value {configEntry.Value}");
 #endif
             if (bindRaisesChangeEvent)
-                onValueChange?.Invoke(new SettingValueChangedArgs<T>() { 
+                onValueChange?.Invoke(new SettingValueChangedArgs<T>()
+                {
                     NewValue = configSetting.BoundConfigEntry.Value
                 });
             return configSetting;
@@ -143,7 +143,7 @@ namespace ModifAmorphic.Outward.Config
             if (File.Exists(Config.ConfigFilePath))
             {
                 File.WriteAllText(Config.ConfigFilePath, string.Empty);
-                
+
                 Config.Clear();
                 Config.Reload();
                 Config.Save();

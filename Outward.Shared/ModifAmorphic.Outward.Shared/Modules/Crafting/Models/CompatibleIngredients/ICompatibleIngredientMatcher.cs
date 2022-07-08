@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients
+﻿namespace ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients
 {
     public interface ICompatibleIngredientMatcher
     {

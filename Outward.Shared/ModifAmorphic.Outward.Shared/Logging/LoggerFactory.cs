@@ -1,9 +1,6 @@
 ﻿using ModifAmorphic.Outward.Events;
-using ModifAmorphic.Outward.Extensions;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Logging
 {
@@ -22,7 +19,7 @@ namespace ModifAmorphic.Outward.Logging
                 $"A logger for '{modId}' {(_loggers.ContainsKey(modId) ? "exists and will be configured" : "will be created")}" +
                 $" with a log level of '{logLevel.GetName()}'.");
 #endif
-            return _loggers.AddOrUpdate(modId, 
+            return _loggers.AddOrUpdate(modId,
                 CreateLogger(modId, loggerName, logLevel),
                 (k, v) => UpdateLogLevel(modId, v, logLevel));
         }
@@ -40,10 +37,10 @@ namespace ModifAmorphic.Outward.Logging
         {
             if (logger.LogLevel != logLevel)
             {
-                if (logger is BepInExLogger)
-                    ((BepInExLogger)logger).LogLevel = logLevel;
-                else if (logger is Logger)
-                    ((Logger)logger).LogLevel = logLevel;
+                if (logger is BepInExLogger bepLogger)
+                    bepLogger.LogLevel = logLevel;
+                else if (logger is Logger modifLogger)
+                    modifLogger.LogLevel = logLevel;
                 else
                     throw new ArgumentException($"'{nameof(logger)}' Argument's base type was unexpected. Supported base types are '{typeof(Logger).FullName}' or '{typeof(BepInExLogger).FullName}'."
                         , nameof(logger));

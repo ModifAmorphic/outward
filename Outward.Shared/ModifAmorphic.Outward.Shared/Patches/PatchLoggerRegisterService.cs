@@ -34,14 +34,13 @@ namespace ModifAmorphic.Outward.Events
                         $" Property p.GetValue(null) as PatchLogger is {(p.GetValue(null) as MultiLogger == null ? "null" : "not null")}." +
                         $" propery name is {p?.Name}");
 #endif
-                    var patchLogger = p.GetValue(null) as MultiLogger;
-                    if (patchLogger == null)
+                    if (!(p.GetValue(null) is MultiLogger patchLogger))
                     {
                         patchLogger = new MultiLogger();
                         p.SetValue(null, patchLogger);
                     }
                     patchLogger.AddOrUpdateLogger(modId, loggerFactory);
-                    
+
                 }
                 foreach (var f in patchLoggerFields)
                 {
@@ -50,8 +49,7 @@ namespace ModifAmorphic.Outward.Events
                         $" Field f.GetValue(null) as PatchLogger is {(f.GetValue(null) as MultiLogger == null ? "null" : "not null")}." +
                         $" propery name is {f?.Name}");
 #endif
-                    var patchLogger = f.GetValue(null) as MultiLogger;
-                    if (patchLogger == null)
+                    if (!(f.GetValue(null) is MultiLogger patchLogger))
                     {
                         patchLogger = new MultiLogger();
                         f.SetValue(null, patchLogger);

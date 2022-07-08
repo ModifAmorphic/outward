@@ -196,7 +196,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
             {
                 if (!(__instance is CustomCraftingMenu customCraftingMenu))
                     return;
-                
+
                 Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(RefreshAvailableIngredientsPostfix)}(): Invoked on CraftingMenu type {customCraftingMenu?.GetType()}.  Invoking {nameof(RefreshAvailableIngredientsAfter)}().");
                 RefreshAvailableIngredientsAfter?.Invoke(customCraftingMenu);
             }

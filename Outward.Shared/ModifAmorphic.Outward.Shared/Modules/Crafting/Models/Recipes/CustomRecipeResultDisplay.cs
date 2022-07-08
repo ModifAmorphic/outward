@@ -1,10 +1,7 @@
 ﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Modules.Crafting
 {
@@ -26,8 +23,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                 $"this.ParentMenu is CustomCraftingMenu craftingMenu? {this.ParentMenu is CustomCraftingMenu}");
 
             if (_result == null ||
-                !(_result is DynamicCraftingResult dynamicResult) || 
-                !(this.ParentMenu is CustomCraftingMenu craftingMenu) || 
+                !(_result is DynamicCraftingResult dynamicResult) ||
+                !(this.ParentMenu is CustomCraftingMenu craftingMenu) ||
                 craftingMenu.GetSelectedRecipe() == null)
             {
                 return;

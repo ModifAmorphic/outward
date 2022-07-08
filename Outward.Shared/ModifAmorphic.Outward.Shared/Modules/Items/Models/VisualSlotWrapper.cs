@@ -1,7 +1,5 @@
 ﻿using ModifAmorphic.Outward.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Modules.Items.Models
 {
@@ -18,7 +16,7 @@ namespace ModifAmorphic.Outward.Modules.Items.Models
             get => _visualSlot.GetPrivateField<VisualSlot, Item>("m_currentItem");
             set => _visualSlot.SetPrivateField<VisualSlot, Item>("m_currentItem", value);
         }
-        
+
         public ItemVisual m_editorCurrentVisuals
         {
             get => _visualSlot.GetPrivateField<VisualSlot, ItemVisual>("m_editorCurrentVisuals");

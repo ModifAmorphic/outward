@@ -1,6 +1,4 @@
 ﻿using BepInEx;
-using ModifAmorphic.Outward.Logging;
-using System;
 
 namespace ModifAmorphic.Outward.Config
 {

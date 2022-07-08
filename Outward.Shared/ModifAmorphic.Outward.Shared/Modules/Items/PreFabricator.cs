@@ -1,15 +1,8 @@
-﻿using Localizer;
+﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.Modules.Items.Patches;
 using ModifAmorphic.Outward.Patches;
-using ModifAmorphic.Outward.Logging;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
-using UnityEngine;
-using ModifAmorphic.Outward.Extensions;
-using System.Reflection;
-using System.Collections.Concurrent;
-using ModifAmorphic.Outward.Modules.Items.Patches;
 
 namespace ModifAmorphic.Outward.Modules.Items
 {

@@ -5,7 +5,7 @@ using ModifAmorphic.Outward.Modules.Crafting.Services;
 using ModifAmorphic.Outward.Modules.Items;
 using ModifAmorphic.Outward.Modules.Merchants;
 using ModifAmorphic.Outward.Modules.QuickSlots;
-using System;
+using ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings.Services;
 
 namespace ModifAmorphic.Outward.Modules
 {
@@ -22,8 +22,10 @@ namespace ModifAmorphic.Outward.Modules
         }
         public static QuickSlotExtender GetQuickSlotExtenderModule(string modId)
         {
-            return ModuleService.GetModule(modId, () => 
-                new QuickSlotExtender(() => LoggerFactory.GetLogger(modId)));
+            return ModuleService.GetModule(modId, () =>
+                new QuickSlotExtender(
+                    new QsMenuExtender(() => LoggerFactory.GetLogger(modId)),
+                    () => LoggerFactory.GetLogger(modId)));
         }
         public static CharacterInstances GetCharacterInstancesModule(string modId)
         {
@@ -40,7 +42,7 @@ namespace ModifAmorphic.Outward.Modules
                                     () => LoggerFactory.GetLogger(modId));
             return ModuleService.GetModule<PreFabricator>(modId, () =>
                 new PreFabricator(modId,
-                    itemPrefabService, 
+                    itemPrefabService,
                     () => LoggerFactory.GetLogger(modId)));
         }
         public static ItemVisualizer GetItemVisualizerModule(string modId)
