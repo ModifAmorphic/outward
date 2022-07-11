@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
 using System;
+using System.Text;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings

@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using ModifAmorphic.Outward.Config.Extensions;
 using ModifAmorphic.Outward.Config.Models;
+using ModifAmorphic.Outward.Logging;
 using System;
 using System.IO;
 

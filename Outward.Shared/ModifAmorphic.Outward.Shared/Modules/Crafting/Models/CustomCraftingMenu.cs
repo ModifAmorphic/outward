@@ -694,7 +694,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			Logger.LogDebug($"CustomCraftingMenu::Show(): Invoking CustomShow()");
 			CustomShow();
 
-			resetFreeRecipeLastIngredients();
+			ResetFreeRecipeLastIngredients();
 		}
 		private void UIElement_Show()
         {
@@ -965,7 +965,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			}
 			Logger.LogDebug($"CustomShow: 10");
 			//ResetFreeRecipeLastIngredients();
-			resetFreeRecipeLastIngredients();
+			ResetFreeRecipeLastIngredients();
 
 			Logger.LogDebug($"CustomShow: 11");
 			//m_allRecipes = RecipeManager.Instance.GetRecipes(m_craftingStationType, base.LocalCharacter);
@@ -978,7 +978,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
 			Logger.LogDebug($"CustomShow: 13");
 			//RefreshAutoRecipe();
-			refreshAutoRecipe();
+			RefreshAutoRecipe();
 
 			Logger.LogDebug($"CustomShow: 14");
 			OnRecipeSelected(-1, _forceRefresh: true);
@@ -1003,7 +1003,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				return;
 			Logger.LogDebug($"OnRecipeSelectedOverride: 2");
 			if (IsCraftingInProgress)
-				cancelCrafting();
+				CancelCrafting();
 
 			Logger.LogDebug($"OnRecipeSelectedOverride: 3");
 			if (_lastRecipeIndex != -1)
@@ -1022,14 +1022,14 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 			Logger.LogDebug($"OnRecipeSelectedOverride: 6");
 			if (_index != -1)
 			{
-				resetFreeRecipeLastIngredients();
+				ResetFreeRecipeLastIngredients();
 				Logger.LogDebug($"OnRecipeSelectedOverride: 7 | _index: {_index}, _complexeRecipes.Count: {_complexeRecipes.Count}");
 				Logger.LogDebug($"OnRecipeSelectedOverride: 7.5 |_complexeRecipes[_index].Value.Results[0]: {_complexeRecipes[_index].Value.Results[0].ItemID}");
 				_recipeResultDisplay.SetRecipeResult(_complexeRecipes[_index].Value.Results[0]);
 				Logger.LogDebug($"OnRecipeSelectedOverride: 8");
 				RefreshItemDetailDisplay(_recipeResultDisplay);
 				Logger.LogDebug($"OnRecipeSelectedOverride: 9");
-				setCraftButtonEnable(_recipeDisplays[_index].IsRecipeIngredientsComplete);
+				SetCraftButtonEnable(_recipeDisplays[_index].IsRecipeIngredientsComplete);
 				Logger.LogDebug($"OnRecipeSelectedOverride: 10");
 				for (int num = _ingredientSelectors.Length - 1; num >= 0; num--)
 				{
@@ -1103,8 +1103,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 				}
 				flag |= !_ingredientSelectors[j].IsMissingIngredient;
 			}
-			setCraftButtonEnable(flag);
-			refreshFreeRecipeResult();
+			SetCraftButtonEnable(flag);
+			RefreshFreeRecipeResult();
 			for (int k = 0; k < _ingredientSelectors.Length; k++)
 			{
 				if (_ingredientSelectors[k].IsMissingIngredient)
