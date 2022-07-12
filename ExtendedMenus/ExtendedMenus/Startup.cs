@@ -37,12 +37,22 @@ namespace ModifAmorphic.Outward.ExtendedMenus
         private AssetBundle LoadAssetMenu(string pluginPath)
         {
             using (var assetStream = new FileStream(Path.Combine(
-                    pluginPath, Path.Combine("assets", "utilitymenues"))
+                    pluginPath, Path.Combine("asset-bundles", "extended-menus"))
                 , FileMode.Open, FileAccess.Read))
             {
                 return AssetBundle.LoadFromStream(assetStream);
             }
 
+        }
+        public void SubscribeToMenuButtonClicks()
+        {
+
+            ExMenuEvents.Instance.OnClick += this.Instance_OnClick;
+        }
+
+        private void Instance_OnClick(UnityEngine.UI.Button menuButton)
+        {
+            Logger.LogInfo("Got a menu button click! Button name is " + menuButton.name);
         }
 
     }

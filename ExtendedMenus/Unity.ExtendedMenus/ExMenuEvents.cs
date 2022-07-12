@@ -8,11 +8,13 @@ namespace ModifAmorphic.Outward.ExtendedMenus
 {
     public class ExMenuEvents : MonoBehaviour
     {
+        public static ExMenuEvents Instance;
         public Button[] MenuButtons;
         public event Action<Button> OnClick;
 
         void Start()
         {
+            Instance = this;
             UnityEngine.Debug.Log("ExMenuEvents::Start() Hooking up ButtonClick events.");
             MenuButtons = this.GetComponentsInChildren<Button>();
             for (int i = 0; i < MenuButtons.Length; i++)
