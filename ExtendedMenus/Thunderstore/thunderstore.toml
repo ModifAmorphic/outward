@@ -22,8 +22,8 @@ source = "bin"
 target = "files/plugins/"
 
 [[build.copy]]
-source = "../Assets/assets"
-target = "files/plugins/assets"
+source = "../Assets/asset-bundles"
+target = "files/plugins/asset-bundles"
 
 [publish]
 repository = "https://outward.thunderstore.io"
