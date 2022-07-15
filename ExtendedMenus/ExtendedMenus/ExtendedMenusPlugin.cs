@@ -1,15 +1,15 @@
 ﻿using BepInEx;
 using HarmonyLib;
+using ModifAmorphic.Outward.ActionMenus.Patches;
 using ModifAmorphic.Outward.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ExtendedMenus
+namespace ModifAmorphic.Outward.ActionMenus
 {
     [BepInDependency("com.bepis.bepinex.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("io.mefino.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency("com.sinai.SideLoader", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInPlugin(ModInfo.ModId, ModInfo.ModName, ModInfo.ModVersion)]
     public class ExtendedMenusPlugin : BaseUnityPlugin
     {
@@ -30,7 +30,11 @@ namespace ModifAmorphic.Outward.ExtendedMenus
                 logger = LoggerFactory.ConfigureLogger(ModInfo.ModId, ModInfo.ModName, LogLevel.Info);
                 logger.LogInfo($"Patching...");
 
-                //harmony.PatchAll(typeof(TransmorphNetworkLevelLoaderPatches));
+                harmony.PatchAll(typeof(SplitPlayerPatches));
+                harmony.PatchAll(typeof(SplitScreenManagerPatches));
+                harmony.PatchAll(typeof(QuickSlotControllerSwitcherPatches));
+                harmony.PatchAll(typeof(QuickSlotPanelPatches));
+                //harmony.PatchAll(typeof(MenuManagerPatches));
                 //harmony.PatchAll(typeof(TransmorphRecipeManagerPatches));
 
                 var startup = new Startup();

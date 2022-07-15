@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ExtendedMenus
+namespace ModifAmorphic.Outward.ActionMenus
 {
     internal static class ModInfo
     {
-        public const string ModId = "modifamorphic.outward.extendedmenus";
+        public const string ModId = "ModifAmorphic.Outward.ActionMenus";
         public const string ModName = "ExtendedMenus";
 #if PIPELINE
         public const string ModVersion = "${PACKAGE_VERSION}";

@@ -40,6 +40,9 @@
     <Reference Include="UnityEngine.UI">
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.UI.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -47,11 +50,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ModifAmorphic.Outward" Version="0.0.5.64" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Unity.ExtendedMenus\ModifAmorphic.Outward.Unity.ExtendedMenus.csproj" />
+    <ProjectReference Include="..\..\..\..\..\modifamorphic\GitHub-Outward\outward-shared\outward\Outward.Shared\ModifAmorphic.Outward.Shared\ModifAmorphic.Outward.Shared.csproj" />
+    <ProjectReference Include="..\Unity.ActionMenuOverhaul\ModifAmorphic.Outward.Unity.ActionMenus.csproj" />
   </ItemGroup>
 
 </Project>

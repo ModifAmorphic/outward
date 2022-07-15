@@ -2,10 +2,36 @@
 using ModifAmorphic.Outward.Logging;
 using System;
 
-namespace ModifAmorphic.Outward.ExtendedMenus.Settings
+namespace ModifAmorphic.Outward.ActionMenus.Settings
 {
     internal class ConfigSettings
     {
+        #region Hotbars
+        const string HotbarsSection = "Hotbars";
+        const int HotbarsTopOrder = int.MaxValue;
+
+        public ConfigSetting<int> Hotbars { get; } = new ConfigSetting<int>()
+        {
+            Name = nameof(Hotbars),
+            DefaultValue = 1,
+            Section = HotbarsSection,
+            DisplayName = "Hotbars",
+            Description = $"Amount of hotbars.",
+            Order = HotbarsTopOrder - 1,
+            IsAdvanced = false
+        };
+        public ConfigSetting<int> ActionSlots { get; } = new ConfigSetting<int>()
+        {
+            Name = nameof(ActionSlots),
+            DefaultValue = 8,
+            Section = HotbarsSection,
+            DisplayName = "Hotbar Action Slots",
+            Description = $"The number of slots per hotbar.",
+            Order = HotbarsTopOrder - 2,
+            IsAdvanced = false
+        };
+        #endregion
+
         const string AdvancedSection = "zz--Advanced Settings--zz";
         const int AdvancedTopOrder = -1000;
 

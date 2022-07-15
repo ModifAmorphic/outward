@@ -4,7 +4,7 @@ using ModifAmorphic.Outward.Config.Models;
 using ModifAmorphic.Outward.Logging;
 using System;
 
-namespace ModifAmorphic.Outward.ExtendedMenus.Settings
+namespace ModifAmorphic.Outward.ActionMenus.Settings
 {
     internal class SettingsService
     {
@@ -33,7 +33,7 @@ namespace ModifAmorphic.Outward.ExtendedMenus.Settings
             }
 
             #region Main Section
-            //_configService.BindConfigSetting(settings.AllCharactersLearnRecipes, null);
+            
 
             #endregion
 
@@ -48,6 +48,16 @@ namespace ModifAmorphic.Outward.ExtendedMenus.Settings
             #endregion
 
             return settings;
+        }
+        public HotbarSettings ConfigureHotbarSettings(ConfigSettings settings)
+        {
+            var hotbarSettings = new HotbarSettings();
+            _configService.BindConfigSetting(settings.Hotbars,
+                (SettingValueChangedArgs<int> args) => hotbarSettings.Hotbars = args.NewValue, true);
+            _configService.BindConfigSetting(settings.ActionSlots,
+                (SettingValueChangedArgs<int> args) => hotbarSettings.ActionSlots = args.NewValue, true);
+
+            return hotbarSettings;
         }
 
         private bool MeetsMinimumVersion(string minimumVersion)

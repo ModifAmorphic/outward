@@ -4,7 +4,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ModifAmorphic.Outward.ExtendedMenus
+namespace ModifAmorphic.Outward.ActionMenus
 {
     public class ExMenuEvents : MonoBehaviour
     {
