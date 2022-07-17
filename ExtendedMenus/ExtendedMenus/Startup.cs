@@ -8,7 +8,7 @@ using System.IO;
 using UnityEngine;
 using System.Reflection;
 using ModifAmorphic.Outward.Extensions;
-using ModifAmorphic.Outward.Unity.ActionMenuOverhaul;
+using ModifAmorphic.Outward.Unity.ActionMenus;
 using System.Linq;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.ActionMenus.Services;

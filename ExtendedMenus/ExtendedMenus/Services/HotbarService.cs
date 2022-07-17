@@ -1,7 +1,7 @@
 ﻿using ModifAmorphic.Outward.ActionMenus.Patches;
 using ModifAmorphic.Outward.ActionMenus.Settings;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Unity.ActionMenuOverhaul;
+using ModifAmorphic.Outward.Unity.ActionMenus;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -56,7 +56,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         public void ConfigureSlots()
         {
             Logger.LogDebug($"Setting Hotbars to {_settings.Hotbars}, Slots per hotbar to {_settings.ActionSlots}");
-            _hotbars?.ConfigureHotbars(_settings.Hotbars, _settings.ActionSlots);
+            _hotbars?.ConfigureHotbars(Hotbars.HotbarType.Grid, _settings.Hotbars, _settings.ActionSlots);
         }
     }
 }

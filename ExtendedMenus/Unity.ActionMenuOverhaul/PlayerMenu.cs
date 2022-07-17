@@ -1,4 +1,4 @@
-﻿using ModifAmorphic.Outward.Unity.ActionMenuOverhaul;
+﻿using ModifAmorphic.Outward.Unity.ActionMenus;
 using System;
 using System.Collections.Generic;
 using System.Text;

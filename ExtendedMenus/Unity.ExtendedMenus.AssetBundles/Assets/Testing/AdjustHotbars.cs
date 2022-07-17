@@ -1,4 +1,4 @@
-using ModifAmorphic.Outward.Unity.ActionMenuOverhaul;
+using ModifAmorphic.Outward.Unity.ActionMenus;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,30 +6,56 @@ using UnityEngine;
 public class AdjustHotbars : MonoBehaviour
 {
     public GameObject HotbarsGo;
-    private Hotbars hotbars;
+    private Hotbars _hotbars;
+    private Hotbars.HotbarType _hotbarType;
+
     // Start is called before the first frame update
     void Start()
     {
         Debug.Log("AdjustHotbars: Getting HotbarsMain component from HotbarsMainGo. HotbarsMainGo is null? " + HotbarsGo == null);
-        hotbars = HotbarsGo.GetComponent<Hotbars>();
+        _hotbars = HotbarsGo.GetComponent<Hotbars>();
+        _hotbars.ConfigureHotbars(Hotbars.HotbarType.Single, 1, 8);
     }
 
     public void IncrementHotbars()
     {
-        hotbars.ConfigureHotbars(hotbars.HotbarCount + 1, hotbars.ActionSlotsPerBar);
+        _hotbars.EnabledHotbar.ConfigureHotbar(_hotbars.EnabledHotbar.HotbarCount + 1, _hotbars.EnabledHotbar.ActionSlotsPerBar);
     }
     public void DecrementHotbars()
     {
-        if (hotbars.HotbarCount > 1)
-            hotbars.ConfigureHotbars(hotbars.HotbarCount - 1, hotbars.ActionSlotsPerBar);
+        if (_hotbars.EnabledHotbar.HotbarCount > 1)
+            _hotbars.EnabledHotbar.ConfigureHotbar(_hotbars.EnabledHotbar.HotbarCount - 1, _hotbars.EnabledHotbar.ActionSlotsPerBar);
+    }
+    public void IncrementRows()
+    {
+        _hotbars.EnabledHotbar.ConfigureHotbar(_hotbars.EnabledHotbar.HotbarCount, _hotbars.EnabledHotbar.RowCount + 1, _hotbars.EnabledHotbar.ActionSlotsPerBar);
+    }
+    public void DecrementRows()
+    {
+        if (_hotbars.EnabledHotbar.RowCount > 1)
+            _hotbars.EnabledHotbar.ConfigureHotbar(_hotbars.EnabledHotbar.HotbarCount, _hotbars.EnabledHotbar.RowCount - 1, _hotbars.EnabledHotbar.ActionSlotsPerBar);
     }
     public void IncrementActionSlots()
     {
-        hotbars.ConfigureHotbars(hotbars.HotbarCount, hotbars.ActionSlotsPerBar + 1);
+        _hotbars.EnabledHotbar.ConfigureHotbar(_hotbars.EnabledHotbar.HotbarCount, _hotbars.EnabledHotbar.ActionSlotsPerBar + 1);
     }
     public void DecrementActionSlots()
     {
-        if (hotbars.ActionSlotsPerBar > 8)
-            hotbars.ConfigureHotbars(hotbars.HotbarCount, hotbars.ActionSlotsPerBar - 1);
+        if (_hotbars.EnabledHotbar.ActionSlotsPerBar > 8)
+        {
+            _hotbars.EnabledHotbar.ConfigureHotbar(_hotbars.EnabledHotbar.HotbarCount, _hotbars.EnabledHotbar.ActionSlotsPerBar - 1);
+        }
     }
+
+    public void ChangeHotbarType(int option)
+    {
+        var hotbarType = option == 0 ? Hotbars.HotbarType.Grid : Hotbars.HotbarType.Single;
+
+        _hotbars.ConfigureHotbars(hotbarType, _hotbars.EnabledHotbar.HotbarCount, _hotbars.EnabledHotbar.ActionSlotsPerBar);
+    }
+   
+
+    public void SelectNextHotbar() => _hotbars.EnabledHotbar.SelectNext();
+    public void SelectPreviousHotbar() => _hotbars.EnabledHotbar.SelectPrevious();
+    public void SelectHotbar(int hotbarIndex) => _hotbars.EnabledHotbar.SelectHotbar(hotbarIndex);
 }

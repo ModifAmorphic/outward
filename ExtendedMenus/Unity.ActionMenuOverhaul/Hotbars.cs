@@ -1,88 +1,87 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenuOverhaul
+namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
 	[UnityScriptComponent(ComponentPath = "OverhaulCanvas/Hotbars")]
 	public class Hotbars : MonoBehaviour
 	{
 		//public GameObject SettingsButton;
-		private GameObject hotbarContainer;
-		private Button settingsButton;
-		private GridLayoutGroup hotbarsGroup;
-		private GameObject baseActionSlot;
-		private List<GameObject> actionSlots = new List<GameObject>();
-		public List<GameObject> ActionSlots { get => actionSlots; }
+		private Button _settingsButton;
 
+		private IHotbar _enabledHotbar;
+		public IHotbar EnabledHotbar { get => _enabledHotbar; }
 
-		public int ActionSlotsPerBar { get => hotbarsGroup.constraintCount; }
-        public int HotbarCount { 
-			get
-            {
-				var totalSlots = hotbarsGroup.transform.childCount;
-				return totalSlots > hotbarsGroup.constraintCount ? totalSlots / hotbarsGroup.constraintCount : 1;
-			}
+		private GameObject _gridPanel;
+		private IHotbar _gridHotbar;
+
+		private GameObject _singlePanel;
+		private IHotbar _singleHotbar;
+
+        public enum HotbarType 
+		{ 
+			Grid,
+			Single
 		}
 
-		public void Awake()
+
+        private void Awake()
 		{
 			SetComponents();
-			ConfigureHotbars(1, 8);
+		}
+		private void Start()
+        {
+			
+
 		}
 		private void SetComponents()
 		{
-			hotbarContainer = this.gameObject;
-			hotbarsGroup = GetComponentInChildren<GridLayoutGroup>();
-			settingsButton = transform.Find("Settings").GetComponent<Button>();
-			baseActionSlot = hotbarsGroup.GetComponentInChildren<Button>().gameObject;
-			baseActionSlot.SetActive(false);
-		}
-		public void ConfigureHotbars(int hotbars, int actionSlots)
-        {
-			hotbarsGroup.constraintCount = actionSlots;
-			ClearActionSlots();
+			//_hotbarsGridPanel = this.GetComponentsInChildren<RectTransform>().First(c => c.name == "GridPanel");
+			_gridHotbar = GetComponentInChildren<GridHotbar>(true);
+			_gridPanel = _gridHotbar.GameObject;
 
-			this.actionSlots = new List<GameObject>();
-			for (int h = 0; h < hotbars; h++)
-			{
-				for (int i = 0; i < actionSlots; i++)
-				{
-					var newSlot = Instantiate(baseActionSlot, baseActionSlot.transform.parent);
-					var slotBtn = newSlot.GetComponent<ActionSlot>();
-					slotBtn.SlotNo = i + 1;
-					slotBtn.HotbarId = h;
-					newSlot.SetActive(true);
-					this.actionSlots.Add(newSlot);
-				}
-			}
-			StartCoroutine(ResizeLayoutGroup());
+			_singleHotbar = GetComponentInChildren<SingleHotbar>(true);
+			_singlePanel = _singleHotbar.GameObject;
+
+			_settingsButton = transform.Find("Settings").GetComponent<Button>();
+
+			_gridHotbar.OnResizeWidthRequest += Resize;
+			_singleHotbar.OnResizeWidthRequest += Resize;
+
 		}
-		private void ClearActionSlots()
+		public IHotbar GetEnabledHotbar()
         {
-			var actionSlots = hotbarsGroup.GetComponentsInChildren<Button>(false);
-			for (int i = 0;i < actionSlots.Length;i++)
+			return _gridHotbar;
+        }
+		public void ConfigureHotbars(HotbarType hotbarType, int hotbars, int actionSlots)
+        {
+			_enabledHotbar = hotbarType == HotbarType.Grid ? _gridHotbar : _singleHotbar;
+			if (hotbarType == HotbarType.Grid) // && _enabledHotbar is SingleHotbar)
             {
-				DestroyImmediate(actionSlots[i].gameObject);
-            }
-
+				_singleHotbar.GameObject.SetActive(false);
+				_enabledHotbar = _gridHotbar;
+				_enabledHotbar.GameObject.SetActive(true);
+			}
+			else if (hotbarType == HotbarType.Single) // && _enabledHotbar is GridHotbar)
+            {
+				_gridHotbar.GameObject.SetActive(false);
+				_enabledHotbar = _singleHotbar;
+				_enabledHotbar.GameObject.SetActive(true);
+			}
+			_enabledHotbar.ConfigureHotbar(hotbars, actionSlots);
 		}
-		IEnumerator ResizeLayoutGroup()
+		
+
+        private void Resize(float hotbarWidth)
 		{
-			yield return new WaitForEndOfFrame();
 
-			float btnWidth = ActionSlots.First().GetComponent<RectTransform>().rect.width;
-			Debug.Log($"Slot Button RectTransform has a width of {btnWidth}");
+			float settingsWidth = _settingsButton.GetComponent<RectTransform>().rect.width;
 
-			var glgRect = hotbarsGroup.GetComponent<RectTransform>().rect;
-			float width = glgRect.width;
-			float settingsWidth = settingsButton.GetComponent<RectTransform>().rect.width;
-			float hotbarWidth = settingsWidth + (btnWidth + hotbarsGroup.spacing.x) * ((float)hotbarsGroup.constraintCount) + hotbarsGroup.padding.horizontal * 2 - hotbarsGroup.spacing.x;
-			Debug.Log($"Changing width of GridLayoutGroup's RectTransform from {width} to {hotbarWidth}");
-
-			GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, hotbarWidth);
+			GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, hotbarWidth + settingsWidth);
 		}
 	}
 }

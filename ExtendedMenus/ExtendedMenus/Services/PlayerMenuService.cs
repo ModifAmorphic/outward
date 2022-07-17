@@ -4,7 +4,7 @@ using ModifAmorphic.Outward.ActionMenus.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Unity.ActionMenuOverhaul;
+using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using System;
 using System.Collections.Generic;
