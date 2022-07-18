@@ -23,7 +23,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private readonly BaseUnityPlugin _baseUnityPlugin;
 
         private readonly GameObject _menusAsset;
-        private readonly Func<Hotbars, CharacterUI, HotbarService> _hotbarServiceFac;
+        private readonly Func<HotbarsContainer, CharacterUI, HotbarService> _hotbarServiceFac;
         private readonly ModifCoroutine _coroutine;
         private readonly GameObject _modInactivableGo;
         private GameObject _overhaulMenusGo;
@@ -33,7 +33,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
         public PlayerMenuService(BaseUnityPlugin baseUnityPlugin,
                                 GameObject menusAsset,
-                                Func<Hotbars, CharacterUI, HotbarService> hotbarServiceFac,
+                                Func<HotbarsContainer, CharacterUI, HotbarService> hotbarServiceFac,
                                 ModifCoroutine coroutine,
                                 ModifGoService modifGoService,
                                 HotbarSettings settings, Func<IModifLogger> getLogger)
@@ -65,7 +65,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             var actionMenus = _playerMenus[splitPlayer.RewiredID].PlayerMenu.gameObject;
             actionMenus.name = character.name + "_UIX";
             actionMenus.SetActive(true);
-            _playerMenus[splitPlayer.RewiredID].HotbarService = _hotbarServiceFac(actionMenus.GetComponentInChildren<Hotbars>(), character.CharacterUI);
+            _playerMenus[splitPlayer.RewiredID].HotbarService = _hotbarServiceFac(actionMenus.GetComponentInChildren<HotbarsContainer>(), character.CharacterUI);
         }
 
         private void RemovePlayerMenu(SplitScreenManager splitScreenManager, SplitPlayer player, string playerId)

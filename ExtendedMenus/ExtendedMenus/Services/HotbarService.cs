@@ -16,10 +16,10 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
-        private readonly Hotbars _hotbars;
+        private readonly HotbarsContainer _hotbars;
         private readonly CharacterUI _characterUI;
 
-        public HotbarService(Hotbars hotbars, CharacterUI characterUI, HotbarSettings settings, Func<IModifLogger> getLogger)
+        public HotbarService(HotbarsContainer hotbars, CharacterUI characterUI, HotbarSettings settings, Func<IModifLogger> getLogger)
         {
             _hotbars = hotbars;
             _characterUI = characterUI;
@@ -56,7 +56,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         public void ConfigureSlots()
         {
             Logger.LogDebug($"Setting Hotbars to {_settings.Hotbars}, Slots per hotbar to {_settings.ActionSlots}");
-            _hotbars?.ConfigureHotbars(Hotbars.HotbarType.Grid, _settings.Hotbars, _settings.ActionSlots);
+            _hotbars?.Hotbar?.ConfigureHotbars(_settings.Hotbars, _settings.ActionSlots);
         }
     }
 }

@@ -8,11 +8,12 @@ using UnityEngine.UI;
 namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
     [UnityScriptComponent]
-    public class SingleHotbar : MonoBehaviour, IHotbar
+    public class HotbarsController : MonoBehaviour, IHotbarController
     {
         public GameObject GameObject { get => this.gameObject; }
 
         public event Action<float> OnResizeWidthRequest;
+        public event Action<int> OnHotbarSelected;
 
         private GridLayoutGroup _baseGrid;
         private GridLayoutGroup[] _hotbars;
@@ -52,16 +53,16 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private void SetComponents()
         {
             _baseGrid = GetComponentsInChildren<GridLayoutGroup>().First(g => g.name == "BaseHotbarGrid");
-            _baseActionSlot = _baseGrid.GetComponentInChildren<Button>().gameObject;
+            _baseActionSlot = _baseGrid.GetComponentInChildren<ActionSlot>().gameObject;
             _baseGrid.gameObject.SetActive(false);
             _baseActionSlot.SetActive(false);
         }
 
-        public void ConfigureHotbar(int hotbars, int actionSlots)
+        public void ConfigureHotbars(int hotbars, int actionSlots)
         {
-            ConfigureHotbar(hotbars, 1, actionSlots);
+            ConfigureHotbars(hotbars, 1, actionSlots);
         }
-        public void ConfigureHotbar(int hotbars, int rows, int slotsPerRow)
+        public void ConfigureHotbars(int hotbars, int rows, int slotsPerRow)
         {
             Reset();
             _baseGrid.constraintCount = slotsPerRow;
@@ -77,7 +78,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 {
                     var newSlot = Instantiate(_baseActionSlot, _hotbars[h].transform);
                     var slotBtn = newSlot.GetComponent<ActionSlot>();
-                    slotBtn.SlotNo = s + 1;
+                    slotBtn.SlotNo = s;
                     slotBtn.HotbarId = h;
                     newSlot.SetActive(true);
                     _hotbarSlots[h][s] = newSlot;
@@ -86,13 +87,14 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             StartCoroutine(ResizeLayoutGroup());
         }
 
-        public void SelectHotbar(int hotbar)
+        public void SelectHotbar(int hotbaIndexr)
         {
             for (int h =0; h < _hotbars.Length; h++)
             {
-                _hotbars[h].gameObject.SetActive(h == hotbar);
+                _hotbars[h].gameObject.SetActive(h == hotbaIndexr);
             }
-            _selectedHotbar = hotbar;
+            _selectedHotbar = hotbaIndexr;
+            OnHotbarSelected?.Invoke(_selectedHotbar);
         }
 
         public void SelectNext()
@@ -117,9 +119,18 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 {
                     var actionSlots = allHotbars[h].GetComponentsInChildren<ActionSlot>(true);
                     for (int s = 0; s < actionSlots.Length; s++)
+                    {
+#if (DEBUG)
+                        DestroyImmediate(actionSlots[s].gameObject);
+#else
                         Destroy(actionSlots[s].gameObject);
-
+#endif
+                    }
+#if (DEBUG)
+                    DestroyImmediate(allHotbars[h]);
+#else
                     Destroy(allHotbars[h]);
+#endif
                 }
             }
             ResetCollections();

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
-    public interface IHotbar
+    public interface IHotbarController
     {
         GameObject GameObject { get; }
         GameObject[][] HotbarSlots { get; }
@@ -18,8 +18,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         void SelectPrevious();
 
         event Action<float> OnResizeWidthRequest;
+        event Action<int> OnHotbarSelected;
 
-        void ConfigureHotbar(int hotbars, int actionSlots);
-        void ConfigureHotbar(int hotbars, int rows, int actionSlots);
+        void ConfigureHotbars(int hotbars, int actionSlots);
+        void ConfigureHotbars(int hotbars, int rows, int actionSlots);
     }
 }

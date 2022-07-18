@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,53 +13,64 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public int HotbarId;
         public int SlotNo;
 
+        private Transform _slotPanel;
+
         private CanvasGroup _canvasGroup;
         private Image _border;
-        private Image _icon;
+
+        private Text _keyText;
+        public Text KeyText => _keyText;
+
+        private Image _actionImage;
+        public Image ActionImage => _actionImage;
+
         private GameObject _assignedAction;
+
+
+        private Button _actionButton;
+        public Button ActionButton => _actionButton;
 
         private void Awake()
         {
-            if (SlotNo != 0)
-            {
-                name = $"ActionSlot_{HotbarId}_{SlotNo - 1}";
-                buttonText = GetComponentInChildren<Text>();
-                buttonText.text = $"Bar {HotbarId}\nSlot: {SlotNo}"; //itemTypes[typeIndex];
-            }
             SetComponents();
+            if (name != "BaseActionSlot")
+            {
+                name = $"ActionSlot_{HotbarId}_{SlotNo}";
+#if DEBUG
+                buttonText = _actionButton.GetComponentInChildren<Text>(true);
+                buttonText.text = $"Bar {HotbarId}\nSlot: {SlotNo}"; //itemTypes[typeIndex];
+#endif
+            }
         }
         private void Start()
         {
             if (_assignedAction == null)
             {
                 Debug.Log("ActionSlot:Start()");
-                AssignEmpty();
+                //AssignEmpty();
             }
         }
         private void SetComponents()
         {
-            var images = GetComponentsInChildren<Image>();
+            _slotPanel = transform.Find("SlotPanel");
+            _canvasGroup = _slotPanel.GetComponent<CanvasGroup>();
+            
+            _keyText = GetComponentsInChildren<Text>(true).First(t => t.name == "KeyText");
+            _border = _slotPanel.GetComponentsInChildren<Image>(true).First(i => i.name == "ActionBorder");
+            _actionButton = _slotPanel.GetComponentInChildren<Button>(true);
 
-            foreach (var image in images)
-            {
-                switch (image.name)
-                {
-                    case "ActionBorder":
-                        _border = image;
-                        break;
-                    case "ActionIcon":
-                        _icon = image;
-                        break;
-                }
-            }
-            _canvasGroup = GetComponent<CanvasGroup>();
+            _actionImage = _actionButton.GetComponent<Image>();
+            
+            //var images = _actionButton.GetComponentsInChildren<Image>();
+
+            
         }
         public void AssignEmpty()
         {
             _canvasGroup.alpha = 0.6f;
-            _icon.overrideSprite = null;
-            _icon.sprite = null;
-            _icon.color = Color.grey;
+            _actionImage.overrideSprite = null;
+            _actionImage.sprite = null;
+            _actionImage.color = Color.grey;
             //_icon.gameObject.SetActive(false);
                 ////this.m_sldCooldown.fillRect.GetComponent<Image>().overrideSprite = (Sprite)null;
                 ////this.m_sldCooldown.normalizedValue = 0.0f;

@@ -22,7 +22,7 @@ namespace ModifAmorphic.Outward.ActionMenus
 
         private readonly BaseUnityPlugin _baseUnityPlugin;
 
-        private readonly Hotbars _hotbars;
+        private readonly HotbarsContainer _hotbars;
 
         private readonly GameObject _hotbarsAsset;
         private readonly ModifCoroutine _coroutine;
@@ -103,7 +103,7 @@ namespace ModifAmorphic.Outward.ActionMenus
 
         public void ConfigureSlots()
         {
-            _hotbars?.ConfigureHotbars(Hotbars.HotbarType.Grid, _settings.Hotbars, _settings.ActionSlots);
+            _hotbars?.Hotbar?.ConfigureHotbars(_settings.Hotbars, _settings.ActionSlots);
         }
     }
 }

@@ -44,7 +44,7 @@ namespace ModifAmorphic.Outward.ActionMenus
 
             services.AddSingleton(new PlayerMenuService(services.GetService<BaseUnityPlugin>(),
                                                   menuOverhaul,
-                                                  (Hotbars hotbars, CharacterUI characterUI) => new HotbarService(hotbars,
+                                                  (HotbarsContainer hotbars, CharacterUI characterUI) => new HotbarService(hotbars,
                                                                             characterUI,
                                                                             services.GetService<HotbarSettings>(),
                                                                             services.GetService<IModifLogger>),
