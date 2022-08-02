@@ -142,5 +142,6 @@ namespace ModifAmorphic.Outward.Extensions
             item.SetPrivateField<Item, ItemVisual>("m_loadedVisual", itemVisual);
             return item;
         }
+        public static bool ItemIsSkill(this Item item) => item is Skill;
     }
 }

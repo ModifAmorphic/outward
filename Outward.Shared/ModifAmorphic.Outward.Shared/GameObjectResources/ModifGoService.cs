@@ -28,7 +28,7 @@ namespace ModifAmorphic.Outward.GameObjectResources
         {
             _loggerFactory = loggerFactory;
             _modifRoot = GetOrAddModifRoot();
-            _activable = GetOrAddActivatable();
+            _activable = GetOrAddActivable();
             _inactivable = GetOrAddInactivable();
         }
 
@@ -50,7 +50,7 @@ namespace ModifAmorphic.Outward.GameObjectResources
             }
             return root;
         }
-        private GameObject GetOrAddActivatable()
+        private GameObject GetOrAddActivable()
         {
             var activable = ModifRoot.transform.Find("Activable")?.gameObject;
             if (!activable)
