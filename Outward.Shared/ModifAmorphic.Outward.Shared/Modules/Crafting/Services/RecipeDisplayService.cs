@@ -5,7 +5,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -19,10 +18,10 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
         private readonly ConcurrentDictionary<Type, IRecipeVisibiltyController> _visibiltyControllers = new ConcurrentDictionary<Type, IRecipeVisibiltyController>();
 
         private readonly ConcurrentDictionary<Type, List<StaticIngredient>> _staticIngredients = new ConcurrentDictionary<Type, List<StaticIngredient>>();
-        
+
 
         private readonly Func<IModifLogger> _loggerFactory;
-        private int _baseSelectorLength = 4;
+        private const int BaseSelectorLength = 4;
         private IModifLogger Logger => _loggerFactory.Invoke();
 
         public event Action<CustomCraftingMenu> MenuHiding;
@@ -59,7 +58,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
         public bool TryGetStaticIngredients(Type menuType, out List<StaticIngredient> ingredients) =>
            _staticIngredients.TryGetValue(menuType, out ingredients);
 
-        public void AddOrUpdateStaticIngredients<T>(IEnumerable<StaticIngredient> ingredients) => _staticIngredients.AddOrUpdate(typeof(T), ingredients.ToList(), (k , v) => v = ingredients.ToList());
+        public void AddOrUpdateStaticIngredients<T>(IEnumerable<StaticIngredient> ingredients) => _staticIngredients.AddOrUpdate(typeof(T), ingredients.ToList(), (k, v) => v = ingredients.ToList());
         public bool TryRemoveStaticIngredients<T>() =>
            _staticIngredients.TryRemove(typeof(T), out _);
 
@@ -77,7 +76,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             var freeIngredientIDs = menu._lastFreeRecipeIngredientIDs;
             Array.Resize(ref freeIngredientIDs, freeIngredientIDs.Length + extras);
             menu._lastFreeRecipeIngredientIDs = freeIngredientIDs;
-            menu.resetFreeRecipeLastIngredients();
+            menu.ResetFreeRecipeLastIngredients();
 
             var template = menu._ingredientSelectorTemplate;
             var slots = menu._ingredientSelectors;
@@ -117,7 +116,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                 craftButton.navigation = craftNav;
             }
 
-            for (int i = 0; i < _baseSelectorLength; i++)
+            for (int i = 0; i < BaseSelectorLength; i++)
             {
                 //var leftSelector = i > 0 ? selectors[i - 1] : null;
                 var selector = selectors[i];
@@ -137,7 +136,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                 }
             }
 
-            var bottomIndex = _baseSelectorLength;
+            var bottomIndex = BaseSelectorLength;
             if (extraIngredientSlotOptions == ExtraIngredientSlotOptions.BottomLeft || extraIngredientSlotOptions == ExtraIngredientSlotOptions.Both)
             {
                 SetBottomLeftNav(bottomIndex, craftButton, extraIngredientSlotOptions, selectors);
@@ -189,22 +188,22 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             Logger.LogDebug($"SetBottomLeftNav: Index slot {index} button was interactable.");
             var navigation = slots[index].navigation;
             var bottomRightSel = slotOptions == ExtraIngredientSlotOptions.Both ? slots.Last() : null;
-            
+
             navigation.mode = Navigation.Mode.Explicit;
-            
-            var leftIndex = Array.FindLastIndex(slots, _baseSelectorLength - 1, _baseSelectorLength, s => s.Button.interactable);
-            
+
+            var leftIndex = Array.FindLastIndex(slots, BaseSelectorLength - 1, BaseSelectorLength, s => s.Button.interactable);
+
             navigation.selectOnLeft = null;
             navigation.selectOnRight = craftButton;
             navigation.selectOnDown = null;
-            
+
             if (craftButton != null)
             {
                 var craftNavigation = craftButton.navigation;
                 craftNavigation.selectOnLeft = slots[index].Button.interactable ? slots[index].Button : null;
                 craftButton.navigation = craftNavigation;
             }
-            
+
             var navDownIndex = slotOptions == ExtraIngredientSlotOptions.BottomLeft ? 4 : 2;
             //change top slots down navigation to go to this slot. If there is a Bottom right slot enabled,
             //then only the first 2 should go to this slot. Otherwise, down takes all 4 here.
@@ -256,22 +255,22 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                 leftNavigation.selectOnRight = slots[index].Button.interactable ? slots[index].Button : null;
                 leftSelector.navigation = leftNavigation;
             }
-            
+
             //change top slots down navigation to go to this slot. If there is a Bottom left slot enabled,
             //then only the last 2 should go to this slot. Otherwise, down takes all 4 here.
             var navDownIndex = slotOptions == ExtraIngredientSlotOptions.BottomRight ? 0 : 2;
-            for (var top = navDownIndex; top < _baseSelectorLength; top++)
+            for (var top = navDownIndex; top < BaseSelectorLength; top++)
             {
                 if (slots[top].Button.interactable)
                 {
                     var topNavigation = slots[top].navigation;
                     topNavigation.selectOnDown = slots[index].Button.interactable ? slots[index].Button : null;
                     slots[top].navigation = topNavigation;
-                    
+
                 }
             }
             //set the up to the last active on the top row
-            for (var i = 0; i < _baseSelectorLength; i++)
+            for (var i = 0; i < BaseSelectorLength; i++)
                 if (slots[i].Button.interactable)
                     navigation.selectOnUp = slots[i].Button;
 
@@ -322,7 +321,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
         {
             if (!TryGetDisplayConfig(menu.GetType(), out var config) || config.ExtraIngredientSlotOption == ExtraIngredientSlotOptions.None)
                 return;
-            
+
             var result = menu.transform.Find("Content/CraftingResult/ItemDisplayGrid").GetComponent<RectTransform>();
             var index = 4;
             if (config.ExtraIngredientSlotOption == ExtraIngredientSlotOptions.Both || config.ExtraIngredientSlotOption == ExtraIngredientSlotOptions.BottomLeft)
@@ -356,7 +355,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             var complexeRecipes = menu.GetPrivateField<CraftingMenu, List<KeyValuePair<int, Recipe>>>("m_complexeRecipes");
             if (complexeRecipes.Count < 1)
                 return;
-            
+
             var controllerType = visibiltyController.GetType();
             Logger.LogDebug($"{menuType.Name}::ProcessAdditionRecipeChecks: Found registered {nameof(IRecipeVisibiltyController)} type {controllerType} for menu. " +
                 $"Setting visibilty of {complexeRecipes.Count} recipes.");
@@ -368,7 +367,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
 
             int index = 0;
             int lastRecipeIndex = menu.GetLastRecipeIndex();
-            
+
             for (int i = 0; i < complexeRecipes.Count; i++)
             {
                 if (i == lastRecipeIndex)
@@ -401,7 +400,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                 recipeDisplays[i].Hide();
                 trimRecipeDisplays.Add(recipeDisplays[i]);
             }
-            
+
             menu.SetPrivateField<CraftingMenu, List<KeyValuePair<int, Recipe>>>("m_complexeRecipes", trimComplexRecipes);
             menu.SetPrivateField<CraftingMenu, List<RecipeDisplay>>("m_recipeDisplays", trimRecipeDisplays);
 

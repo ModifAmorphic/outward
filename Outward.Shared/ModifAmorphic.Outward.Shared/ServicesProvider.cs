@@ -22,7 +22,7 @@ namespace ModifAmorphic.Outward
         }
         public ServicesProvider AddSingleton<T>(T serviceInstance)
         {
-            _serviceFactories.TryAdd(typeof(T), (Func<T>)( () => serviceInstance));
+            _serviceFactories.TryAdd(typeof(T), (Func<T>)(() => serviceInstance));
             return this;
         }
         public ServicesProvider AddFactory<T>(Func<T> serviceFactory)
@@ -88,7 +88,7 @@ namespace ModifAmorphic.Outward
             service = (T)serviceDelegate.DynamicInvoke();
             return !EqualityComparer<T>.Default.Equals(service, default);
         }
-        
+
         //Exists so TryGetService can log trace events without creating an infinite loop.
         private bool TryGetLogger(out IModifLogger logger)
         {

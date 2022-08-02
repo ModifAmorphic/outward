@@ -2,9 +2,7 @@
 using ModifAmorphic.Outward.Logging;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.Coroutines
@@ -16,7 +14,7 @@ namespace ModifAmorphic.Outward.Coroutines
         protected const float DefaultTicSeconds = .25f;
         protected readonly BaseUnityPlugin _unityPlugin;
 
-        public ModifCoroutine(BaseUnityPlugin unityPlugin, Func<IModifLogger> getLogger) => 
+        public ModifCoroutine(BaseUnityPlugin unityPlugin, Func<IModifLogger> getLogger) =>
             (_unityPlugin, _getLogger) = (unityPlugin, getLogger);
 
         public IEnumerator InvokeAfter(Func<bool> condition, Action action, int timeoutSecs, float waitTicSecs = 0f, Func<bool> cancelCondition = null)
@@ -36,7 +34,7 @@ namespace ModifAmorphic.Outward.Coroutines
             int waits = 0;
             var isCanceled = cancelCondition?.Invoke() ?? false;
             while (!condition.Invoke() && !isCanceled &&
-                (waits++ < maxWaits || (useStopwatch && stopwatch.Elapsed.TotalSeconds < timeoutSecs)) )
+                (waits++ < maxWaits || (useStopwatch && stopwatch.Elapsed.TotalSeconds < timeoutSecs)))
             {
                 isCanceled = cancelCondition?.Invoke() ?? false;
                 if (waitTicSecs > 0f)
@@ -71,12 +69,12 @@ namespace ModifAmorphic.Outward.Coroutines
                 Logger.LogError($"{this.GetType().Name}::{nameof(InvokeAfter)}: Timed out after waiting {timeoutSecs} seconds for condition {condition.Method.Name} to be met." +
                     $" Action not invoked: {action.Method.Name}.");
             }
-            
+
         }
         public IEnumerator InvokeAfter<T>(Func<bool> condition, Action<T> action, Func<T> valueFactory, int timeoutSecs, float waitTicSecs = 0f, Func<bool> cancelCondition = null)
         {
             var maxWaits = (int)(timeoutSecs / waitTicSecs);
-            
+
             bool useStopwatch = false;
             var stopwatch = new Stopwatch();
 

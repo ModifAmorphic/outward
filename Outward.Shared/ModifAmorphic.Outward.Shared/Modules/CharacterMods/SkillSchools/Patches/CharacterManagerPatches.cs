@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Logging;
 using System;
 

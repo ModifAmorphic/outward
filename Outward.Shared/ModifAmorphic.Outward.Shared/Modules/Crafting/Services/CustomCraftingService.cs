@@ -6,7 +6,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Modules.Crafting.Services
 {
@@ -63,10 +62,9 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             int quantity = result.Quantity * resultMultiplier;
 
             var dynamicResult = result as DynamicCraftingResult;
-            
+
             dynamicResult?.SetIngredientData(craftingMenu.IngredientCraftData);
 
-            var craftedAny = false;
             for (int i = 0; i < quantity; i++)
             {
                 Logger.LogTrace($"{nameof(CustomCraftingService)}::{nameof(GenerateResultOverride)}(): " +
@@ -75,7 +73,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                 {
                     Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(GenerateResultOverride)}(): " +
                         $"New item '{craftedItem.Name}' crafted from recipe {craftingMenu.GetSelectedRecipe().Name} and result ItemID {result.ItemID};");
-                    craftedAny = true;
 
                     //Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(GenerateResultOverride)}(): " +
                     //        $"tryEquipItem: {tryEquipItem}. Item '{craftedItem.Name}' crafted from recipe {craftingMenu.GetSelectedRecipe().Name}." +
@@ -89,7 +86,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                         characterInventory.TakeItem(craftedItem, tryEquipItem);
                     }
                     //If item is in inventory or pouch already and tryEquipItem is specified, try to equip it.
-                    else if (tryEquipItem 
+                    else if (tryEquipItem
                         && (characterInventory.IsItemInBag(craftedItem) || characterInventory.IsItemInPouch(craftedItem))
                         && craftedItem is Equipment equipment)
                     {
@@ -186,7 +183,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                         ingredientFilter.EquippedIngredientFilter,
                         matcher, itemSelector, ref availableIngredients);
             }
-            
+
             craftingMenu.SetPrivateField<CraftingMenu, DictionaryExt<int, CompatibleIngredient>>("m_availableIngredients", availableIngredients);
 
             Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(RefreshAvailableIngredients)}(): " +
@@ -206,7 +203,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                         $"Found a registered MenuIngredientFilters for menu type {menuType}");
                 if (!ingredientFilter.BaseInventoryFilterTag.IsSet)
                     ingredientFilter.BaseInventoryFilterTag = TagSourceManager.GetCraftingIngredient(craftingMenu.GetRecipeCraftingType());
-                
+
                 return ingredientFilter;
             }
 
@@ -359,7 +356,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                         $"Added {ingredients.Count - startCount} additional items from character's inventory to the collection of available Ingredients." +
                         $" Original amount of available ingredients was {startCount}. New amount is {ingredients.Count - startCount}");
         }
-        public void AddOrUpdateCrafter<T>(ICustomCrafter customCrafter)  where T : CustomCraftingMenu =>
+        public void AddOrUpdateCrafter<T>(ICustomCrafter customCrafter) where T : CustomCraftingMenu =>
             _customCrafters.AddOrUpdate(typeof(T), customCrafter, (k, v) => v = customCrafter);
 
         public MenuIngredientFilters AddOrUpdateIngredientFilter<T>(MenuIngredientFilters filter) =>
@@ -368,7 +365,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
            _ingredientFilters.TryGetValue(typeof(T), out filter);
         public bool TryRemoveIngredientFilter<T>() =>
            _ingredientFilters.TryRemove(typeof(T), out _);
-        
+
 
         public ICompatibleIngredientMatcher AddOrUpdateCompatibleIngredientMatcher<T>(ICompatibleIngredientMatcher matcher) =>
             _ingredientMatchers.AddOrUpdate(typeof(T), matcher, (k, v) => v = matcher);
@@ -376,7 +373,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
         public bool TryGetCompatibleIngredientMatcher<T>(out ICompatibleIngredientMatcher matcher) =>
             _ingredientMatchers.TryGetValue(typeof(T), out matcher);
 
-        
+
         public IConsumedItemSelector AddOrUpdateConsumedItemSelector<T>(IConsumedItemSelector itemSelector) =>
            _itemSelectors.AddOrUpdate(typeof(T), itemSelector, (k, v) => v = itemSelector);
         public bool TryRemoveConsumedItemSelector<T>() => _itemSelectors.TryRemove(typeof(T), out _);

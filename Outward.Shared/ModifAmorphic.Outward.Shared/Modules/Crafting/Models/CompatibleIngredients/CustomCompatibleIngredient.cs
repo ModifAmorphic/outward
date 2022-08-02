@@ -2,8 +2,6 @@
 using ModifAmorphic.Outward.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients
 {
@@ -52,8 +50,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients
                 StashIngredientEnchantData(consumedItems);
 
                 var menuCraftData = _ingredientMatcher.ParentCraftingMenu.IngredientCraftData;
-                Dictionary<string, int> itemQuantities;
-                if (!menuCraftData.ConsumedItems.TryGetValue(ItemID, out itemQuantities))
+                if (!menuCraftData.ConsumedItems.TryGetValue(ItemID, out Dictionary<string, int> itemQuantities))
                 {
                     itemQuantities = new Dictionary<string, int>();
                     menuCraftData.ConsumedItems.Add(ItemID, itemQuantities);

@@ -1,14 +1,11 @@
-﻿using Localizer;
-using ModifAmorphic.Outward.Extensions;
+﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Items.Models;
 using ModifAmorphic.Outward.Modules.Items.Patches;
-using ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.Modules.Items
@@ -37,7 +34,7 @@ namespace ModifAmorphic.Outward.Modules.Items
               typeof(ItemDisplayPatches)
         };
 
-    private readonly ConcurrentDictionary<string, int> _itemVisuals = new ConcurrentDictionary<string, int>();
+        private readonly ConcurrentDictionary<string, int> _itemVisuals = new ConcurrentDictionary<string, int>();
 
         /// <summary>
         /// Collection of a specific Item UID's icons and a means to get them.<br />
@@ -109,7 +106,7 @@ namespace ModifAmorphic.Outward.Modules.Items
             }
         }
 
-        public bool IsAdditionalIconRegistered(string itemUID, string iconName) => _itemsIcons.TryGetValue(itemUID, out var icons) ? icons.ContainsKey(iconName) : false;
+        public bool IsAdditionalIconRegistered(string itemUID, string iconName) => _itemsIcons.TryGetValue(itemUID, out var icons) && icons.ContainsKey(iconName);
         //private bool GetVisualsByItemOverride(Item item, out ItemVisual visual)
         //{
         //    if (!_itemVisuals.TryGetValue(item.UID, out var visualItemID))
@@ -305,7 +302,7 @@ namespace ModifAmorphic.Outward.Modules.Items
         {
             var registeredItemIcons = new HashSet<string>();
             Logger.LogTrace($"{nameof(ItemVisualizer)}::{nameof(ToggleCustomIcons)}(): Setting custom icons for Item {item?.ItemID} - {item?.DisplayName} ({item?.UID}) current ItemDisplay {itemDisplay.name}.");
-            
+
             if (item != null && !string.IsNullOrEmpty(item.UID) && _itemsIcons.TryGetValue(item.UID, out var itemIcons))
             {
                 foreach (var iconKvp in itemIcons)

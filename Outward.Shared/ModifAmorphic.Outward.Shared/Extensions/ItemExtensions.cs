@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Extensions
 {
@@ -47,7 +44,7 @@ namespace ModifAmorphic.Outward.Extensions
 
         //TODO: This doesn't belong here. Rework all this so the extensions don't need a random dictionary stashed in
         //the extensions class.
-        
+
         private static readonly ConcurrentDictionary<int, Sprite> _itemIcons = new ConcurrentDictionary<int, Sprite>();
 
         public static Item ConfigureItemIcon(this Item item, string iconPath)
@@ -57,7 +54,7 @@ namespace ModifAmorphic.Outward.Extensions
 
             if (!File.Exists(iconPath))
                 throw new FileNotFoundException($"Item {item.ItemID} - {item.DisplayName}'s Icon could not be set. Icon file not found.", iconPath);
-            
+
             var sprite = item.ItemIcon;
             var texture = item.ItemIcon.texture;
 
@@ -71,7 +68,7 @@ namespace ModifAmorphic.Outward.Extensions
 
             var newSprite = Sprite.Create(newtexture, sprite.rect, sprite.pivot, sprite.pixelsPerUnit, 0, SpriteMeshType.FullRect);
             newSprite.name = "icon";
-            
+
             item.ItemIconPath = iconPath;
             item.SetItemIcon(newSprite);
 
@@ -145,5 +142,6 @@ namespace ModifAmorphic.Outward.Extensions
             item.SetPrivateField<Item, ItemVisual>("m_loadedVisual", itemVisual);
             return item;
         }
+        public static bool ItemIsSkill(this Item item) => item is Skill;
     }
 }
