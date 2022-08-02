@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 #if DEBUG
@@ -11,25 +10,20 @@ using System.Linq;
 
 namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
 {
+    /// <summary>
+    /// Patches for handling keypresses of extra quickslots
+    /// </summary>
     [HarmonyPatch]
     internal static class LocalCharacterControlPatches
     {
         private static Dictionary<int, RewiredInputs> _playerInputManager = new Dictionary<int, RewiredInputs>();
-        //private static SortedDictionary<int, string> _exQuickSlots = new SortedDictionary<int, string>();
+
         private static IEnumerable<ExtendedQuickSlot> _exQuickSlots = new List<ExtendedQuickSlot>();
 
         [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
 
-        private static void QuickSlotExtenderEvents_SlotsChanged(object sender, QuickSlotExtendedArgs e) => _exQuickSlots = e.ExtendedQuickSlots;
-
-
-        [EventSubscription]
-        public static void SubscribeToEvents()
-        {
-            //LoggerEvents.LoggerConfigured += LoggerEvents_LoggerLoaded;
-            QuickSlotExtenderEvents.SlotsChanged += QuickSlotExtenderEvents_SlotsChanged;
-        }
+        public static void Configure(IEnumerable<ExtendedQuickSlot> exQuickSlots) => _exQuickSlots = exQuickSlots;
 
         [HarmonyPatch(typeof(ControlsInput), nameof(ControlsInput.Setup))]
         [HarmonyPostfix]

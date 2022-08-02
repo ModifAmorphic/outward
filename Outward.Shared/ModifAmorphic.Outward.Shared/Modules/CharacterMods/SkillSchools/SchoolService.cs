@@ -23,7 +23,7 @@ namespace ModifAmorphic.Outward.Modules.CharacterMods
                 _charInstances.TryGetSkillSchools(out var skillSchools);
 
                 var learnedSkills = character.Inventory.SkillKnowledge.GetLearnedItems().Select(s => ((Skill)s));
-                
+
                 var breakThroughs = skillSchools.Select(s => s.Value.BreakthroughSkill as SkillSlot).ToList();
                 var charBreakThroughs = learnedSkills.Where(s => breakThroughs.Any(b => b.Skill.ItemID == s.ItemID));
                 return skillSchools.Where(kvp => charBreakThroughs.Any(c => c.SchoolIndex == kvp.Key)).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
@@ -46,14 +46,14 @@ namespace ModifAmorphic.Outward.Modules.CharacterMods
         public bool TryForgetSkill(int skillItemID, string characterUID, out SkillSlot skillSlotForgotten, bool notifyOnRemove = false)
         {
             Logger.LogTrace($"{nameof(SchoolService)}::{nameof(TryForgetSkill)}: skillItemID: {skillItemID}, characterUID: '{characterUID}'");
-            
+
             skillSlotForgotten = default;
-            
+
             if (!_charInstances.TryGetCharacterManager(out var characterManager) || !characterManager.Characters.TryGetValue(characterUID, out var character))
                 return false;
-            
+
             var skillItem = character.Inventory.SkillKnowledge.GetItemFromItemID(skillItemID) as Skill;
-            if (skillItem == null || ! TryGetSchool(skillItem.SchoolIndex, out var skillSchool))
+            if (skillItem == null || !TryGetSchool(skillItem.SchoolIndex, out var skillSchool))
                 return false;
 
             var skillSlot = skillSchool.GetComponentsInChildren<SkillSlot>()?.FirstOrDefault(s => s.Skill.ItemID == skillItem.ItemID);

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ModifAmorphic.Outward.Modules.Save
+﻿namespace ModifAmorphic.Outward.Modules.Save
 {
     public interface IModifSave<T>
     {

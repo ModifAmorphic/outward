@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ModifAmorphic.Outward.Modules.Crafting
+﻿namespace ModifAmorphic.Outward.Modules.Crafting
 {
     public class CraftingMenuEvents
     {
@@ -32,7 +28,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
 
         internal void InvokeMenuHiding(CustomCraftingMenu menu) => MenuHiding?.Invoke(menu);
         internal void InvokeMenuLoading(CustomCraftingMenu menu) => MenuLoaded?.Invoke(menu);
-        internal void InvokeMenuStarting(CustomCraftingMenu menu) => MenuShowing?.Invoke(menu);
+        internal void InvokeMenuStarting(CustomCraftingMenu menu) => MenuStarting?.Invoke(menu);
         internal void InvokeMenuShowing(CustomCraftingMenu menu) => MenuShowing?.Invoke(menu);
     }
 }

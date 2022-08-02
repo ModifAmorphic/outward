@@ -1,7 +1,6 @@
 ﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Localization;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Modules.Crafting.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -23,7 +22,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
         public GameObject AddMenuTab(CharacterUI characterUI, string tabName, string tabDisplayName, string buttonName, int menuId, string orderAfterBtn, MenuIcons menuIcons)
         {
             var menuTabs = characterUI.GetPrivateField<CharacterUI, MenuTab[]>("m_menuTabs");
-            
+
             //Get the existing crafting tab and clone it
             var craftingTabGo = menuTabs.First(t => t.TabName == "PlayerMenu_Tab_Crafting").Tab.gameObject;
             var isActive = craftingTabGo.activeSelf;
@@ -38,8 +37,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
 
             var newUiMenuTab = newUiMenuTabGo.AddComponent<UIMenuTab>();
             newUiMenuTab.transform.SetAsLastSibling();
-            
-            
+
+
             newUiMenuTab.LinkedMenuID = (CharacterUI.MenuScreens)menuId;
             var newMenuTab = new MenuTab()
             {
@@ -67,7 +66,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
 
             //menuTabs[menuTabs.Length - 1] = newMenuTab;
             characterUI.SetPrivateField("m_menuTabs", tabSorter);
-            
+
             Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(AddMenuTab)}: Resized m_menuTabs to {menuTabs.Length}");
 
             //activate the new menu gameobject
@@ -80,11 +79,11 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
 
             return newUiMenuTabGo;
         }
-        ConcurrentDictionary<UID, ConcurrentDictionary<int, MenuPanel>> _disabledMenus = new ConcurrentDictionary<UID, ConcurrentDictionary<int, MenuPanel>>();
+        private readonly ConcurrentDictionary<UID, ConcurrentDictionary<int, MenuPanel>> _disabledMenus = new ConcurrentDictionary<UID, ConcurrentDictionary<int, MenuPanel>>();
         public void EnableMenuTab(CharacterUI characterUI, CraftingMenuMetadata meta)
         {
             var uIMenuTab = meta.MenuTab.GetComponent<UIMenuTab>();
-            Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(DisableMenuTab)}: Enabling Menu Toggle Tab {meta.MenuTab.name} ({meta.MenuName}) for player ID {characterUI.RewiredID}.");
+            Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(EnableMenuTab)}: Enabling Menu Toggle Tab {meta.MenuTab.name} ({meta.MenuName}) for player ID {characterUI.RewiredID}.");
 
             meta.MenuTab.SetActive(true);
             var m_menus = characterUI.GetPrivateField<CharacterUI, MenuPanel[]>("m_menus");
@@ -108,9 +107,9 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
         {
             var toggle = menuBtn.GetComponent<Toggle>();
 
-            
+
             var spriteState = new SpriteState()
-            { 
+            {
                 pressedSprite = toggle.spriteState.pressedSprite.Clone(menuIcons.PressedIcon.IconFilePath, menuIcons.PressedIcon.SpriteName, menuIcons.PressedIcon.TextureName),
                 highlightedSprite = toggle.spriteState.pressedSprite.Clone(menuIcons.HoverIcon.IconFilePath, menuIcons.HoverIcon.SpriteName, menuIcons.HoverIcon.TextureName)
             };
@@ -202,7 +201,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             CopyFields(craftMenu, newMenu);
 
             UnityEngine.Object.DestroyImmediate(craftMenu);
-            
+
             //remove clones that would otherwise be duplicated when the menu Awakes.
             RemoveMenuClones(newMenuGo);
 
@@ -220,13 +219,13 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             }
             //reset the parent Active status back to whatever it was before
             menuParentXform.gameObject.SetActive(isActive);
-            
+
             //Disable title label for Alchemy and Cooking menus, otherwise they display "Pocket".
             if (newMenu is CustomCraftingMenu customMenu)
                 if (customMenu.PermanentCraftingStationType == Recipe.CraftingType.Alchemy
                     || customMenu.PermanentCraftingStationType == Recipe.CraftingType.Cooking)
-                        DisableTitleLabel(newMenuGo);
-            
+                    DisableTitleLabel(newMenuGo);
+
             return newMenuGo;
         }
         public List<int> AddIngredientTags(int tags)
@@ -253,21 +252,21 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             }
 
             TagSourceManager.Instance.SetPrivateField("m_craftingStationIngredientTags", m_craftingStationIngredientTags);
-            
+
             Logger.LogDebug($"{nameof(CraftingMenuUIService)}::{nameof(AddIngredientTags)}: Expanded m_craftingStationIngredientTags by {expandBy}.");
 
             return addedTagIds;
 
         }
-        
+
         public int AddIngredientTag()
         {
             return AddIngredientTags(1)[0];
         }
         private void CopyFields<T>(T source, T target)
         {
-            var sourceFields = typeof(T).GetFields(System.Reflection.BindingFlags.Public 
-                | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance 
+            var sourceFields = typeof(T).GetFields(System.Reflection.BindingFlags.Public
+                | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance
                 | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.FlattenHierarchy);
 
             for (int i = 0; i < sourceFields.Length; i++)

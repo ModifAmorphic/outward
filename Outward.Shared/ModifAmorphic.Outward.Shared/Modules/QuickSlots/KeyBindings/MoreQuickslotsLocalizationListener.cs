@@ -24,8 +24,11 @@ namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
             StringBuilder sb = new StringBuilder();
             foreach (var qs in qsLocalizations)
             {
-                localizations.Add(qs.Key, qs.Value);
-                sb.AppendLine($"\tname: {qs.Key}, desc: {qs.Value}");
+                if (!localizations.ContainsKey(qs.Key))
+                {
+                    localizations.Add(qs.Key, qs.Value);
+                    sb.AppendLine($"\tname: {qs.Key}, desc: {qs.Value}");
+                }
             }
             logger.LogDebug($"{nameof(MoreQuickslotsLocalizationListener)} Localizations Added:\n{sb}.");
             LocalizationManager.Instance.SetGeneralLocalizations(localizations);

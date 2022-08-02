@@ -6,7 +6,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Modules.Merchants
 {
@@ -54,7 +53,7 @@ namespace ModifAmorphic.Outward.Modules.Merchants
 
             //var gDrops = args.DropableInventory.GetComponentsInChildren<GuaranteedDrop>();
             //var guaranteedDrop = args.DropableInventory.gameObject.AddComponent<GuaranteedDrop>();
-            foreach(var d in customDrops.GuaranteedDrops)
+            foreach (var d in customDrops.GuaranteedDrops)
             {
                 var guaranteedDrop = args.DropableInventory.gameObject.AddComponent<GuaranteedDrop>();
                 guaranteedDrop.ItemGenatorName = d.ItemGenatorName;
@@ -79,6 +78,6 @@ namespace ModifAmorphic.Outward.Modules.Merchants
                 GameObjectName = gameObjectName
             });
         }
-        
+
     }
 }

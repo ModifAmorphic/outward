@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.Modules.Items
@@ -60,11 +59,11 @@ namespace ModifAmorphic.Outward.Modules.Items
             prefab.gameObject.DeCloneNames();
             prefab.transform.ResetLocal();
             basePrefab.gameObject.SetActive(baseActiveStatus);
-            
+
             //UnityEngine.Object.DontDestroyOnLoad(prefab.gameObject);
             //basePrefab.gameObject.SetActive(baseActiveStatus);
             //prefab.hideFlags |= HideFlags.HideAndDontSave;
-            
+
 
             if (setFields)
             {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ModifAmorphic.Outward.Modules.Crafting
+﻿namespace ModifAmorphic.Outward.Modules.Crafting
 {
     public interface IRecipeVisibiltyController
     {

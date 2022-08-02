@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ModifAmorphic.Outward.Extensions
+﻿namespace ModifAmorphic.Outward.Extensions
 {
     public static class LoggingExtensions
     {
@@ -23,7 +19,7 @@ namespace ModifAmorphic.Outward.Extensions
                 default:
                     return BepInEx.Logging.LogLevel.Info;
             }
-            
+
         }
     }
 }

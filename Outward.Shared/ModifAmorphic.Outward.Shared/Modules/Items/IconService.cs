@@ -2,11 +2,7 @@
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -67,7 +63,7 @@ namespace ModifAmorphic.Outward.Modules.Items
                 iconGo.gameObject.SetActive(true);
             }
             return iconGo;
-            
+
         }
         public bool TryDeactivateIcon(ItemDisplay itemDisplay, string iconName)
         {
@@ -75,14 +71,14 @@ namespace ModifAmorphic.Outward.Modules.Items
             var existing = itemDisplay.transform.Find(iconGoName)?.gameObject;
             if (existing == null || !existing.activeSelf)
             {
-                Logger.LogTrace($"{nameof(IconService)}::{nameof(TryDeactivateIcon)}(): No existing icon GameObject '{iconGoName}' found attached, or existing icon's GameObject {existing?.name?? " "}was already deactivated. No action taken.");
+                Logger.LogTrace($"{nameof(IconService)}::{nameof(TryDeactivateIcon)}(): No existing icon GameObject '{iconGoName}' found attached, or existing icon's GameObject {existing?.name ?? " "}was already deactivated. No action taken.");
                 return false;
             }
 
             existing.SetActive(false);
             Logger.LogDebug($"{nameof(IconService)}::{nameof(TryDeactivateIcon)}(): Deactivated existing icon's GameObject {existing.name}.");
             //UnityEngine.Object.DestroyImmediate(existing);
-            
+
             return true;
         }
         private string GetIconGameObjectName(string iconName)

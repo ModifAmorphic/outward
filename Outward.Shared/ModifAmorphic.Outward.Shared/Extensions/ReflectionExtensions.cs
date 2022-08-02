@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
@@ -39,7 +38,7 @@ namespace ModifAmorphic.Outward.Extensions
             var field = typeof(T).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
             return (V)field.GetValue(parent);
         }
-        public static void SetPrivateField<T,V>(this T parent, string fieldName, V value)
+        public static void SetPrivateField<T, V>(this T parent, string fieldName, V value)
         {
             var field = typeof(T).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
             field.SetValue(parent, value);
@@ -109,8 +108,8 @@ namespace ModifAmorphic.Outward.Extensions
                     else if (fieldType.IsAssignableFrom(typeof(UnityEngine.Object)))
                     {
                         var value = (UnityEngine.Object)sourceFields[i].GetValue(source);
-                        if (value.TryCloneValue(parentTransform, out var tValue));
-                               sourceFields[i].SetValue(target, tValue, BindingFlags.FlattenHierarchy, null, null);
+                        if (value.TryCloneValue(parentTransform, out var tValue))
+                            sourceFields[i].SetValue(target, tValue, BindingFlags.FlattenHierarchy, null, null);
                     }
                     else if (fieldType.IsAssignableFrom(typeof(IEnumerable)))
                     {
@@ -151,7 +150,7 @@ namespace ModifAmorphic.Outward.Extensions
             {
                 list = null;
                 return false;
-            }    
+            }
 
             var listType = typeof(List<>);
             var genericArgs = type.GetGenericArguments();
@@ -181,7 +180,7 @@ namespace ModifAmorphic.Outward.Extensions
                 if (cloneUO is GameObject go)
                     go.DeCloneNames();
                 if (sourceUO is T clonedValue)
-                { 
+                {
                     clone = clonedValue;
                     return true;
                 }
@@ -189,6 +188,7 @@ namespace ModifAmorphic.Outward.Extensions
             clone = default;
             return false;
         }
+
         private static Type GetElementType(Type seqType)
         {
             Type ienum = FindIEnumerable(seqType);

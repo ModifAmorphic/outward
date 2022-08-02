@@ -3,7 +3,6 @@ using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Modules.Crafting.Patches
 {
@@ -22,10 +21,10 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
             {
                 if (!(__instance is CustomCompatibleIngredient customIngredient))
                     return true;
-                
+
                 //Logger.LogTrace($"{nameof(CompatibleIngredientPatches)}::{nameof(MatchRecipeStepPrefix)}(): Invoked for RecipeIngredient {_recipeStep}. Invoking {nameof(MatchRecipeStepOverride)}().");
                 var origResult = __result;
-                
+
                 if (customIngredient.MatchRecipeStepOverride(_recipeStep, out __result))
                 {
                     Logger.LogTrace($"{nameof(CompatibleIngredientPatches)}::{nameof(MatchRecipeStepPrefix)}(): Was overridden by {logMethod}() and had its result set to {__result}.");
@@ -43,7 +42,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
 
         [HarmonyPatch(nameof(CompatibleIngredient.GetConsumedItems), MethodType.Normal)]
         [HarmonyPostfix]
-        private static void GetConsumedItemsPostfix(CompatibleIngredient __instance, bool _useMultipler, ref int _resultMultiplier, ref IList<KeyValuePair<string, int>>  __result)
+        private static void GetConsumedItemsPostfix(CompatibleIngredient __instance, bool _useMultipler, ref int _resultMultiplier, ref IList<KeyValuePair<string, int>> __result)
         {
             string logMethod = nameof(CustomCompatibleIngredient) + "." + nameof(CustomCompatibleIngredient.CaptureConsumedItems);
             try
