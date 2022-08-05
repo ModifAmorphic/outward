@@ -41,6 +41,7 @@ namespace Assets.Testing
                 Cooldown = new RandomCooldown(),
                 Stack = new RandomStack(monoBehaviour)
             };
+            
             return slotAction;
 
         }

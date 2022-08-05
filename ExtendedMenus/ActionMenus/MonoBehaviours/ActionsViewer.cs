@@ -11,11 +11,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     [UnityScriptComponent]
     public class ActionsViewer : MonoBehaviour
     {
+
+        public PlayerMenu PlayerMenu;
         public ViewerLeftNav LeftNav;
 
         private GridLayoutGroup _gridLayout;
         public GameObject BaseGridAction;
-        private IActionViewData _actionViewData;
         private int _slotId;
         private Func<bool> _exitRequested;
 
@@ -24,7 +25,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public delegate void SlotActionSelected(int slotId, ISlotAction slotAction);
         public event SlotActionSelected OnSlotActionSelected;
 
-        public bool HasData => _actionViewData != null;
+        public bool HasData => GetViewData() != null;
 
         private void Awake()
         {
@@ -44,14 +45,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 Hide();
         }
         public void ConfigureExit(Func<bool> exitRequested) => _exitRequested = exitRequested;
-        public void SetViewData(IActionViewData actionViewData)
-        {
-            if (actionViewData == null)
-                throw new ArgumentNullException(nameof(actionViewData));
-            _actionViewData = actionViewData;
-
-            InitLeftNav();
-        }
         
         public void Clear()
         {
@@ -82,7 +75,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             if (!gameObject.activeSelf)
                 gameObject.SetActive(true);
-
+            InitLeftNav();
             DoNextFrame(LeftNav.ClickSelectedTab);
         }
         public void Hide()
@@ -97,17 +90,20 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private void InitLeftNav()
         {
             LeftNav.ClearViewTabs();
-            if (_actionViewData.GetActionsTabData() != null)
+            var viewData = GetViewData();
+            if (viewData.GetActionsTabData() != null)
             {
-                foreach (var tabView in _actionViewData.GetActionsTabData().OrderBy(d => d.TabOrder))
+                foreach (var tabView in viewData.GetActionsTabData().OrderBy(d => d.TabOrder))
                 {
                     var button = LeftNav.AddViewTab(tabView.DisplayName);
                     button.onClick.AddListener(() => LoadData(tabView.GetSlotActions()));
                 }
             }
             LeftNav.AddViewTab("All")
-                .onClick.AddListener(() => LoadData(_actionViewData.GetAllActions()));
+                .onClick.AddListener(() => LoadData(viewData.GetAllActions()));
         }
+
+        private IActionViewData GetViewData() => Psp.GetServicesProvider(PlayerMenu.PlayerID).GetService<IActionViewData>();
 
         private void AddGridItem(ISlotAction slotAction)
         {

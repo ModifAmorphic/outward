@@ -1,4 +1,5 @@
 using ModifAmorphic.Outward.ActionMenus.Extensions;
+using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,7 +13,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
     {
         private readonly HotbarsContainer _hbc;
         public HotbarsContainer HotbarsContainer => _hbc;
-        IHotbarRequestActions _requestActions;
+        
+        private IHotbarRequestActions _requestActions;
 
         private bool _resizeNeeded = false;
 
@@ -22,14 +24,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 throw new ArgumentNullException(nameof(hotbarsContainer));
 
             _hbc = hotbarsContainer;
-        }
-
-        public void RegisterActionViewData(IActionViewData actionViewData)
-        {
-            if (actionViewData == null)
-                throw new ArgumentNullException(nameof(actionViewData));
-
-            _hbc.ActionsViewer.SetViewData(actionViewData);
             _hbc.ActionsViewer.OnSlotActionSelected += AssignSlotAction;
         }
 
@@ -40,14 +34,28 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
 
             _requestActions = requestActions;
         }
-
+        
         public void AssignSlotAction(int slotId, ISlotAction slotAction)
         {
             if (_hbc.ActionSlots.TryGetValue(slotId, out var slot))
                 slot.Controller.AssignSlotAction(slotAction);
         }
-
-        public void ConfigureHotbars(int hotbars, int rows, int slotsPerRow, IHotbarRequestActions requestActions = null)
+        public void ConfigureHotbars(IHotbarProfileData profile, IHotbarRequestActions requestActions)
+        {
+            var slotConfigs = new IActionSlotConfig[profile.Hotbars.Count, profile.SlotsPerRow * profile.Rows];
+            for (int h = 0; h < profile.Hotbars.Count; h++)
+            {
+                var bar = profile.Hotbars[h];
+                for (int s = 0; s < bar.Slots.Count; s++)
+                {
+                    slotConfigs[h, s] = bar.Slots[s].Config;
+                    Debug.Log($"[Debug  :ExtendedMenus] Setting Slot[{h},{s}].Config to '{(bar.Slots[s].Config == null ? "null" : "an ActionSlotConfig instance.")}'.");
+                }
+            }
+            ConfigureHotbars(profile.Hotbars.Count, profile.Rows, profile.SlotsPerRow, slotConfigs, requestActions);
+        }
+        public void ConfigureHotbars(int hotbars, int rows, int slotsPerRow, IActionSlotConfig[,] slotConfigs) => ConfigureHotbars(hotbars, rows, slotsPerRow, slotConfigs, _requestActions);
+        public void ConfigureHotbars(int hotbars, int rows, int slotsPerRow, IActionSlotConfig[,] slotConfigs, IHotbarRequestActions requestActions)
         {
             if (hotbars < 1)
                 throw new ArgumentOutOfRangeException(nameof(hotbars));
@@ -78,8 +86,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                     actionSlot.SlotIndex = s;
                     actionSlot.HotbarIndex = h;
                     actionSlot.HotbarsContainer = _hbc;
-
+                    actionSlot.Config = slotConfigs[h, s];
+                    Debug.Log($"[Debug  :ExtendedMenus] Configured Hotkey to '{actionSlot.Config?.HotkeyText}' for SlotIndex {s}.");
                     newSlot.SetActive(true);
+                    //actionSlot.OnAwake += () => actionSlot.Controller.Configure(slotConfigs[h, s]);
                     _hbc.Hotbars[h][s] = actionSlot;
                     _hbc.ActionSlots.Add(actionSlot.SlotId, actionSlot);
                 }
@@ -87,6 +97,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             }
             Debug.Log($"[Debug  :ExtendedMenus] Added {_hbc.Hotbars.Length} Hotbars with {_hbc.Hotbars.FirstOrDefault()?.Length} Action Slots each. Calling StartCoroutine ResizeLayoutGroup().");
             _resizeNeeded = true;
+            _hbc.HasChanges = true;
             //_hbc.StartCoroutine(ResizeLayoutGroup());
         }
 
@@ -121,11 +132,17 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 return 0;
             return _hbc.HotbarGrid.Length;
         }
-        public int GetActionSlotsPerBar()
+        public int GetActionSlotsPerRow()
         {
             if (_hbc.HotbarGrid == null || _hbc.HotbarGrid.Length == 0)
                 return _hbc.BaseGrid.constraintCount;
             return _hbc.HotbarGrid[0].constraintCount;
+        }
+        public int GetActionSlotsPerBar()
+        {
+            if (_hbc.Hotbars == null || _hbc.Hotbars.Length == 0)
+                return 0;
+            return _hbc.Hotbars[0].Length;
         }
 
         public GridLayoutGroup[] GetHotbarGrids() => _hbc.HotbarGrid;

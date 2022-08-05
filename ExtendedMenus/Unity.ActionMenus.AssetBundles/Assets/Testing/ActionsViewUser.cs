@@ -73,7 +73,7 @@ public class ActionsViewUser : MonoBehaviour, IActionViewData
 
     public IEnumerable<ISlotAction> GetAllActions()
     {
-        var actions = _actionGenerator.Generate(52);
+        var actions = _actionGenerator.Generate(125);
         return actions;
     }
 

@@ -14,6 +14,7 @@ using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.ActionMenus.Services;
 using ModifAmorphic.Outward.ActionMenus.Plugin.Services;
 using Rewired;
+using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 
 namespace ModifAmorphic.Outward.ActionMenus
 {
@@ -51,17 +52,21 @@ namespace ModifAmorphic.Outward.ActionMenus
 
             services
                 .AddSingleton(new PlayerMenuService(services.GetService<BaseUnityPlugin>(),
-                                                  menuOverhaul,
-                                                  (HotbarsContainer hotbars, Player player, Character character) => new HotbarService(
-                                                    hotbars,
-                                                    player, character,
-                                                    services.GetService<HotbarSettings>(),
-                                                    services.GetService<LevelCoroutines>(),
-                                                    services.GetService<IModifLogger>),
+                                                  menuOverhaul.GetComponentInChildren<PlayerMenu>(true).gameObject,
                                                   services.GetService<LevelCoroutines>(),
                                                   services.GetService<ModifGoService>(),
                                                   services.GetService<HotbarSettings>(),
+                                                  services.GetService<IModifLogger>))
+                .AddSingleton(new HotbarServicesInjector(services,
+                                                  services.GetService<ModifGoService>(),
+                                                  services.GetService<LevelCoroutines>(),
+                                                  services.GetService<HotbarSettings>(),
                                                   services.GetService<IModifLogger>));
+                //.AddSingleton(new HotbarProfileJsonServiceInjector(
+                //                                  services.GetService<HotbarSettings>(),
+                //                                  services.GetService<IModifLogger>));
+
+
 
             //services.AddSingleton(new HotbarsService(services.GetService<BaseUnityPlugin>(),
             //                                      menuOverhaul,
@@ -85,7 +90,7 @@ namespace ModifAmorphic.Outward.ActionMenus
         }
         public GameObject ConfigureAssetBundle()
         {
-            AttachScripts(typeof(ActionSlot).Assembly);
+            var scriptsGo = AttachScripts(typeof(ActionSlot).Assembly);
             //var menuAssets = LoadAssetMenu(services.GetService<BaseUnityPlugin>().GetPluginDirectory());
             Logger.LogDebug($"Loading asset bundle action-menus-overhaul.");
             var menuBundle = LoadAssetBundle(_services.GetService<BaseUnityPlugin>().GetPluginDirectory(), "asset-bundles", "action-menus-overhaul");
@@ -96,28 +101,32 @@ namespace ModifAmorphic.Outward.ActionMenus
                 logAssets += name + ", ";
             }
             Logger.LogDebug($"Assets in Bundle: " + logAssets);
-            var menuOverhaulAsset = menuBundle.LoadAsset<GameObject>("assets/prefabs/menuoverhaul.prefab");
-            menuOverhaulAsset.SetActive(false);
+            var menuOverhaulPrefab = menuBundle.LoadAsset<GameObject>("assets/prefabs/menuoverhaul.prefab");
+            menuOverhaulPrefab.SetActive(false);
             Logger.LogDebug($"Loaded asset assets/prefabs/menuoverhaul.prefab.");
-            UnityEngine.Object.DontDestroyOnLoad(menuOverhaulAsset);
+            UnityEngine.Object.DontDestroyOnLoad(menuOverhaulPrefab);
             menuBundle.Unload(false);
 
             var modGo = _services.GetService<ModifGoService>()
                                  .GetModResources(ModInfo.ModId, false);
-            menuOverhaulAsset.transform.SetParent(modGo.transform);
-            return menuOverhaulAsset;
-            
-            //AttachScripts(menuOverhaulAsset, typeof(ActionSlot).Assembly);
 
+            menuOverhaulPrefab.transform.SetParent(modGo.transform);
 
-            //var parent = GameObject.Find("PlayerUI/Canvas/GameplayPanels/HUD").transform;
-            //menuOverhaulAsset.transform.SetParent(parent);
-            //return GameObject.Instantiate(menuOverhaulAsset);
+            var pspPrefab = menuOverhaulPrefab.transform.Find("PlayersServicesProvider").gameObject;
+            var modActiveGo = _services.GetService<ModifGoService>()
+                                 .GetModResources(ModInfo.ModId, true);
+            var psp = UnityEngine.Object.Instantiate(pspPrefab);
 
-            //TODO: ExMenuEvents.Start() doesn't get called yet. Need a better way to hook into these events.
-            //SubscribeToMenuButtonClicks();
+            psp.transform.SetParent(modActiveGo.transform);
+            psp.name = "PlayersServicesProvider";
+
+            UnityEngine.Object.Destroy(pspPrefab);
+            UnityEngine.Object.Destroy(scriptsGo);
+
+            return menuOverhaulPrefab;
+
         }
-        public void AttachScripts(Assembly sourceAssembly)
+        public GameObject AttachScripts(Assembly sourceAssembly)
         {
             var scriptComponentTypes = sourceAssembly.GetTypes().Where(type => type.GetCustomAttributes(typeof(UnityScriptComponentAttribute), true).Length > 0);
             var goSvc = _services.GetService<ModifGoService>();
@@ -129,6 +138,7 @@ namespace ModifAmorphic.Outward.ActionMenus
             {
                 scriptGo.AddComponent(t);
             }
+            return scriptGo;
         }
         //public void AttachScripts(GameObject target, Assembly sourceAssembly)
         //{

@@ -11,11 +11,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     [UnityScriptComponent]
     public class PlayerMenu : MonoBehaviour
     {
-        private int _rewiredID;
-        public int RewiredID { get => _rewiredID; }
-
-        private string _playerUID;
-        public string PlayerUID { get => _playerUID; }
+        private int _playerID;
+        public int PlayerID { get => _playerID; }
 
         public Text posText;
         public RectTransform rectTransform;
@@ -26,7 +23,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         //private GameObject _characterGo;
         //public GameObject CharacterGo { get => _characterGo; }
 
-        public void SetIDs(int rewiredID, string playerUID) => (_rewiredID, _playerUID) = (rewiredID, playerUID);
+        public void SetIDs(int playerID) => (_playerID) = (playerID);
 
         private void Awake()
         {

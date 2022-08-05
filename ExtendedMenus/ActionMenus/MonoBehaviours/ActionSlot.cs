@@ -11,8 +11,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     [UnityScriptComponent]
     public class ActionSlot : MonoBehaviour
     {
-        private Text buttonText;
-
         public HotbarsContainer HotbarsContainer { get; internal set; }
 
         private MouseClickListener _mouseClickListener;
@@ -22,7 +20,13 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public int SlotIndex { get; internal set; }
         public int SlotId => HotbarIndex * 10000 + SlotIndex;
 
-        //The parent transform
+        private ISlotAction _slotAction;
+        public ISlotAction SlotAction { get => _slotAction; internal set => _slotAction = value; }
+
+        private IActionSlotConfig _config;
+        public IActionSlotConfig Config { get => _config; internal set => _config = value; }
+
+    //The parent transform
         private Transform _slotPanel;
         public Transform SlotPanel => _slotPanel;
 
@@ -78,12 +82,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             {
                 name = $"ActionSlot_{HotbarIndex}_{SlotIndex}";
                 _controller = new ActionSlotController(this);
-                _controller.Refresh();
-
-                //#if DEBUG
-                //                buttonText = _actionButton.GetComponentInChildren<Text>(true);
-                //                buttonText.text = $"Bar {HotbarIndex}\nSlot: {SlotIndex}"; //itemTypes[typeIndex];
-                //#endif
+                _controller.ActionSlotAwake();
             }
 
         }
@@ -93,7 +92,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         }
         private void Update()
         {
-            _controller.OnActionSlotUpdate();
+            _controller.ActionSlotUpdate();
         }
         #endregion
 

@@ -19,8 +19,9 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private readonly Player _player;
         private readonly Character _character;
         private readonly CharacterInventory _inventory;
+        private readonly SlotDataService _slotData;
 
-        public SlotActionViewData(Player player, Character character, Func<IModifLogger> getLogger)
+        public SlotActionViewData(Player player, Character character, SlotDataService slotData, Func<IModifLogger> getLogger)
         {
             if (player == null)
                 throw new ArgumentNullException(nameof(player));
@@ -30,7 +31,9 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
             _player = player;
             _character = character;
+            _slotData = slotData;
             _inventory = character.Inventory;
+            _getLogger = getLogger;
         }
         public IEnumerable<IActionsDisplayTab> GetActionsTabData()
         {
@@ -109,13 +112,10 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         }
         private ISlotAction GetSlotAction(Item item)
         {
-            var slotAction = new ItemSlotAction(item, _player, _character, _getLogger)
+            var slotAction = new ItemSlotAction(item, _player, _character, _slotData, _getLogger)
             {
-                DisplayName = item.DisplayName,
-                ActionIcon = item.QuickSlotIcon,
                 Cooldown = new ItemCooldown(item),
-                Stack = item.IsStackable() ? item.ToStackable(_character.Inventory) : null,
-                HasDynamicIcon = item.HasDynamicQuickSlotIcon
+                Stack = item.IsStackable() ? item.ToStackable(_character.Inventory) : null
             };
             return slotAction;
         }

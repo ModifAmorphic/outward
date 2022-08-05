@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModifAmorphic.Outward.Unity.ActionMenus.Data;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +12,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         ActionSlot[][] GetActionSlots();
         int GetRowCount();
         int GetHotbarCount();
+        int GetActionSlotsPerRow();
         int GetActionSlotsPerBar();
         void HotbarsContainerUpdate();
 
@@ -18,9 +20,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         void SelectNext();
         void SelectPrevious();
 
-        void ConfigureHotbars(int hotbars, int rows, int slotsPerRow, IHotbarRequestActions requestActions = null);
+        void ConfigureHotbars(IHotbarProfileData profile, IHotbarRequestActions requestActions);
+        void ConfigureHotbars(int hotbars, int rows, int slotsPerRow, IActionSlotConfig[,] slotConfigs);
+        void ConfigureHotbars(int hotbars, int rows, int slotsPerRow, IActionSlotConfig[,] slotConfigs, IHotbarRequestActions requestActions);
 
         void ToggleEditMode(bool enabled);
-        void RegisterActionViewData(IActionViewData actionViewData);
     }
 }

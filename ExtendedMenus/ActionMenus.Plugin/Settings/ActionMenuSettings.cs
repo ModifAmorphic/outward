@@ -10,6 +10,8 @@ namespace ModifAmorphic.Outward.ActionMenus.Settings
         public const string GameObjectName = "MenuOverhaul";
 
         public static readonly string PluginPath = Path.GetDirectoryName(ExtendedMenusPlugin.Instance.Info.Location);
+        public static readonly string ConfigPath = Path.GetDirectoryName(ExtendedMenusPlugin.Instance.Config.ConfigFilePath);
+        public static readonly string ProfilesPath = Path.Combine(ConfigPath, ModInfo.ModId, "profiles");
 
         public static class ActionViewer
         {
@@ -20,6 +22,6 @@ namespace ModifAmorphic.Outward.ActionMenus.Settings
             public const string ArmorTab = "Armor";
             public const string WeaponsTab = "Weapons";
         }
-        //public const string ActionMenusGoName = "ActionMenus";
+        
     }
 }

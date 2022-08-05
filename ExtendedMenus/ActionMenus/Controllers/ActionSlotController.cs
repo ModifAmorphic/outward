@@ -12,11 +12,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
     internal class ActionSlotController : IActionSlotController
     {
 
-        private ActionSlotConfig _config;
         public ActionSlot ActionSlot { get; private set; }
-
-        private ISlotAction _slotAction;
-        public ISlotAction SlotAction => _slotAction;
 
         private CooldownService _cooldownService;
         private StackService _stackService;
@@ -24,15 +20,16 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         private Func<bool> _getEditRequested;
         private Coroutine _iconCoroutine;
 
-        public bool IsUpdateEnabled => _slotAction?.TargetAction != null && _slotAction.CheckOnUpdate;
-        public bool IsActionNeeded => ActionSlot.ParentCanvas.enabled && _slotAction?.TargetAction != null && _slotAction.GetIsActionRequested() && ActionSlot.ActionButton.interactable;
+        public bool IsUpdateEnabled => ActionSlot.SlotAction?.TargetAction != null && ActionSlot.SlotAction.CheckOnUpdate;
+        public bool IsActionNeeded => ActionSlot.ParentCanvas.enabled && ActionSlot.SlotAction?.TargetAction != null && ActionSlot.SlotAction.GetIsActionRequested() && ActionSlot.ActionButton.interactable;
 
         public ActionSlotController(ActionSlot actionSlot)
         {
             if (actionSlot == null)
                 throw new ArgumentNullException(nameof(actionSlot));
 
-            (ActionSlot, _config) = (actionSlot, new ActionSlotConfig());
+            ActionSlot = actionSlot;
+            //ActionSlot.Config = ActionSlot.Config?? new IActionSlotConfig();
 
             actionSlot.MouseClickListener.OnRightClick.AddListener(OnEditRequested);
         }
@@ -48,10 +45,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             ActionSlot.CooldownText.enabled = false;
             ActionSlot.StackText.enabled = false;
 
-            if (_config.EmptySlotOption == EmptySlotOptions.Transparent)
+            if (ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Transparent)
             {
                 var color = Color.grey;
-                color.a = .6f;
+                color.a = .05f;
                 ActionSlot.ActionImage.color = color;
                 ActionSlot.ActionImage.enabled = true;
                 ActionSlot.EmptyImage.gameObject.SetActive(false);
@@ -61,6 +58,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 ActionSlot.ActionImage.enabled = false;
                 ActionSlot.EmptyImage.gameObject.SetActive(true);
             }
+            ActionSlot.HotbarsContainer.HasChanges = true;
 
         }
         public void AssignSlotAction(ISlotAction slotAction, Func<bool> getEditRequested = null)
@@ -92,22 +90,33 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
 
             StartEnableToggleService(slotAction.GetEnabled);
 
-            _slotAction = slotAction;
-            _slotAction.OnActionRequested += OnActionRequested;
-            _slotAction.OnEditRequested += OnEditRequested;
+            ActionSlot.SlotAction = slotAction;
+            ActionSlot.SlotAction.OnActionRequested += OnActionRequested;
+            ActionSlot.SlotAction.OnEditRequested += OnEditRequested;
 
             slotAction.SlotActionAssigned(ActionSlot);
+            ActionSlot.HotbarsContainer.HasChanges = true;
         }
 
         public void Refresh()
         {
-            if (_slotAction != null)
-                AssignSlotAction(_slotAction);
+            if (ActionSlot.SlotAction != null)
+                AssignSlotAction(ActionSlot.SlotAction);
             else
                 AssignEmptyAction();
         }
-        
-        public void OnActionSlotUpdate()
+        public void ActionSlotAwake()
+        {
+            Refresh();
+            if (ActionSlot.Config != null)
+            {
+                _cooldownService?.Configure(ActionSlot.Config.ShowCooldownTime, ActionSlot.Config.PreciseCooldownTime);
+                _stackService?.Configure(ActionSlot.Config.ShowZeroStackAmount);
+                ActionSlot.KeyText.text = ActionSlot.Config.HotkeyText;
+            }
+        }
+
+        public void ActionSlotUpdate()
         {
             if (!IsUpdateEnabled)
                 return;
@@ -115,23 +124,24 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             if (IsActionNeeded)
             {
                 ExecuteEvents.Execute(ActionSlot.ActionButton.gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
-                _slotAction.TargetAction.Invoke();
+                ActionSlot.SlotAction.TargetAction.Invoke();
             }
-            else if (_slotAction.GetIsEditRequested())
+            else if (ActionSlot.SlotAction.GetIsEditRequested())
             {
                 ActionSlot.HotbarsContainer.ActionsViewer.Show(ActionSlot.SlotId);
             }
         }
-        public void Configure(ActionSlotConfig config)
+        public void Configure(IActionSlotConfig config)
         {
             if (config == null)
                 throw new ArgumentNullException(nameof(config));
 
-            _config = config;
+            ActionSlot.Config = config;
             Refresh();
-            _cooldownService?.Configure(_config.ShowCooldownTime, _config.PreciseCooldownTime);
-            _stackService?.Configure(_config.ShowZeroStackAmount);
-            ActionSlot.KeyText.text = config.HotkeyText;
+            _cooldownService?.Configure(ActionSlot.Config.ShowCooldownTime, ActionSlot.Config.PreciseCooldownTime);
+            _stackService?.Configure(ActionSlot.Config.ShowZeroStackAmount);
+            ActionSlot.KeyText.text = ActionSlot.Config.HotkeyText;
+            ActionSlot.HotbarsContainer.HasChanges = true;
         }
 
         public void HideCooldown()
@@ -163,8 +173,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         
         private void OnActionRequested()
         {
-            if (ActionSlot.ParentCanvas.enabled && _slotAction?.TargetAction != null && ActionSlot.ActionButton.interactable)
-                _slotAction.TargetAction.Invoke();
+            if (ActionSlot.ParentCanvas.enabled && ActionSlot.SlotAction?.TargetAction != null && ActionSlot.ActionButton.interactable)
+                ActionSlot.SlotAction.TargetAction.Invoke();
         }
         private void OnEditRequested()
         {
@@ -184,11 +194,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         }
         private void UnassignSlotAction()
         {
-            if (_slotAction != null)
+            if (ActionSlot.SlotAction != null)
             {
-                _slotAction.OnActionRequested -= OnActionRequested;
-                _slotAction.SlotActionUnassigned();
-                _slotAction = null;
+                ActionSlot.SlotAction.OnActionRequested -= OnActionRequested;
+                ActionSlot.SlotAction.SlotActionUnassigned();
+                ActionSlot.SlotAction = null;
             }
             if (_iconCoroutine != null)
             {
@@ -228,7 +238,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 _cooldownService = null;
             }
 
-            _cooldownService = new CooldownService(ActionSlot.CooldownImage, ActionSlot.CooldownText, _config.ShowCooldownTime, _config.PreciseCooldownTime, this);
+            _cooldownService = new CooldownService(ActionSlot.CooldownImage, ActionSlot.CooldownText, ActionSlot.Config.ShowCooldownTime, ActionSlot.Config.PreciseCooldownTime, this);
             _cooldownService.TrackCooldown(cooldown);
         }
         private void DisableCooldownService()
@@ -241,9 +251,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 throw new ArgumentNullException(nameof(getStackAmount));
 
             if (_stackService == null)
-                _stackService = new StackService(ActionSlot.StackText, _config.ShowZeroStackAmount, this);
+                _stackService = new StackService(ActionSlot.StackText, ActionSlot.Config.ShowZeroStackAmount, this);
             else
-                _stackService.Configure(_config.ShowZeroStackAmount);
+                _stackService.Configure(ActionSlot.Config.ShowZeroStackAmount);
 
             _stackService.TrackStackAmount(getStackAmount);
         }

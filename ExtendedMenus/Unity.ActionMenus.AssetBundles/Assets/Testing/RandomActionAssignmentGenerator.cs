@@ -34,11 +34,11 @@ namespace Assets.Testing
                         prefix = "Alt + ";
                     
                     var hotkey = prefix + slot.SlotIndex.ToString();
-                    slot.Controller.Configure(GetConfig(hotkey));
+                    //slot.Controller.Configure(GetConfig(hotkey));
                     if (slotAction != null)
                     {
                         slot.Controller.AssignSlotAction(slotAction);
-                        slot.ActionButton.onClick.AddListener(() => ((RandomCooldown)slot.Controller.SlotAction.Cooldown).StartCooldown());
+                        slot.ActionButton.onClick.AddListener(() => ((RandomCooldown)slot.SlotAction.Cooldown).StartCooldown());
                         //slot.MouseClickListener.OnRightClick.AddListener(() => ((SampleSlotAction)slotAction).RequestEdit());
                     }
                 }

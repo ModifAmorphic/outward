@@ -69,6 +69,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
 		public bool IsInEditMode { get; internal set; }
 
+		public bool HasChanges { get; internal set; }
+		public void ClearChanges() => HasChanges = false;
+
 		private void Awake()
 		{
 			SetComponents();
