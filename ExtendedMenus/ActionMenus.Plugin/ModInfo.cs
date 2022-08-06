@@ -7,7 +7,7 @@ namespace ModifAmorphic.Outward.ActionMenus
     internal static class ModInfo
     {
         public const string ModId = "ModifAmorphic.Outward.ActionMenus";
-        public const string ModName = "ExtendedMenus";
+        public const string ModName = "ActionMenus";
 #if PIPELINE
         public const string ModVersion = "${PACKAGE_VERSION}";
 #else

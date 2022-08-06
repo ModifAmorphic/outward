@@ -26,13 +26,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private IActionSlotConfig _config;
         public IActionSlotConfig Config { get => _config; internal set => _config = value; }
 
-    //The parent transform
+        //The parent transform
         private Transform _slotPanel;
         public Transform SlotPanel => _slotPanel;
 
         private Canvas _parentCanvas;
         public Canvas ParentCanvas => _parentCanvas;
-        //private CanvasGroup _canvasGroup;
 
         //Displays the assigned hotkey / button.
         private Text _keyText;
@@ -70,11 +69,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public bool IsInEditMode => HotbarsContainer.IsInEditMode;
 
-        //public ActionSlot() => _controller = new ActionSlotController(this);
-
         public Func<Action, bool> ActionRequested { get; private set;  }
 
         #region MonoBehaviour Methods
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
         {
             SetComponents();
@@ -86,10 +84,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             }
 
         }
-        private void Start()
-        {
-            
-        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Update()
         {
             _controller.ActionSlotUpdate();
@@ -100,7 +96,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         {
             _parentCanvas = transform.parent.GetComponentInParent<Canvas>();
             _slotPanel = transform.Find("SlotPanel");
-            //_canvasGroup = _slotPanel.GetComponent<CanvasGroup>();
             
             _keyText = GetComponentsInChildren<Text>(true).First(t => t.name == "KeyText");
             _borderImage = _slotPanel.GetComponentsInChildren<Image>(true).First(i => i.name == "ActionBorder");

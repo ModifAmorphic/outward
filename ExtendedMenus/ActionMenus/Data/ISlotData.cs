@@ -8,7 +8,5 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
     {
         int SlotIndex { get; set; }
         IActionSlotConfig Config { get; set; }
-        //int ItemId { get; set; }
-        //public UID ItemUID { get; set; }
     }
 }

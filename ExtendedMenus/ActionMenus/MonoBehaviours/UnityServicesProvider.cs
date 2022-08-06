@@ -15,6 +15,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public static UnityServicesProvider _instance;
         public static UnityServicesProvider Instance { get; private set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake() => _instance = this;
 
         public UnityServicesProvider AddSingleton<T>(T serviceInstance)
@@ -79,9 +80,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public bool TryGetService<T>(out T service)
         {
-//#if DEBUG
-//            Debug.Log($"{nameof(ServicesProvider)}::{nameof(TryGetService)}<T>: Type: {typeof(T).Name}");
-//#endif
             service = default;
             if (!_serviceFactories.TryGetValue(typeof(T), out var serviceDelegate))
                 return false;
@@ -90,97 +88,4 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             return !EqualityComparer<T>.Default.Equals(service, default);
         }
     }
-    
-    //public class PlayerServicesProvider : IServicesProvider
-    //{
-    //    public int Id { get; }
-
-    //    public PlayerServicesProvider(int playerId) => Id = playerId;
-
-    //    public IServicesProvider AddFactory<T>(Func<T> serviceFactory)
-    //    {
-    //        if (ServicesProvider.Instance.TryGetService<PlayersService<T>>(out var ps))
-    //        {
-    //            ps = new PlayersService<T>();
-    //            ServicesProvider.Instance.AddFactory<PlayersService<T>>(() => ps);
-    //        }
-
-    //        ps.ServiceFactories.AddOrUpdate(Id, serviceFactory, (k, v) => v = serviceFactory);
-            
-    //        return this;
-    //    }
-
-    //    public IServicesProvider AddSingleton<T>(T serviceInstance)
-    //    {
-    //        if (ServicesProvider.Instance.TryGetService<PlayersService<T>>(out var ps))
-    //        {
-    //            ps = new PlayersService<T>();
-    //            ServicesProvider.Instance.AddFactory<PlayersService<T>>(() => ps);
-    //        }
-
-    //        ps.ServiceFactories.AddOrUpdate(Id, () => serviceInstance, (k, v) => v = () => serviceInstance);
-
-    //        return this;
-    //    }
-
-    //    public object GetService(Type type)
-    //    {
-    //        Type serviceClass = typeof(PlayersService<>);
-    //        Type serviceType = serviceClass.MakeGenericType(type);
-
-    //        var ps = ServicesProvider.Instance.GetService(serviceType);
-    //        var facProperty = serviceType.GetProperty(nameof(PlayersService<string>.ServiceFactories), BindingFlags.Public | BindingFlags.Instance);
-            
-    //        var factories = (ConcurrentDictionary<int, Func<dynamic>>)facProperty.GetValue(ps);
-
-    //        factories.TryGetValue(Id, out var svcFactory);
-
-    //        return svcFactory.DynamicInvoke();
-    //    }
-
-    //    public T GetService<T>()
-    //    {
-    //        var ps = ServicesProvider.Instance.GetService<PlayersService<T>>();
-            
-    //        return (T)ps.ServiceFactories[Id].DynamicInvoke();
-    //    }
-
-    //    public List<Func<T>> GetServiceFactories<T>()
-    //    {
-    //        var psf = ServicesProvider.Instance.GetServiceFactories<PlayersService<T>>();
-
-    //        return psf.SelectMany(f => ((PlayersService<T>)f.DynamicInvoke()).ServiceFactories.Values).ToList();
-    //    }
-
-    //    public Func<T> GetServiceFactory<T>()
-    //    {
-    //        var ps = ServicesProvider.Instance.GetService<PlayersService<T>>();
-
-    //        return ps.ServiceFactories[Id];
-    //    }
-
-    //    public List<T> GetServices<T>()
-    //    {
-    //        return GetServiceFactories<T>().Select(f => (T)f.DynamicInvoke()).ToList();
-    //    }
-
-    //    public bool TryGetService<T>(out T service)
-    //    {
-    //        if (ServicesProvider.Instance.TryGetService<PlayersService<T>>(out var ps))
-    //        {
-    //            if (ps.ServiceFactories.TryGetValue(Id, out var serviceFactory))
-    //            {
-    //                service = (T)serviceFactory.DynamicInvoke();
-    //                return true;
-    //            }
-    //        }
-    //        service = default;
-    //        return false;
-    //    }
-    //}
-    //internal class PlayersService<T> 
-    //{
-    //    public ConcurrentDictionary<int, Func<T>> ServiceFactories { get; } = new ConcurrentDictionary<int, Func<T>>();
-    //}
-
 }

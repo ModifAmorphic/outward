@@ -25,7 +25,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private Button _settingsButton;
 		public Button SettingsButton => _settingsButton;
 
-		//private ActionsViewer _actionsViewer;
 		public ActionsViewer ActionsViewer;
 
 		private Canvas _baseHotbarCanvas;
@@ -58,7 +57,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 			}
 		}
 
-		//public HotbarsContainer() => _controller = new HotbarsController(this);
 		private Text posText;
 		private RectTransform rectTransform;
 
@@ -72,11 +70,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 		public bool HasChanges { get; internal set; }
 		public void ClearChanges() => HasChanges = false;
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 		private void Awake()
 		{
 			SetComponents();
 			_controller = new HotbarsController(this);
-			//GetComponentInChildren<HotbarsController>(true);
 
 			posText = transform.parent.GetComponentsInChildren<Text>().First(t => t.name == "HotbarsPosText");
 			rectTransform = GetComponent<RectTransform>();
@@ -84,6 +82,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 			canvasPosText = transform.parent.GetComponentsInChildren<Text>().First(t => t.name == "Hotbar0CanvasPosText");
 			gridPosText = transform.parent.GetComponentsInChildren<Text>().First(t => t.name == "Hotbar0GridPosText");
 		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 		private void Update()
         {
 			canvasRectTransform = GetComponentsInChildren<Canvas>()?.FirstOrDefault(c => c.name == "HotbarCanvas0")?
@@ -103,8 +103,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 		}
 		private void SetComponents()
 		{
-			//_hotbarsGridPanel = this.GetComponentsInChildren<RectTransform>().First(c => c.name == "GridPanel");
-
 			_leftDisplay = transform.Find("LeftDisplay").GetComponent<RectTransform>();
 			_settingsButton = _leftDisplay.Find("Settings").GetComponent<Button>();
 			_barNumber = transform.Find("LeftDisplay/BarNumber").GetComponent<RectTransform>();
@@ -131,14 +129,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 			_hotbars = new ActionSlot[0][];
 			_actionSlots = new Dictionary<int, ActionSlot>();
 		}
-		internal void Resize(float hotbarWidth)
-		{
-			//float settingsWidth = _settingsButton.GetComponent<RectTransform>().rect.width;
-			//float hotbarIconWidth = _hotbarIcon.GetComponent<RectTransform>().rect.width;
-			//float padding = hotbarIconWidth > settingsWidth ? hotbarIconWidth : settingsWidth;
-
+		internal void Resize(float hotbarWidth) =>
 			GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, hotbarWidth + _leftDisplay.rect.width + _leftDisplay.rect.width * 0.15f);
-		}
 
 		internal void ConfigureHotbars(int barsAmount)
 		{

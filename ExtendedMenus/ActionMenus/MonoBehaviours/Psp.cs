@@ -13,6 +13,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public static Psp Instance { get; private set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         void Awake()
         {
             services = new ConcurrentDictionary<int, UnityServicesProvider>();

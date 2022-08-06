@@ -20,15 +20,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public int Amount => int.TryParse(InputText.text, out var amount) ? amount : Minimum;
 
         // Start is called before the first frame update
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         void Start()
         {
             InputText.onValueChanged.AddListener((call) => OnValueChanged.Invoke(Amount));
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
         }
 
         public void SetAmount(int amount)

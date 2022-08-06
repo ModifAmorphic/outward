@@ -13,14 +13,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     public class ViewerLeftNav : MonoBehaviour
     {
         public GameObject BaseActionGo;
-        private Dictionary<int, GameObject> _viewTabs = new Dictionary<int, GameObject>();
+        private readonly Dictionary<int, GameObject> _viewTabs = new Dictionary<int, GameObject>();
         private int _tabCounter = 0;
         private int _lastSelectedId = 0;
-
-        void Awake()
-        {
-
-        }
 
         public Button AddViewTab(string displayText)
         {

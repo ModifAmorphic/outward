@@ -12,7 +12,7 @@ namespace ModifAmorphic.Outward.ActionMenus
     [BepInDependency("com.bepis.bepinex.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("io.mefino.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInPlugin(ModInfo.ModId, ModInfo.ModName, ModInfo.ModVersion)]
-    public class ExtendedMenusPlugin : BaseUnityPlugin
+    public class ActionMenusPlugin : BaseUnityPlugin
     {
         internal static ServicesProvider Services => _servicesProvider;
         private static ServicesProvider _servicesProvider;
@@ -30,27 +30,12 @@ namespace ModifAmorphic.Outward.ActionMenus
             {
                 logger = LoggerFactory.ConfigureLogger(ModInfo.ModId, ModInfo.ModName, LogLevel.Info);
                 logger.LogInfo($"Patching...");
-
-                //var mapHelperconstructor = typeof(Rewired.Player.ControllerHelper.MapHelper)
-                //    .GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic).FirstOrDefault();
-                //var postfix = typeof(MapHelperConstructorPatch).GetMethod("Postfix", BindingFlags.Public | BindingFlags.Static);
-                //logger.LogInfo($"Patching {mapHelperconstructor?.Name} to {postfix?.Name}");
-                //harmony.Patch(mapHelperconstructor, null, new HarmonyMethod(postfix));
                 harmony.PatchAll(typeof(InputManager_BasePatches));
-                //harmony.PatchAll(typeof(UserDataPatches)); 
-                //harmony.PatchAll(typeof(NetworkLevelLoaderPatches));
-                //harmony.PatchAll(typeof(MapHelperConstructorPatch));
-                //harmony.PatchAll(typeof(PlayerConstructorPatch));
-
                 harmony.PatchAll(typeof(SplitPlayerPatches));
-                //harmony.PatchAll(typeof(SplitScreenManagerPatches));
                 harmony.PatchAll(typeof(QuickSlotControllerSwitcherPatches));
                 harmony.PatchAll(typeof(QuickSlotPanelPatches));
                 harmony.PatchAll(typeof(ControlsInputPatches));
-
                 harmony.PatchAll(typeof(CharacterManagerPatches));
-                //harmony.PatchAll(typeof(MenuManagerPatches));
-                //harmony.PatchAll(typeof(TransmorphRecipeManagerPatches));
 
                 var startup = new Startup();
                 logger.LogInfo($"Starting {ModInfo.ModName} {ModInfo.ModVersion}...");
@@ -63,14 +48,6 @@ namespace ModifAmorphic.Outward.ActionMenus
                 harmony.UnpatchSelf();
                 throw;
             }
-        }
-        private Modules.Crafting.CustomCraftingModule GetCustomCraftingModule()
-        {
-            return _servicesProvider.GetService<Modules.Crafting.CustomCraftingModule>();
-        }
-        private Modules.Items.ItemVisualizer GetItemVisualizer()
-        {
-            return _servicesProvider.GetService<Modules.Items.ItemVisualizer>();
         }
     }
 }

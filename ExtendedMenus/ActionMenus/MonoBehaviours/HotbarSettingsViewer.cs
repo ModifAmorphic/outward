@@ -37,17 +37,21 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private Func<bool> _exitRequested;
         public bool IsShowing => gameObject.activeSelf;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
         {
             Hide();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         void Update()
         {
             if (_exitRequested != null && IsShowing && _exitRequested.Invoke())
                 Hide();
         }
+
         public void ConfigureExit(Func<bool> exitRequested) => _exitRequested = exitRequested;
+
         public void Show()
         {
             gameObject.SetActive(true);
@@ -86,8 +90,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         }
         private void HookControls()
         {
-            //HotbarsController = Hotbars.Controller;
-            //var config = _currentProfile.Hotbars.First().SlotsAssigned.First().Config;
             BarAmountInput.OnValueChanged.AddListener(amount =>
             {
                 if (_activeProfile.Hotbars.Count < amount)
@@ -95,17 +97,22 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 else if(_activeProfile.Hotbars.Count > amount)
                     GetProfileData().RemoveHotbar(_activeProfile);
             });
-            //BarAmountInput.InputText
-            //    .onValueChanged.AddListener((call) => _currentProfile = GetProfileData().AddHotbar(_currentProfile.Name));
 
-            //BarAmountInput.InputText
-            //    .onValueChanged.AddListener((call) => OnBarsChanged.Invoke(BarAmountInput.Amount));
-            //BarAmountInput.InputText
-            //    .onValueChanged.AddListener((call) => HotbarsController.ConfigureHotbars(
-            //        BarAmountInput.Amount,
-            //        RowAmountInput.Amount,
-            //        SlotAmountInput.Amount,
-            //        GetActionSlotConfigs(BarAmountInput.Amount, RowAmountInput.Amount, SlotAmountInput.Amount, config)));
+            RowAmountInput.OnValueChanged.AddListener(amount =>
+            {
+                if (_activeProfile.Rows < amount)
+                    GetProfileData().AddRow(_activeProfile);
+                else if (_activeProfile.Rows > amount)
+                    GetProfileData().RemoveRow(_activeProfile);
+            });
+
+            SlotAmountInput.OnValueChanged.AddListener(amount =>
+            {
+                if (_activeProfile.SlotsPerRow < amount)
+                    GetProfileData().AddSlot(_activeProfile);
+                else if (_activeProfile.SlotsPerRow > amount)
+                    GetProfileData().RemoveSlot(_activeProfile);
+            });
 
             //RowAmountInput.InputText
             //    .onValueChanged.AddListener((call) => OnRowsChanged.Invoke(RowAmountInput.Amount));

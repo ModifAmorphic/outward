@@ -27,6 +27,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public bool HasData => GetViewData() != null;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
         {
             _gridLayout = GetComponentInChildren<GridLayoutGroup>();
@@ -34,16 +35,19 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             Hide();
         }
         // Start is called before the first frame update
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         void Start()
         {
             Clear();
             //LeftNav.ClearViewTabs();
         }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         void Update()
         {
             if (_exitRequested != null && IsShowing && _exitRequested.Invoke())
                 Hide();
         }
+
         public void ConfigureExit(Func<bool> exitRequested) => _exitRequested = exitRequested;
         
         public void Clear()
@@ -83,8 +87,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _slotId = 0;
             if (gameObject.activeSelf)
                 gameObject.SetActive(false);
-            //_gridLayout.gameObject.SetActive(false);
-            //LeftNav.gameObject.SetActive(false);
         }
 
         private void InitLeftNav()

@@ -20,10 +20,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
 
         public HotbarsController(HotbarsContainer hotbarsContainer)
         {
-            if (hotbarsContainer == null)
-                throw new ArgumentNullException(nameof(hotbarsContainer));
+            _hbc = hotbarsContainer ?? throw new ArgumentNullException(nameof(hotbarsContainer));
 
-            _hbc = hotbarsContainer;
             _hbc.ActionsViewer.OnSlotActionSelected += AssignSlotAction;
         }
 
@@ -49,7 +47,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 for (int s = 0; s < bar.Slots.Count; s++)
                 {
                     slotConfigs[h, s] = bar.Slots[s].Config;
-                    Debug.Log($"[Debug  :ExtendedMenus] Setting Slot[{h},{s}].Config to '{(bar.Slots[s].Config == null ? "null" : "an ActionSlotConfig instance.")}'.");
+                    Debug.Log($"[Debug  :ActionMenus] Setting Slot[{h},{s}].Config to '{(bar.Slots[s].Config == null ? "null" : "an ActionSlotConfig instance.")}'.");
                 }
             }
             ConfigureHotbars(profile.Hotbars.Count, profile.Rows, profile.SlotsPerRow, slotConfigs, requestActions);
@@ -69,7 +67,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             Reset();
             _hbc.BaseGrid.constraintCount = slotsPerRow;
             _hbc.ConfigureHotbars(hotbars);
-            Debug.Log("[Debug  :ExtendedMenus] Configuring ActionSlots.");
+            Debug.Log("[Debug  :ActionMenus] Configuring ActionSlots.");
             for (int h = 0; h < hotbars; h++)
             {
                 var barCanvas = UnityEngine.Object.Instantiate(_hbc.BaseHotbarCanvas, _hbc.BaseHotbarCanvas.transform.parent);
@@ -89,16 +87,14 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                     actionSlot.Config = slotConfigs[h, s];
                     Debug.Log($"[Debug  :ExtendedMenus] Configured Hotkey to '{actionSlot.Config?.HotkeyText}' for SlotIndex {s}.");
                     newSlot.SetActive(true);
-                    //actionSlot.OnAwake += () => actionSlot.Controller.Configure(slotConfigs[h, s]);
                     _hbc.Hotbars[h][s] = actionSlot;
                     _hbc.ActionSlots.Add(actionSlot.SlotId, actionSlot);
                 }
                 barCanvas.enabled = h == 0;
             }
-            Debug.Log($"[Debug  :ExtendedMenus] Added {_hbc.Hotbars.Length} Hotbars with {_hbc.Hotbars.FirstOrDefault()?.Length} Action Slots each. Calling StartCoroutine ResizeLayoutGroup().");
+            Debug.Log($"[Debug  :ActionMenus] Added {_hbc.Hotbars.Length} Hotbars with {_hbc.Hotbars.FirstOrDefault()?.Length} Action Slots each. Calling StartCoroutine ResizeLayoutGroup().");
             _resizeNeeded = true;
             _hbc.HasChanges = true;
-            //_hbc.StartCoroutine(ResizeLayoutGroup());
         }
 
         public void SelectHotbar(int barIndex)
@@ -205,26 +201,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             //float width = glgRect.width;
             float hotbarWidth = (btnWidth + _hbc.HotbarGrid[0].spacing.x) * (_hbc.HotbarGrid[0].constraintCount) + _hbc.HotbarGrid[0].padding.horizontal * 2 - _hbc.HotbarGrid[0].spacing.x;
 
-            Debug.Log("[Debug  :ExtendedMenus] ResizeLayoutGroup() called. Calculated width is " + hotbarWidth);
+            Debug.Log("[Debug  :ActionMenus] ResizeLayoutGroup() called. Calculated width is " + hotbarWidth);
 
             _hbc.Resize(hotbarWidth);
             _resizeNeeded = false;
         }
-        IEnumerator ResizeLayoutGroupNextFrame()
-        {
-            yield return new WaitForEndOfFrame();
-            float btnWidth = _hbc.Hotbars[0][0].GetComponent<RectTransform>().rect.width;
-
-            //var glgRect = _hbc.Hotbars[0].GetComponent<RectTransform>().rect;
-            //float width = glgRect.width;
-            float hotbarWidth = (btnWidth + _hbc.HotbarGrid[0].spacing.x) * (_hbc.HotbarGrid[0].constraintCount) + _hbc.HotbarGrid[0].padding.horizontal * 2 - _hbc.HotbarGrid[0].spacing.x;
-
-            Debug.Log("[Debug  :ExtendedMenus] ResizeLayoutGroup() called. Calculated width is " + hotbarWidth);
-
-            _hbc.Resize(hotbarWidth);
-            _resizeNeeded = false;
-        }
-
+        
         public void ToggleEditMode(bool enabled)
         {
             _hbc.IsInEditMode = enabled;

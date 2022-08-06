@@ -28,12 +28,8 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private readonly GameObject _playerMenuPrefab;
         private readonly LevelCoroutines _coroutine;
         private readonly GameObject _modInactivableGo;
-        //private GameObject _overhaulMenusGo;
-        //public readonly static Dictionary<int, PlayerMenu> PlayerMenu = new Dictionary<int, PlayerMenu>();
 
         private readonly static Dictionary<int, ControllerMap> _controllerMaps = new Dictionary<int, ControllerMap>();
-
-        private GameObject baseHud;
 
         public PlayerMenuService(BaseUnityPlugin baseUnityPlugin,
                                 GameObject playerMenuPrefab,
@@ -45,30 +41,21 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             _playerMenuPrefab = playerMenuPrefab;
             _coroutine = coroutine;
             _modInactivableGo = modifGoService.GetModResources(ModInfo.ModId, false);
-            //_hotbars = hotbars;
             _settings = settings;
             _getLogger = getLogger;
 
-            //GetOrAddMenuGameObject();
 
             SplitPlayerPatches.InitAfter += InjectMenus;
             SplitPlayerPatches.SetCharacterAfter += SetPlayerMenuCharacter;
             SplitScreenManagerPatches.RemoveLocalPlayerAfter += RemovePlayerMenu;
             coroutine.InvokeAfterPlayersLoaded(() => NetworkLevelLoader.Instance, LoadDefaultControllerMaps, 300);
 
-            //SplitScreenManagerPatches.AwakeAfter += InjectMenus;
-            //MenuManagerPatches.AwakeBefore += MenuManagerPatches_AwakeBefore;
-            //settings.HotbarsChanged += (bars) => ConfigureSlots();
-            //settings.ActionSlotsChanged += (slots) => ConfigureSlots();
-            //WaitAttachAsset();
-            //ConfigureSlots();
         }
 
         private void SetPlayerMenuCharacter(SplitPlayer splitPlayer, Character character)
         {
             var psp = Psp.GetServicesProvider(splitPlayer.RewiredID);
             var playerMenus = psp.GetService<PlayerMenu>().gameObject;
-            //var actionMenus = playerMenu.gameObject;
             playerMenus.name = character.name + "_UIX";
 
             playerMenus.SetActive(true);
@@ -78,9 +65,6 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             var player = ReInput.players.GetPlayer(splitPlayer.RewiredID);
 
             playerMenus.GetComponentInChildren<HotbarSettingsViewer>(true).ConfigureExit(() => player.GetButtonDown(ControlsInput.GetMenuActionName(ControlsInput.MenuActions.Cancel)));
-
-            //PlayerMenus[splitPlayer.RewiredID].HotbarService = 
-            //    _hotbarServiceFac(playerMenus.GetComponentInChildren<HotbarsContainer>(), ReInput.players.GetPlayer(splitPlayer.RewiredID), splitPlayer.AssignedCharacter);
 
             var hud = splitPlayer.CharUI.transform.Find("Canvas/GameplayPanels/HUD");
             playerMenus.transform.SetParent(hud.transform);
@@ -105,16 +89,6 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             }
         }
 
-        //private GameObject GetOrAddMenuGameObject()
-        //{
-        //    if (_overhaulMenusGo == null)
-        //    {
-        //        _overhaulMenusGo = new GameObject(ActionMenuSettings.GameObjectName);
-        //        UnityEngine.Object.DontDestroyOnLoad(_overhaulMenusGo);
-        //    }
-        //    return _overhaulMenusGo;
-        //}
-
         private void InjectMenus(SplitPlayer splitPlayer)
         {
             var psp = Psp.GetServicesProvider(splitPlayer.RewiredID);
@@ -125,21 +99,10 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             var playerMenuPrefab = _playerMenuPrefab.gameObject;
             var playerMenuGo = GameObject.Instantiate(playerMenuPrefab);
             playerMenuGo.SetActive(false);
-            //PlayerMenus.Add(splitPlayer.RewiredID, new PlayerActionMenus() { PlayerMenu = _playerMenuPrefab });
             var playerMenu = playerMenuGo.GetComponent<PlayerMenu>();
             psp.AddSingleton(playerMenu);
             playerMenu.SetIDs(splitPlayer.RewiredID);
-
-            //PlayerMenus[splitPlayer.RewiredID].PlayerMenu.SetIDs(splitPlayer.RewiredID, splitPlayer.PlayerUID);
-            //PlayerMenus[splitPlayer.RewiredID].PlayerMenu.SetIDs(splitPlayer.RewiredID);
-            
-            //playerMenuGo.transform.SetParent(_overhaulMenusGo.transform);
             UnityEngine.Object.DontDestroyOnLoad(playerMenuGo);
-
-            
-            //var hotbarPanel = playerMenuGo.GetComponentInChildren<HotbarsContainer>().transform;
-
-            //_modInactivableGo
         }
         private void LoadDefaultControllerMaps()
         {

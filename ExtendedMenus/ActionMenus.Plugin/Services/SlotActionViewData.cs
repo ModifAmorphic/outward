@@ -90,8 +90,6 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         {
             var allItems = new List<Item>();
 
-            //allItems.AddRange(_inventory.SkillKnowledge.GetLearnedItems());
-
             allItems.AddRange(_inventory.Equipment.EquipmentSlots.Where(s => s != null && s.HasItemEquipped).Select(e => e.EquippedItem));
 
             allItems.AddRange(_inventory.Pouch.GetContainedItems());

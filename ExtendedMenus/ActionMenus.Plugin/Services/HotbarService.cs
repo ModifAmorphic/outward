@@ -33,8 +33,6 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private readonly IHotbarProfileDataService _profileData;
         private readonly SlotDataService _slotData;
 
-        private IActionSlotConfig[,] _actionSlotConfigs;
-
         private readonly LevelCoroutines _levelCoroutines;
         private bool _saveDisabled;
         private bool _isProfileInit;
@@ -66,20 +64,8 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             _settings = settings;
             _levelCoroutines = levelCoroutines;
             _getLogger = getLogger;
-
-            //_hotbarsContainer.OnChanged += (hbc) => {
-            //    var name = GetOrCreateActiveProfile().Name;
-            //    _profileData.SaveProfile(hbc.ToHotbarProfileData(name));
-            //};
-            //settings.HotbarsChanged += (bars) => ConfigureSlots();
-            //settings.ActionSlotsChanged += (slots) =>
-            //{
-            //    ConfigureSlots();
-            //    AssignSlotActions(_character);
-            //};
-
             _saveDisabled = true;
-            _isProfileInit = true;
+
             QuickSlotPanelPatches.StartInitAfter += DisableKeyboardQuickslots;
             QuickSlotControllerSwitcherPatches.StartInitAfter += SwapCanvasGroup;
             CharacterManagerPatches.AfterApplyQuickSlots += (c) =>
@@ -133,49 +119,6 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 keyboard.gameObject.SetActive(false);
         }
 
-
-        //public void ConfigureSlots()
-        //{
-        //    var profile = GetOrCreateActiveProfile();
-        //    ConfigureHotbars(profile);
-
-        //    //_actionSlotConfigs = new ActionSlotConfig[_settings.Hotbars, _settings.ActionSlots];
-        //    //for (int b = 0; b < _settings.Hotbars; b++)
-        //    //{
-        //    //    for (int s = 0; s < _settings.ActionSlots; s++)
-        //    //    {
-        //    //        _actionSlotConfigs[b, s] = (new ActionSlotConfig()
-        //    //        {
-        //    //            ShowZeroStackAmount = false,
-        //    //            ShowCooldownTime = false,
-        //    //            EmptySlotOption = EmptySlotOptions.Image,
-        //    //            HotkeyText = (s + 1).ToString(),
-        //    //        });
-        //    //    }
-        //    //}
-
-        //    ////_hotbars.ConfigureHotbars(profile.HotbarAssignments.Count, profile.Rows, profile.SlotsPerRow, _actionSlotConfigs, keyListener);
-
-
-
-        //    //DoNextFrame(() =>
-        //    //{
-        //    //    for (int b = 0; b < _settings.Hotbars; b++)
-        //    //    {
-        //    //        for (int s = 0; s < _settings.ActionSlots; s++)
-        //    //        {
-        //    //            _hotbars.GetActionSlots()[b][s].Controller.Configure(new ActionSlotConfig()
-        //    //            {
-        //    //                ShowZeroStackAmount = false,
-        //    //                ShowCooldownTime = false,
-        //    //                EmptySlotOption = EmptySlotOptions.Image,
-        //    //                HotkeyText = (s + 1).ToString(),
-        //    //            });
-        //    //        }
-        //    //    }
-        //    //});
-        //}
-
         private IHotbarProfileData GetOrCreateActiveProfile()
         {
             var activeProfile = _profileData.GetActiveProfile();
@@ -206,12 +149,11 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
             var keyListener = new HotbarKeyListener(_player);
             _hotbars.ConfigureHotbars(profile, keyListener);
-            if (!_isProfileInit)
+
+            if (_isProfileInit)
             {
                 AssignSlotActions(profile);
-                //_saveDisabled = false;
             }
-            
         }
 
         public void QueueActionSlotAssignments()
@@ -238,9 +180,9 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 }
             }
             SetProfileHotkeys(profile);
-            if (_isProfileInit)
+            if (!_isProfileInit)
             {
-                _isProfileInit = false;
+                _isProfileInit = true;
                 _hotbarsContainer.ClearChanges();
             }
             _saveDisabled = false;
@@ -262,62 +204,6 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 }
             }
         }
-        //public void AssignSlotActions(Character character)
-        //{
-        //    if (character.UID != _character.UID)
-        //        return;
-
-        //    //_hotbarsContainer.Controller.RegisterActionViewData(new SlotActionViewData(_player, _character, _getLogger));
-        //    Psp.GetServicesProvider(_player.id).AddSingleton<IActionViewData>(new SlotActionViewData(_player, _character, _getLogger));
-
-        //    _hotbarsContainer.ActionsViewer.ConfigureExit(() => _player.GetButtonDown(ControlsInput.GetMenuActionName(ControlsInput.MenuActions.Cancel)));
-
-        //    string nameFormat = "ActionSlot_00";
-        //    int slotIndex = 0;
-        //    var learnedItems = character.Inventory.SkillKnowledge.GetLearnedItems();
-        //    Logger.LogDebug($"Character has {learnedItems.Count} learned skills.");
-        //    foreach (var item in learnedItems)
-        //    {
-        //        var actionSlot = _hotbars.GetActionSlots()[0][slotIndex];
-        //        var actionName = (slotIndex + 1).ToString(nameFormat);
-        //        TryAssignAction(actionSlot, actionName, item);
-        //        slotIndex++;
-        //        if (slotIndex >= _hotbars.GetActionSlots()[0].Length)
-        //            break;
-        //    }
-        //}
-
-        //public bool TryAssignAction(ActionSlot actionSlot, string actionName, Item item)
-        //{
-        //    try
-        //    {
-        //        Logger.LogDebug($"Assigning item {item?.name} to action slot {actionSlot?.name} and Rewired Action {actionName}.");
-        //        actionSlot.Controller.AssignSlotAction(GetSlotAction(item));
-        //        //This needs to be set to pass certain checks in the base game.
-        //        //item.SetQuickSlot(actionSlot.SlotIndex);
-        //        return true;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Logger.LogException($"Encountered exception assigning action {actionName} for Item/Skill {item?.name}.", ex);
-        //        return false;
-        //    }
-        //}
-        //public void ToggleEditMode(bool enabled)
-        //{
-        //    _hotbars.ToggleEditMode(enabled);
-        //}
-        //private ISlotAction GetSlotAction(Item item)
-        //{
-        //    var slotAction = new ItemSlotAction(item, _player, _characterUI.TargetCharacter, _getLogger)
-        //    {
-        //        Cooldown = new ItemCooldown(item),
-        //        Stack = item.IsStackable() ? item.ToStackable(_character.Inventory) : null,
-        //        //TargetAction = () => Logger.LogInfo($"Action {actionName} triggered!")
-        //    };
-        //    return slotAction;
-
-        //}
 
         private void DoNextFrame(Action action) => _levelCoroutines.StartRoutine(NextFrameCoroutine(action));
 

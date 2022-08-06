@@ -20,11 +20,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public Text canvasPosText;
         public RectTransform canvasRectTransform;
 
-        //private GameObject _characterGo;
-        //public GameObject CharacterGo { get => _characterGo; }
-
         public void SetIDs(int playerID) => (_playerID) = (playerID);
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
         {
             posText = GetComponentsInChildren<Text>().First(t => t.name == "PlayerPosText");
@@ -33,6 +31,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             canvasPosText = GetComponentsInChildren<Text>().First(t => t.name == "ActionCanvasPosText");
             canvasRectTransform = GetComponentInChildren<Canvas>().GetComponent<RectTransform>();
         }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Update()
         {
             posText.text = $"Player Pos: {rectTransform.position.x}, {rectTransform.position.y}. Size {rectTransform.sizeDelta.x}, {rectTransform.sizeDelta.y}";

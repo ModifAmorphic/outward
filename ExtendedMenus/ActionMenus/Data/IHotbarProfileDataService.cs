@@ -12,10 +12,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
         bool TryGetActiveProfileName(out string name);
         void SetActiveProfile(string name);
         void SaveProfile(IHotbarProfileData profile);
-        //IEnumerable<T> GetSlotAssignments();
-        IHotbarProfileData Create(string name, HotbarsContainer hotbarsContainer);
         IHotbarProfileData AddHotbar(IHotbarProfileData profile);
         IHotbarProfileData RemoveHotbar(IHotbarProfileData profile);
+        IHotbarProfileData AddRow(IHotbarProfileData profile);
+        IHotbarProfileData RemoveRow(IHotbarProfileData profile);
+        IHotbarProfileData AddSlot(IHotbarProfileData profile);
+        IHotbarProfileData RemoveSlot(IHotbarProfileData profile);
 
         event Action<IHotbarProfileData> OnActiveProfileChanged;
     }

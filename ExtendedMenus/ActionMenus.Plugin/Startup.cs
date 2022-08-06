@@ -48,7 +48,6 @@ namespace ModifAmorphic.Outward.ActionMenus
             _loggerFactory = services.GetServiceFactory<IModifLogger>();
 
             var menuOverhaul = ConfigureAssetBundle();
-            ////var hotbars = menuOverhaul.GetComponentInChildren<HotbarsMain>();
 
             services
                 .AddSingleton(new PlayerMenuService(services.GetService<BaseUnityPlugin>(),
@@ -62,36 +61,10 @@ namespace ModifAmorphic.Outward.ActionMenus
                                                   services.GetService<LevelCoroutines>(),
                                                   services.GetService<HotbarSettings>(),
                                                   services.GetService<IModifLogger>));
-                //.AddSingleton(new HotbarProfileJsonServiceInjector(
-                //                                  services.GetService<HotbarSettings>(),
-                //                                  services.GetService<IModifLogger>));
-
-
-
-            //services.AddSingleton(new HotbarsService(services.GetService<BaseUnityPlugin>(),
-            //                                      menuOverhaul,
-            //                                      services.GetService<ModifCoroutine>(),
-            //                                      _services.GetService<ModifGoService>(),
-            //                                      services.GetService<HotbarSettings>(),
-            //                                      services.GetService<IModifLogger>));
-
-            //var menuAssets = LoadAssetBundle(services.GetService<BaseUnityPlugin>().GetPluginDirectory(), "asset-bundles", "extended-menus");
-            //var utilityMenu = menuAssets.LoadAsset<GameObject>("UtilityMenu");
-            //Logger.LogDebug($"Loaded asset UtilityMenu. {utilityMenu?.GetPath()}");
-            //var umgo = utilityMenu.transform.Find("Canvas/ExMenuButtons").gameObject;
-            //Logger.LogDebug($"Found ExMenuButtons. {umgo.GetPath()}");
-            //umgo.AddComponent<ExMenuEvents>();
-            //GameObject.Instantiate(utilityMenu);
-            //menuAssets.Unload(false);
-            ////TODO: ExMenuEvents.Start() doesn't get called yet. Need a better way to hook into these events.
-            ////SubscribeToMenuButtonClicks();
-
-            //AttachScripts(utilityMenu, typeof(ActionSlot).Assembly);
         }
         public GameObject ConfigureAssetBundle()
         {
             var scriptsGo = AttachScripts(typeof(ActionSlot).Assembly);
-            //var menuAssets = LoadAssetMenu(services.GetService<BaseUnityPlugin>().GetPluginDirectory());
             Logger.LogDebug($"Loading asset bundle action-menus-overhaul.");
             var menuBundle = LoadAssetBundle(_services.GetService<BaseUnityPlugin>().GetPluginDirectory(), "asset-bundles", "action-menus-overhaul");
             var allAssetNames = menuBundle.GetAllAssetNames();
@@ -140,21 +113,7 @@ namespace ModifAmorphic.Outward.ActionMenus
             }
             return scriptGo;
         }
-        //public void AttachScripts(GameObject target, Assembly sourceAssembly)
-        //{
-        //    foreach (Type type in sourceAssembly.GetTypes())
-        //    {
-        //        var scriptAttribute = type.GetCustomAttribute<UnityScriptComponentAttribute>();
-        //        if (scriptAttribute != null && type.IsClass)
-        //        {
-        //            var component = target.transform.Find(scriptAttribute.ComponentPath)?.gameObject;
-        //            if (component != null)
-        //            {
-        //                component.AddComponent(type);
-        //            }
-        //        }
-        //    }
-        //}
+
         private AssetBundle LoadAssetBundle(string pluginPath, string bundleDirectory, string bundleFileName)
         {
             using (var assetStream = new FileStream

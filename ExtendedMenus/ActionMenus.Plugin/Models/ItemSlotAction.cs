@@ -101,20 +101,15 @@ namespace ModifAmorphic.Outward.ActionMenus.Models
         }
         public void ActivateTarget()
         {
-            //this.CheckAndUpdateRefItem();
             if (item == null)
                 return;
 
             if (inventory.OwnsItem(item.UID) || (item is Skill skill && inventory.LearnedSkill(skill)))
             {
-                //if ((Object)this.m_activeItem != (Object)this.m_registeredItem)
-                //    this.SetQuickSlot(this.m_activeItem);
                 item.TryQuickSlotUse();
             }
             else
             {
-                //if (!(bool)(Object)this.m_owner || !this.m_owner.IsLocalPlayer || !(bool)(Object)this.m_owner.CharacterUI)
-                //    return;
                 character.CharacterUI.ShowInfoNotification(LocalizationManager.Instance.GetLoc("Notification_Quickslot_NoItemInventory", Global.SetTextColor(item.Name, Global.HIGHLIGHT)));
             }
         }
@@ -142,15 +137,6 @@ namespace ModifAmorphic.Outward.ActionMenus.Models
             slotIndex = assignedSlot.SlotIndex + 1;
             item.SetQuickSlot(slotIndex + 1);
             actionConfig = (ActionConfig)assignedSlot.Config;
-
-            //SlotAssignment = new SlotAssignment()
-            //{
-            //    SlotIndex = assignedSlot.SlotIndex,
-            //    HotbarIndex = assignedSlot.HotbarIndex,
-            //    ItemId = target.ItemID,
-            //    ItemUID = target.UID
-            //};
-            //assignedSlot.MouseClickListener.OnRightClick.AddListener(() => OnEditRequested?.Invoke());
         }
         public void SlotActionUnassigned()
         {

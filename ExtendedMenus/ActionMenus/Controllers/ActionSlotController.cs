@@ -17,7 +17,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         private CooldownService _cooldownService;
         private StackService _stackService;
         private EnableToggleService _toggleService;
-        private Func<bool> _getEditRequested;
         private Coroutine _iconCoroutine;
 
         public bool IsUpdateEnabled => ActionSlot.SlotAction?.TargetAction != null && ActionSlot.SlotAction.CheckOnUpdate;
@@ -25,20 +24,14 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
 
         public ActionSlotController(ActionSlot actionSlot)
         {
-            if (actionSlot == null)
-                throw new ArgumentNullException(nameof(actionSlot));
-
-            ActionSlot = actionSlot;
-            //ActionSlot.Config = ActionSlot.Config?? new IActionSlotConfig();
+            ActionSlot = actionSlot ?? throw new ArgumentNullException(nameof(actionSlot));
 
             actionSlot.MouseClickListener.OnRightClick.AddListener(OnEditRequested);
         }
 
-        public void AssignEmptyAction(Func<bool> getEditRequested = null)
+        public void AssignEmptyAction()
         {
             UnassignSlotAction();
-
-            _getEditRequested = getEditRequested;
             ActionSlot.ActionImage.overrideSprite = null;
             ActionSlot.ActionImage.sprite = null;
             ActionSlot.CooldownImage.enabled = false;
@@ -61,12 +54,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             ActionSlot.HotbarsContainer.HasChanges = true;
 
         }
-        public void AssignSlotAction(ISlotAction slotAction, Func<bool> getEditRequested = null)
+        public void AssignSlotAction(ISlotAction slotAction)
         {
             if (slotAction == null)
                 throw new ArgumentNullException(nameof(slotAction));
-
-            _getEditRequested = getEditRequested;
 
             UnassignSlotAction();
 
@@ -133,10 +124,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         }
         public void Configure(IActionSlotConfig config)
         {
-            if (config == null)
-                throw new ArgumentNullException(nameof(config));
+            ActionSlot.Config = config ?? throw new ArgumentNullException(nameof(config));
 
-            ActionSlot.Config = config;
             Refresh();
             _cooldownService?.Configure(ActionSlot.Config.ShowCooldownTime, ActionSlot.Config.PreciseCooldownTime);
             _stackService?.Configure(ActionSlot.Config.ShowZeroStackAmount);
