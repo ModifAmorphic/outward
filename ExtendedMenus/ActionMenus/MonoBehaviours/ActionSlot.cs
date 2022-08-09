@@ -13,6 +13,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     {
         public HotbarsContainer HotbarsContainer { get; internal set; }
 
+        public HotkeyCaptureDialog HotkeyCapture;
+
         private MouseClickListener _mouseClickListener;
         public MouseClickListener MouseClickListener => _mouseClickListener;
 
@@ -36,6 +38,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         //Displays the assigned hotkey / button.
         private Text _keyText;
         public Text KeyText => _keyText;
+
+        private Button _keyButton;
+        public Button KeyButton => _keyButton;
 
         #region ActionButton Resources
         private Button _actionButton;
@@ -98,6 +103,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _slotPanel = transform.Find("SlotPanel");
             
             _keyText = GetComponentsInChildren<Text>(true).First(t => t.name == "KeyText");
+            _keyButton = GetComponentsInChildren<Button>(true).First(t => t.name == "KeyButton");
             _borderImage = _slotPanel.GetComponentsInChildren<Image>(true).First(i => i.name == "ActionBorder");
             _actionButton = _slotPanel.GetComponentInChildren<Button>(true);
             _mouseClickListener = _actionButton.GetComponent<MouseClickListener>();

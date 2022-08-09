@@ -31,7 +31,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
         private void AddHotbarServices(SplitPlayer splitPlayer, Character character)
         {
-            var psp = Psp.GetServicesProvider(splitPlayer.RewiredID);
+            var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
             var playerMenus = psp.GetService<PlayerMenu>().gameObject;
             var hotbars = playerMenus.GetComponentInChildren<HotbarsContainer>();
             var player = ReInput.players.GetPlayer(splitPlayer.RewiredID);
@@ -51,11 +51,21 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                                         , _levelCoroutines
                                         , _settings
                                         , _getLogger))
+                .AddSingleton(new ControllerMapService(psp.GetService<HotkeyCaptureDialog>()
+                                        , (HotbarProfileJsonService)psp.GetService<IHotbarProfileDataService>()
+                                        , psp.GetService<HotbarService>()
+                                        , player
+                                        , _levelCoroutines
+                                        , _settings, _getLogger))
                 .AddSingleton<IActionViewData>(new SlotActionViewData(player
                                         , splitPlayer.AssignedCharacter
                                         , psp.GetService<SlotDataService>()
-                                        , _getLogger))     
-                ;
+                                        , _getLogger))
+                .AddSingleton<IHotbarNavActions>(new HotbarKeyListener(player));
+
+            psp.GetService<ControllerMapService>().LoadConfigMaps();
+            psp.GetService<HotbarService>().Start();
+
         }
     }
 }

@@ -10,29 +10,31 @@ namespace Assets.Testing
 {
     internal class TestHotbarProfileData : IHotbarProfileDataService
     {
-        public Dictionary<string, HotbarProfileData> HotbarProfiles { get; set; } = new Dictionary<string, HotbarProfileData>();
-        public HotbarProfileData Create(string name, HotbarsContainer hotbarsContainer)
+        public Dictionary<string, IHotbarProfileData> HotbarProfiles { get; set; } = new Dictionary<string, IHotbarProfileData>();
+
+        public event Action<IHotbarProfileData> OnActiveProfileChanged;
+
+        public IHotbarProfileData AddHotbar(IHotbarProfileData profile)
         {
-            var data = ToHotbarData(hotbarsContainer);
-            var hotbarAssigns = data.Select(h => (IHotbarData<ISlotData>)h);
-
-            var profile = new HotbarProfileData()
-            {
-                Name = name,
-                Rows = hotbarsContainer.Controller.GetRowCount(),
-                SlotsPerRow = hotbarsContainer.Controller.GetActionSlotsPerBar(),
-                HotbarAssignments = hotbarAssigns.ToList()
-            };
-
-            if (!HotbarProfiles.ContainsKey(name))
-                HotbarProfiles.Add(name, profile);
-            else
-                HotbarProfiles[name] = profile;
-
-            return profile;
+            throw new NotImplementedException();
         }
 
-        public HotbarProfileData GetProfile(string name)
+        public IHotbarProfileData AddRow(IHotbarProfileData profile)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IHotbarProfileData AddSlot(IHotbarProfileData profile)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IHotbarProfileData GetActiveProfile()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IHotbarProfileData GetProfile(string name)
         {
             if (HotbarProfiles.TryGetValue(name, out var profile))
                 return profile;
@@ -44,7 +46,22 @@ namespace Assets.Testing
             return HotbarProfiles.Keys;
         }
 
-        public void SaveProfile(HotbarProfileData profile)
+        public IHotbarProfileData RemoveHotbar(IHotbarProfileData profile)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IHotbarProfileData RemoveRow(IHotbarProfileData profile)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IHotbarProfileData RemoveSlot(IHotbarProfileData profile)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SaveProfile(IHotbarProfileData profile)
         {
             if (!HotbarProfiles.ContainsKey(profile.Name))
                 HotbarProfiles.Add(profile.Name, profile);
@@ -52,28 +69,24 @@ namespace Assets.Testing
                 HotbarProfiles[profile.Name] = profile;
         }
 
-        public static List<HotbarData> ToHotbarData(HotbarsContainer hbc)
+        public void SetActiveProfile(string name)
         {
-            var hotbars = new List<HotbarData>();
+            throw new NotImplementedException();
+        }
 
-            for (int h = 0; h < hbc.Hotbars.Length; h++)
-            {
-                var hotbarData = new HotbarData()
-                {
-                    HotbarIndex = h
-                };
-                for (int s = 0; s < hbc.Hotbars[h].Length; s++)
-                {
-                    hotbarData.SlotsAssigned.Add(new TestSlotData()
-                    {
-                        SlotIndex = hbc.Hotbars[h][s].SlotIndex,
-                        Config = hbc.Hotbars[h][s].Config,
-                        });
-                }
-                hotbars.Add(hotbarData);
-            }
+        public IHotbarProfileData SetCooldownTimer(IHotbarProfileData profile, bool showTimer, bool preciseTime)
+        {
+            throw new NotImplementedException();
+        }
 
-            return hotbars;
+        public IHotbarProfileData SetEmptySlotView(IHotbarProfileData profile, EmptySlotOptions option)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TryGetActiveProfileName(out string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }

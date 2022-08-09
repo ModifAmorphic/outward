@@ -27,12 +27,13 @@ public class AdjustHotbars : MonoBehaviour
         
         _hotbarsContainer = HotbarsGameObject.GetComponent<HotbarsContainer>();
         _hotbarController = _hotbarsContainer.Controller;
-        Psp.GetServicesProvider(0).AddSingleton<IActionViewData>(ActionsViewUser);
+        Psp.Instance.GetServicesProvider(0).AddSingleton<IActionViewData>(ActionsViewUser);
         _hotbarController.ConfigureHotbars(1, 1, 8, SlotConfigService.GetActionSlotConfigs(1, 1, 8));
         _actionGenerator = new RandomActionAssignmentGenerator(_hotbarController);
         _actionGenerator.Generate(SlotIcons, this);
 
-        Psp.GetServicesProvider(0).AddSingleton<IHotbarProfileDataService>(new TestHotbarProfileData());
+        Psp.Instance.GetServicesProvider(0).AddSingleton<IHotbarProfileDataService>(new TestHotbarProfileData());
+        Psp.Instance.GetServicesProvider(0).AddSingleton<IHotbarNavActions>(new HotbarNav());        
     }
     
 
@@ -98,53 +99,15 @@ public class AdjustHotbars : MonoBehaviour
     public void SelectPreviousHotbar() => _hotbarController.SelectPrevious();
     public void SelectHotbar(int hotbarIndex) => _hotbarController.SelectHotbar(hotbarIndex);
 
-    public void TestStuff()
-    {
-        var ihd = new List<IHotbarData<ISlotData>>();
-        var thd = new List<TestHotbarData>()
-        {
-            new TestHotbarData()
-            {
-                HotbarIndex = 0,
-                SlotsAssigned = new List<ISlotData>()
-                {
-                    new TestSlotData()
-                    {
-                        SlotIndex = 0,
-                    }
-                }
-            }
-        };
-        thd.Add(new TestHotbarData()
-        {
-            HotbarIndex = 1,
-            SlotsAssigned = new List<ISlotData>()
-                {
-                    new TestSlotData()
-                    {
-                        SlotIndex = 0,
-                    }
-                }
-        });
-
-        var assigns = thd.Select(h => (IHotbarData<ISlotData>)h).ToList();
-
-        var converted = new List<IHotbarData<ISlotData>>();
-        foreach (var bar in thd)
-        {
-            converted.Add(bar);
-        }
-        ihd = converted;//assigns.ToList();
-    }
 }
-public class TestHotbarData : IHotbarData<ISlotData>
+public class TestHotbarData : IHotbarSlotData
 {
     public int HotbarIndex { get; set; }
-    public List<ISlotData> SlotsAssigned { get; set; }
+    public List<ISlotData> Slots { get; set; }
 }
 public class TestSlotData : ISlotData
 {
     public int SlotIndex { get; set; }
-    public ActionSlotConfig Config { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public IActionSlotConfig Config { get; set; }
 }
 

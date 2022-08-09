@@ -20,12 +20,15 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public PlayerMenu PlayerMenu;
 
         public Dropdown ProfileDropdown;
+
         public ArrowInput BarAmountInput;
         public ArrowInput RowAmountInput;
         public ArrowInput SlotAmountInput;
 
         public Toggle ShowCooldownTimer;
         public Toggle ShowPrecisionTime;
+
+        public Dropdown EmptySlotDropdown;
 
         public Button SetHotkeys;
 
@@ -76,16 +79,27 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         }
         private void SetControls()
         {
+            var config = _activeProfile.Hotbars.First().Slots.First().Config;
+
             BarAmountInput.SetAmount(_activeProfile.Hotbars.Count);
             RowAmountInput.SetAmount(_activeProfile.Rows);
             SlotAmountInput.SetAmount(_activeProfile.SlotsPerRow);
 
             ProfileDropdown.ClearOptions();
             var profiles = GetProfileData().GetProfileNames();
-            var profileOptions = profiles.Select(p => new Dropdown.OptionData(p)).ToList();
+            var profileOptions = profiles.OrderBy(p => p).Select(p => new Dropdown.OptionData(p)).ToList();
             profileOptions.Add(new Dropdown.OptionData("[New Profile]"));
             ProfileDropdown.AddOptions(profileOptions);
             ProfileDropdown.value = profileOptions.FindIndex(o => o.text.Equals(_activeProfile.Name, System.StringComparison.InvariantCultureIgnoreCase));
+
+            ShowCooldownTimer.isOn = config.ShowCooldownTime;
+            ShowPrecisionTime.isOn = config.PreciseCooldownTime;
+
+            EmptySlotDropdown.ClearOptions();
+            var imageOptions = Enum.GetNames(typeof(EmptySlotOptions)).Select(name => new Dropdown.OptionData(name)).ToList();
+            EmptySlotDropdown.AddOptions(imageOptions);
+            var selectedName = Enum.GetName(typeof(EmptySlotOptions), config.EmptySlotOption);
+            EmptySlotDropdown.value = imageOptions.FindIndex(o => o.text.Equals(selectedName, System.StringComparison.InvariantCultureIgnoreCase));
 
         }
         private void HookControls()
@@ -114,24 +128,17 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                     GetProfileData().RemoveSlot(_activeProfile);
             });
 
-            //RowAmountInput.InputText
-            //    .onValueChanged.AddListener((call) => OnRowsChanged.Invoke(RowAmountInput.Amount));
-            //RowAmountInput.InputText
-            //    .onValueChanged.AddListener((call) => HotbarsController.ConfigureHotbars(
-            //        BarAmountInput.Amount,
-            //        RowAmountInput.Amount,
-            //        SlotAmountInput.Amount,
-            //        GetActionSlotConfigs(BarAmountInput.Amount, RowAmountInput.Amount, SlotAmountInput.Amount, config)));
+            ShowCooldownTimer.onValueChanged.AddListener(isOn =>
+                GetProfileData().SetCooldownTimer(_activeProfile, ShowCooldownTimer.isOn, ShowPrecisionTime.isOn)
+            );
+            ShowPrecisionTime.onValueChanged.AddListener(isOn =>
+                GetProfileData().SetCooldownTimer(_activeProfile, ShowCooldownTimer.isOn, ShowPrecisionTime.isOn)
+            );
 
-            //SlotAmountInput.InputText
-            //    .onValueChanged.AddListener((call) => OnSlotsChanged.Invoke(SlotAmountInput.Amount));
-            //SlotAmountInput.InputText
-            //    .onValueChanged.AddListener((call) => HotbarsController.ConfigureHotbars(
-            //        BarAmountInput.Amount,
-            //        RowAmountInput.Amount,
-            //        SlotAmountInput.Amount,
-            //        GetActionSlotConfigs(BarAmountInput.Amount, RowAmountInput.Amount, SlotAmountInput.Amount, config)));
+            EmptySlotDropdown.onValueChanged.AddListener(value =>
+                GetProfileData().SetEmptySlotView(_activeProfile, (EmptySlotOptions)value)
+            );
         }
-        private IHotbarProfileDataService GetProfileData() => Psp.GetServicesProvider(PlayerMenu.PlayerID).GetService<IHotbarProfileDataService>();
+        private IHotbarProfileDataService GetProfileData() => Psp.Instance.GetServicesProvider(PlayerMenu.PlayerID).GetService<IHotbarProfileDataService>();
     }
 }

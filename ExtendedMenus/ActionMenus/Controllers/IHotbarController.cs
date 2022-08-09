@@ -20,9 +20,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         void SelectNext();
         void SelectPrevious();
 
-        void ConfigureHotbars(IHotbarProfileData profile, IHotbarRequestActions requestActions);
+        void ConfigureHotbars(IHotbarProfileData profile);
         void ConfigureHotbars(int hotbars, int rows, int slotsPerRow, IActionSlotConfig[,] slotConfigs);
-        void ConfigureHotbars(int hotbars, int rows, int slotsPerRow, IActionSlotConfig[,] slotConfigs, IHotbarRequestActions requestActions);
 
         void ToggleEditMode(bool enabled);
     }

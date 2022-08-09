@@ -19,9 +19,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 		private IHotbarController _controller;
 		public IHotbarController Controller { get => _controller; }
 
-        private IActionViewData _actionViewData;
-        public IActionViewData ActionViewData { get => _actionViewData; internal set => _actionViewData = value; }
-
         private Button _settingsButton;
 		public Button SettingsButton => _settingsButton;
 
@@ -57,13 +54,13 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 			}
 		}
 
-		private Text posText;
-		private RectTransform rectTransform;
+		//private Text posText;
+		//private RectTransform rectTransform;
 
-		private Text canvasPosText;
-		private RectTransform canvasRectTransform;
+		//private Text canvasPosText;
+		//private RectTransform canvasRectTransform;
 
-		private Text gridPosText;
+		//private Text gridPosText;
 
 		public bool IsInEditMode { get; internal set; }
 
@@ -76,28 +73,28 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 			SetComponents();
 			_controller = new HotbarsController(this);
 
-			posText = transform.parent.GetComponentsInChildren<Text>().First(t => t.name == "HotbarsPosText");
-			rectTransform = GetComponent<RectTransform>();
+			//posText = transform.parent.GetComponentsInChildren<Text>().First(t => t.name == "HotbarsPosText");
+			//rectTransform = GetComponent<RectTransform>();
 
-			canvasPosText = transform.parent.GetComponentsInChildren<Text>().First(t => t.name == "Hotbar0CanvasPosText");
-			gridPosText = transform.parent.GetComponentsInChildren<Text>().First(t => t.name == "Hotbar0GridPosText");
+			//canvasPosText = transform.parent.GetComponentsInChildren<Text>().First(t => t.name == "Hotbar0CanvasPosText");
+			//gridPosText = transform.parent.GetComponentsInChildren<Text>().First(t => t.name == "Hotbar0GridPosText");
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 		private void Update()
         {
-			canvasRectTransform = GetComponentsInChildren<Canvas>()?.FirstOrDefault(c => c.name == "HotbarCanvas0")?
-				.GetComponent<RectTransform>();
+			//canvasRectTransform = GetComponentsInChildren<Canvas>()?.FirstOrDefault(c => c.name == "HotbarCanvas0")?
+			//	.GetComponent<RectTransform>();
 
-			posText.text = $"Hotbars Pos: {rectTransform.position.x}, {rectTransform.position.y}. Size {rectTransform.sizeDelta.x}, {rectTransform.sizeDelta.y}";
-			if (canvasRectTransform != null)
-				canvasPosText.text = $"Hotbars0 Canvas Pos: {canvasRectTransform.position.x}, {canvasRectTransform.position.y}. Size {canvasRectTransform.sizeDelta.x}, {canvasRectTransform.sizeDelta.y}";
+			//posText.text = $"Hotbars Pos: {rectTransform.position.x}, {rectTransform.position.y}. Size {rectTransform.sizeDelta.x}, {rectTransform.sizeDelta.y}";
+			//if (canvasRectTransform != null)
+			//	canvasPosText.text = $"Hotbars0 Canvas Pos: {canvasRectTransform.position.x}, {canvasRectTransform.position.y}. Size {canvasRectTransform.sizeDelta.x}, {canvasRectTransform.sizeDelta.y}";
 
-			if (HotbarGrid?.Length > 0)
-			{
-				var grid = HotbarGrid[0].GetComponent<RectTransform>();
-				gridPosText.text = $"HotbarsGrid0 Pos: {grid.position.x}, {grid.position.y}. Size {grid.sizeDelta.x}, {grid.sizeDelta.y}";
-			}
+			//if (HotbarGrid?.Length > 0)
+			//{
+			//	var grid = HotbarGrid[0].GetComponent<RectTransform>();
+			//	gridPosText.text = $"HotbarsGrid0 Pos: {grid.position.x}, {grid.position.y}. Size {grid.sizeDelta.x}, {grid.sizeDelta.y}";
+			//}
 
 			Controller.HotbarsContainerUpdate();
 		}

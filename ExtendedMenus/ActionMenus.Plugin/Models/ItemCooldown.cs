@@ -12,7 +12,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Models
 
         public bool HasCooldown => skill != null;
 
-        public bool GetIsInCooldown() =>  skill?.InCooldown() ?? false;
+        public bool GetIsInCooldown() => skill?.InCooldown() ?? false;
 
         public float GetProgress()
         {
@@ -22,13 +22,8 @@ namespace ModifAmorphic.Outward.ActionMenus.Models
             return Mathf.Clamp01(1f - skill.CoolDownProgress);
         }
 
-        public float GetSecondsRemaining()
-        {
-            return 0f;
-        }
-        public ItemCooldown(Item item)
-        {
-            skill = item as Skill;
-        }
+        public float GetSecondsRemaining() => skill.RealCooldown * (1f - skill.CoolDownProgress);
+        
+        public ItemCooldown(Item item) => skill = item as Skill;
     }
 }

@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3994388442
+CRC: 4212059996
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: f94d7bdb13ed82302e081a9ebee0f91b
+    Hash: 2c0dc9b9fcc348b83c8b85e4617e298b
   TypeTreeHash:
     serializedVersion: 2
-    Hash: f626156bebaa714462eea8ac27ef0728
+    Hash: a6d6af3233e2e26d45432a502d17b6c9
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -26,19 +26,39 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  Script: {fileID: -2132296311, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
 - Class: 114
   Script: {fileID: -1149775767, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
 - Class: 114
+  Script: {fileID: 1431360530, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+- Class: 114
+  Script: {fileID: -1160063426, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+- Class: 114
   Script: {fileID: 1056829355, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+- Class: 114
+  Script: {fileID: 1460552717, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+- Class: 114
+  Script: {fileID: -833863390, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+- Class: 114
+  Script: {fileID: 445401529, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
 - Class: 114
   Script: {fileID: -1864934948, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
 - Class: 114
+  Script: {fileID: 56838480, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+- Class: 114
+  Script: {fileID: 64035627, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+- Class: 114
+  Script: {fileID: -449930734, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+- Class: 114
+  Script: {fileID: -1352836752, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
 - Class: 114
@@ -54,23 +74,7 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
 - Class: 114
-  Script: {fileID: -2132296311, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
-- Class: 114
-  Script: {fileID: 1431360530, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
-- Class: 114
-  Script: {fileID: 445401529, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
-- Class: 114
-  Script: {fileID: -1352836752, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
-- Class: 114
-  Script: {fileID: 56838480, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
-- Class: 114
-  Script: {fileID: -1160063426, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
-- Class: 114
-  Script: {fileID: 64035627, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
-- Class: 114
-  Script: {fileID: -449930734, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
-- Class: 114
-  Script: {fileID: 1460552717, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  Script: {fileID: 1948066178, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
@@ -129,5 +133,6 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.Toggle/ToggleEvent
 Assets:
-- Assets/Prefabs/MenuOverhaul.prefab
+- Assets/Prefabs/ActionMenus.prefab
+- Assets/Prefabs/ActionMenus 1.prefab
 Dependencies: []

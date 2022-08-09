@@ -59,13 +59,13 @@ namespace Assets.Testing
             return slotAction;
 
         }
-        private ActionSlotConfig GetConfig(string hotkey)
+        private TestActionSlotConfig GetConfig(string hotkey)
         {
             int showZero = random.Next(1, 100);
             int showTime = random.Next(1, 100);
             int showImage = random.Next(1, 100);
 
-            return new ActionSlotConfig()
+            return new TestActionSlotConfig()
             {
                 ShowZeroStackAmount = showZero > 50,
                 ShowCooldownTime = showTime > 50,

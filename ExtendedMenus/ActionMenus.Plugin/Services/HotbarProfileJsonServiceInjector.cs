@@ -28,7 +28,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
         private void AddHotbarProfileJsonService(SplitPlayer splitPlayer, Character character)
         {
-            var psp = Psp.GetServicesProvider(splitPlayer.RewiredID);
+            var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
             psp.AddSingleton<IHotbarProfileDataService>(
                     new HotbarProfileJsonService(Path.Combine(ActionMenuSettings.ProfilesPath, character.UID)
                                               , _settings

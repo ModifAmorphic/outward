@@ -48,13 +48,13 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             SplitPlayerPatches.InitAfter += InjectMenus;
             SplitPlayerPatches.SetCharacterAfter += SetPlayerMenuCharacter;
             SplitScreenManagerPatches.RemoveLocalPlayerAfter += RemovePlayerMenu;
-            coroutine.InvokeAfterPlayersLoaded(() => NetworkLevelLoader.Instance, LoadDefaultControllerMaps, 300);
+            //coroutine.InvokeAfterPlayersLoaded(() => NetworkLevelLoader.Instance, LoadDefaultControllerMaps, 300);
 
         }
 
         private void SetPlayerMenuCharacter(SplitPlayer splitPlayer, Character character)
         {
-            var psp = Psp.GetServicesProvider(splitPlayer.RewiredID);
+            var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
             var playerMenus = psp.GetService<PlayerMenu>().gameObject;
             playerMenus.name = character.name + "_UIX";
 
@@ -82,46 +82,47 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         }
         private void RemovePlayerMenu(SplitScreenManager splitScreenManager, SplitPlayer player, string playerId)
         {
-            if (Psp.GetServicesProvider(player.RewiredID).TryGetService<PlayerMenu>(out var playerMenu))
+            if (Psp.Instance.GetServicesProvider(player.RewiredID).TryGetService<PlayerMenu>(out var playerMenu))
             {
                 UnityEngine.Object.Destroy(playerMenu.gameObject);
-                Psp.GetServicesProvider(player.RewiredID).TryRemove<PlayerMenu>();
+                Psp.Instance.GetServicesProvider(player.RewiredID).TryRemove<PlayerMenu>();
             }
         }
 
         private void InjectMenus(SplitPlayer splitPlayer)
         {
-            var psp = Psp.GetServicesProvider(splitPlayer.RewiredID);
+            var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
 
             if (psp.TryGetService<PlayerMenu>(out var _))
                 return;
 
             var playerMenuPrefab = _playerMenuPrefab.gameObject;
             var playerMenuGo = GameObject.Instantiate(playerMenuPrefab);
+            psp.AddSingleton(playerMenuGo.GetComponentInChildren<HotkeyCaptureDialog>(true));
             playerMenuGo.SetActive(false);
             var playerMenu = playerMenuGo.GetComponent<PlayerMenu>();
             psp.AddSingleton(playerMenu);
             playerMenu.SetIDs(splitPlayer.RewiredID);
             UnityEngine.Object.DontDestroyOnLoad(playerMenuGo);
         }
-        private void LoadDefaultControllerMaps()
-        {
-            foreach (var player in ReInput.players.AllPlayers)
-            {
-                if (player.name.Equals("System", StringComparison.OrdinalIgnoreCase))
-                    continue;
+        //private void LoadDefaultControllerMaps()
+        //{
+        //    foreach (var player in ReInput.players.AllPlayers)
+        //    {
+        //        if (player.name.Equals("System", StringComparison.OrdinalIgnoreCase))
+        //            continue;
 
-                Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(LoadDefaultControllerMaps)}(): Loading default keyboard maps for player {player.id} maps.");
+        //        Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(LoadDefaultControllerMaps)}(): Loading default keyboard maps for player {player.id} maps.");
                 
-                //var json = File.ReadAllText(RewiredConstants.ActionSlotsDefaultKeyboardMapFile);
-                //var keyboardMaps = new List<string>() { json };
-                //player.controllers.maps.AddMapsFromJson(ControllerType.Keyboard, 0, keyboardMaps);
+        //        //var json = File.ReadAllText(RewiredConstants.ActionSlotsDefaultKeyboardMapFile);
+        //        //var keyboardMaps = new List<string>() { json };
+        //        //player.controllers.maps.AddMapsFromJson(ControllerType.Keyboard, 0, keyboardMaps);
                 
-                var xml = File.ReadAllText(RewiredConstants.ActionSlots.DefaultKeyboardMapFile);
-                var keyboardMap = ControllerMap.CreateFromXml(ControllerType.Keyboard, xml);
-                player.controllers.maps.AddMap<KeyboardMap>(0, keyboardMap);
-                _controllerMaps.Add(player.id, keyboardMap);
-            }
-        }
+        //        var xml = File.ReadAllText(RewiredConstants.ActionSlots.DefaultKeyboardMapFile);
+        //        var keyboardMap = ControllerMap.CreateFromXml(ControllerType.Keyboard, xml);
+        //        player.controllers.maps.AddMap<KeyboardMap>(0, keyboardMap);
+        //        _controllerMaps.Add(player.id, keyboardMap);
+        //    }
+        //}
     }
 }

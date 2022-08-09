@@ -64,6 +64,11 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             _settings = settings;
             _levelCoroutines = levelCoroutines;
             _getLogger = getLogger;
+            
+        }
+
+        public void Start()
+        {
             _saveDisabled = true;
 
             QuickSlotPanelPatches.StartInitAfter += DisableKeyboardQuickslots;
@@ -79,6 +84,23 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             _profileData.OnActiveProfileChanged += ConfigureHotbars;
             _levelCoroutines.StartRoutine(CheckProfileForSave());
             _hotbarsContainer.ActionsViewer.ConfigureExit(() => _player.GetButtonDown(ControlsInput.GetMenuActionName(ControlsInput.MenuActions.Cancel)));
+        }
+
+        public void ConfigureHotbars(IHotbarProfileData profile)
+        {
+            _saveDisabled = true;
+
+            SetProfileHotkeys(profile);
+
+            Logger.LogDebug($"Setting Hotbars to {_settings.Hotbars}, Slots per hotbar to {_settings.ActionSlots}");
+
+            _hotbars.ConfigureHotbars(profile);
+
+            if (_isProfileInit)
+            {
+                AssignSlotActions(profile);
+                _saveDisabled = false;
+            }
         }
 
         private IEnumerator CheckProfileForSave()
@@ -139,22 +161,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             Logger.LogDebug($"Got or Created Active Profile  '{activeProfile.Name}'");
             return activeProfile;
         }
-        private void ConfigureHotbars(IHotbarProfileData profile)
-        {
-            _saveDisabled = true;
-            
-            SetProfileHotkeys(profile);
-
-            Logger.LogDebug($"Setting Hotbars to {_settings.Hotbars}, Slots per hotbar to {_settings.ActionSlots}");
-
-            var keyListener = new HotbarKeyListener(_player);
-            _hotbars.ConfigureHotbars(profile, keyListener);
-
-            if (_isProfileInit)
-            {
-                AssignSlotActions(profile);
-            }
-        }
+        
 
         public void QueueActionSlotAssignments()
         {
@@ -196,7 +203,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 {
                     var config = ((ActionConfig)slot.Config);
                         var eleMap = keyMap.ButtonMaps.FirstOrDefault(m => m.actionId == config.RewiredActionId);
-                    
+
                     if (eleMap != null)
                         slot.Config.HotkeyText = eleMap.elementIdentifierName;
                     else

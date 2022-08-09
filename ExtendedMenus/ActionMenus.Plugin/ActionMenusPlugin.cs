@@ -31,6 +31,7 @@ namespace ModifAmorphic.Outward.ActionMenus
                 logger = LoggerFactory.ConfigureLogger(ModInfo.ModId, ModInfo.ModName, LogLevel.Info);
                 logger.LogInfo($"Patching...");
                 harmony.PatchAll(typeof(InputManager_BasePatches));
+                harmony.PatchAll(typeof(RewiredInputsPatches));
                 harmony.PatchAll(typeof(SplitPlayerPatches));
                 harmony.PatchAll(typeof(QuickSlotControllerSwitcherPatches));
                 harmony.PatchAll(typeof(QuickSlotPanelPatches));

@@ -40,10 +40,12 @@ namespace ModifAmorphic.Outward.ActionMenus.Settings
             public const int ActionCategoryId = 131001;
             public static InputCategory ActionCategory;
             public static List<InputAction> Actions;
+            public static List<InputAction> HotbarNavActions;
             public const string NameFormat = "ActionSlot_00";
-            
-            public const string NextHotbarAction = "NextHotbar";
-            public const string PreviousHotbarAction = "PreviousHotbar";
+            public const string NavNameFormat = "Hotbar_00";
+
+            public static InputAction NextHotbarAction;
+            public static InputAction PreviousHotbarAction;
 
             public const string SelectHotbarNameFormat = "SelectHotbar_00";
 
@@ -69,22 +71,33 @@ namespace ModifAmorphic.Outward.ActionMenus.Settings
                     actionCategoryId: ActionCategory.id,
                     startingId: 131500,
                     amount: 64);
-                Actions.Add(GetAction(
+                
+                HotbarNavActions = GetHotbarNavActions(
+                    nameFormat: NavNameFormat,
+                    descriptiveNameFormat: "Hotbar ##0",
+                    inputActionType: InputActionType.Button,
+                    userAssignable: true,
+                    actionCategoryId: ActionCategory.id,
+                    startingId: 131200,
+                    amount: 64);
+                NextHotbarAction = GetAction(
                     id: 131100,
-                    name: NextHotbarAction,
+                    name: "NextHotbar",
                     descriptiveName: "Next Hotbar",
                     inputActionType: InputActionType.Button,
                     userAssignable: true,
                     actionCategoryId: ActionCategory.id
-                    ));
-                Actions.Add(GetAction(
+                    );
+                PreviousHotbarAction = GetAction(
                     id: 131101,
-                    name: PreviousHotbarAction,
+                    name: "PreviousHotbar",
                     descriptiveName: "Previous Hotbar",
                     inputActionType: InputActionType.Button,
                     userAssignable: true,
                     actionCategoryId: ActionCategory.id
-                    ));
+                    );
+                HotbarNavActions.Add(NextHotbarAction);
+                HotbarNavActions.Add(PreviousHotbarAction);
             }
         }
         private static InputMapCategory GetMapCategory(string name, string descriptiveName, int id, bool userAssignable)
@@ -127,6 +140,26 @@ namespace ModifAmorphic.Outward.ActionMenus.Settings
             }
 
             return actions;   
+        }
+        private static List<InputAction> GetHotbarNavActions(string nameFormat, string descriptiveNameFormat, InputActionType inputActionType, bool userAssignable, int actionCategoryId, int startingId, int amount)
+        {
+            var actions = new List<InputAction>();
+
+            for (int i = 0; i < amount; i++)
+            {
+                int barNo = i + 1;
+                var inputAction = GetAction(
+                    id: i + startingId,
+                    name: barNo.ToString(nameFormat),
+                    descriptiveName: barNo.ToString(descriptiveNameFormat),
+                    inputActionType: inputActionType,
+                    userAssignable: userAssignable,
+                    actionCategoryId: actionCategoryId
+                    );
+                actions.Add(inputAction);
+            }
+
+            return actions;
         }
         public static InputAction GetAction(int id, string name, string descriptiveName, InputActionType inputActionType, bool userAssignable, int actionCategoryId)
         {

@@ -105,7 +105,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 .onClick.AddListener(() => LoadData(viewData.GetAllActions()));
         }
 
-        private IActionViewData GetViewData() => Psp.GetServicesProvider(PlayerMenu.PlayerID).GetService<IActionViewData>();
+        private IActionViewData GetViewData() => Psp.Instance.GetServicesProvider(PlayerMenu.PlayerID).GetService<IActionViewData>();
 
         private void AddGridItem(ISlotAction slotAction)
         {

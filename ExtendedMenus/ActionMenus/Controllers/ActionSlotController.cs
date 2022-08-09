@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.Unity.ActionMenus.Services;
+﻿using ModifAmorphic.Outward.Unity.ActionMenus.Models;
+using ModifAmorphic.Outward.Unity.ActionMenus.Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             ActionSlot = actionSlot ?? throw new ArgumentNullException(nameof(actionSlot));
 
             actionSlot.MouseClickListener.OnRightClick.AddListener(OnEditRequested);
+            actionSlot.KeyButton.onClick.AddListener(OnHotkeyEditRequested);
         }
 
         public void AssignEmptyAction()
@@ -171,6 +173,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 ActionSlot.HotbarsContainer.ActionsViewer.Show(ActionSlot.SlotId);
         }
 
+        private void OnHotkeyEditRequested()
+        {
+            if (ActionSlot.ParentCanvas.enabled && ActionSlot.ActionButton.interactable)
+                ActionSlot.HotkeyCapture.Show(ActionSlot.SlotIndex, HotkeyCategories.ActionSlot);
+        }
         private void EnableActiveSlot()
         {
             ActionSlot.CooldownImage.enabled = true;

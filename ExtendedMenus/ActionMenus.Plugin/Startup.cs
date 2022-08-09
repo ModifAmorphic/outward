@@ -74,18 +74,18 @@ namespace ModifAmorphic.Outward.ActionMenus
                 logAssets += name + ", ";
             }
             Logger.LogDebug($"Assets in Bundle: " + logAssets);
-            var menuOverhaulPrefab = menuBundle.LoadAsset<GameObject>("assets/prefabs/menuoverhaul.prefab");
-            menuOverhaulPrefab.SetActive(false);
-            Logger.LogDebug($"Loaded asset assets/prefabs/menuoverhaul.prefab.");
-            UnityEngine.Object.DontDestroyOnLoad(menuOverhaulPrefab);
+            var actionMenusPrefab = menuBundle.LoadAsset<GameObject>("assets/prefabs/actionmenus.prefab");
+            actionMenusPrefab.SetActive(false);
+            Logger.LogDebug($"Loaded asset assets/prefabs/actionmenus.prefab.");
+            UnityEngine.Object.DontDestroyOnLoad(actionMenusPrefab);
             menuBundle.Unload(false);
 
             var modGo = _services.GetService<ModifGoService>()
                                  .GetModResources(ModInfo.ModId, false);
 
-            menuOverhaulPrefab.transform.SetParent(modGo.transform);
+            actionMenusPrefab.transform.SetParent(modGo.transform);
 
-            var pspPrefab = menuOverhaulPrefab.transform.Find("PlayersServicesProvider").gameObject;
+            var pspPrefab = actionMenusPrefab.transform.Find("PlayersServicesProvider").gameObject;
             var modActiveGo = _services.GetService<ModifGoService>()
                                  .GetModResources(ModInfo.ModId, true);
             var psp = UnityEngine.Object.Instantiate(pspPrefab);
@@ -96,7 +96,7 @@ namespace ModifAmorphic.Outward.ActionMenus
             UnityEngine.Object.Destroy(pspPrefab);
             UnityEngine.Object.Destroy(scriptsGo);
 
-            return menuOverhaulPrefab;
+            return actionMenusPrefab;
 
         }
         public GameObject AttachScripts(Assembly sourceAssembly)

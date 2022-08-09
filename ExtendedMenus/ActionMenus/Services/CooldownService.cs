@@ -71,8 +71,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Services
                 if (_cooldown.GetIsInCooldown())
                 {
                     _image.fillAmount = Mathf.Clamp01(_cooldown.GetProgress());
-                    if (_showTime && _cooldown.GetSecondsRemaining() > 0f)
-                        _text.text = _cooldown.GetSecondsRemaining().ToString(_timeFormat);
+                    if (_showTime && ((int)_cooldown.GetSecondsRemaining() > 0 || _isPreciseTime))
+                        if (_cooldown.GetSecondsRemaining() <= 9.9f)
+                            _text.text = _cooldown.GetSecondsRemaining().ToString(_timeFormat);
+                        else
+                            _text.text = _cooldown.GetSecondsRemaining().ToString("0");
+
                     _hideNeeded = true;
                 }
                 else if (_hideNeeded)

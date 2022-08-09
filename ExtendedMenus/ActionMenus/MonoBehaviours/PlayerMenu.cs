@@ -14,30 +14,30 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private int _playerID;
         public int PlayerID { get => _playerID; }
 
-        public Text posText;
-        public RectTransform rectTransform;
+        //public Text posText;
+        //public RectTransform rectTransform;
 
-        public Text canvasPosText;
-        public RectTransform canvasRectTransform;
+        //public Text canvasPosText;
+        //public RectTransform canvasRectTransform;
 
         public void SetIDs(int playerID) => (_playerID) = (playerID);
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
         {
-            posText = GetComponentsInChildren<Text>().First(t => t.name == "PlayerPosText");
-            rectTransform = GetComponent<RectTransform>();
+            //posText = GetComponentsInChildren<Text>().First(t => t.name == "PlayerPosText");
+            //rectTransform = GetComponent<RectTransform>();
 
-            canvasPosText = GetComponentsInChildren<Text>().First(t => t.name == "ActionCanvasPosText");
-            canvasRectTransform = GetComponentInChildren<Canvas>().GetComponent<RectTransform>();
+            //canvasPosText = GetComponentsInChildren<Text>().First(t => t.name == "ActionCanvasPosText");
+            //canvasRectTransform = GetComponentInChildren<Canvas>().GetComponent<RectTransform>();
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Update()
         {
-            posText.text = $"Player Pos: {rectTransform.position.x}, {rectTransform.position.y}. Size {rectTransform.sizeDelta.x}, {rectTransform.sizeDelta.y}";
+            //posText.text = $"Player Pos: {rectTransform.position.x}, {rectTransform.position.y}. Size {rectTransform.sizeDelta.x}, {rectTransform.sizeDelta.y}";
 
-            canvasPosText.text = $"ActionCanvas Pos: {canvasRectTransform.position.x}, {canvasRectTransform.position.y}. Size {canvasRectTransform.sizeDelta.x}, {canvasRectTransform.sizeDelta.y}";
+            //canvasPosText.text = $"ActionCanvas Pos: {canvasRectTransform.position.x}, {canvasRectTransform.position.y}. Size {canvasRectTransform.sizeDelta.x}, {canvasRectTransform.sizeDelta.y}";
         }
         
     }

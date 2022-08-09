@@ -13,8 +13,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
     {
         private readonly HotbarsContainer _hbc;
         public HotbarsContainer HotbarsContainer => _hbc;
-        
-        private IHotbarRequestActions _requestActions;
 
         private bool _resizeNeeded = false;
 
@@ -23,22 +21,23 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             _hbc = hotbarsContainer ?? throw new ArgumentNullException(nameof(hotbarsContainer));
 
             _hbc.ActionsViewer.OnSlotActionSelected += AssignSlotAction;
+            //_hbc.HotkeyCapture.OnKeyPressed += AssignSlotHotkey;
+            //public void AssignSlotHotkey(int slotId, KeyCode keyCode)
+            //{
+            //    if (_hbc.ActionSlots.TryGetValue(slotId, out var slot))
+            //    {
+
+            //    }
+            //}
         }
 
-        public void RegisterHotbarRequestActions(IHotbarRequestActions requestActions)
-        {
-            if (_requestActions == null)
-                throw new ArgumentNullException(nameof(requestActions));
-
-            _requestActions = requestActions;
-        }
-        
         public void AssignSlotAction(int slotId, ISlotAction slotAction)
         {
             if (_hbc.ActionSlots.TryGetValue(slotId, out var slot))
                 slot.Controller.AssignSlotAction(slotAction);
         }
-        public void ConfigureHotbars(IHotbarProfileData profile, IHotbarRequestActions requestActions)
+        
+        public void ConfigureHotbars(IHotbarProfileData profile)
         {
             var slotConfigs = new IActionSlotConfig[profile.Hotbars.Count, profile.SlotsPerRow * profile.Rows];
             for (int h = 0; h < profile.Hotbars.Count; h++)
@@ -50,10 +49,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                     Debug.Log($"[Debug  :ActionMenus] Setting Slot[{h},{s}].Config to '{(bar.Slots[s].Config == null ? "null" : "an ActionSlotConfig instance.")}'.");
                 }
             }
-            ConfigureHotbars(profile.Hotbars.Count, profile.Rows, profile.SlotsPerRow, slotConfigs, requestActions);
+            ConfigureHotbars(profile.Hotbars.Count, profile.Rows, profile.SlotsPerRow, slotConfigs);
         }
-        public void ConfigureHotbars(int hotbars, int rows, int slotsPerRow, IActionSlotConfig[,] slotConfigs) => ConfigureHotbars(hotbars, rows, slotsPerRow, slotConfigs, _requestActions);
-        public void ConfigureHotbars(int hotbars, int rows, int slotsPerRow, IActionSlotConfig[,] slotConfigs, IHotbarRequestActions requestActions)
+        public void ConfigureHotbars(int hotbars, int rows, int slotsPerRow, IActionSlotConfig[,] slotConfigs)
         {
             if (hotbars < 1)
                 throw new ArgumentOutOfRangeException(nameof(hotbars));
@@ -61,8 +59,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 throw new ArgumentOutOfRangeException(nameof(rows));
             if (slotsPerRow < 1)
                 throw new ArgumentOutOfRangeException(nameof(slotsPerRow));
-
-            _requestActions = requestActions;
 
             Reset();
             _hbc.BaseGrid.constraintCount = slotsPerRow;
@@ -157,17 +153,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             {
                 ResizeLayoutGroup();
                 //_hbc.StartCoroutine(ResizeLayoutGroupNextFrame());
-            }
-            if (_requestActions != null)
-            {
-                if (_requestActions.IsPreviousRequested())
-                    SelectPrevious();
-                else if (_requestActions.IsNextRequested())
-                    SelectNext();
-                else if (_requestActions.IsSelectRequested())
-                {
-                    SelectHotbar(_requestActions.HotbarIndexRequested);
-                }
             }
         }
         private void Reset()

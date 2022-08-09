@@ -26,18 +26,12 @@ namespace ModifAmorphic.Outward.ActionMenus.Plugin.Services
 
         private readonly LevelCoroutines _coroutine;
 
-        private InputMapCategory menuMapCategory;
-        private InputMapCategory slotsMapCategory;
-
-        private readonly List<InputAction> _inputAction = new List<InputAction>();
-
-        private InputMapCategory mapCategory;
 
         public RewiredListener(BaseUnityPlugin baseUnityPlugin,
                                 LevelCoroutines coroutine,
                                 ConfigSettings settings, Func<IModifLogger> getLogger)
         {
-            (_baseUnityPlugin, _coroutine, _getLogger) = (baseUnityPlugin, coroutine, getLogger);
+            (_baseUnityPlugin, _coroutine, _settings, _getLogger) = (baseUnityPlugin, coroutine, settings, getLogger);
             InputManager_BasePatches.BeforeInitialize += InitializeActonMenus;
         }
 
@@ -58,6 +52,13 @@ namespace ModifAmorphic.Outward.ActionMenus.Plugin.Services
             foreach (var action in RewiredConstants.ActionSlots.Actions)
             {
                 Logger.LogDebug($"Adding action {action.name} with id {action.id}");
+                inputManager.userData.GetPrivateField<UserData, List<InputAction>>("actions").Add(action);
+                inputManager.userData.GetPrivateField<UserData, ActionCategoryMap>("actionCategoryMap").AddAction(action.categoryId, action.id);
+            }
+
+            foreach (var action in RewiredConstants.ActionSlots.HotbarNavActions)
+            {
+                Logger.LogDebug($"Adding hotbar nav action {action.name} with id {action.id}");
                 inputManager.userData.GetPrivateField<UserData, List<InputAction>>("actions").Add(action);
                 inputManager.userData.GetPrivateField<UserData, ActionCategoryMap>("actionCategoryMap").AddAction(action.categoryId, action.id);
             }

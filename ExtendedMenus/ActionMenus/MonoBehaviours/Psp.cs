@@ -20,6 +20,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             Instance = this;
         }
 
-        public static UnityServicesProvider GetServicesProvider(int playerId) => Instance.services.GetOrAdd(playerId, new UnityServicesProvider());
+        public UnityServicesProvider GetServicesProvider(int playerId) => Instance.services.GetOrAdd(playerId, new UnityServicesProvider());
     }
 }

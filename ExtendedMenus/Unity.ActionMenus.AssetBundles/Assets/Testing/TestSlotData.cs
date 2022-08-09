@@ -11,6 +11,6 @@ namespace Assets.Testing
     internal class TestSlotData : ISlotData
     {
         public int SlotIndex { get; set; }
-        public ActionSlotConfig Config { get; set; }
+        public IActionSlotConfig Config { get; set; }
     }
 }

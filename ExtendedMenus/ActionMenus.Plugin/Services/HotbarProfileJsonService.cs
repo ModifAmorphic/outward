@@ -2,8 +2,10 @@
 using ModifAmorphic.Outward.ActionMenus.Models;
 using ModifAmorphic.Outward.ActionMenus.Settings;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using Newtonsoft.Json;
+using Rewired;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -107,7 +109,10 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         public void SaveProfile(IHotbarProfileData profile)
         {
             var json = JsonConvert.SerializeObject(profile, Formatting.Indented);
-            File.WriteAllText(Path.Combine(GetProfileDir(profile.Name), HotbarsConfigFile), json);
+            var profileData = ((ProfileData)profile);
+            var profileFile = Path.Combine(GetOrAddProfileDir(profile.Name), HotbarsConfigFile);
+
+            File.WriteAllText(profileFile, json);
 
             if (TryGetActiveProfileName(out var activeName) && profile.Name.Equals(activeName, StringComparison.InvariantCultureIgnoreCase))
             {
@@ -250,6 +255,59 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             return profile;
         }
 
+        public IHotbarProfileData SetCooldownTimer(IHotbarProfileData profile, bool showTimer, bool preciseTime)
+        {
+            bool profileChanged = false;
+
+            foreach(var bar in profile.Hotbars)
+            {
+                foreach(var slot in bar.Slots)
+                {
+                    if (slot.Config.ShowCooldownTime != showTimer || slot.Config.PreciseCooldownTime != preciseTime)
+                    {
+                        profileChanged = true;
+                        slot.Config.ShowCooldownTime = showTimer;
+                        slot.Config.PreciseCooldownTime = preciseTime;
+                    }
+                }
+            }
+
+            if (profileChanged)
+                OnActiveProfileChanged?.Invoke(profile);
+            
+            return profile;
+        }
+
+        public IHotbarProfileData SetEmptySlotView(IHotbarProfileData profile, EmptySlotOptions option)
+        {
+            bool profileChanged = false;
+
+            foreach (var bar in profile.Hotbars)
+            {
+                foreach (var slot in bar.Slots)
+                {
+                    if (slot.Config.EmptySlotOption != option)
+                    {
+                        profileChanged = true;
+                        slot.Config.EmptySlotOption = option;
+                    }
+                }
+            }
+
+            if (profileChanged)
+                OnActiveProfileChanged?.Invoke(profile);
+            return profile;
+        }
+
+        public string GetOrAddProfileDir(string profileName)
+        {
+            string profileDir = Path.Combine(ProfilesPath, profileName);
+            if (!Directory.Exists(profileDir))
+                Directory.CreateDirectory(profileDir);
+
+            return profileDir;
+        }
+
         private void ReindexSlots(List<ISlotData> slots)
         {
             for (int i = 0; i < slots.Count; i++)
@@ -281,18 +339,10 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 ItemUID = null
             };
         }
-        private string GetProfileDir(string profileName)
-        {
-            string profileDir = Path.Combine(ProfilesPath, profileName);
-            if (!Directory.Exists(profileDir))
-                Directory.CreateDirectory(profileDir);
-
-            return profileDir;
-        }
 
         private ProfileData GetProfileData(string name)
         {
-            string profileFile = Path.Combine(GetProfileDir(name), HotbarsConfigFile);
+            string profileFile = Path.Combine(GetOrAddProfileDir(name), HotbarsConfigFile);
 
             if (!File.Exists(profileFile))
             {
