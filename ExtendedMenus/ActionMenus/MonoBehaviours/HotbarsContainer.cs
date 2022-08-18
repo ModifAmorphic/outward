@@ -12,17 +12,17 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 	public class HotbarsContainer : MonoBehaviour
 	{
 		private RectTransform _leftDisplay;
-		private Image _hotbarIcon;
-
-		private RectTransform _barNumber;
 
 		private IHotbarController _controller;
 		public IHotbarController Controller { get => _controller; }
 
-        private Button _settingsButton;
-		public Button SettingsButton => _settingsButton;
+  //      private Button _settingsButton;
+		//public Button SettingsButton => _settingsButton;
 
 		public ActionsViewer ActionsViewer;
+
+		//private LeftHotbarNav _leftHotbarNav;
+		public LeftHotbarNav LeftHotbarNav; // => _leftHotbarNav;
 
 		private Canvas _baseHotbarCanvas;
 		internal Canvas BaseHotbarCanvas => _baseHotbarCanvas;
@@ -62,10 +62,14 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
 		//private Text gridPosText;
 
-		public bool IsInEditMode { get; internal set; }
+		public bool IsInHotkeyEditMode { get; internal set; }
+		public bool IsInActionSlotEditMode { get; internal set; }
 
 		public bool HasChanges { get; internal set; }
 		public void ClearChanges() => HasChanges = false;
+
+		public event Action OnAwake;
+		public bool IsAwake { get; private set; }
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 		private void Awake()
@@ -78,6 +82,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
 			//canvasPosText = transform.parent.GetComponentsInChildren<Text>().First(t => t.name == "Hotbar0CanvasPosText");
 			//gridPosText = transform.parent.GetComponentsInChildren<Text>().First(t => t.name == "Hotbar0GridPosText");
+			IsAwake = true;
+			OnAwake?.Invoke();
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
@@ -100,11 +106,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 		}
 		private void SetComponents()
 		{
+			//_leftHotbarNav = GetComponentInChildren<LeftHotbarNav>();
 			_leftDisplay = transform.Find("LeftDisplay").GetComponent<RectTransform>();
-			_settingsButton = _leftDisplay.Find("Settings").GetComponent<Button>();
-			_barNumber = transform.Find("LeftDisplay/BarNumber").GetComponent<RectTransform>();
-
-			_hotbarIcon = _barNumber.Find("BarIcon").GetComponent<Image>();
+			//_settingsButton = _leftDisplay.Find("Settings").GetComponent<Button>();
 
 			_baseHotbarCanvas = transform.Find("BaseHotbarCanvas").GetComponent<Canvas>();
 
@@ -114,11 +118,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 			_baseGrid.gameObject.SetActive(false);
 			_baseActionSlot.SetActive(false);
 		}
-		
-		internal void SetBarDisplayNumber(int hotbarIndex)
-        {
-            _hotbarIcon.GetComponentInChildren<Text>().text = (hotbarIndex + 1).ToString();
-        }
 
 		internal void ResetCollections()
 		{

@@ -6,7 +6,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Models
 {
     public enum HotkeyCategories
     {
+        None,
         ActionSlot,
+        PreviousHotbar,
+        NextHotbar,
         Hotbar
     }
 }

@@ -75,7 +75,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             if (selected)
             {
-                EventSystem.current.SetSelectedGameObject(viewTab, null);
+                //EventSystem.current.SetSelectedGameObject(viewTab, null);
                 text.color = Color.white;
             }
             else

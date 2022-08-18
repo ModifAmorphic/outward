@@ -1,3 +1,4 @@
+using ModifAmorphic.Outward.Unity.ActionMenus.Models;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     [UnityScriptComponent]
     public class LeftHotbarNav : MonoBehaviour
     {
-        public PlayerMenu PlayerMenu;
-        public HotkeyCaptureDialog HotkeyCaptureDialog;
+        public PlayerActionMenus PlayerMenu;
+        public HotkeyCaptureMenu HotkeyCaptureDialog;
         public HotbarSettingsViewer HotbarSettingsViewer;
         public HotbarsContainer HotbarsContainer;
 
-        private Button _settingsButton;
+        //private Button _settingsButton;
         private Button _nextButton;
         private Button _nextHotkeyButton;
         private Button _previousButton;
@@ -26,7 +27,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private Text _previousHotkeyText;
         private Text _hotkeyText;
 
+        private List<string> _hotbarHotkeys = new List<string>();
 
+        private bool _awake = false;
         private IHotbarNavActions GetHotbarNavActions()
         {
             var psp = Psp.Instance?.GetServicesProvider(PlayerMenu.PlayerID);
@@ -50,8 +53,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             SetHotkeyText(string.Empty);
 
             HookButtonEvents();
-
-            ToggleEditMode(true);
+            
+            _awake = true;
+            
+            ToggleActionSlotEditMode(false);
+            ToggleHotkeyEditMode(false);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
@@ -73,7 +79,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private void SetComponents()
         {
-            _settingsButton = GetComponentsInChildren<Button>().First(b => b.name.Equals("Settings"));
+            //_settingsButton = GetComponentsInChildren<Button>().First(b => b.name.Equals("Settings"));
 
             var nextHotbar = transform.Find("BarNumber/NextHotbar").gameObject;
             _nextButton = nextHotbar.GetComponentsInChildren<Button>().First(b => b.name.Equals("NextButton"));
@@ -90,47 +96,54 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _hotkeyText = barHotkey.GetComponentInChildren<Text>();
 
             var barIcon = transform.Find("BarNumber/BarIcon").gameObject;
-            _barText = previousHotbar.GetComponentInChildren<Text>();
+            _barText = barIcon.GetComponentInChildren<Text>();
         }
 
         public void SetBarText(string text) => _barText.text = text;
         public void SetNextHotkeyText(string text) => _nextHotkeyText.text = text;
         public void SetPreviousHotkeyText(string text) => _previousHotkeyText.text = text;
         public void SetHotkeyText(string text) => _hotkeyText.text = text;
+        public void SetHotkeys(IEnumerable<string> hotbarTexts) => _hotbarHotkeys = hotbarTexts.ToList();
 
-        public void ToggleEditMode(bool enableEdits)
+        public void SelectHotbar(int barIndex)
         {
+            _barText.text = (barIndex + 1).ToString();
+            _hotkeyText.text = _hotbarHotkeys?.Count > barIndex ? _hotbarHotkeys[barIndex] : string.Empty;
+        }
+
+        public void ToggleActionSlotEditMode(bool enableEdits)
+        {
+            if (!_awake)
+                return;
+
             _inEditMode = enableEdits;
-            if (!enableEdits)
-            {
-                _settingsButton.gameObject.SetActive(false);
-                _nextButton.gameObject.SetActive(false);
-                _nextHotkeyButton.gameObject.SetActive(false);
-                _previousButton.gameObject.SetActive(false);
-                _previousHotkeyButton.gameObject.SetActive(false);
-                _hotkeyButton.gameObject.SetActive(false);
-            }
-            else
-            {
-                _settingsButton.gameObject.SetActive(true);
-                _nextButton.gameObject.SetActive(true);
-                _nextHotkeyButton.gameObject.SetActive(true);
-                _previousButton.gameObject.SetActive(true);
-                _previousHotkeyButton.gameObject.SetActive(true);
-                _hotkeyButton.gameObject.SetActive(true);
-            }
+            
+            //_settingsButton.gameObject.SetActive(enableEdits);
+            _nextButton.gameObject.SetActive(enableEdits);
+            _previousButton.gameObject.SetActive(enableEdits);
+            
+            
+        }
+        public void ToggleHotkeyEditMode(bool enableEdits)
+        {
+            if (!_awake)
+                return;
+
+            _nextHotkeyButton.gameObject.SetActive(enableEdits);
+            _previousHotkeyButton.gameObject.SetActive(enableEdits);
+            _hotkeyButton.gameObject.SetActive(enableEdits);
         }
 
         private void HookButtonEvents()
         {
-            _settingsButton.onClick.AddListener(() => HotbarSettingsViewer.Show());
+            //_settingsButton.onClick.AddListener(() => HotbarSettingsViewer.Show());
 
             _nextButton.onClick.AddListener(() => HotbarsContainer.Controller.SelectNext());
             _previousButton.onClick.AddListener(() => HotbarsContainer.Controller.SelectPrevious());
 
-            _nextHotkeyButton.onClick.AddListener(() => HotkeyCaptureDialog.Show(0, Models.HotkeyCategories.Hotbar));
-            _previousHotkeyButton.onClick.AddListener(() => HotkeyCaptureDialog.Show(1, Models.HotkeyCategories.Hotbar));
-            _hotkeyButton.onClick.AddListener(() => HotkeyCaptureDialog.Show(2, Models.HotkeyCategories.Hotbar));
+            _nextHotkeyButton.onClick.AddListener(() => HotkeyCaptureDialog.ShowDialog(0, HotkeyCategories.NextHotbar));
+            _previousHotkeyButton.onClick.AddListener(() => HotkeyCaptureDialog.ShowDialog(1, HotkeyCategories.PreviousHotbar));
+            _hotkeyButton.onClick.AddListener(() => HotkeyCaptureDialog.ShowDialog(HotbarsContainer.SelectedHotbar, HotkeyCategories.Hotbar));
         }
     }
 }

@@ -25,8 +25,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
-        private readonly HotbarsContainer _hotbarsContainer;
-        private readonly IHotbarController _hotbars;
+        private readonly HotbarsContainer _hotbars;
         private readonly Player _player;
         private readonly Character _character;
         private readonly CharacterUI _characterUI;
@@ -53,8 +52,8 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             if (settings == null)
                 throw new ArgumentNullException(nameof(settings));
 
-            _hotbarsContainer = hotbarsContainer;
-            _hotbars = _hotbarsContainer.Controller;
+            _hotbars = hotbarsContainer;
+            //_hotbars = _hotbarsContainer.Controller;
 
             _player = player;
             _character = character;
@@ -64,26 +63,26 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             _settings = settings;
             _levelCoroutines = levelCoroutines;
             _getLogger = getLogger;
-            
+
+            QuickSlotPanelPatches.StartInitAfter += DisableKeyboardQuickslots;
+            QuickSlotControllerSwitcherPatches.StartInitAfter += SwapCanvasGroup;
+
+            CharacterManagerPatches.AfterApplyQuickSlots += (c) =>
+            {
+                if (c.UID == _character.UID)
+                    QueueActionSlotAssignments();
+            };
         }
 
         public void Start()
         {
             _saveDisabled = true;
 
-            QuickSlotPanelPatches.StartInitAfter += DisableKeyboardQuickslots;
-            QuickSlotControllerSwitcherPatches.StartInitAfter += SwapCanvasGroup;
-            CharacterManagerPatches.AfterApplyQuickSlots += (c) =>
-            {
-                if (c.UID == _character.UID)
-                    QueueActionSlotAssignments();
-            };
             var profile = GetOrCreateActiveProfile();
             ConfigureHotbars(profile);
-            _hotbarsContainer.ClearChanges();
+            _hotbars.ClearChanges();
             _profileData.OnActiveProfileChanged += ConfigureHotbars;
             _levelCoroutines.StartRoutine(CheckProfileForSave());
-            _hotbarsContainer.ActionsViewer.ConfigureExit(() => _player.GetButtonDown(ControlsInput.GetMenuActionName(ControlsInput.MenuActions.Cancel)));
         }
 
         public void ConfigureHotbars(IHotbarProfileData profile)
@@ -92,9 +91,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
             SetProfileHotkeys(profile);
 
-            Logger.LogDebug($"Setting Hotbars to {_settings.Hotbars}, Slots per hotbar to {_settings.ActionSlots}");
-
-            _hotbars.ConfigureHotbars(profile);
+            _hotbars.Controller.ConfigureHotbars(profile);
 
             if (_isProfileInit)
             {
@@ -108,12 +105,12 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             while (true)
             {
                 yield return new WaitForSecondsRealtime(5);
-                if (_hotbarsContainer.HasChanges && !_saveDisabled)
+                if (_hotbars.HasChanges && !_saveDisabled)
                 {
                     var profile = GetOrCreateActiveProfile();
                     Logger.LogDebug($"Hotbar changes found. Saving active profile '{profile.Name}'");
-                    _profileData.SaveProfile(_hotbarsContainer.ToProfileData(profile.Name));
-                    _hotbarsContainer.ClearChanges();
+                    _profileData.UpdateProfile(_hotbars, profile);
+                    _hotbars.ClearChanges();
                 }
             }
         }
@@ -126,7 +123,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 if (keyboard.CharacterUI.RewiredID == _characterUI.RewiredID)
                 {
                     _activeController = ControllerType.Keyboard;
-                    canvasGroup = _hotbarsContainer.GetComponent<CanvasGroup>();
+                    canvasGroup = _hotbars.GetComponent<CanvasGroup>();
                     DisableKeyboardQuickslots(keyboard);
                 }
             }
@@ -178,11 +175,11 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                     var slot = profile.Hotbars[hb].Slots[s] as SlotData;
                     if (!_slotData.TryGetItemSlotAction(slot, out var slotAction))
                     {
-                        _hotbars.GetActionSlots()[hb][s].Controller.AssignEmptyAction();
+                        _hotbars.Controller.GetActionSlots()[hb][s].Controller.AssignEmptyAction();
                     }
                     else
                     {
-                        _hotbars.GetActionSlots()[hb][s].Controller.AssignSlotAction(slotAction);
+                        _hotbars.Controller.GetActionSlots()[hb][s].Controller.AssignSlotAction(slotAction);
                     }
                 }
             }
@@ -190,15 +187,20 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             if (!_isProfileInit)
             {
                 _isProfileInit = true;
-                _hotbarsContainer.ClearChanges();
+                _hotbars.ClearChanges();
             }
             _saveDisabled = false;
         }
         private void SetProfileHotkeys(IHotbarProfileData profile)
         {
             var keyMap = _player.controllers.maps.GetMap<KeyboardMap>(0, RewiredConstants.ActionSlots.CategoryMapId, 0);
-            foreach (var bar in profile.Hotbars)
+            var profileData = (ProfileData)profile;
+            profileData.NextHotkey = keyMap.ButtonMaps.FirstOrDefault(m => m.actionId == profileData.NextRewiredActionId)?.elementIdentifierName;
+            profileData.PrevHotkey = keyMap.ButtonMaps.FirstOrDefault(m => m.actionId == profileData.PrevRewiredActionId)?.elementIdentifierName;
+
+            foreach (HotbarData bar in profileData.Hotbars)
             {
+                bar.HotbarHotkey = keyMap.ButtonMaps.FirstOrDefault(m => m.actionId == bar.RewiredActionId)?.elementIdentifierName;
                 foreach (var slot in bar.Slots)
                 {
                     var config = ((ActionConfig)slot.Config);
@@ -211,14 +213,5 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 }
             }
         }
-
-        private void DoNextFrame(Action action) => _levelCoroutines.StartRoutine(NextFrameCoroutine(action));
-
-        private IEnumerator NextFrameCoroutine(Action action)
-        {
-            yield return null;
-            action.Invoke();
-        }
-
     }
 }

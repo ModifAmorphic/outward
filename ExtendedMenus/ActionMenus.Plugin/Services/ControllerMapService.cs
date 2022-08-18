@@ -25,7 +25,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
-        private readonly HotkeyCaptureDialog _captureDialog;
+        private readonly HotkeyCaptureMenu _captureDialog;
         private readonly HotbarProfileJsonService _profileData;
         private readonly HotbarService _hotbarService;
         private readonly Player _player;
@@ -35,7 +35,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private const string ActionSlotsPlayer1Key = "RewiredData&amp;playerName=Player1&amp;dataType=ControllerMap&amp;controllerMapType=KeyboardMap&amp;categoryId=131000&amp;layoutId=0&amp;hardwareIdentifier=Keyboard";
         private const string KeyboardMapFile = "KeyboardMap_ActionSlots.xml";
 
-        public ControllerMapService(HotkeyCaptureDialog captureDialog,
+        public ControllerMapService(HotkeyCaptureMenu captureDialog,
                                 HotbarProfileJsonService profileData,
                                 HotbarService hotbarService,
                                 Player player,
@@ -77,11 +77,17 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
         private void CaptureDialog_OnKeysSelected(int id, HotkeyCategories category, KeyGroup keyGroup)
         {
-            
             var map = GetKeyboardMap();
-            if (category != HotkeyCategories.ActionSlot)
-                return;
+            if (category == HotkeyCategories.ActionSlot)
+                SetActionSlotHotkey(id, keyGroup, map);
+            else if (category == HotkeyCategories.Hotbar)
+                SetHotbarHotkey(id, keyGroup, map);
+            else if (category == HotkeyCategories.NextHotbar || category == HotkeyCategories.PreviousHotbar)
+                SetHotbarNavHotkey(category, keyGroup, map);
+        }
 
+        private void SetActionSlotHotkey(int id, KeyGroup keyGroup, KeyboardMap map)
+        {
             Logger.LogDebug($"Setting ActionSlot Hotkey for Slot Index {id}.");
 
             var profile = _profileData.GetActiveProfile();
@@ -90,7 +96,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             var eleMap = new ElementAssignment(keyGroup.KeyCode, GetModifierKeyFlags(keyGroup.Modifiers), config.RewiredActionId, Pole.Positive);
 
             var existingMaps = map.ElementMapsWithAction(config.RewiredActionId).ToArray();
-            
+
             if (existingMaps.Any() && existingMaps.Length > 1)
             {
                 for (int i = 1; i < existingMaps.Length; i++)
@@ -109,6 +115,81 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             {
                 hotbars[b].Slots[id].Config.HotkeyText = hotkey;
             }
+
+            _profileData.SaveProfile(profile);
+            _hotbarService.ConfigureHotbars(profile);
+            SaveKeyboardMap(map);
+        }
+
+        private void SetHotbarHotkey(int id, KeyGroup keyGroup, KeyboardMap map)
+        {
+            Logger.LogDebug($"Setting Hotbar Hotkey for Bar Index {id}.");
+
+            var profile = _profileData.GetActiveProfile();
+            var hotbar = (HotbarData)profile.Hotbars[id];
+            //var config = (ActionConfig)hotbars[0].Slots[id].Config;
+            var eleMap = new ElementAssignment(keyGroup.KeyCode, GetModifierKeyFlags(keyGroup.Modifiers), hotbar.RewiredActionId, Pole.Positive);
+
+            var existingMaps = map.ElementMapsWithAction(hotbar.RewiredActionId).ToArray();
+
+            if (existingMaps.Any() && existingMaps.Length > 1)
+            {
+                for (int i = 1; i < existingMaps.Length; i++)
+                    map.DeleteElementMap(existingMaps[i].id);
+            }
+            if (existingMaps.Any())
+            {
+                eleMap.elementMapId = existingMaps.First().id;
+                eleMap.elementIdentifierId = existingMaps.First().elementIdentifierId;
+            }
+
+            map.ReplaceOrCreateElementMap(eleMap);
+
+            hotbar.HotbarHotkey = map.ButtonMaps.FirstOrDefault(m => m.actionId == hotbar.RewiredActionId).elementIdentifierName;
+
+            _profileData.SaveProfile(profile);
+            _hotbarService.ConfigureHotbars(profile);
+            SaveKeyboardMap(map);
+        }
+
+        private void SetHotbarNavHotkey(HotkeyCategories category, KeyGroup keyGroup, KeyboardMap map)
+        {
+            //Logger.LogDebug($"Setting Hotbar Hotkey for Bar Index {id}.");
+            var profile = (ProfileData)_profileData.GetActiveProfile();
+            var rewiredId = category == HotkeyCategories.NextHotbar ? profile.NextRewiredActionId : profile.PrevRewiredActionId;
+
+            //var config = (ActionConfig)hotbars[0].Slots[id].Config;
+            var eleMap = new ElementAssignment(keyGroup.KeyCode, GetModifierKeyFlags(keyGroup.Modifiers), rewiredId, Pole.Positive);
+
+            Logger.LogDebug($"Got RewiredActionId {rewiredId} for {category.ToString()} navagation.");
+            var existingMaps = map.ElementMapsWithAction(rewiredId).ToArray();
+
+            if (existingMaps.Any() && existingMaps.Length > 1)
+            {
+                for (int i = 1; i < existingMaps.Length; i++)
+                    map.DeleteElementMap(existingMaps[i].id);
+            }
+            if (existingMaps.Any())
+            {
+                eleMap.elementMapId = existingMaps.First().id;
+                eleMap.elementIdentifierId = existingMaps.First().elementIdentifierId;
+                Logger.LogDebug($"Setting existing element map {eleMap.elementMapId} to use KeyCode {keyGroup.KeyCode} - {existingMaps.First().elementIdentifierId}.");
+            }
+
+            map.ReplaceOrCreateElementMap(eleMap);
+
+            var hotKey = map.ButtonMaps.FirstOrDefault(m => m.actionId == rewiredId).elementIdentifierName;
+            if (category == HotkeyCategories.NextHotbar)
+            {
+                profile.NextHotkey = hotKey;
+                Logger.LogDebug($"Setting profile '{profile.Name}' NextHotkey text to {hotKey}.");
+            }
+            else
+            {
+                Logger.LogDebug($"Setting profile '{profile.Name}' PrevHotkey text to {hotKey}.");
+                profile.PrevHotkey = hotKey;
+            }
+
 
             _profileData.SaveProfile(profile);
             _hotbarService.ConfigureHotbars(profile);

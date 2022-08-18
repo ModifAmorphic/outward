@@ -47,11 +47,11 @@ namespace ModifAmorphic.Outward.ActionMenus
 
             _loggerFactory = services.GetServiceFactory<IModifLogger>();
 
-            var menuOverhaul = ConfigureAssetBundle();
+            var actionMenusPrefab = ConfigureAssetBundle();
 
             services
                 .AddSingleton(new PlayerMenuService(services.GetService<BaseUnityPlugin>(),
-                                                  menuOverhaul.GetComponentInChildren<PlayerMenu>(true).gameObject,
+                                                  actionMenusPrefab.GetComponentInChildren<PlayerActionMenus>(true).gameObject,
                                                   services.GetService<LevelCoroutines>(),
                                                   services.GetService<ModifGoService>(),
                                                   services.GetService<HotbarSettings>(),
@@ -65,8 +65,8 @@ namespace ModifAmorphic.Outward.ActionMenus
         public GameObject ConfigureAssetBundle()
         {
             var scriptsGo = AttachScripts(typeof(ActionSlot).Assembly);
-            Logger.LogDebug($"Loading asset bundle action-menus-overhaul.");
-            var menuBundle = LoadAssetBundle(_services.GetService<BaseUnityPlugin>().GetPluginDirectory(), "asset-bundles", "action-menus-overhaul");
+            Logger.LogDebug($"Loading asset bundle action-menus.");
+            var menuBundle = LoadAssetBundle(_services.GetService<BaseUnityPlugin>().GetPluginDirectory(), "asset-bundles", "action-menus");
             var allAssetNames = menuBundle.GetAllAssetNames();
             var logAssets = "";
             foreach (string name in allAssetNames)

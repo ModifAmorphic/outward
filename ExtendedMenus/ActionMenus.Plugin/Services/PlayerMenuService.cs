@@ -11,8 +11,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.ActionMenus.Services
 {
@@ -28,6 +30,12 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private readonly GameObject _playerMenuPrefab;
         private readonly LevelCoroutines _coroutine;
         private readonly GameObject _modInactivableGo;
+
+        private float _initialPauseMenuHeight;
+        private const int _baseActivePauseButtons = 7;
+
+        private Button _actionSlotsButton;
+        public Button ActionSlotsButton => _actionSlotsButton;
 
         private readonly static Dictionary<int, ControllerMap> _controllerMaps = new Dictionary<int, ControllerMap>();
 
@@ -48,6 +56,8 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             SplitPlayerPatches.InitAfter += InjectMenus;
             SplitPlayerPatches.SetCharacterAfter += SetPlayerMenuCharacter;
             SplitScreenManagerPatches.RemoveLocalPlayerAfter += RemovePlayerMenu;
+            PauseMenuPatches.AfterRefreshDisplay += ResizePauseMenu;
+
             //coroutine.InvokeAfterPlayersLoaded(() => NetworkLevelLoader.Instance, LoadDefaultControllerMaps, 300);
 
         }
@@ -55,21 +65,21 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private void SetPlayerMenuCharacter(SplitPlayer splitPlayer, Character character)
         {
             var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
-            var playerMenus = psp.GetService<PlayerMenu>().gameObject;
-            playerMenus.name = character.name + "_UIX";
+            var playerMenu = psp.GetService<PlayerActionMenus>();
+            var playerMenuGo = playerMenu.gameObject;
+            playerMenuGo.name = "PlayerActionMenus_" + character.UID;
 
-            playerMenus.SetActive(true);
+            playerMenuGo.SetActive(true);
 
-            psp.AddSingleton(playerMenus.GetComponentInChildren<HotbarsContainer>());
+            psp.AddSingleton(playerMenuGo.GetComponentInChildren<HotbarsContainer>());
 
             var player = ReInput.players.GetPlayer(splitPlayer.RewiredID);
 
-            playerMenus.GetComponentInChildren<HotbarSettingsViewer>(true).ConfigureExit(() => player.GetButtonDown(ControlsInput.GetMenuActionName(ControlsInput.MenuActions.Cancel)));
+            var gamePanels = splitPlayer.CharUI.transform.Find("Canvas/GameplayPanels");
+            playerMenuGo.transform.SetParent(gamePanels.transform);
+            playerMenu.ConfigureExit(() => player.GetButtonDown(ControlsInput.GetMenuActionName(ControlsInput.MenuActions.Cancel)));
 
-            var hud = splitPlayer.CharUI.transform.Find("Canvas/GameplayPanels/HUD");
-            playerMenus.transform.SetParent(hud.transform);
-
-            _coroutine.StartRoutine(SetSortOrderNextFrame(playerMenus));
+            //_coroutine.StartRoutine(SetSortOrderNextFrame(playerMenuGo));
         }
         private IEnumerator SetSortOrderNextFrame(GameObject actionMenus)
         {
@@ -82,10 +92,10 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         }
         private void RemovePlayerMenu(SplitScreenManager splitScreenManager, SplitPlayer player, string playerId)
         {
-            if (Psp.Instance.GetServicesProvider(player.RewiredID).TryGetService<PlayerMenu>(out var playerMenu))
+            if (Psp.Instance.GetServicesProvider(player.RewiredID).TryGetService<PlayerActionMenus>(out var playerMenu))
             {
                 UnityEngine.Object.Destroy(playerMenu.gameObject);
-                Psp.Instance.GetServicesProvider(player.RewiredID).TryRemove<PlayerMenu>();
+                Psp.Instance.GetServicesProvider(player.RewiredID).TryRemove<PlayerActionMenus>();
             }
         }
 
@@ -93,36 +103,66 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         {
             var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
 
-            if (psp.TryGetService<PlayerMenu>(out var _))
+            if (psp.TryGetService<PlayerActionMenus>(out var _))
                 return;
 
             var playerMenuPrefab = _playerMenuPrefab.gameObject;
-            var playerMenuGo = GameObject.Instantiate(playerMenuPrefab);
-            psp.AddSingleton(playerMenuGo.GetComponentInChildren<HotkeyCaptureDialog>(true));
+            var gamePanels = splitPlayer.CharUI.transform.Find("Canvas/GameplayPanels");
+            var playerMenuGo = UnityEngine.Object.Instantiate(playerMenuPrefab, gamePanels);
+
+            psp.AddSingleton(playerMenuGo.GetComponentInChildren<HotkeyCaptureMenu>(true));
             playerMenuGo.SetActive(false);
-            var playerMenu = playerMenuGo.GetComponent<PlayerMenu>();
+            var playerMenu = playerMenuGo.GetComponent<PlayerActionMenus>();
             psp.AddSingleton(playerMenu);
             playerMenu.SetIDs(splitPlayer.RewiredID);
+            //MenuManagerPatches.GetIsApplicationFocused = playerMenu.AnyActionMenuShowing;
+            CharacterUIPatches.GetIsMenuFocused = playerMenu.AnyActionMenuShowing;
             UnityEngine.Object.DontDestroyOnLoad(playerMenuGo);
-        }
-        //private void LoadDefaultControllerMaps()
-        //{
-        //    foreach (var player in ReInput.players.AllPlayers)
-        //    {
-        //        if (player.name.Equals("System", StringComparison.OrdinalIgnoreCase))
-        //            continue;
 
-        //        Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(LoadDefaultControllerMaps)}(): Loading default keyboard maps for player {player.id} maps.");
+            //Get the main
+            var hideOnPauseGo = splitPlayer.CharUI.transform.Find("Canvas/PauseMenu/Buttons/Content/HideOnPause/").gameObject;
+            var settingsBtn = hideOnPauseGo.GetComponentsInChildren<Button>().First(b => b.name.Equals("btnOptions", StringComparison.InvariantCultureIgnoreCase));
+
+            _actionSlotsButton = UnityEngine.Object.Instantiate(settingsBtn, hideOnPauseGo.transform);
+            _actionSlotsButton.name = "btnActionMenuHotkeys";
+            _actionSlotsButton.transform.SetSiblingIndex(settingsBtn.transform.GetSiblingIndex() + 1);
+            
+            var menuText = _actionSlotsButton.GetComponentInChildren<Text>();
+            UnityEngine.Object.Destroy(menuText.GetComponent<UILocalize>());
+            menuText.text = "Action Slots";
+
+            //get the PauseMenu component so the PauseMenu UI can be hidden later
+            var pauseMenu = splitPlayer.CharUI.transform.Find("Canvas/PauseMenu").GetComponent<PauseMenu>();
+            //This removes any persistent (set in Unity Editor) onClick listeners.
+            _actionSlotsButton.onClick = new Button.ButtonClickedEvent();
+            //Add a new listener to hide the pause menu and show the Hotbar Setting Menu
+            _actionSlotsButton.onClick.AddListener(() => {
+                pauseMenu.Hide();
+                playerMenu.HotbarSettingsViewer.Show();
+                });
+            //_actionSlotsButton.transform.SetParent(pauseMenu.transform, false);
+        }
+        
+        private void ResizePauseMenu(PauseMenu pauseMenu)
+        {
+            //var pauseMenuPrefab = Resources.FindObjectsOfTypeAll<PauseMenu>().First(p => p.gameObject.GetPath().Equals("/PlayerUI/Canvas/PauseMenu"));
+            //var prefabRect = pauseMenuPrefab.transform.Find("Buttons").GetComponent<RectTransform>();
+            //var prefabButtons = pauseMenuPrefab.transform.Find("Buttons/Content/HideOnPause").GetComponentsInChildren<Button>();
+
+            var parentRect = pauseMenu.transform.Find("Buttons").GetComponent<RectTransform>();
+            if (_initialPauseMenuHeight == 0f)
+                _initialPauseMenuHeight = parentRect.rect.height;
+
+            var hideOnPause = pauseMenu.transform.Find("Buttons/Content/HideOnPause");
+
+            var vertLayout = hideOnPause.GetComponent<VerticalLayoutGroup>();
+            var buttons = hideOnPause.GetComponentsInChildren<Button>();
+
+            float btnHeight = buttons.First().GetComponent<RectTransform>().rect.height;
                 
-        //        //var json = File.ReadAllText(RewiredConstants.ActionSlotsDefaultKeyboardMapFile);
-        //        //var keyboardMaps = new List<string>() { json };
-        //        //player.controllers.maps.AddMapsFromJson(ControllerType.Keyboard, 0, keyboardMaps);
-                
-        //        var xml = File.ReadAllText(RewiredConstants.ActionSlots.DefaultKeyboardMapFile);
-        //        var keyboardMap = ControllerMap.CreateFromXml(ControllerType.Keyboard, xml);
-        //        player.controllers.maps.AddMap<KeyboardMap>(0, keyboardMap);
-        //        _controllerMaps.Add(player.id, keyboardMap);
-        //    }
-        //}
+            float increaseHeight = (vertLayout.spacing + btnHeight) * (buttons.Length - _baseActivePauseButtons);
+            Logger.LogDebug($"Resizing Pause Menu height from {parentRect.rect.height} to {_initialPauseMenuHeight + increaseHeight}.");
+            parentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, _initialPauseMenuHeight + increaseHeight);
+        }
     }
 }

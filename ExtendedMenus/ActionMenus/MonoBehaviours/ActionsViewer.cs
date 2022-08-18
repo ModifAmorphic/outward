@@ -1,31 +1,37 @@
 using ModifAmorphic.Outward.ActionMenus.Extensions;
+using ModifAmorphic.Outward.Unity.ActionMenus.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
     [UnityScriptComponent]
-    public class ActionsViewer : MonoBehaviour
+    public class ActionsViewer : MonoBehaviour, IActionMenu
     {
 
-        public PlayerMenu PlayerMenu;
+        public PlayerActionMenus PlayerMenu;
         public ViewerLeftNav LeftNav;
 
         private GridLayoutGroup _gridLayout;
         public GameObject BaseGridAction;
         private int _slotId;
-        private Func<bool> _exitRequested;
 
         public bool IsShowing => gameObject.activeSelf;
 
         public delegate void SlotActionSelected(int slotId, ISlotAction slotAction);
         public event SlotActionSelected OnSlotActionSelected;
 
+
         public bool HasData => GetViewData() != null;
+
+        public UnityEvent OnShow { get; } = new UnityEvent();
+
+        public UnityEvent OnHide { get; } = new UnityEvent();
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
@@ -41,14 +47,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             Clear();
             //LeftNav.ClearViewTabs();
         }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
-        void Update()
-        {
-            if (_exitRequested != null && IsShowing && _exitRequested.Invoke())
-                Hide();
-        }
-
-        public void ConfigureExit(Func<bool> exitRequested) => _exitRequested = exitRequested;
         
         public void Clear()
         {
@@ -81,12 +79,14 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 gameObject.SetActive(true);
             InitLeftNav();
             DoNextFrame(LeftNav.ClickSelectedTab);
+            OnShow?.Invoke();
         }
         public void Hide()
         {
             _slotId = 0;
             if (gameObject.activeSelf)
                 gameObject.SetActive(false);
+            OnHide?.Invoke();
         }
 
         private void InitLeftNav()

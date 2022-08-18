@@ -7,11 +7,14 @@ using System.Text;
 
 namespace ModifAmorphic.Outward.ActionMenus.DataModels
 {
-    internal class HotbarSlotData : IHotbarSlotData
+    internal class HotbarData : IHotbarSlotData
     {
         public int HotbarIndex { get; set; }
 
         [JsonProperty(ItemConverterType = typeof(ConcreteTypeConverter<SlotData>))]
         public List<ISlotData> Slots { get; set; } = new List<ISlotData>();
+        public string HotbarHotkey { get; set; }
+        public string RewiredActionName { get; set; }
+        public int RewiredActionId { get; set; }
     }
 }

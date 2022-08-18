@@ -32,6 +32,8 @@ namespace ModifAmorphic.Outward.ActionMenus
                 logger.LogInfo($"Patching...");
                 harmony.PatchAll(typeof(InputManager_BasePatches));
                 harmony.PatchAll(typeof(RewiredInputsPatches));
+                harmony.PatchAll(typeof(CharacterUIPatches));
+                harmony.PatchAll(typeof(PauseMenuPatches));
                 harmony.PatchAll(typeof(SplitPlayerPatches));
                 harmony.PatchAll(typeof(QuickSlotControllerSwitcherPatches));
                 harmony.PatchAll(typeof(QuickSlotPanelPatches));

@@ -1,7 +1,10 @@
 ManifestFileVersion: 0
-CRC: 2590086311
+CRC: 3654709501
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
       Name: action-menus-overhaul
+      Dependencies: {}
+    Info_1:
+      Name: action-menus
       Dependencies: {}

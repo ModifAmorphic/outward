@@ -31,10 +31,10 @@ namespace ModifAmorphic.Outward.ActionMenus.Patches
                     return;
                 
                 //Logger.LogTrace($"{nameof(ControlsInputPatches)}::{nameof(SetQuickSlotActivePrefix)}(): Invoked. Disabling quickslots for player {_playerID}.");
-                if (Psp.Instance.GetServicesProvider(_playerID).TryGetService<HotbarsContainer>(out var hotbars))
+                if (Psp.Instance.GetServicesProvider(_playerID).TryGetService<HotbarsContainer>(out var hotbars) && hotbars.IsAwake)
                 {
                     ReInput.players.GetPlayer(_playerID).controllers.maps.SetMapsEnabled(_active, ControllerType.Keyboard, RewiredConstants.ActionSlots.CategoryMapId);
-                    hotbars.Controller.ToggleEditMode(!_active);
+                    hotbars.Controller.ToggleActionSlotEdits(!_active);
                     _active = false;
                 }
             }

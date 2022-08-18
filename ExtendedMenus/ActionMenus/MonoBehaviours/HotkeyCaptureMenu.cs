@@ -17,12 +17,16 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public KeyCode KeyCode { get; set; }
     }
     [UnityScriptComponent]
-    public class HotkeyCaptureDialog : MonoBehaviour
+    public class HotkeyCaptureMenu : MonoBehaviour, IActionMenu
     {
-        public GameObject CaptureHotkeyMenu;
+        public GameObject Dialog;
+        public Image BackPanel;
 
         public Button CloseButton;
         public Button ClearButton;
+        public Text CaptureHotkeyMenuText;
+
+        public HotbarsContainer Hotbars;
 
         public delegate void OnKeysSelectedDelegate(int id, HotkeyCategories category, KeyGroup keyGroup);
         public event OnKeysSelectedDelegate OnKeysSelected;
@@ -36,17 +40,28 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private bool _modifierUp = false;
         private Text _text;
 
+        private bool _monitorKeys = false;
+
+        public UnityEvent OnShow { get; } = new UnityEvent();
+
+        public UnityEvent OnHide { get; } = new UnityEvent();
+
+        public bool IsShowing => gameObject.activeSelf;
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
         {
             Debug.Log("HotkeyCaptureDialog::Awake");
             _text = GetComponentsInChildren<Text>().First(t => t.name.Equals("ContentText"));
-            Hide();
+            gameObject.SetActive(false);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Update()
         {
+            if (!_monitorKeys)
+                return;
+
             var _selectionStatePropInfo = typeof(Selectable).GetProperty("currentSelectionState", BindingFlags.NonPublic | BindingFlags.Instance);
 
             if (IsClosedOrClear())
@@ -74,10 +89,18 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                     break;
                 }
             }
-            if (Input.GetKeyUp(_keyGroup.KeyCode) || _modifierUp)
+            if (Input.GetKeyUp(_keyGroup.KeyCode) || (_modifierUp && _keyGroup.KeyCode != KeyCode.None))
             {
-                OnKeysSelected?.Invoke(_id, _category, _keyGroup);
-                Hide();
+                try
+                {
+                    OnKeysSelected?.Invoke(_id, _category, _keyGroup);
+                    Hotbars.Controller.ToggleHotkeyEdits(true);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
+                }
+                HideDialog();
             }
         }
         private bool IsClosedOrClear()
@@ -143,17 +166,39 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public void ClearPressed()
         {
             OnClearPressed?.Invoke(_id, _category);
-            Hide();
+            HideDialog();
         }
 
-        public void Show(int id, HotkeyCategories category)
+        public void Show()
         {
-            _id = id;
-            _category = category;
-            CaptureHotkeyMenu.SetActive(true);
+            gameObject.SetActive(true);
+            BackPanel.gameObject.SetActive(true);
+            CaptureHotkeyMenuText.gameObject.SetActive(true);
+            Dialog.SetActive(false);
+            Hotbars.Controller.ToggleHotkeyEdits(true);
+            OnShow?.Invoke();
         }
 
         public void Hide()
+        {
+            Hotbars.Controller.ToggleHotkeyEdits(false);
+            HideDialog();
+            gameObject.SetActive(false);
+            BackPanel.gameObject.SetActive(false);
+            CaptureHotkeyMenuText.gameObject.SetActive(false);
+            OnHide?.Invoke();
+        }
+
+        public void ShowDialog(int id, HotkeyCategories category)
+        {
+            Debug.Log($"Capturing Hotkey for id {id} in category {category}.");
+            _id = id;
+            _category = category;
+            Dialog.SetActive(true);
+            _monitorKeys = true;
+        }
+
+        public void HideDialog()
         {
             _id = 0;
             _modifierUp = false;
@@ -161,7 +206,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _text.text = string.Empty;
             _keyGroup.KeyCode = default;
             _keyGroup.Modifiers.Clear();
-            CaptureHotkeyMenu.SetActive(false);
+            Dialog.SetActive(false);
+            _monitorKeys = false;
         }
 
         private bool IsModifier(KeyCode keyCode)

@@ -53,7 +53,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 ActionSlot.ActionImage.enabled = false;
                 ActionSlot.EmptyImage.gameObject.SetActive(true);
             }
-            ActionSlot.HotbarsContainer.HasChanges = true;
+            //ActionSlot.HotbarsContainer.HasChanges = true;
 
         }
         public void AssignSlotAction(ISlotAction slotAction)
@@ -88,7 +88,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             ActionSlot.SlotAction.OnEditRequested += OnEditRequested;
 
             slotAction.SlotActionAssigned(ActionSlot);
-            ActionSlot.HotbarsContainer.HasChanges = true;
+            //ActionSlot.HotbarsContainer.HasChanges = true;
         }
 
         public void Refresh()
@@ -107,6 +107,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 _stackService?.Configure(ActionSlot.Config.ShowZeroStackAmount);
                 ActionSlot.KeyText.text = ActionSlot.Config.HotkeyText;
             }
+            ToggleHotkeyEditMode(false);
         }
 
         public void ActionSlotUpdate()
@@ -132,7 +133,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             _cooldownService?.Configure(ActionSlot.Config.ShowCooldownTime, ActionSlot.Config.PreciseCooldownTime);
             _stackService?.Configure(ActionSlot.Config.ShowZeroStackAmount);
             ActionSlot.KeyText.text = ActionSlot.Config.HotkeyText;
-            ActionSlot.HotbarsContainer.HasChanges = true;
+            //ActionSlot.HotbarsContainer.HasChanges = true;
         }
 
         public void HideCooldown()
@@ -162,6 +163,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 ActionSlot.SetButtonNormalColor(ActionSlot.DisabledColor);
         }
         
+        public void ToggleHotkeyEditMode(bool toggle)
+        {
+            ActionSlot.KeyButton.gameObject.SetActive(toggle);
+        }
         private void OnActionRequested()
         {
             if (ActionSlot.ParentCanvas.enabled && ActionSlot.SlotAction?.TargetAction != null && ActionSlot.ActionButton.interactable)
@@ -176,7 +181,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         private void OnHotkeyEditRequested()
         {
             if (ActionSlot.ParentCanvas.enabled && ActionSlot.ActionButton.interactable)
-                ActionSlot.HotkeyCapture.Show(ActionSlot.SlotIndex, HotkeyCategories.ActionSlot);
+                ActionSlot.HotkeyCapture.ShowDialog(ActionSlot.SlotIndex, HotkeyCategories.ActionSlot);
         }
         private void EnableActiveSlot()
         {

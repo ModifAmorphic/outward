@@ -1,4 +1,5 @@
 ﻿using ModifAmorphic.Outward.ActionMenus.DataModels;
+using ModifAmorphic.Outward.ActionMenus.Extensions;
 using ModifAmorphic.Outward.ActionMenus.Models;
 using ModifAmorphic.Outward.ActionMenus.Settings;
 using ModifAmorphic.Outward.Logging;
@@ -120,15 +121,26 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             }
         }
 
+        public void UpdateProfile(HotbarsContainer hotbar, IHotbarProfileData profile)
+        {
+            profile.Rows = hotbar.Controller.GetRowCount();
+            profile.SlotsPerRow = hotbar.Controller.GetActionSlotsPerRow();
+            profile.Hotbars = hotbar.ToHotbarSlotData(profile.Hotbars.Cast<HotbarData>().ToArray());
+
+            SaveProfile(profile);
+        }
+
         public IHotbarProfileData AddHotbar(IHotbarProfileData profile)
         {
-            int lastIndex = profile.Hotbars.Last().HotbarIndex;
+            int barIndex = profile.Hotbars.Last().HotbarIndex + 1;
 
             var profileClone = GetProfileData(profile.Name);
 
-            var newBar = new HotbarSlotData()
+            var newBar = new HotbarData()
             {
-                HotbarIndex = lastIndex + 1
+                HotbarIndex = barIndex,
+                RewiredActionId = RewiredConstants.ActionSlots.HotbarNavActions[barIndex].id,
+                RewiredActionName = RewiredConstants.ActionSlots.HotbarNavActions[barIndex].name,
             };
 
             Logger.LogDebug($"Adding new hotbar with index of {newBar.HotbarIndex}");
@@ -145,6 +157,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             }
 
             profile.Hotbars.Add(newBar);
+            SaveProfile(profile);
             OnActiveProfileChanged?.Invoke(profile);
             return profile;
         }
@@ -154,6 +167,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             if (profile.Hotbars.Count > 1)
             {
                 profile.Hotbars.RemoveAt(profile.Hotbars.Count - 1);
+                SaveProfile(profile);
                 OnActiveProfileChanged?.Invoke(profile);
             }
             return profile;
@@ -170,10 +184,11 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                     int slotIndex = s + profile.SlotsPerRow * (profile.Rows - 1);
 
                     profile.Hotbars[b].Slots.Add(
-                        CreateFrom(profile.Hotbars[b].Slots[s], slotIndex));
+                        CreateSlotDataFrom(profile.Hotbars[b].Slots[s], slotIndex));
                 }
             }
 
+            SaveProfile(profile);
             OnActiveProfileChanged?.Invoke(profile);
             return profile;
         }
@@ -196,7 +211,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 profile.Hotbars[b].Slots.RemoveRange(removeFrom, removeAmount);
             }
 
-
+            SaveProfile(profile);
             OnActiveProfileChanged?.Invoke(profile);
             return profile;
         }
@@ -218,19 +233,20 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             {
                 int slotIndex = profile.Hotbars[b].Slots.Count;
                 profile.Hotbars[b].Slots.Add(
-                        CreateFrom(profile.Hotbars[b].Slots.First(), slotIndex));
+                        CreateSlotDataFrom(profile.Hotbars[b].Slots.First(), slotIndex));
 
                 var lastIndex = slotIndex - profile.SlotsPerRow;
 
                 for (int s = lastIndex; s > 0; s = s - profile.SlotsPerRow)
                 {
                     profile.Hotbars[b].Slots.Insert(s,
-                        CreateFrom(profile.Hotbars[b].Slots.First(), s));
+                        CreateSlotDataFrom(profile.Hotbars[b].Slots.First(), s));
                 }
                 ReindexSlots(profile.Hotbars[b].Slots);
             }
 
             profile.SlotsPerRow++;
+            SaveProfile(profile);
             OnActiveProfileChanged?.Invoke(profile);
             return profile;
         }
@@ -251,6 +267,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             }
 
             profile.SlotsPerRow--;
+            SaveProfile(profile);
             OnActiveProfileChanged?.Invoke(profile);
             return profile;
         }
@@ -318,7 +335,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             }
         }
 
-        private SlotData CreateFrom(ISlotData source, int slotIndex)
+        private SlotData CreateSlotDataFrom(ISlotData source, int slotIndex)
         {
             var config = new ActionConfig()
             {

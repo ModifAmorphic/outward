@@ -12,5 +12,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         void Refresh();
         void ActionSlotUpdate();
         void ActionSlotAwake();
+        void ToggleHotkeyEditMode(bool toggle);
     }
 }

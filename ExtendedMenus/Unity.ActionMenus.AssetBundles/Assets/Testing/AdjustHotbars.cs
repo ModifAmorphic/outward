@@ -16,6 +16,7 @@ public class AdjustHotbars : MonoBehaviour
     public Sprite[] SlotIcons;
     public ActionsViewUser ActionsViewUser;
 
+    private IHotbarProfileData _profile;
     private HotbarsContainer _hotbarsContainer;
     private IHotbarController _hotbarController;
     private RandomActionAssignmentGenerator _actionGenerator;
@@ -24,73 +25,59 @@ public class AdjustHotbars : MonoBehaviour
     void Start()
     {
         Debug.Log("AdjustHotbars: Getting HotbarsMain component from HotbarsMainGo. HotbarsMainGo is null? " + HotbarsGameObject == null);
-        
+        _profile = TestDefaultProfile.DefaultProfile;
         _hotbarsContainer = HotbarsGameObject.GetComponent<HotbarsContainer>();
         _hotbarController = _hotbarsContainer.Controller;
         Psp.Instance.GetServicesProvider(0).AddSingleton<IActionViewData>(ActionsViewUser);
-        _hotbarController.ConfigureHotbars(1, 1, 8, SlotConfigService.GetActionSlotConfigs(1, 1, 8));
+        _hotbarController.ConfigureHotbars(_profile);
         _actionGenerator = new RandomActionAssignmentGenerator(_hotbarController);
         _actionGenerator.Generate(SlotIcons, this);
-
-        Psp.Instance.GetServicesProvider(0).AddSingleton<IHotbarProfileDataService>(new TestHotbarProfileData());
+        Psp.Instance.GetServicesProvider(0).AddSingleton<IHotbarProfileDataService>(new TestHotbarProfileDataService());
         Psp.Instance.GetServicesProvider(0).AddSingleton<IHotbarNavActions>(new HotbarNav());        
     }
     
 
     public void IncrementHotbars()
     {
-        _hotbarController.ConfigureHotbars(_hotbarController.GetHotbarCount() + 1
-            , _hotbarController.GetRowCount()
-            , _hotbarController.GetActionSlotsPerRow()
-            , SlotConfigService.GetActionSlotConfigs(_hotbarController.GetHotbarCount() + 1, _hotbarController.GetRowCount(), _hotbarController.GetActionSlotsPerRow()));
+        _profile.Hotbars.Add(new TestHotbarData()
+        {
+            HotbarIndex = _hotbarController.GetHotbarCount(),
+            Slots = new List<ISlotData>() {},
+        });
+        _hotbarController.ConfigureHotbars(_profile);
         _actionGenerator.Generate(SlotIcons, this);
     }
     public void DecrementHotbars()
     {
         if (_hotbarController.GetHotbarCount() > 1)
         {
-            _hotbarController.ConfigureHotbars(_hotbarController.GetHotbarCount() - 1
-                , _hotbarController.GetRowCount()
-                , _hotbarController.GetActionSlotsPerRow()
-                , SlotConfigService.GetActionSlotConfigs(_hotbarController.GetHotbarCount() - 1, _hotbarController.GetRowCount(), _hotbarController.GetActionSlotsPerRow()));
-            _actionGenerator.Generate(SlotIcons, this);
+            _profile.Hotbars.RemoveAt(_profile.Hotbars.Count - 1);
+            _hotbarController.ConfigureHotbars(_profile);
         }
     }
     public void IncrementRows()
     {
-        _hotbarController.ConfigureHotbars(_hotbarController.GetHotbarCount()
-            , _hotbarController.GetRowCount() + 1
-            , _hotbarController.GetActionSlotsPerRow()
-            , SlotConfigService.GetActionSlotConfigs(_hotbarController.GetHotbarCount(), _hotbarController.GetRowCount() + 1, _hotbarController.GetActionSlotsPerRow()));
+        _hotbarController.ConfigureHotbars(_profile);
         _actionGenerator.Generate(SlotIcons, this);
     }
     public void DecrementRows()
     {
         if (_hotbarController.GetRowCount() > 1)
         {
-            _hotbarController.ConfigureHotbars(_hotbarController.GetHotbarCount()
-                , _hotbarController.GetRowCount() - 1
-                , _hotbarController.GetActionSlotsPerRow()
-                , SlotConfigService.GetActionSlotConfigs(_hotbarController.GetHotbarCount(), _hotbarController.GetRowCount() - 1, _hotbarController.GetActionSlotsPerRow()));
+            _hotbarController.ConfigureHotbars(_profile);
             _actionGenerator.Generate(SlotIcons, this);
         }
     }
     public void IncrementActionSlots()
     {
-        _hotbarController.ConfigureHotbars(_hotbarController.GetHotbarCount()
-            , _hotbarController.GetRowCount()
-            , _hotbarController.GetActionSlotsPerRow() + 1
-            , SlotConfigService.GetActionSlotConfigs(_hotbarController.GetHotbarCount(), _hotbarController.GetRowCount(), _hotbarController.GetActionSlotsPerRow() + 1));
+        _hotbarController.ConfigureHotbars(_profile);
         _actionGenerator.Generate(SlotIcons, this);
     }
     public void DecrementActionSlots()
     {
         if (_hotbarController.GetActionSlotsPerRow() > 1)
         {
-            _hotbarController.ConfigureHotbars(_hotbarController.GetHotbarCount()
-                , _hotbarController.GetRowCount()
-                , _hotbarController.GetActionSlotsPerRow() - 1
-                , SlotConfigService.GetActionSlotConfigs(_hotbarController.GetHotbarCount(), _hotbarController.GetRowCount(), _hotbarController.GetActionSlotsPerRow() - 1));
+            _hotbarController.ConfigureHotbars(_profile);
             _actionGenerator.Generate(SlotIcons, this);
         }
     }
@@ -104,6 +91,7 @@ public class TestHotbarData : IHotbarSlotData
 {
     public int HotbarIndex { get; set; }
     public List<ISlotData> Slots { get; set; }
+    public string HotbarHotkey { get; set; }
 }
 public class TestSlotData : ISlotData
 {

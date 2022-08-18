@@ -13,9 +13,11 @@ namespace ModifAmorphic.Outward.ActionMenus.Settings
     {
         private static List<IHotbarSlotData> hotbarAssignments = new List<IHotbarSlotData>()
         {
-            new HotbarSlotData()
+            new HotbarData()
             {
                 HotbarIndex = 0,
+                RewiredActionId =  RewiredConstants.ActionSlots.HotbarNavActions[0].id,
+                RewiredActionName =  RewiredConstants.ActionSlots.HotbarNavActions[0].name,
                 Slots = new List<ISlotData>()
                 {
                     new SlotData()
@@ -126,7 +128,11 @@ namespace ModifAmorphic.Outward.ActionMenus.Settings
             Name = "Profile 1",
             Rows = 1,
             SlotsPerRow = hotbarAssignments.First().Slots.Count,
-            Hotbars = hotbarAssignments
+            Hotbars = hotbarAssignments,
+            NextRewiredActionId = RewiredConstants.ActionSlots.NextHotbarAction.id,
+            NextRewiredActionName = RewiredConstants.ActionSlots.NextHotbarAction.name,
+            PrevRewiredActionId = RewiredConstants.ActionSlots.PreviousHotbarAction.id,
+            PrevRewiredActionName = RewiredConstants.ActionSlots.PreviousHotbarAction.name,
         };
 
         public event Action<int> HotbarsChanged;

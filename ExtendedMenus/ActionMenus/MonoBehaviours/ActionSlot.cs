@@ -13,7 +13,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     {
         public HotbarsContainer HotbarsContainer { get; internal set; }
 
-        public HotkeyCaptureDialog HotkeyCapture;
+        public HotkeyCaptureMenu HotkeyCapture;
 
         private MouseClickListener _mouseClickListener;
         public MouseClickListener MouseClickListener => _mouseClickListener;
@@ -72,7 +72,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private IActionSlotController _controller;
         public IActionSlotController Controller => _controller;
 
-        public bool IsInEditMode => HotbarsContainer.IsInEditMode;
+        public bool IsInEditMode => HotbarsContainer.IsInHotkeyEditMode;
 
         public Func<Action, bool> ActionRequested { get; private set;  }
 

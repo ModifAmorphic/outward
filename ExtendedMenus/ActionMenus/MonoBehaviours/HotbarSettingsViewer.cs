@@ -1,5 +1,6 @@
 using ModifAmorphic.Outward.Unity.ActionMenus.Controllers;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
+using ModifAmorphic.Outward.Unity.ActionMenus.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,13 +12,13 @@ using UnityEngine.UI;
 namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
     [UnityScriptComponent]
-    public class HotbarSettingsViewer : MonoBehaviour
+    public class HotbarSettingsViewer : MonoBehaviour, IActionMenu
     {
         public UnityEvent<int> OnBarsChanged;
         public UnityEvent<int> OnRowsChanged;
         public UnityEvent<int> OnSlotsChanged;
 
-        public PlayerMenu PlayerMenu;
+        public PlayerActionMenus PlayerMenu;
 
         public Dropdown ProfileDropdown;
 
@@ -33,30 +34,25 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public Button SetHotkeys;
 
         public HotbarsContainer Hotbars;
-        public IHotbarController HotbarsController;
 
         private IHotbarProfileData _activeProfile => GetProfileData().GetActiveProfile();
 
-        private Func<bool> _exitRequested;
         public bool IsShowing => gameObject.activeSelf;
+
+        public UnityEvent OnShow { get; } = new UnityEvent();
+
+        public UnityEvent OnHide { get; } = new UnityEvent();
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
         {
             Hide();
+            SetHotkeys.onClick.AddListener(EnableHotkeyEdits);
         }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
-        void Update()
-        {
-            if (_exitRequested != null && IsShowing && _exitRequested.Invoke())
-                Hide();
-        }
-
-        public void ConfigureExit(Func<bool> exitRequested) => _exitRequested = exitRequested;
 
         public void Show()
         {
+            Debug.Log("HotbarSettingsViewer::Show");
             gameObject.SetActive(true);
 
             var activeProfile = GetProfileData().GetActiveProfile();
@@ -72,10 +68,13 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             }
             SetControls();
             HookControls();
+            OnShow?.Invoke();
         }
         public void Hide()
         {
+            Debug.Log("HotbarSettingsViewer::Hide");
             gameObject.SetActive(false);
+            OnHide?.Invoke();
         }
         private void SetControls()
         {
@@ -92,13 +91,13 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             ProfileDropdown.AddOptions(profileOptions);
             ProfileDropdown.value = profileOptions.FindIndex(o => o.text.Equals(_activeProfile.Name, System.StringComparison.InvariantCultureIgnoreCase));
 
-            ShowCooldownTimer.isOn = config.ShowCooldownTime;
-            ShowPrecisionTime.isOn = config.PreciseCooldownTime;
+            ShowCooldownTimer.isOn = config?.ShowCooldownTime ?? false;
+            ShowPrecisionTime.isOn = config?.PreciseCooldownTime ?? false;
 
             EmptySlotDropdown.ClearOptions();
             var imageOptions = Enum.GetNames(typeof(EmptySlotOptions)).Select(name => new Dropdown.OptionData(name)).ToList();
             EmptySlotDropdown.AddOptions(imageOptions);
-            var selectedName = Enum.GetName(typeof(EmptySlotOptions), config.EmptySlotOption);
+            var selectedName = Enum.GetName(typeof(EmptySlotOptions), config?.EmptySlotOption ?? EmptySlotOptions.Image);
             EmptySlotDropdown.value = imageOptions.FindIndex(o => o.text.Equals(selectedName, System.StringComparison.InvariantCultureIgnoreCase));
 
         }
@@ -140,5 +139,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             );
         }
         private IHotbarProfileDataService GetProfileData() => Psp.Instance.GetServicesProvider(PlayerMenu.PlayerID).GetService<IHotbarProfileDataService>();
+
+        private void EnableHotkeyEdits()
+        {
+            Hotbars.Controller.ToggleActionSlotEdits(true);
+            PlayerMenu.HotkeyCaptureMenu.Show();
+            Hide();
+        }
     }
 }

@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 4212059996
+CRC: 3739396222
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 2c0dc9b9fcc348b83c8b85e4617e298b
+    Hash: 5120838e2e7aa521e7c1bddd0336a479
   TypeTreeHash:
     serializedVersion: 2
-    Hash: a6d6af3233e2e26d45432a502d17b6c9
+    Hash: 0b67199ad01a7a46d12953068e2273fe
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -26,6 +26,8 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
 - Class: 114
+  Script: {fileID: 1948066178, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
@@ -42,11 +44,11 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 1460552717, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
 - Class: 114
-  Script: {fileID: -833863390, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  Script: {fileID: -898740916, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
 - Class: 114
   Script: {fileID: 445401529, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
 - Class: 114
-  Script: {fileID: -1864934948, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  Script: {fileID: -1549649897, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
 - Class: 114
   Script: {fileID: 56838480, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
 - Class: 114
@@ -73,8 +75,6 @@ ClassTypes:
   Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
-- Class: 114
-  Script: {fileID: 1948066178, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
@@ -133,6 +133,6 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.Toggle/ToggleEvent
 Assets:
-- Assets/Prefabs/ActionMenus.prefab
-- Assets/Prefabs/ActionMenus 1.prefab
+- Assets/Prefabs/4k/ActionMenus 1.prefab
+- Assets/Prefabs/4k/ActionMenus.prefab
 Dependencies: []

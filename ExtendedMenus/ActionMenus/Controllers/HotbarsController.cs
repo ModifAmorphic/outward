@@ -34,54 +34,58 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         public void AssignSlotAction(int slotId, ISlotAction slotAction)
         {
             if (_hbc.ActionSlots.TryGetValue(slotId, out var slot))
+            {
                 slot.Controller.AssignSlotAction(slotAction);
+                _hbc.HasChanges = true;
+            }
         }
         
         public void ConfigureHotbars(IHotbarProfileData profile)
         {
-            var slotConfigs = new IActionSlotConfig[profile.Hotbars.Count, profile.SlotsPerRow * profile.Rows];
-            for (int h = 0; h < profile.Hotbars.Count; h++)
-            {
-                var bar = profile.Hotbars[h];
-                for (int s = 0; s < bar.Slots.Count; s++)
-                {
-                    slotConfigs[h, s] = bar.Slots[s].Config;
-                    Debug.Log($"[Debug  :ActionMenus] Setting Slot[{h},{s}].Config to '{(bar.Slots[s].Config == null ? "null" : "an ActionSlotConfig instance.")}'.");
-                }
-            }
-            ConfigureHotbars(profile.Hotbars.Count, profile.Rows, profile.SlotsPerRow, slotConfigs);
-        }
-        public void ConfigureHotbars(int hotbars, int rows, int slotsPerRow, IActionSlotConfig[,] slotConfigs)
-        {
-            if (hotbars < 1)
-                throw new ArgumentOutOfRangeException(nameof(hotbars));
-            if (rows < 1)
-                throw new ArgumentOutOfRangeException(nameof(rows));
-            if (slotsPerRow < 1)
-                throw new ArgumentOutOfRangeException(nameof(slotsPerRow));
+            //var slotConfigs = new IActionSlotConfig[profile.Hotbars.Count, profile.SlotsPerRow * profile.Rows];
+            //for (int h = 0; h < profile.Hotbars.Count; h++)
+            //{
+            //    var bar = profile.Hotbars[h];
+            //    for (int s = 0; s < bar.Slots.Count; s++)
+            //    {
+            //        slotConfigs[h, s] = bar.Slots[s].Config;
+            //        Debug.Log($"[Debug  :ActionMenus] Setting Slot[{h},{s}].Config to '{(bar.Slots[s].Config == null ? "null" : "an ActionSlotConfig instance.")}'.");
+            //    }
+            //}
+            //ConfigureHotbars(profile.Hotbars.Count, profile.Rows, profile.SlotsPerRow, slotConfigs);
+            int selectedIndex = _hbc.SelectedHotbar;
 
             Reset();
-            _hbc.BaseGrid.constraintCount = slotsPerRow;
-            _hbc.ConfigureHotbars(hotbars);
+            _hbc.BaseGrid.constraintCount = profile.SlotsPerRow;
+            _hbc.ConfigureHotbars(profile.Hotbars.Count);
             Debug.Log("[Debug  :ActionMenus] Configuring ActionSlots.");
-            for (int h = 0; h < hotbars; h++)
+            _hbc.LeftHotbarNav.SetNextHotkeyText(profile.NextHotkey);
+            _hbc.LeftHotbarNav.SetPreviousHotkeyText(profile.PrevHotkey);
+            _hbc.LeftHotbarNav.SetHotkeys(profile.Hotbars.Select(b => b.HotbarHotkey));
+            _hbc.LeftHotbarNav.SetBarText((_hbc.SelectedHotbar + 1).ToString());
+
+            for (int h = 0; h < profile.Hotbars.Count; h++)
             {
-                var barCanvas = UnityEngine.Object.Instantiate(_hbc.BaseHotbarCanvas, _hbc.BaseHotbarCanvas.transform.parent);
+                var barCanvas = UnityEngine.Object.Instantiate(_hbc.BaseHotbarCanvas);
+                barCanvas.transform.SetParent(_hbc.BaseHotbarCanvas.transform.parent, false);
+                //barCanvas.transform.localScale = Vector3.one;
                 barCanvas.name = "HotbarCanvas" + h;
                 barCanvas.gameObject.SetActive(true);
                 _hbc.HotbarGrid[h] = UnityEngine.Object.Instantiate(_hbc.BaseGrid, barCanvas.transform);
                 _hbc.HotbarGrid[h].name = "HotbarsGrid" + h;
                 _hbc.HotbarGrid[h].gameObject.SetActive(true);
-                _hbc.ConfigureActionSlots(h, slotsPerRow * rows);
-                for (int s = 0; s < slotsPerRow * rows; s++)
+                
+                _hbc.ConfigureActionSlots(h, profile.SlotsPerRow * profile.Rows);
+                for (int s = 0; s < profile.SlotsPerRow * profile.Rows; s++)
                 {
-                    var newSlot = UnityEngine.Object.Instantiate(_hbc.BaseActionSlot, _hbc.HotbarGrid[h].transform);
+                    var newSlot = UnityEngine.Object.Instantiate(_hbc.BaseActionSlot);
+                    newSlot.transform.SetParent(_hbc.HotbarGrid[h].transform, false);
+                    //newSlot.transform.localScale = Vector3.one;
                     var actionSlot = newSlot.GetComponent<ActionSlot>();
                     actionSlot.SlotIndex = s;
                     actionSlot.HotbarIndex = h;
                     actionSlot.HotbarsContainer = _hbc;
-                    actionSlot.Config = slotConfigs[h, s];
-                    Debug.Log($"[Debug  :ExtendedMenus] Configured Hotkey to '{actionSlot.Config?.HotkeyText}' for SlotIndex {s}.");
+                    actionSlot.Config = profile.Hotbars[h].Slots[s].Config;
                     newSlot.SetActive(true);
                     _hbc.Hotbars[h][s] = actionSlot;
                     _hbc.ActionSlots.Add(actionSlot.SlotId, actionSlot);
@@ -90,8 +94,56 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             }
             Debug.Log($"[Debug  :ActionMenus] Added {_hbc.Hotbars.Length} Hotbars with {_hbc.Hotbars.FirstOrDefault()?.Length} Action Slots each. Calling StartCoroutine ResizeLayoutGroup().");
             _resizeNeeded = true;
-            _hbc.HasChanges = true;
+            //_hbc.HasChanges = true;
+
+            if (selectedIndex != _hbc.SelectedHotbar && selectedIndex < GetHotbarCount())
+                SelectHotbar(selectedIndex);
+            else if (selectedIndex != _hbc.SelectedHotbar)
+                SelectHotbar(GetHotbarCount() - 1);
+            else
+                SelectHotbar(_hbc.SelectedHotbar);
+
         }
+        //public void ConfigureHotbars(int hotbars, int rows, int slotsPerRow, IActionSlotConfig[,] slotConfigs)
+        //{
+        //    if (hotbars < 1)
+        //        throw new ArgumentOutOfRangeException(nameof(hotbars));
+        //    if (rows < 1)
+        //        throw new ArgumentOutOfRangeException(nameof(rows));
+        //    if (slotsPerRow < 1)
+        //        throw new ArgumentOutOfRangeException(nameof(slotsPerRow));
+
+        //    Reset();
+        //    _hbc.BaseGrid.constraintCount = slotsPerRow;
+        //    _hbc.ConfigureHotbars(hotbars);
+        //    Debug.Log("[Debug  :ActionMenus] Configuring ActionSlots.");
+        //    for (int h = 0; h < hotbars; h++)
+        //    {
+        //        var barCanvas = UnityEngine.Object.Instantiate(_hbc.BaseHotbarCanvas, _hbc.BaseHotbarCanvas.transform.parent);
+        //        barCanvas.name = "HotbarCanvas" + h;
+        //        barCanvas.gameObject.SetActive(true);
+        //        _hbc.HotbarGrid[h] = UnityEngine.Object.Instantiate(_hbc.BaseGrid, barCanvas.transform);
+        //        _hbc.HotbarGrid[h].name = "HotbarsGrid" + h;
+        //        _hbc.HotbarGrid[h].gameObject.SetActive(true);
+        //        _hbc.ConfigureActionSlots(h, slotsPerRow * rows);
+        //        for (int s = 0; s < slotsPerRow * rows; s++)
+        //        {
+        //            var newSlot = UnityEngine.Object.Instantiate(_hbc.BaseActionSlot, _hbc.HotbarGrid[h].transform);
+        //            var actionSlot = newSlot.GetComponent<ActionSlot>();
+        //            actionSlot.SlotIndex = s;
+        //            actionSlot.HotbarIndex = h;
+        //            actionSlot.HotbarsContainer = _hbc;
+        //            actionSlot.Config = slotConfigs[h, s];
+        //            newSlot.SetActive(true);
+        //            _hbc.Hotbars[h][s] = actionSlot;
+        //            _hbc.ActionSlots.Add(actionSlot.SlotId, actionSlot);
+        //        }
+        //        barCanvas.enabled = h == 0;
+        //    }
+        //    Debug.Log($"[Debug  :ActionMenus] Added {_hbc.Hotbars.Length} Hotbars with {_hbc.Hotbars.FirstOrDefault()?.Length} Action Slots each. Calling StartCoroutine ResizeLayoutGroup().");
+        //    _resizeNeeded = true;
+        //    _hbc.HasChanges = true;
+        //}
 
         public void SelectHotbar(int barIndex)
         {
@@ -100,10 +152,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             
             for (int h = 0; h < _hbc.HotbarGrid.Length; h++)
             {
-                _hbc.HotbarGrid[h].GetComponentInParent<Canvas>().enabled = h == barIndex;
+                _hbc.HotbarGrid[h].transform.parent.GetComponent<Canvas>().enabled = h == barIndex;
             }
             _hbc.SelectedHotbar = barIndex;
-            _hbc.SetBarDisplayNumber(_hbc.SelectedHotbar);
+            _hbc.LeftHotbarNav.SelectHotbar(barIndex);
         }
 
         public void SelectNext()
@@ -192,9 +244,24 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             _resizeNeeded = false;
         }
         
-        public void ToggleEditMode(bool enabled)
+        public void ToggleActionSlotEdits(bool editMode)
         {
-            _hbc.IsInEditMode = enabled;
+            _hbc.IsInActionSlotEditMode = editMode;
+            _hbc.LeftHotbarNav.ToggleActionSlotEditMode(editMode);
+            //foreach (var slot in _hbc.ActionSlots.Values)
+            //{
+            //    slot.Controller.ToggleEditMode(editMode);
+            //}
+        }
+
+        public void ToggleHotkeyEdits(bool editMode)
+        {
+            _hbc.IsInHotkeyEditMode = editMode;
+            _hbc.LeftHotbarNav.ToggleHotkeyEditMode(editMode);
+            foreach (var slot in _hbc.ActionSlots.Values)
+            {
+                slot.Controller.ToggleHotkeyEditMode(editMode);
+            }
         }
     }
 }
