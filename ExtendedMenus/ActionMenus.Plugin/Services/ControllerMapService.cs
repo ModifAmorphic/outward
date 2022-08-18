@@ -108,9 +108,16 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 eleMap.elementIdentifierId = existingMaps.First().elementIdentifierId;
             }
 
-            map.ReplaceOrCreateElementMap(eleMap);
+            if (keyGroup.KeyCode != KeyCode.None)
+            {
+                map.ReplaceOrCreateElementMap(eleMap);
+            }
+            else if (existingMaps.Any())
+            {
+                map.DeleteElementMap(existingMaps.First().id);
+            }
 
-            var hotkey = map.ButtonMaps.FirstOrDefault(m => m.actionId == config.RewiredActionId).elementIdentifierName;
+            var hotkey = map.ButtonMaps.FirstOrDefault(m => m.actionId == config.RewiredActionId)?.elementIdentifierName;
             for (int b = 0; b < hotbars.Count; b++)
             {
                 hotbars[b].Slots[id].Config.HotkeyText = hotkey;
@@ -137,15 +144,23 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 for (int i = 1; i < existingMaps.Length; i++)
                     map.DeleteElementMap(existingMaps[i].id);
             }
+
             if (existingMaps.Any())
             {
                 eleMap.elementMapId = existingMaps.First().id;
                 eleMap.elementIdentifierId = existingMaps.First().elementIdentifierId;
             }
 
-            map.ReplaceOrCreateElementMap(eleMap);
+            if (keyGroup.KeyCode != KeyCode.None)
+            {
+                map.ReplaceOrCreateElementMap(eleMap);
+            }
+            else if (existingMaps.Any())
+            {
+                map.DeleteElementMap(existingMaps.First().id);
+            }
 
-            hotbar.HotbarHotkey = map.ButtonMaps.FirstOrDefault(m => m.actionId == hotbar.RewiredActionId).elementIdentifierName;
+            hotbar.HotbarHotkey = map.ButtonMaps.FirstOrDefault(m => m.actionId == hotbar.RewiredActionId)?.elementIdentifierName;
 
             _profileData.SaveProfile(profile);
             _hotbarService.ConfigureHotbars(profile);
@@ -176,9 +191,16 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 Logger.LogDebug($"Setting existing element map {eleMap.elementMapId} to use KeyCode {keyGroup.KeyCode} - {existingMaps.First().elementIdentifierId}.");
             }
 
-            map.ReplaceOrCreateElementMap(eleMap);
+            if (keyGroup.KeyCode != KeyCode.None)
+            {
+                map.ReplaceOrCreateElementMap(eleMap);
+            }
+            else if (existingMaps.Any())
+            {
+                map.DeleteElementMap(existingMaps.First().id);
+            }
 
-            var hotKey = map.ButtonMaps.FirstOrDefault(m => m.actionId == rewiredId).elementIdentifierName;
+            var hotKey = map.ButtonMaps.FirstOrDefault(m => m.actionId == rewiredId)?.elementIdentifierName;
             if (category == HotkeyCategories.NextHotbar)
             {
                 profile.NextHotkey = hotKey;

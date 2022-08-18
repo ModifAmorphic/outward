@@ -166,6 +166,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public void ClearPressed()
         {
             OnClearPressed?.Invoke(_id, _category);
+            OnKeysSelected?.Invoke(_id, _category, new KeyGroup() { KeyCode = KeyCode.None });
+            Hotbars.Controller.ToggleHotkeyEdits(true);
             HideDialog();
         }
 

@@ -21,7 +21,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         private Coroutine _iconCoroutine;
 
         public bool IsUpdateEnabled => ActionSlot.SlotAction?.TargetAction != null && ActionSlot.SlotAction.CheckOnUpdate;
-        public bool IsActionNeeded => ActionSlot.ParentCanvas.enabled && ActionSlot.SlotAction?.TargetAction != null && ActionSlot.SlotAction.GetIsActionRequested() && ActionSlot.ActionButton.interactable;
+        public bool IsActionNeeded => ActionSlot.ParentCanvas != null && ActionSlot.ParentCanvas.enabled && ActionSlot.SlotAction?.TargetAction != null && ActionSlot.SlotAction.GetIsActionRequested() && ActionSlot.ActionButton.interactable;
 
         public ActionSlotController(ActionSlot actionSlot)
         {
@@ -47,12 +47,21 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 ActionSlot.ActionImage.color = color;
                 ActionSlot.ActionImage.enabled = true;
                 ActionSlot.EmptyImage.gameObject.SetActive(false);
+                ActionSlot.CanvasGroup.alpha = 1;
             }
-            else
+            else if (ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Image)
             {
                 ActionSlot.ActionImage.enabled = false;
                 ActionSlot.EmptyImage.gameObject.SetActive(true);
+                ActionSlot.CanvasGroup.alpha = 1;
             }
+            else if (ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Hidden)
+            {
+                ActionSlot.ActionImage.enabled = false;
+                ActionSlot.EmptyImage.gameObject.SetActive(false);
+                ActionSlot.CanvasGroup.alpha = 0;
+            }
+
             //ActionSlot.HotbarsContainer.HasChanges = true;
 
         }
@@ -166,21 +175,25 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         public void ToggleHotkeyEditMode(bool toggle)
         {
             ActionSlot.KeyButton.gameObject.SetActive(toggle);
+            if (toggle && ActionSlot.CanvasGroup.alpha == 0f)
+                ActionSlot.CanvasGroup.alpha = 1;
+            else if (!toggle && ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Hidden && ActionSlot.SlotAction == null)
+                ActionSlot.CanvasGroup.alpha = 0;
         }
         private void OnActionRequested()
         {
-            if (ActionSlot.ParentCanvas.enabled && ActionSlot.SlotAction?.TargetAction != null && ActionSlot.ActionButton.interactable)
+            if (ActionSlot.ParentCanvas != null && ActionSlot.ParentCanvas.enabled && ActionSlot.SlotAction?.TargetAction != null && ActionSlot.ActionButton.interactable)
                 ActionSlot.SlotAction.TargetAction.Invoke();
         }
         private void OnEditRequested()
         {
-            if (ActionSlot.ParentCanvas.enabled && ActionSlot.ActionButton.interactable)
+            if (ActionSlot.ParentCanvas != null && ActionSlot.ParentCanvas.enabled && ActionSlot.ActionButton.interactable)
                 ActionSlot.HotbarsContainer.ActionsViewer.Show(ActionSlot.SlotId);
         }
 
         private void OnHotkeyEditRequested()
         {
-            if (ActionSlot.ParentCanvas.enabled && ActionSlot.ActionButton.interactable)
+            if (ActionSlot.ParentCanvas != null && ActionSlot.ParentCanvas.enabled && ActionSlot.ActionButton.interactable)
                 ActionSlot.HotkeyCapture.ShowDialog(ActionSlot.SlotIndex, HotkeyCategories.ActionSlot);
         }
         private void EnableActiveSlot()
@@ -189,6 +202,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             ActionSlot.CooldownText.enabled = true;
             ActionSlot.StackText.enabled = true;
             ActionSlot.ActionImage.enabled = true;
+            ActionSlot.CanvasGroup.alpha = 1;
 
             ActionSlot.CooldownText.text = String.Empty;
             ActionSlot.StackText.text = String.Empty;

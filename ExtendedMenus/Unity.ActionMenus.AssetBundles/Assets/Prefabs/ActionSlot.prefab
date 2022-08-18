@@ -808,6 +808,7 @@ GameObject:
   - component: {fileID: 2505187777641110955}
   - component: {fileID: 8554435773044272934}
   - component: {fileID: 7130510115476757999}
+  - component: {fileID: 3129255602228640231}
   m_Layer: 5
   m_Name: ActionSlot
   m_TagString: Untagged
@@ -859,6 +860,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HotkeyCapture: {fileID: 0}
+--- !u!225 &3129255602228640231
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7073540720848846307}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &7737087163836583683
 GameObject:
   m_ObjectHideFlags: 0

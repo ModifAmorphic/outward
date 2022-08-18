@@ -35,6 +35,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private Canvas _parentCanvas;
         public Canvas ParentCanvas => _parentCanvas;
 
+        private CanvasGroup _canvasGroup;
+        public CanvasGroup CanvasGroup => _canvasGroup;
+
         //Displays the assigned hotkey / button.
         private Text _keyText;
         public Text KeyText => _keyText;
@@ -99,9 +102,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private void SetComponents()
         {
-            _parentCanvas = transform.parent.GetComponentInParent<Canvas>();
+            _parentCanvas = transform.parent?.parent?.GetComponent<Canvas>();
             _slotPanel = transform.Find("SlotPanel");
-            
+            _canvasGroup = GetComponent<CanvasGroup>();
+
             _keyText = GetComponentsInChildren<Text>(true).First(t => t.name == "KeyText");
             _keyButton = GetComponentsInChildren<Button>(true).First(t => t.name == "KeyButton");
             _borderImage = _slotPanel.GetComponentsInChildren<Image>(true).First(i => i.name == "ActionBorder");
