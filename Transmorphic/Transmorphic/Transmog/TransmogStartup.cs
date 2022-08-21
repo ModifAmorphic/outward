@@ -38,7 +38,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                                 _services.GetService<TransmogSettings>(),
                                 _services.GetService<IModifLogger>
                 ));
-            
+
             ConfigureRecipes();
             ConfigureMenu();
         }
@@ -90,6 +90,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                                     , _services.GetService<IModifLogger>)
                       )
                      .AddSingleton(new TransmogCrafter(_services.GetService<ItemVisualizer>(),
+                                        _services.GetService<LevelCoroutines>(),
                                         _services.GetService<IModifLogger>)
                       );
 
@@ -102,14 +103,14 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
             craftingModule.RegisterCompatibleIngredientMatcher<TransmogrifyMenu>(_services.GetService<MenuIngredientMatcher>());
             craftingModule.RegisterConsumedItemSelector<TransmogrifyMenu>(_services.GetService<MenuIngredientMatcher>());
             craftingModule.RegisterCustomCrafter<TransmogrifyMenu>(_services.GetService<TransmogCrafter>());
-            
+
             transmogSettings.TransmogMenuEnabledChanged += (isEnabled) => ToggleCraftingMenu<TransmogrifyMenu>(craftingModule, isEnabled);
             craftingModule.CraftingMenuEvents.MenuLoaded += (menu) =>
             {
                 if (menu is TransmogrifyMenu)
                     ToggleCraftingMenu<TransmogrifyMenu>(craftingModule, transmogSettings.TransmogMenuEnabled);
             };
-            
+
         }
         private void ToggleCraftingMenu<T>(CustomCraftingModule craftingModule, bool isEnabled) where T : CustomCraftingMenu
         {
