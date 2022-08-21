@@ -76,7 +76,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
         }
         private Item GenerateItemTransmog(ItemVisualMap visualMap)
         {
-            var item = ItemManager.Instance.GenerateItemNetwork(visualMap.ItemID);
+            var item = ItemManager.Instance.GenerateItem(visualMap.ItemID);
 
             if (item == null)
                 return item;
