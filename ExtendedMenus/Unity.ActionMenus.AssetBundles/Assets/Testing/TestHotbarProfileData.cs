@@ -16,5 +16,6 @@ namespace Assets.Testing
         public int SlotsPerRow { get; set; } = 8;
         public string NextHotkey { get; set; } = ".";
         public string PrevHotkey { get; set; } = ",";
+        public bool CombatMode { get; set; } = true;
     }
 }

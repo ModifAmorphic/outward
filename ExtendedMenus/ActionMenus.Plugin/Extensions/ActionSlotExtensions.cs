@@ -17,7 +17,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Extensions
                 Config = actionSlot.Config,
             };
 
-            if (actionSlot.SlotAction is ItemSlotAction islot)
+            if (actionSlot.SlotAction is IOutwardItem islot)
             {
                 sData.ItemID = islot.ActionItem.ItemID;
                 sData.ItemUID = islot.ActionItem.UID;

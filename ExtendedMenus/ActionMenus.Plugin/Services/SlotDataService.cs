@@ -7,6 +7,8 @@ using System.Text;
 using Rewired;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.ActionMenus.Extensions;
+using ModifAmorphic.Outward.Unity.ActionMenus;
+using ModifAmorphic.Outward.Coroutines;
 
 namespace ModifAmorphic.Outward.ActionMenus.Services
 {
@@ -33,26 +35,43 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             _getLogger = getLogger;
         }
 
-        public bool TryGetItemSlotAction(SlotData slotData, out ItemSlotAction slotAction)
+        public bool TryGetItemSlotAction(SlotData slotData, bool combatModeEnabled, out ISlotAction slotAction)
         {
+            slotAction = null;
             if (!TryFindOwnedItem(slotData.ItemID, slotData.ItemUID, out var item))
                 if (!TryFindPrefab(slotData.ItemID, out item))
-                {
-                    slotAction = null;
                     return false;
-                }
 
-            slotAction = new ItemSlotAction(item, _rewiredPlayer, _character, this, _getLogger)
+            if (item is Skill skill)
             {
-                Cooldown = new ItemCooldown(item),
-                Stack = item.IsStackable() ? item.ToStackable(_character.Inventory) : null,
-            };
-            return true;
+                slotAction = new SkillSlotAction(skill, _rewiredPlayer, _character, this, combatModeEnabled, _getLogger)
+                {
+                    Cooldown = new ItemCooldownTracker(skill)
+                };
+            }
+            else if (item is Equipment equipment)
+            {
+                slotAction = new EquipmentSlotAction(equipment, _rewiredPlayer, _character, this, combatModeEnabled, _getLogger)
+                {
+                    Cooldown = new ItemCooldownTracker(equipment)
+                };
+            }
+            else
+            {
+                slotAction = new ItemSlotAction(item, _rewiredPlayer, _character, this, combatModeEnabled, _getLogger)
+                {
+                    Cooldown = new ItemCooldownTracker(item),
+                    Stack = item.IsStackable() ? item.ToStackable(_character.Inventory) : null,
+                };
+            }
+
+            return slotAction != null;
         }
 
         public bool TryFindOwnedItem(int itemId, string uid, out Item item)
         {
             item = null;
+            //Search skills
             var itemSkills = _inventory.SkillKnowledge.GetLearnedItems().Where(s => s.ItemID == itemId);
             if (itemSkills.Any())
             {
@@ -60,13 +79,30 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 return true;
             }
 
+            //If not owned, stop looking
+            if (!_inventory.OwnsOrHasEquipped(itemId))
+                return false;
+
+            //Find by uid
+            if (!string.IsNullOrEmpty(uid))
+            {
+                var worldItem = ItemManager.Instance.GetItem(uid);
+                if (worldItem != null && worldItem.OwnerCharacter == _character)
+                {
+                    item = worldItem;
+                    return true;
+                }
+            }
+
+            //UID not found or empty. Check inventory for ItemID match
             var items = _inventory.GetOwnedItems(itemId);
             if (items != null && items.Any())
             {
-                item = items.FirstOrDefault(i => i.UID.Equals(uid));
-                if (item == null)
-                    item = items.First();
-            }            
+                item = items.First();
+                return true;
+            }
+            //Check equipment for ItemID
+            _inventory.Equipment.OwnsItem(itemId, out item);
 
             return item != null;
         }

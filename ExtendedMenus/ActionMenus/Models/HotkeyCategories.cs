@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenus.Models
+namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
     public enum HotkeyCategories
     {

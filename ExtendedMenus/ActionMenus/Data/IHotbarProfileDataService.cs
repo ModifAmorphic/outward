@@ -20,6 +20,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
         IHotbarProfileData AddSlot(IHotbarProfileData profile);
         IHotbarProfileData RemoveSlot(IHotbarProfileData profile);
         IHotbarProfileData SetCooldownTimer(IHotbarProfileData profile, bool showTimer, bool preciseTime);
+        IHotbarProfileData SetCombatMode(IHotbarProfileData profile, bool combatMode);
         IHotbarProfileData SetEmptySlotView(IHotbarProfileData profile, EmptySlotOptions option);
 
         event Action<IHotbarProfileData> OnActiveProfileChanged;

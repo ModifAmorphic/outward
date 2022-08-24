@@ -8,6 +8,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
         string Name { get; set; }
         int Rows { get; set; }
         int SlotsPerRow { get; set; }
+        bool CombatMode { get; set; }
         string NextHotkey { get; set; }
         string PrevHotkey { get; set; }
     }

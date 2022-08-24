@@ -14,6 +14,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private Button _button;
         public Button Button => _button;
+        public ActionImages ActionImages;
         private Text _text;
         private Text _stackText;
 
@@ -21,14 +22,18 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private void Awake()
         {
             _button = GetComponentInChildren<Button>(true);
-            _text = _button.GetComponentsInChildren<Text>(true).First(t => t.name.Equals("ButtonText"));
+            _text = GetComponentsInChildren<Text>(true).First(t => t.name.Equals("ActionText"));
             _stackText = _button.GetComponentsInChildren<Text>(true).First(t => t.name.Equals("StackText"));
         }
        
         public void SetViewItem(ISlotAction action)
         {
             _slotAction = action;
-            _button.image.sprite = action.ActionIcon;
+            //_button.image.sprite = action.ActionIcons[0];
+            for (int i = 0; i < _slotAction.ActionIcons.Length; i++)
+            {
+                ActionImages.AddOrUpdateImage(_slotAction.ActionIcons[i]);
+            }
             _text.text = action.DisplayName;
             _stackText.text = action.Stack != null && action.Stack.IsStackable && action.Stack.GetAmount() > 0 ? action.Stack.GetAmount().ToString() : string.Empty;
         }

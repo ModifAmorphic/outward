@@ -290,8 +290,22 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             }
 
             if (profileChanged)
+            {
+                SaveProfile(profile);
                 OnActiveProfileChanged?.Invoke(profile);
+            }
             
+            return profile;
+        }
+        public IHotbarProfileData SetCombatMode(IHotbarProfileData profile, bool combatMode)
+        {
+            if (profile.CombatMode != combatMode)
+            {
+                profile.CombatMode = combatMode;
+                SaveProfile(profile);
+                OnActiveProfileChanged?.Invoke(profile);
+            }
+
             return profile;
         }
 
@@ -312,7 +326,10 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             }
 
             if (profileChanged)
+            {
+                SaveProfile(profile);
                 OnActiveProfileChanged?.Invoke(profile);
+            }
             return profile;
         }
 

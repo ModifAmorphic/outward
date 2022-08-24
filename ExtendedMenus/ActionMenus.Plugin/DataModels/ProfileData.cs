@@ -12,6 +12,7 @@ namespace ModifAmorphic.Outward.ActionMenus.DataModels
         public string Name { get; set; }
         public int Rows { get; set; }
         public int SlotsPerRow { get; set; }
+        public bool CombatMode { get; set; } = true;
 
         [JsonProperty(ItemConverterType = typeof(ConcreteTypeConverter<HotbarData>))]
         public List<IHotbarSlotData> Hotbars { get; set; }

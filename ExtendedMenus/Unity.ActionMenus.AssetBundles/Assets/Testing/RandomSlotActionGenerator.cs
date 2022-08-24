@@ -37,7 +37,7 @@ namespace Assets.Testing
             var slotAction = new SampleSlotAction()
             {
                 DisplayName = _slotNames[nameIndex],
-                ActionIcon = _slotImages[imageIndex],
+                ActionIcons = new ActionSlotIcon[1] { new ActionSlotIcon() { Icon = _slotImages[imageIndex], Name = _slotImages[imageIndex].name } },
                 Cooldown = new RandomCooldown(),
                 Stack = new RandomStack(monoBehaviour)
             };

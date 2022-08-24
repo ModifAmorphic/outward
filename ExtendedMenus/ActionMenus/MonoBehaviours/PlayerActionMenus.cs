@@ -1,5 +1,4 @@
 ﻿using ModifAmorphic.Outward.Unity.ActionMenus;
-using ModifAmorphic.Outward.Unity.ActionMenus.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +19,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public ActionsViewer ActionsViewer;
         //public GameObject BackPanel;
 
-        private IActionMenu[] _actionMenus = new IActionMenu[3];
+        private IActionMenu[] _actionMenus = new IActionMenu[4];
 
         private Func<bool> _exitRequested;
 
@@ -47,6 +46,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _actionMenus[0] = HotkeyCaptureMenu;
             _actionMenus[1] = HotbarSettingsViewer;
             _actionMenus[2] = ActionsViewer;
+            _actionMenus[3] = HotbarSettingsViewer.NewProfileInput;
 
             for (int i = 0; i < _actionMenus.Length; i++)
             {
@@ -57,8 +57,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             }
             _isAwake = true;
         }
-
-
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Update()

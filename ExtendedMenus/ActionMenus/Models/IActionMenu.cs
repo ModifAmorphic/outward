@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine.Events;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenus.Models
+namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
     internal interface IActionMenu
     {

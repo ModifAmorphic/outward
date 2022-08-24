@@ -10,10 +10,10 @@ namespace Assets.Testing
 {
     internal class TestHotbarProfileDataService : IHotbarProfileDataService
     {
-        private string activeProfileName = "Profile 1";
+        private string activeProfileName = TestDefaultProfile.DefaultProfile.Name;
         public Dictionary<string, IHotbarProfileData> HotbarProfiles { get; set; } = new Dictionary<string, IHotbarProfileData>()
         {
-            { "Profile 1", new TestHotbarProfileData() }
+            { TestDefaultProfile.DefaultProfile.Name, TestDefaultProfile.DefaultProfile }
         };
 
         public event Action<IHotbarProfileData> OnActiveProfileChanged;
@@ -76,6 +76,12 @@ namespace Assets.Testing
         public void SetActiveProfile(string name)
         {
             activeProfileName = name;
+        }
+
+        public IHotbarProfileData SetCombatMode(IHotbarProfileData profile, bool combatMode)
+        {
+            profile.CombatMode = combatMode;
+            return profile;
         }
 
         public IHotbarProfileData SetCooldownTimer(IHotbarProfileData profile, bool showTimer, bool preciseTime)

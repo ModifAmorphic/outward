@@ -60,6 +60,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 .AddSingleton<IActionViewData>(new SlotActionViewData(player
                                         , splitPlayer.AssignedCharacter
                                         , psp.GetService<SlotDataService>()
+                                        , (HotbarProfileJsonService)psp.GetService<IHotbarProfileDataService>()
                                         , _getLogger))
                 .AddSingleton<IHotbarNavActions>(new HotbarKeyListener(player));
 

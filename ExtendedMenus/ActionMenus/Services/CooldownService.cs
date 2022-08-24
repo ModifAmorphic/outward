@@ -66,16 +66,27 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Services
         }
         private IEnumerator DisplayCooldown()
         {
+            int timeCeiling;
             while (true)
             {
                 if (_cooldown.GetIsInCooldown())
                 {
                     _image.fillAmount = Mathf.Clamp01(_cooldown.GetProgress());
-                    if (_showTime && ((int)_cooldown.GetSecondsRemaining() > 0 || _isPreciseTime))
-                        if (_cooldown.GetSecondsRemaining() <= 9.9f)
+                    timeCeiling = Mathf.CeilToInt(_cooldown.GetSecondsRemaining());
+                    if (_showTime && (timeCeiling > 0 || _isPreciseTime))
+                    {
+                        if (_isPreciseTime && _cooldown.GetSecondsRemaining() <= 9.9f)
                             _text.text = _cooldown.GetSecondsRemaining().ToString(_timeFormat);
                         else
-                            _text.text = _cooldown.GetSecondsRemaining().ToString("0");
+                            _text.text = timeCeiling.ToString();
+
+                        if (_controller.ActionSlot.CooldownTextBackground.color.a != .9f && !string.IsNullOrWhiteSpace(_text.text))
+                        {
+                            var bgColor = _controller.ActionSlot.CooldownTextBackground.color;
+                            bgColor.a = .8f;
+                            _controller.ActionSlot.CooldownTextBackground.color = bgColor;
+                        }
+                    }
 
                     _hideNeeded = true;
                 }

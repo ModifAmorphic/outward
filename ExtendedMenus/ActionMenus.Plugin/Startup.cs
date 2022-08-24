@@ -93,7 +93,14 @@ namespace ModifAmorphic.Outward.ActionMenus
             psp.transform.SetParent(modActiveGo.transform);
             psp.name = "PlayersServicesProvider";
 
+            var actionSpritesPrefab = actionMenusPrefab.transform.Find("ActionSprites").gameObject;
+            var actionSprites = UnityEngine.Object.Instantiate(actionSpritesPrefab);
+
+            actionSprites.transform.SetParent(modActiveGo.transform);
+            actionSprites.name = "ActionSprites";
+
             UnityEngine.Object.Destroy(pspPrefab);
+            UnityEngine.Object.Destroy(actionSpritesPrefab);
             UnityEngine.Object.Destroy(scriptsGo);
 
             return actionMenusPrefab;

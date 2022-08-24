@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace ModifAmorphic.Outward.ActionMenus.Models
 {
-    internal class ItemCooldown : ICooldown
+    internal class ItemCooldownTracker : ICooldown
     {
         private readonly Skill skill;
 
@@ -24,6 +24,6 @@ namespace ModifAmorphic.Outward.ActionMenus.Models
 
         public float GetSecondsRemaining() => skill.RealCooldown * (1f - skill.CoolDownProgress);
         
-        public ItemCooldown(Item item) => skill = item as Skill;
+        public ItemCooldownTracker(Item item) => skill = item as Skill;
     }
 }

@@ -24,8 +24,14 @@ namespace Assets.Testing
 
         public bool HasDynamicIcon { get; set; }
 
+        public ActionSlotIcon[] ActionIcons { get; set; }
+
+
+        public Dictionary<BarPositions, IBarProgress> ActiveBars => null;
+
         public event Action OnActionRequested;
         public event Action OnEditRequested;
+        public event Action<ActionSlotIcon[]> OnIconsChanged;
 
         public bool GetIsActionRequested()
         {
@@ -47,7 +53,7 @@ namespace Assets.Testing
 
         public void SlotActionUnassigned() { }
 
-        public Sprite GetDynamicIcon()
+        public ActionSlotIcon[] GetDynamicIcons()
         {
             throw new NotImplementedException();
         }

@@ -13,5 +13,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         void ActionSlotUpdate();
         void ActionSlotAwake();
         void ToggleHotkeyEditMode(bool toggle);
+        void HideCooldown();
+        void HideSlider(BarPositions slider);
     }
 }

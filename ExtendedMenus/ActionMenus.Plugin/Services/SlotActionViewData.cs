@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.ActionMenus.Extensions;
+﻿using ModifAmorphic.Outward.ActionMenus.DataModels;
+using ModifAmorphic.Outward.ActionMenus.Extensions;
 using ModifAmorphic.Outward.ActionMenus.Models;
 using ModifAmorphic.Outward.ActionMenus.Settings;
 using ModifAmorphic.Outward.Logging;
@@ -20,8 +21,9 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private readonly Character _character;
         private readonly CharacterInventory _inventory;
         private readonly SlotDataService _slotData;
+        private readonly HotbarProfileJsonService _profileService;
 
-        public SlotActionViewData(Player player, Character character, SlotDataService slotData, Func<IModifLogger> getLogger)
+        public SlotActionViewData(Player player, Character character, SlotDataService slotData, HotbarProfileJsonService profileService, Func<IModifLogger> getLogger)
         {
             if (player == null)
                 throw new ArgumentNullException(nameof(player));
@@ -33,6 +35,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             _character = character;
             _slotData = slotData;
             _inventory = character.Inventory;
+            _profileService = profileService;
             _getLogger = getLogger;
         }
         public IEnumerable<IActionsDisplayTab> GetActionsTabData()
@@ -43,30 +46,28 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             {
                 DisplayName = ActionMenuSettings.ActionViewer.SkillsTab,
                 TabOrder = tabOrder++,
-                GetSlotActionsQuery = () => _inventory.SkillKnowledge.GetLearnedItems().Select(s => GetSlotAction(s))
+                GetSlotActionsQuery = () => GetSkills()
             });
 
             displays.Add(new ActionsDisplayTab()
             {
                 DisplayName = ActionMenuSettings.ActionViewer.ConsumablesTab,
                 TabOrder = tabOrder++,
-                GetSlotActionsQuery = () => _inventory.GetOwnedItems(TagSourceManager.Consumable)
-                                                      .GroupBy(i => i.ItemID)
-                                                      .Select(i => GetSlotAction(i.First()))
+                GetSlotActionsQuery = () => GetConsumables()
             });
 
             displays.Add(new ActionsDisplayTab()
             {
                 DisplayName = ActionMenuSettings.ActionViewer.DeployablesTab,
                 TabOrder = tabOrder++,
-                GetSlotActionsQuery = () => _inventory.GetOwnedItems(TagSourceManager.Deployable).Select(s => GetSlotAction(s))
+                GetSlotActionsQuery = () => GetDeployables()
             });
 
             displays.Add(new ActionsDisplayTab()
             {
                 DisplayName = ActionMenuSettings.ActionViewer.EquippedTab,
                 TabOrder = tabOrder++,
-                GetSlotActionsQuery = () => _inventory.Equipment.EquipmentSlots.Where(s => s != null && s.HasItemEquipped).Select(e => GetSlotAction(e.EquippedItem))
+                GetSlotActionsQuery = () => GetEquipped()
             });
 
             displays.Add(new ActionsDisplayTab()
@@ -80,7 +81,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             {
                 DisplayName = ActionMenuSettings.ActionViewer.ArmorTab,
                 TabOrder = tabOrder++,
-                GetSlotActionsQuery = () => _inventory.GetOwnedItems(TagSourceManager.Armor).Select(s => GetSlotAction(s))
+                GetSlotActionsQuery = () => GetArmor()
             });
 
             return displays;
@@ -88,15 +89,15 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
         public IEnumerable<ISlotAction> GetAllActions()
         {
-            var allItems = new List<Item>();
+            var allItems = new List<ISlotAction>();
 
-            allItems.AddRange(_inventory.Equipment.EquipmentSlots.Where(s => s != null && s.HasItemEquipped).Select(e => e.EquippedItem));
+            allItems.AddRange(GetArmor());
+            allItems.AddRange(GetWeapons());
+            allItems.AddRange(GetEquipped());
+            allItems.AddRange(GetDeployables());
+            allItems.AddRange(GetConsumables());
 
-            allItems.AddRange(_inventory.Pouch.GetContainedItems());
-            if (_inventory.HasABag)
-                allItems.AddRange(_inventory.EquippedBag.Container.GetContainedItems());
-
-            return allItems.Where(i => i.IsQuickSlotable).Select(i => GetSlotAction(i));
+            return allItems.OrderBy(i => i.DisplayName);
         }
         public IEnumerable<ISlotAction> GetWeapons()
         {
@@ -108,14 +109,40 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             
             return allWeapons;
         }
+        public IEnumerable<ISlotAction> GetSkills() => _inventory.SkillKnowledge.GetLearnedItems().Select(s => GetSlotAction(s));
+        public IEnumerable<ISlotAction> GetConsumables() => _inventory.GetOwnedItems(TagSourceManager.Consumable)
+                                                      .GroupBy(i => i.ItemID)
+                                                      .Select(i => GetSlotAction(i.First()));
+        public IEnumerable<ISlotAction> GetDeployables() => _inventory.GetOwnedItems(TagSourceManager.Deployable).Select(s => GetSlotAction(s));
+
+        public IEnumerable<ISlotAction> GetEquipped() => _inventory.Equipment.EquipmentSlots.Where(s => s != null && s.HasItemEquipped).Select(e => GetSlotAction(e.EquippedItem));
+        public IEnumerable<ISlotAction> GetArmor() => _inventory.GetOwnedItems(TagSourceManager.Armor).Select(s => GetSlotAction(s));
+
+
         private ISlotAction GetSlotAction(Item item)
         {
-            var slotAction = new ItemSlotAction(item, _player, _character, _slotData, _getLogger)
+            if (item is Skill skill)
             {
-                Cooldown = new ItemCooldown(item),
-                Stack = item.IsStackable() ? item.ToStackable(_character.Inventory) : null
-            };
-            return slotAction;
+                return new SkillSlotAction(skill, _player, _character, _slotData, _profileService.GetActiveProfile()?.CombatMode ?? true, _getLogger)
+                {
+                    Cooldown = new ItemCooldownTracker(item),
+                };
+            }
+            else if (item is Equipment equipment)
+            {
+                return new EquipmentSlotAction(equipment, _player, _character, _slotData, _profileService.GetActiveProfile()?.CombatMode ?? true, _getLogger)
+                {
+                    Cooldown = new ItemCooldownTracker(item),
+                };
+            }
+            else
+            {
+                return new ItemSlotAction(item, _player, _character, _slotData, _profileService.GetActiveProfile()?.CombatMode ?? true, _getLogger)
+                {
+                    Cooldown = new ItemCooldownTracker(item),
+                    Stack = item.IsStackable() ? item.ToStackable(_character.Inventory) : null
+                };
+            }
         }
     }
 }

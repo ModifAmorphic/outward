@@ -5,13 +5,13 @@ using System.Text;
 
 namespace ModifAmorphic.Outward.ActionMenus.Models
 {
-    internal class Stackable : IStackable
+    internal class StackTracker : IStackable
     {
         private readonly Item _item;
         private readonly CharacterInventory _inventory;
         public bool IsStackable => true;
 
-        public Stackable(Item item, CharacterInventory inventory)
+        public StackTracker(Item item, CharacterInventory inventory)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));

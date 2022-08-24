@@ -1,6 +1,5 @@
 using ModifAmorphic.Outward.Unity.ActionMenus.Controllers;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
-using ModifAmorphic.Outward.Unity.ActionMenus.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,6 +17,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public UnityEvent<int> OnRowsChanged;
         public UnityEvent<int> OnSlotsChanged;
 
+        public NewProfileInput NewProfileInput;
         public PlayerActionMenus PlayerMenu;
 
         public Dropdown ProfileDropdown;
@@ -28,6 +28,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public Toggle ShowCooldownTimer;
         public Toggle ShowPrecisionTime;
+        public Toggle CombatMode;
 
         public Dropdown EmptySlotDropdown;
 
@@ -37,7 +38,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private IHotbarProfileData _activeProfile => GetProfileData().GetActiveProfile();
 
-        public bool IsShowing => gameObject.activeSelf;
+        public bool IsShowing => gameObject.activeSelf && !NewProfileInput.IsShowing;
 
         public UnityEvent OnShow { get; } = new UnityEvent();
 
@@ -73,6 +74,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public void Hide()
         {
             Debug.Log("HotbarSettingsViewer::Hide");
+            if (NewProfileInput.IsShowing)
+            {
+                NewProfileInput.Hide();
+                return;
+            }
             gameObject.SetActive(false);
             OnHide?.Invoke();
         }
@@ -84,15 +90,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             RowAmountInput.SetAmount(_activeProfile.Rows);
             SlotAmountInput.SetAmount(_activeProfile.SlotsPerRow);
 
-            ProfileDropdown.ClearOptions();
-            var profiles = GetProfileData().GetProfileNames();
-            var profileOptions = profiles.OrderBy(p => p).Select(p => new Dropdown.OptionData(p)).ToList();
-            profileOptions.Add(new Dropdown.OptionData("[New Profile]"));
-            ProfileDropdown.AddOptions(profileOptions);
-            ProfileDropdown.value = profileOptions.FindIndex(o => o.text.Equals(_activeProfile.Name, System.StringComparison.InvariantCultureIgnoreCase));
+            SetProfiles();
 
             ShowCooldownTimer.isOn = config?.ShowCooldownTime ?? false;
             ShowPrecisionTime.isOn = config?.PreciseCooldownTime ?? false;
+            CombatMode.isOn = _activeProfile.CombatMode;
 
             EmptySlotDropdown.ClearOptions();
             var imageOptions = Enum.GetNames(typeof(EmptySlotOptions)).Select(name => new Dropdown.OptionData(name)).ToList();
@@ -103,6 +105,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         }
         private void HookControls()
         {
+            ProfileDropdown.onValueChanged.AddListener(SelectProfile);
+            
+            NewProfileInput.OnHide.AddListener(SetProfiles);
+
             BarAmountInput.OnValueChanged.AddListener(amount =>
             {
                 if (_activeProfile.Hotbars.Count < amount)
@@ -133,6 +139,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             ShowPrecisionTime.onValueChanged.AddListener(isOn =>
                 GetProfileData().SetCooldownTimer(_activeProfile, ShowCooldownTimer.isOn, ShowPrecisionTime.isOn)
             );
+            CombatMode.onValueChanged.AddListener(isOn =>
+                GetProfileData().SetCombatMode(_activeProfile, CombatMode.isOn)
+            );
 
             EmptySlotDropdown.onValueChanged.AddListener(value =>
                 GetProfileData().SetEmptySlotView(_activeProfile, (EmptySlotOptions)value)
@@ -145,6 +154,26 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             Hotbars.Controller.ToggleActionSlotEdits(true);
             PlayerMenu.HotkeyCaptureMenu.Show();
             Hide();
+        }
+        private void SetProfiles()
+        {
+            ProfileDropdown.ClearOptions();
+            var profiles = GetProfileData().GetProfileNames();
+            var profileOptions = profiles.OrderBy(p => p).Select(p => new Dropdown.OptionData(p)).ToList();
+            profileOptions.Add(new Dropdown.OptionData("[New Profile]"));
+            ProfileDropdown.AddOptions(profileOptions);
+            ProfileDropdown.value = profileOptions.FindIndex(o => o.text.Equals(_activeProfile.Name, System.StringComparison.InvariantCultureIgnoreCase));
+        }
+        private void SelectProfile(int profileIndex)
+        {
+            if (profileIndex < ProfileDropdown.options.Count - 1)
+            {
+                GetProfileData().SetActiveProfile(ProfileDropdown.options[profileIndex].text);
+            }
+            else
+            {
+                NewProfileInput.Show(GetProfileData());
+            }
         }
     }
 }

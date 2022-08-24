@@ -17,6 +17,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private int _tabCounter = 0;
         private int _lastSelectedId = 0;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+        private void Awake()
+        {
+            BaseActionGo.SetActive(false);
+        }
+
         public Button AddViewTab(string displayText)
         {
             var newViewGo = Instantiate(BaseActionGo, this.transform);

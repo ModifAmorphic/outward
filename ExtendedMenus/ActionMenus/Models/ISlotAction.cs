@@ -10,10 +10,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         string DisplayName { get; }
         ICooldown Cooldown { get; }
         IStackable Stack { get; }
+        Dictionary<BarPositions, IBarProgress> ActiveBars { get; }
         bool HasDynamicIcon { get; }
-        Sprite ActionIcon { get; }
+        ActionSlotIcon[] ActionIcons { get; }
         bool CheckOnUpdate { get; }
-        Sprite GetDynamicIcon();
+        ActionSlotIcon[] GetDynamicIcons();
         bool GetIsActionRequested();
         bool GetEnabled();
         bool GetIsEditRequested();
@@ -23,5 +24,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         event Action OnActionRequested;
         event Action OnEditRequested;
+        event Action<ActionSlotIcon[]> OnIconsChanged;
     }
 }

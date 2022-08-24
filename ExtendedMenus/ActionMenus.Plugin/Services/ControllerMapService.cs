@@ -6,8 +6,6 @@ using ModifAmorphic.Outward.ActionMenus.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
-using ModifAmorphic.Outward.Unity.ActionMenus.Data;
-using ModifAmorphic.Outward.Unity.ActionMenus.Models;
 using Rewired;
 using System;
 using System.Collections.Generic;
@@ -29,7 +27,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private readonly HotbarProfileJsonService _profileData;
         private readonly HotbarService _hotbarService;
         private readonly Player _player;
-        private readonly LevelCoroutines _coroutine;
+        private readonly ModifCoroutine _coroutine;
 
         private const string ActionSlotsPlayer0Key = "RewiredData&amp;playerName=Player0&amp;dataType=ControllerMap&amp;controllerMapType=KeyboardMap&amp;categoryId=131000&amp;layoutId=0&amp;hardwareIdentifier=Keyboard";
         private const string ActionSlotsPlayer1Key = "RewiredData&amp;playerName=Player1&amp;dataType=ControllerMap&amp;controllerMapType=KeyboardMap&amp;categoryId=131000&amp;layoutId=0&amp;hardwareIdentifier=Keyboard";
@@ -39,7 +37,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                                 HotbarProfileJsonService profileData,
                                 HotbarService hotbarService,
                                 Player player,
-                                LevelCoroutines coroutine,
+                                ModifCoroutine coroutine,
                                 HotbarSettings settings, Func<IModifLogger> getLogger)
         {
             (_captureDialog, _profileData, _hotbarService, _player, _coroutine, _settings, _getLogger) = (captureDialog, profileData, hotbarService, player, coroutine, settings, getLogger);

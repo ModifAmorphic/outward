@@ -52,7 +52,7 @@ namespace Assets.Testing
             int imageIndex = random.Next(0, _slotImages.Length - 1);
             var slotAction = new SampleSlotAction()
             {
-                ActionIcon = _slotImages[imageIndex],
+                ActionIcons = new ActionSlotIcon[1] { new ActionSlotIcon() { Icon = _slotImages[imageIndex], Name = _slotImages[imageIndex].name } },
                 Cooldown = new RandomCooldown(),
                 Stack = new RandomStack(monoBehaviour)
             };

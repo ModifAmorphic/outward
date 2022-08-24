@@ -49,12 +49,18 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private Button _actionButton;
         public Button ActionButton => _actionButton;
 
-        private Image _actionImage;
-        public Image ActionImage  => _actionImage;
+        private ActionImages _actionImages;
+        public ActionImages ActionImages => _actionImages;
+
+        //private Image _actionImage;
+        //public Image ActionImage  => _actionImage;
         
         //Cooldown Resources
         private Image _cooldownImage;
         public Image CooldownImage => _cooldownImage;
+
+        private Image _cooldownTextBackground;
+        public Image CooldownTextBackground => _cooldownTextBackground;
 
         private Text _cooldownText;
         public Text CooldownText => _cooldownText;
@@ -71,6 +77,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         //Border around the ActionSlot
         private Image _borderImage;
         public Image BorderImage => _borderImage;
+
+
+        private Dictionary<BarPositions, ProgressBar> _progressBars = new Dictionary<BarPositions, ProgressBar>();
+        public Dictionary<BarPositions, ProgressBar> ProgressBars => _progressBars;
 
         private IActionSlotController _controller;
         public IActionSlotController Controller => _controller;
@@ -111,11 +121,17 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _borderImage = _slotPanel.GetComponentsInChildren<Image>(true).First(i => i.name == "ActionBorder");
             _actionButton = _slotPanel.GetComponentInChildren<Button>(true);
             _mouseClickListener = _actionButton.GetComponent<MouseClickListener>();
+            _actionImages = _actionButton.GetComponentInChildren<ActionImages>();
 
-            _actionImage = _actionButton.GetComponent<Image>();
+            _progressBars.Add(BarPositions.Top, _actionButton.GetComponentsInChildren<ProgressBar>().First(s => s.name == "TopBar"));
+            _progressBars.Add(BarPositions.Right, _actionButton.GetComponentsInChildren<ProgressBar>().First(s => s.name == "RightBar"));
+            _progressBars.Add(BarPositions.Bottom, _actionButton.GetComponentsInChildren<ProgressBar>().First(s => s.name == "BottomBar"));
+            _progressBars.Add(BarPositions.Left, _actionButton.GetComponentsInChildren<ProgressBar>().First(s => s.name == "LeftBar"));
+            //_actionImage = _actionButton.GetComponent<Image>();
 
             _stackText = _actionButton.GetComponentsInChildren<Text>().First(t => t.name == "StackText");
             _cooldownText = _actionButton.GetComponentsInChildren<Text>().First(t => t.name == "CooldownText");
+            _cooldownTextBackground = _actionButton.GetComponentsInChildren<Image>().First(i => i.name == "CooldownTextBackground");
             _cooldownImage = _actionButton.GetComponentsInChildren<Image>().First(i => i.name == "CooldownImage");
             _emptyImage = _actionButton.GetComponentsInChildren<Image>().First(i => i.name == "EmptyImage");
         }

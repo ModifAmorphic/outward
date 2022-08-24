@@ -23,78 +23,6 @@ namespace ModifAmorphic.Outward.ActionMenus.Settings
                     new SlotData()
                     {
                         SlotIndex = 0,
-                        Config = new ActionConfig() { 
-                            HotkeyText = "1",
-                            RewiredActionName = RewiredConstants.ActionSlots.Actions[0].name,
-                            RewiredActionId = RewiredConstants.ActionSlots.Actions[0].id,
-                        }
-                    },
-                    new SlotData()
-                    {
-                        SlotIndex = 1,
-                        Config = new ActionConfig() {
-                            HotkeyText = "2",
-                            RewiredActionName = RewiredConstants.ActionSlots.Actions[1].name,
-                            RewiredActionId = RewiredConstants.ActionSlots.Actions[1].id,
-                        }
-                    },
-                    new SlotData()
-                    {
-                        SlotIndex = 2,
-                        Config = new ActionConfig() {
-                            HotkeyText = "3",
-                            RewiredActionName = RewiredConstants.ActionSlots.Actions[2].name,
-                            RewiredActionId = RewiredConstants.ActionSlots.Actions[2].id,
-                        }
-                    },
-                    new SlotData()
-                    {
-                        SlotIndex = 3,
-                        Config = new ActionConfig() {
-                            HotkeyText = "4",
-                            RewiredActionName = RewiredConstants.ActionSlots.Actions[3].name,
-                            RewiredActionId = RewiredConstants.ActionSlots.Actions[3].id,
-                        }
-                    },
-                    new SlotData()
-                    {
-                        SlotIndex = 4,
-                        Config = new ActionConfig() {
-                            HotkeyText = "5",
-                            RewiredActionName = RewiredConstants.ActionSlots.Actions[4].name,
-                            RewiredActionId = RewiredConstants.ActionSlots.Actions[4].id,
-                        }
-                    },
-                    new SlotData()
-                    {
-                        SlotIndex = 5,
-                        Config = new ActionConfig() {
-                            HotkeyText = "6",
-                            RewiredActionName = RewiredConstants.ActionSlots.Actions[5].name,
-                            RewiredActionId = RewiredConstants.ActionSlots.Actions[5].id,
-                        }
-                    },
-                    new SlotData()
-                    {
-                        SlotIndex = 6,
-                        Config = new ActionConfig() {
-                            HotkeyText = "7",
-                            RewiredActionName = RewiredConstants.ActionSlots.Actions[6].name,
-                            RewiredActionId = RewiredConstants.ActionSlots.Actions[6].id,
-                        }
-                    },
-                    new SlotData()
-                    {
-                        SlotIndex = 7,
-                        Config = new ActionConfig() {
-                            HotkeyText = "8",
-                            RewiredActionName = RewiredConstants.ActionSlots.Actions[7].name,
-                            RewiredActionId = RewiredConstants.ActionSlots.Actions[7].id,
-                        }
-                    },
-                    new SlotData()
-                    {
-                        SlotIndex = 8,
                         Config = new ActionConfig() {
                             HotkeyText = "Q",
                             RewiredActionName = RewiredConstants.ActionSlots.Actions[8].name,
@@ -103,7 +31,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Settings
                     },
                     new SlotData()
                     {
-                        SlotIndex = 9,
+                        SlotIndex = 1,
                         Config = new ActionConfig() {
                             HotkeyText = "E",
                             RewiredActionName = RewiredConstants.ActionSlots.Actions[9].name,
@@ -112,13 +40,85 @@ namespace ModifAmorphic.Outward.ActionMenus.Settings
                     },
                     new SlotData()
                     {
-                        SlotIndex = 10,
+                        SlotIndex = 2,
                         Config = new ActionConfig() {
                             HotkeyText = "R",
                             RewiredActionName = RewiredConstants.ActionSlots.Actions[10].name,
                             RewiredActionId = RewiredConstants.ActionSlots.Actions[10].id,
                         }
-                    }
+                    },
+                    new SlotData()
+                    {
+                        SlotIndex = 3,
+                        Config = new ActionConfig() { 
+                            HotkeyText = "1",
+                            RewiredActionName = RewiredConstants.ActionSlots.Actions[0].name,
+                            RewiredActionId = RewiredConstants.ActionSlots.Actions[0].id,
+                        }
+                    },
+                    new SlotData()
+                    {
+                        SlotIndex = 4,
+                        Config = new ActionConfig() {
+                            HotkeyText = "2",
+                            RewiredActionName = RewiredConstants.ActionSlots.Actions[1].name,
+                            RewiredActionId = RewiredConstants.ActionSlots.Actions[1].id,
+                        }
+                    },
+                    new SlotData()
+                    {
+                        SlotIndex = 5,
+                        Config = new ActionConfig() {
+                            HotkeyText = "3",
+                            RewiredActionName = RewiredConstants.ActionSlots.Actions[2].name,
+                            RewiredActionId = RewiredConstants.ActionSlots.Actions[2].id,
+                        }
+                    },
+                    new SlotData()
+                    {
+                        SlotIndex = 6,
+                        Config = new ActionConfig() {
+                            HotkeyText = "4",
+                            RewiredActionName = RewiredConstants.ActionSlots.Actions[3].name,
+                            RewiredActionId = RewiredConstants.ActionSlots.Actions[3].id,
+                        }
+                    },
+                    new SlotData()
+                    {
+                        SlotIndex = 7,
+                        Config = new ActionConfig() {
+                            HotkeyText = "5",
+                            RewiredActionName = RewiredConstants.ActionSlots.Actions[4].name,
+                            RewiredActionId = RewiredConstants.ActionSlots.Actions[4].id,
+                        }
+                    },
+                    new SlotData()
+                    {
+                        SlotIndex = 8,
+                        Config = new ActionConfig() {
+                            HotkeyText = "6",
+                            RewiredActionName = RewiredConstants.ActionSlots.Actions[5].name,
+                            RewiredActionId = RewiredConstants.ActionSlots.Actions[5].id,
+                        }
+                    },
+                    new SlotData()
+                    {
+                        SlotIndex = 9,
+                        Config = new ActionConfig() {
+                            HotkeyText = "7",
+                            RewiredActionName = RewiredConstants.ActionSlots.Actions[6].name,
+                            RewiredActionId = RewiredConstants.ActionSlots.Actions[6].id,
+                        }
+                    },
+                    new SlotData()
+                    {
+                        SlotIndex = 10,
+                        Config = new ActionConfig() {
+                            HotkeyText = "8",
+                            RewiredActionName = RewiredConstants.ActionSlots.Actions[7].name,
+                            RewiredActionId = RewiredConstants.ActionSlots.Actions[7].id,
+                        }
+                    },
                 }
             }
         };
@@ -129,6 +129,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Settings
             Rows = 1,
             SlotsPerRow = hotbarAssignments.First().Slots.Count,
             Hotbars = hotbarAssignments,
+            CombatMode = true,
             NextRewiredActionId = RewiredConstants.ActionSlots.NextHotbarAction.id,
             NextRewiredActionName = RewiredConstants.ActionSlots.NextHotbarAction.name,
             PrevRewiredActionId = RewiredConstants.ActionSlots.PreviousHotbarAction.id,

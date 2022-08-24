@@ -67,11 +67,15 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             QuickSlotPanelPatches.StartInitAfter += DisableKeyboardQuickslots;
             QuickSlotControllerSwitcherPatches.StartInitAfter += SwapCanvasGroup;
 
-            CharacterManagerPatches.AfterApplyQuickSlots += (c) =>
+            NetworkLevelLoader.Instance.onOverallLoadingDone += () =>
             {
-                if (c.UID == _character.UID)
-                    QueueActionSlotAssignments();
+                AssignSlotActions(GetOrCreateActiveProfile());
             };
+            //CharacterManagerPatches.AfterApplyQuickSlots += (c) =>
+            //{
+            //    if (c.UID == _character.UID)
+            //        QueueActionSlotAssignments();
+            //};
         }
 
         public void Start()
@@ -162,18 +166,27 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
         public void QueueActionSlotAssignments()
         {
-            _levelCoroutines.InvokeAfterLevelLoaded(NetworkLevelLoader.Instance, () => AssignSlotActions(GetOrCreateActiveProfile()), 300);
+            //var invokeTime = DateTime.Now.AddSeconds(10);
+            //_levelCoroutines.StartRoutine(
+            //    _levelCoroutines.InvokeAfter(() => DateTime.Now >= invokeTime, () => AssignSlotActions(GetOrCreateActiveProfile()), 30)
+            //);
+            //_levelCoroutines.InvokeAfterLevelAndPlayersLoaded(NetworkLevelLoader.Instance, () => AssignSlotActions(GetOrCreateActiveProfile()), 300);
         }
         
         public void AssignSlotActions(IHotbarProfileData profile)
         {
+            //refresh item displays
+            _characterUI.ShowMenu(CharacterUI.MenuScreens.Inventory);
+            _characterUI.HideMenu(CharacterUI.MenuScreens.Inventory);
+
             _saveDisabled = true;
+            //_characterUI.InventoryPanel.RefreshEquippedBag
             for (int hb = 0; hb < profile.Hotbars.Count; hb++)
             {
                 for (int s = 0; s < profile.Hotbars[hb].Slots.Count; s++)
                 {
                     var slot = profile.Hotbars[hb].Slots[s] as SlotData;
-                    if (!_slotData.TryGetItemSlotAction(slot, out var slotAction))
+                    if (!_slotData.TryGetItemSlotAction(slot, profile.CombatMode, out var slotAction))
                     {
                         _hotbars.Controller.GetActionSlots()[hb][s].Controller.AssignEmptyAction();
                     }

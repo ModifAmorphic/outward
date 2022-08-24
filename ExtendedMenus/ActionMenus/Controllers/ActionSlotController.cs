@@ -1,5 +1,4 @@
-﻿using ModifAmorphic.Outward.Unity.ActionMenus.Models;
-using ModifAmorphic.Outward.Unity.ActionMenus.Services;
+﻿using ModifAmorphic.Outward.Unity.ActionMenus.Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,6 +15,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         public ActionSlot ActionSlot { get; private set; }
 
         private CooldownService _cooldownService;
+        private readonly Dictionary<BarPositions, ProgressBarService> _progressBarServices = new Dictionary<BarPositions, ProgressBarService>();
         private StackService _stackService;
         private EnableToggleService _toggleService;
         private Coroutine _iconCoroutine;
@@ -34,30 +34,35 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         public void AssignEmptyAction()
         {
             UnassignSlotAction();
-            ActionSlot.ActionImage.overrideSprite = null;
-            ActionSlot.ActionImage.sprite = null;
-            ActionSlot.CooldownImage.enabled = false;
-            ActionSlot.CooldownText.enabled = false;
+            //ActionSlot.ActionImage.overrideSprite = null;
+            //ActionSlot.ActionImage.sprite = null;
+            ActionSlot.ActionImages.ClearImages();
+            DisableCooldownService();
             ActionSlot.StackText.enabled = false;
+
+            foreach (var bar in ActionSlot.ProgressBars.Values)
+                bar.gameObject.SetActive(false);
 
             if (ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Transparent)
             {
                 var color = Color.grey;
                 color.a = .05f;
-                ActionSlot.ActionImage.color = color;
-                ActionSlot.ActionImage.enabled = true;
+                //ActionSlot.ActionImage.color = color;
+                //ActionSlot.ActionImage.enabled = true;
                 ActionSlot.EmptyImage.gameObject.SetActive(false);
+                var emptyImage = ActionSlot.ActionImages.AddOrUpdateImage(new ActionSlotIcon() { Name = "emptyTransparentAction", Icon = null });
+                emptyImage.color = color;
                 ActionSlot.CanvasGroup.alpha = 1;
             }
             else if (ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Image)
             {
-                ActionSlot.ActionImage.enabled = false;
+                //ActionSlot.ActionImage.enabled = false;
                 ActionSlot.EmptyImage.gameObject.SetActive(true);
                 ActionSlot.CanvasGroup.alpha = 1;
             }
             else if (ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Hidden)
             {
-                ActionSlot.ActionImage.enabled = false;
+                //ActionSlot.ActionImage.enabled = false;
                 ActionSlot.EmptyImage.gameObject.SetActive(false);
                 ActionSlot.CanvasGroup.alpha = 0;
             }
@@ -65,6 +70,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             //ActionSlot.HotbarsContainer.HasChanges = true;
 
         }
+
         public void AssignSlotAction(ISlotAction slotAction)
         {
             if (slotAction == null)
@@ -73,10 +79,17 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             UnassignSlotAction();
 
             EnableActiveSlot();
+
+            ActionSlot.SlotAction = slotAction;
+            ActionSlot.SlotAction.OnActionRequested += OnActionRequested;
+            ActionSlot.SlotAction.OnEditRequested += OnEditRequested;
             if (!slotAction.HasDynamicIcon)
-                AssignSlotIcon(slotAction.ActionIcon);
+                ActionSlot.SlotAction.OnIconsChanged += AssignSlotIcons;
+
+            if (!slotAction.HasDynamicIcon)
+                AssignSlotIcons(slotAction.ActionIcons);
             else
-                AssignDynamicIcon(slotAction.GetDynamicIcon);
+                AssignDynamicIcon(slotAction.GetDynamicIcons);
             
             ActionSlot.EmptyImage.gameObject.SetActive(false);
 
@@ -90,11 +103,15 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             else
                 DisableStackService();
 
+            foreach (var kvp in ActionSlot.ProgressBars)
+            {
+                if (slotAction.ActiveBars != null && slotAction.ActiveBars.TryGetValue(kvp.Key, out var bar) && bar.IsEnabled)
+                    EnableBarService(bar);
+                else
+                    DisableBarService(kvp.Key);
+            }
+     
             StartEnableToggleService(slotAction.GetEnabled);
-
-            ActionSlot.SlotAction = slotAction;
-            ActionSlot.SlotAction.OnActionRequested += OnActionRequested;
-            ActionSlot.SlotAction.OnEditRequested += OnEditRequested;
 
             slotAction.SlotActionAssigned(ActionSlot);
             //ActionSlot.HotbarsContainer.HasChanges = true;
@@ -107,6 +124,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             else
                 AssignEmptyAction();
         }
+
         public void ActionSlotAwake()
         {
             Refresh();
@@ -134,6 +152,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 ActionSlot.HotbarsContainer.ActionsViewer.Show(ActionSlot.SlotId);
             }
         }
+
         public void Configure(IActionSlotConfig config)
         {
             ActionSlot.Config = config ?? throw new ArgumentNullException(nameof(config));
@@ -148,9 +167,29 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         public void HideCooldown()
         {
             ActionSlot.CooldownImage.fillAmount = 0f;
-            ActionSlot.CooldownText.text = string.Empty;
+            if (ActionSlot.CooldownText.gameObject.activeSelf)
+            {
+                ActionSlot.CooldownText.text = string.Empty;
+                var bgColor = ActionSlot.CooldownTextBackground.color;
+                bgColor.a = 0f;
+                ActionSlot.CooldownTextBackground.color = bgColor;
+            }
         }
+
         public void HideStackAmount() => ActionSlot.StackText.text = string.Empty;
+
+        public void ShowSlider(BarPositions barPosition)
+        {
+            if (!ActionSlot.ProgressBars[barPosition].gameObject.activeSelf)
+                ActionSlot.ProgressBars[barPosition].gameObject.SetActive(true);
+
+        }
+
+        public void HideSlider(BarPositions barPosition)
+        {
+            if (ActionSlot.ProgressBars[barPosition].gameObject.activeSelf)
+                ActionSlot.ProgressBars[barPosition].gameObject.SetActive(false);
+        }
 
         public void ToggleInteractive(bool interactive)
         {
@@ -166,10 +205,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         
         public void ToggleEnabled(bool enabled)
         {
-            if (enabled && ActionSlot.ActionButton.colors.normalColor != Color.white)
-                ActionSlot.SetButtonNormalColor(Color.white);
-            else if (!enabled && ActionSlot.ActionButton.colors.normalColor != ActionSlot.DisabledColor)
-                ActionSlot.SetButtonNormalColor(ActionSlot.DisabledColor);
+            ActionSlot.ActionImages.ToggleEnabled(enabled);
+            //if (enabled && ActionSlot.ActionButton.colors.normalColor != Color.white)
+            //    ActionSlot.SetButtonNormalColor(Color.white);
+            //else if (!enabled && ActionSlot.ActionButton.colors.normalColor != ActionSlot.DisabledColor)
+            //    ActionSlot.SetButtonNormalColor(ActionSlot.DisabledColor);
         }
         
         public void ToggleHotkeyEditMode(bool toggle)
@@ -180,11 +220,13 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             else if (!toggle && ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Hidden && ActionSlot.SlotAction == null)
                 ActionSlot.CanvasGroup.alpha = 0;
         }
+
         private void OnActionRequested()
         {
             if (ActionSlot.ParentCanvas != null && ActionSlot.ParentCanvas.enabled && ActionSlot.SlotAction?.TargetAction != null && ActionSlot.ActionButton.interactable)
                 ActionSlot.SlotAction.TargetAction.Invoke();
         }
+
         private void OnEditRequested()
         {
             if (ActionSlot.ParentCanvas != null && ActionSlot.ParentCanvas.enabled && ActionSlot.ActionButton.interactable)
@@ -196,17 +238,19 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             if (ActionSlot.ParentCanvas != null && ActionSlot.ParentCanvas.enabled && ActionSlot.ActionButton.interactable)
                 ActionSlot.HotkeyCapture.ShowDialog(ActionSlot.SlotIndex, HotkeyCategories.ActionSlot);
         }
+
         private void EnableActiveSlot()
         {
             ActionSlot.CooldownImage.enabled = true;
             ActionSlot.CooldownText.enabled = true;
             ActionSlot.StackText.enabled = true;
-            ActionSlot.ActionImage.enabled = true;
+            //ActionSlot.ActionImage.enabled = true;
             ActionSlot.CanvasGroup.alpha = 1;
 
             ActionSlot.CooldownText.text = String.Empty;
             ActionSlot.StackText.text = String.Empty;
         }
+
         private void UnassignSlotAction()
         {
             if (ActionSlot.SlotAction != null)
@@ -222,21 +266,42 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             }
         }
 
-        private void AssignSlotIcon(Sprite spriteIcon)
+        private ActionSlotIcon[] dynamicSprites;
+        private void AssignSlotIcons(ActionSlotIcon[] spriteIcons)
         {
+            string logMsg = string.Empty;
             try
             {
-                if (ActionSlot.ActionImage.sprite != spriteIcon)
+                bool spritesChanged = false;
+                if (dynamicSprites != null && dynamicSprites.Length == spriteIcons.Length)
                 {
-                    var color = Color.white;
-                    color.a = 1f;
-                    ActionSlot.ActionImage.color = color;
-                    ActionSlot.ActionImage.sprite = spriteIcon;
+                    for (int i = 0; i < spriteIcons.Length; i++)
+                    {
+                        if (spriteIcons[i].Name != dynamicSprites[i].Name)
+                        {
+                            spritesChanged = true;
+                            break;
+                        }
+                    }
+                }
+                else
+                    spritesChanged = true;
+
+                dynamicSprites = spriteIcons;
+
+                if (spritesChanged)
+                {
+                    ActionSlot.ActionImages.ClearImages();
+                    for (int i = 0; i < spriteIcons.Length; i++)
+                    {
+                        logMsg = $"AssignSlotIcon: ActionSlot.ActionImages == null == {ActionSlot.ActionImages == null}.  spriteIcon[{i}] == null == {spriteIcons[i] == null}";
+                        ActionSlot.ActionImages.AddOrUpdateImage(spriteIcons[i]);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Could not assign spritIcon {spriteIcon?.name} to ActionSlot {ActionSlot?.name}.");
+                Debug.LogError($"Could not assign sprite icons to ActionSlot {ActionSlot?.name}. {logMsg}");
                 Debug.LogException(ex);
             }
         }
@@ -252,14 +317,28 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 _cooldownService.StopTracking();
                 _cooldownService = null;
             }
+            if (ActionSlot.Config.ShowCooldownTime)
+            {
+                ActionSlot.CooldownImage.gameObject.SetActive(true);
+                ActionSlot.CooldownText.gameObject.SetActive(true);
+                ActionSlot.CooldownTextBackground.gameObject.SetActive(true);
+                var bgColor = ActionSlot.CooldownTextBackground.color;
+                bgColor.a = .0f;
+                ActionSlot.CooldownTextBackground.color = bgColor;
+            }
 
             _cooldownService = new CooldownService(ActionSlot.CooldownImage, ActionSlot.CooldownText, ActionSlot.Config.ShowCooldownTime, ActionSlot.Config.PreciseCooldownTime, this);
             _cooldownService.TrackCooldown(cooldown);
         }
+
         private void DisableCooldownService()
         {
             _cooldownService?.StopTracking();
+            ActionSlot.CooldownImage.gameObject.SetActive(false);
+            ActionSlot.CooldownText.gameObject.SetActive(false);
+            ActionSlot.CooldownTextBackground.gameObject.SetActive(false);
         }
+
         private void EnableStackService(Func<int> getStackAmount)
         {
             if (getStackAmount == null)
@@ -272,10 +351,39 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
 
             _stackService.TrackStackAmount(getStackAmount);
         }
+
         private void DisableStackService()
         {
             _stackService?.StopTracking();
         }
+
+        private void EnableBarService(IBarProgress bar)
+        {
+            if (bar == null)
+                throw new ArgumentNullException(nameof(bar));
+
+            if (_progressBarServices.TryGetValue(bar.BarPosition, out var barService))
+            {
+                barService.StopTracking();
+                barService = null;
+                _progressBarServices.Remove(bar.BarPosition);
+            }
+
+            _progressBarServices.Add(bar.BarPosition, new ProgressBarService(ActionSlot.ProgressBars[bar.BarPosition], bar.BarPosition, this));
+            _progressBarServices[bar.BarPosition].TrackSlider(bar);
+        }
+
+        private void DisableBarService(BarPositions barPosition)
+        {
+            if (_progressBarServices.TryGetValue(barPosition, out var barService))
+            {
+                barService.StopTracking();
+                barService = null;
+                _progressBarServices.Remove(barPosition);
+            }
+            HideSlider(barPosition);
+        }
+
         private void StartEnableToggleService(Func<bool> getEnabled)
         {
             if (getEnabled == null)
@@ -287,15 +395,15 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             _toggleService.TrackEnableToggle(getEnabled);
         }
 
-        private void AssignDynamicIcon(Func<Sprite> getIcon)
+        private void AssignDynamicIcon(Func<ActionSlotIcon[]> getIcon)
         {
             _iconCoroutine = ActionSlot.StartCoroutine(AssignIconCoroutine(getIcon));
         }
-        private IEnumerator AssignIconCoroutine(Func<Sprite> getIcon)
+        private IEnumerator AssignIconCoroutine(Func<ActionSlotIcon[]> getIcons)
         {
             while (true)
             {
-                AssignSlotIcon(getIcon.Invoke());
+                AssignSlotIcons(getIcons.Invoke());
                 yield return new WaitForSeconds(Timings.DynamicIconWait);
             }
         }
