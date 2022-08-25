@@ -8,11 +8,9 @@ using UnityEngine;
 
 namespace ModifAmorphic.Outward.ActionMenus.Services
 {
-    internal class DurabilityTracker : IDurability
+    internal class UnequippedDurabilityTracker : IDurability
     {
-        private readonly Equipment _equipment;
-
-        private readonly static Color Grey = new Color(.3f, .3f, .3f, .8f);
+        private readonly static Color Grey = new Color(.3f, .3f, .3f, .75f);
         private readonly static Color Yellow = new Color(0.7830189f, 0.7024478f, 0.04924639f, .8f);
         private readonly static Color Orange = new Color(0.9433962f, 0.5298792f, 0.08603289f, .8f);
         private readonly static Color Red = new Color(0.7169812f, 0.08259042f, 0.03832913f, .9f);
@@ -26,14 +24,17 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         };
         public List<ColorRange> ColorRanges => colorRanges;
 
-        public DurableEquipmentType DurableEquipmentType => _equipment.GetDurableEquipmentType();
+        private readonly DurableEquipmentType _equipmentType;
+        public DurableEquipmentType DurableEquipmentType => _equipmentType;
 
-        public DurableEquipmentSlot DurableEquipmentSlot => _equipment.CurrentEquipmentSlot.SlotType.ToDurableEquipmentSlot();
+        private readonly DurableEquipmentSlot _slot;
+        public DurableEquipmentSlot DurableEquipmentSlot => _slot;
 
-        public float MinimumDisplayValue => .499f;
+        public float MinimumDisplayValue => .0f;
 
-        public DurabilityTracker(Equipment equipment) => (_equipment) = (equipment);
+        public UnequippedDurabilityTracker(DurableEquipmentSlot slot, DurableEquipmentType equipmentType, float durabilityRatio) => (_slot, _equipmentType, _durabilityRatio) = (slot, equipmentType, durabilityRatio);
 
-        public float GetDurabilityRatio() => _equipment.DurabilityRatio;
+        private readonly float _durabilityRatio;
+        public float GetDurabilityRatio() => _durabilityRatio;
     }
 }

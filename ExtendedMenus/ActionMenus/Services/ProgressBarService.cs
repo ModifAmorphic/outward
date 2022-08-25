@@ -60,7 +60,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Services
             while (true)
             {
                 _bar.SetValue(_barProgress.GetProgress());
-                yield return new WaitForSeconds(Timings.SliderWait);
+                yield return new WaitForSeconds(Timings.ProgressBarWait);
             }
         }
 

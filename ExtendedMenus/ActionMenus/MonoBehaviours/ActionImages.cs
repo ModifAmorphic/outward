@@ -50,7 +50,6 @@ public class ActionImages : MonoBehaviour
         else if (!enabled && !_bottomImages.ContainsKey(DisabledKey))
         {
             disabledImage = AddOrUpdateImage(new ActionSlotIcon() { Name = DisabledKey, Icon = null });
-            Debug.Log($"Setting disabled color to ({DisabledColor.r}, {DisabledColor.g}, {DisabledColor.b}, {DisabledColor.a})");
             disabledImage.color = DisabledColor;
         }
     }

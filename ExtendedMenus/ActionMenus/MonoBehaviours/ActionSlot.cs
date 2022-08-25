@@ -135,8 +135,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _cooldownImage = _actionButton.GetComponentsInChildren<Image>().First(i => i.name == "CooldownImage");
             _emptyImage = _actionButton.GetComponentsInChildren<Image>().First(i => i.name == "EmptyImage");
         }
-        
-        public static readonly Color DisabledColor = new Color(0.7843137f, 0.7843137f, 0.7843137f, 0.5019608f); //#C8C8C8;
+
         internal void SetButtonNormalColor(Color color)
         {
             var colorBlock = ActionButton.colors;

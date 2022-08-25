@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
@@ -10,7 +11,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public const float EnabledWait = .25f;
         public const float InteractiveWait = .25f;
         public const float CooldownWait = .05f;
-        public const float SliderWait = 1f;
+        public const float ProgressBarWait = 1f;
         public const float DynamicIconWait = .1f;
+        public const float DurabilityWait = 1f;
     }
 }

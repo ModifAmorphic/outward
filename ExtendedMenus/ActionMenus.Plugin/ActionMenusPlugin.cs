@@ -43,7 +43,7 @@ namespace ModifAmorphic.Outward.ActionMenus
                 var startup = new Startup();
                 logger.LogInfo($"Starting {ModInfo.ModName} {ModInfo.ModVersion}...");
                 _servicesProvider = new ServicesProvider(this);
-                startup.Start(_servicesProvider);
+                startup.Start(harmony, _servicesProvider);
             }
             catch (Exception ex)
             {

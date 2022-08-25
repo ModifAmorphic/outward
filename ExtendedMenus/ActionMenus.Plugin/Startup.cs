@@ -15,6 +15,7 @@ using ModifAmorphic.Outward.ActionMenus.Services;
 using ModifAmorphic.Outward.ActionMenus.Plugin.Services;
 using Rewired;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
+using HarmonyLib;
 
 namespace ModifAmorphic.Outward.ActionMenus
 {
@@ -24,7 +25,7 @@ namespace ModifAmorphic.Outward.ActionMenus
         private Func<IModifLogger> _loggerFactory;
         private IModifLogger Logger => _loggerFactory.Invoke();
 
-        internal void Start(ServicesProvider services)
+        internal void Start(Harmony harmony, ServicesProvider services)
         {
             _services = services;
             var settingsService = new SettingsService(services.GetService<BaseUnityPlugin>(), ModInfo.MinimumConfigVersion);
@@ -61,6 +62,11 @@ namespace ModifAmorphic.Outward.ActionMenus
                                                   services.GetService<LevelCoroutines>(),
                                                   services.GetService<HotbarSettings>(),
                                                   services.GetService<IModifLogger>));
+
+            services.AddSingleton(new DurabilityDisplayStartup(
+                harmony, services, _loggerFactory));
+
+            services.GetService<DurabilityDisplayStartup>().Start();
         }
         public GameObject ConfigureAssetBundle()
         {

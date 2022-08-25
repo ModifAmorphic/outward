@@ -77,7 +77,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Models
             this.HasDynamicIcon = equipment.HasDynamicQuickSlotIcon;
             this.IsCombatModeEnabled = combatModeEnabled;
             if (!equipment.IsIndestructible)
-                this._activeBars.Add(BarPositions.Right, new DurabilityTracker(this, BarPositions.Right));
+                this._activeBars.Add(BarPositions.Right, new DurabilityActionSlotTracker(this, BarPositions.Right));
             //this._activeBars.Add(BarPositions.Right, new DurabilityTracker(equipment, BarPositions.Right));
 
             itemId = equipment.ItemID;
