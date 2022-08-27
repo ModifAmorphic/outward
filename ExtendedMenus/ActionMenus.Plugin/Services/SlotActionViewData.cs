@@ -123,21 +123,21 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         {
             if (item is Skill skill)
             {
-                return new SkillSlotAction(skill, _player, _character, _slotData, _profileService.GetActiveProfile()?.CombatMode ?? true, _getLogger)
+                return new SkillSlotAction(skill, _player, _character, _slotData, _profileService.GetProfile()?.CombatMode ?? true, _getLogger)
                 {
                     Cooldown = new ItemCooldownTracker(item),
                 };
             }
             else if (item is Equipment equipment)
             {
-                return new EquipmentSlotAction(equipment, _player, _character, _slotData, _profileService.GetActiveProfile()?.CombatMode ?? true, _getLogger)
+                return new EquipmentSlotAction(equipment, _player, _character, _slotData, _profileService.GetProfile()?.CombatMode ?? true, _getLogger)
                 {
                     Cooldown = new ItemCooldownTracker(item),
                 };
             }
             else
             {
-                return new ItemSlotAction(item, _player, _character, _slotData, _profileService.GetActiveProfile()?.CombatMode ?? true, _getLogger)
+                return new ItemSlotAction(item, _player, _character, _slotData, _profileService.GetProfile()?.CombatMode ?? true, _getLogger)
                 {
                     Cooldown = new ItemCooldownTracker(item),
                     Stack = item.IsStackable() ? item.ToStackable(_character.Inventory) : null

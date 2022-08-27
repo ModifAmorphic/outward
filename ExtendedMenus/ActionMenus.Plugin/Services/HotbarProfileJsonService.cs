@@ -16,125 +16,73 @@ using System.Linq;
 namespace ModifAmorphic.Outward.ActionMenus.Services
 {
     
-    public class HotbarProfileJsonService : IHotbarProfileDataService
+    public class HotbarProfileJsonService : IHotbarProfileService
     {
         private readonly HotbarSettings _settings;
 
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
 
-        public string ProfilesPath { get; private set; }
-        public string ActiveProfileFile => Path.Combine(ProfilesPath, "profile.json");
         private const string KeyboardMapFileSuffix = "_KeyboardMap.xml";
         public string HotbarsConfigFile = "Hotbars.json";
 
-        private IHotbarProfileData _activeProfile;
+        ProfileService _profileService;
 
-        public event Action<IHotbarProfileData> OnActiveProfileChanged;
+        private HotbarProfileData _hotbarProfile;
 
-        public HotbarProfileJsonService(string profilesPath, HotbarSettings settings, Func<IModifLogger> getLogger)
+        public event Action<IHotbarProfile> OnProfileChanged;
+
+        public HotbarProfileJsonService(ProfileService profileService, HotbarSettings settings, Func<IModifLogger> getLogger)
         {
-            (_settings, _getLogger) = (settings, getLogger);
-            ProfilesPath = profilesPath;
+            (_profileService, _settings, _getLogger) = (profileService, settings, getLogger);
+            profileService.OnActiveProfileChanged += RefreshCachedProfile;
         }
 
-        public IHotbarProfileData GetProfile(string name) => GetProfileData(name);
-
-        public bool TryGetActiveProfileName(out string name)
+        private void RefreshCachedProfile(IActionMenusProfile obj)
         {
-            if (!Directory.Exists(ProfilesPath))
-                Directory.CreateDirectory(ProfilesPath);
-            name = string.Empty;
-            if (File.Exists(ActiveProfileFile))
-            {
-                var json = File.ReadAllText(ActiveProfileFile);
-                var activeProfile = JsonConvert.DeserializeObject<ActiveProfileData>(json);
-
-                name = activeProfile.ActiveProfile;
-            }
-            return !string.IsNullOrEmpty(name);
+            _hotbarProfile = GetProfileData();
+            OnProfileChanged?.Invoke(_hotbarProfile);
         }
 
-        public IHotbarProfileData GetActiveProfile()
+        public IHotbarProfile GetProfile()
         {
-            if (TryGetActiveProfileName(out var name))
-            {
-                if (_activeProfile == null || !_activeProfile.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    _activeProfile = GetProfile(name);
-                }
-            }
-            else
-                _activeProfile = null;
+            if (_hotbarProfile != null)
+                return _hotbarProfile;
 
-            return _activeProfile;
+            _hotbarProfile = GetProfileData();
+            return _hotbarProfile;
         }
 
-        public void SetActiveProfile(string name)
+        public void Save() => Save(GetProfile());
+
+        public void SaveNew(IHotbarProfile hotbarProfile)
         {
-            if (!Directory.Exists(ProfilesPath))
-                Directory.CreateDirectory(ProfilesPath);
-
-            if (TryGetActiveProfileName(out var activeName) && name.Equals(activeName, StringComparison.InvariantCultureIgnoreCase))
-                return;
-
-            var activeProfile = new ActiveProfileData();
-            if (File.Exists(ActiveProfileFile))
-            {
-                var currentJson = File.ReadAllText(ActiveProfileFile);
-                activeProfile = JsonConvert.DeserializeObject<ActiveProfileData>(currentJson);
-            }
-            activeProfile.ActiveProfile = name;
-            var newJson = JsonConvert.SerializeObject(activeProfile, Formatting.Indented);
-            File.WriteAllText(ActiveProfileFile, newJson);
-            
-            OnActiveProfileChanged?.Invoke(GetActiveProfile());
+            Save(hotbarProfile);
+            _hotbarProfile = null;
         }
 
-        public IEnumerable<string> GetProfileNames()
+        private void Save(IHotbarProfile hotbarProfile)
         {
-            if (!Directory.Exists(ProfilesPath))
-                Directory.CreateDirectory(ProfilesPath);
-
-            var dirs = Directory.GetDirectories(ProfilesPath);
-            var names = new List<string>();
-            foreach(var dir in dirs)
-            {
-                if (File.Exists(Path.Combine(dir, HotbarsConfigFile)))
-                    names.Add(new DirectoryInfo(dir).Name);
-            }
-
-            return names;
-        }
-
-        public void SaveProfile(IHotbarProfileData profile)
-        {
-            var json = JsonConvert.SerializeObject(profile, Formatting.Indented);
-            var profileData = ((ProfileData)profile);
-            var profileFile = Path.Combine(GetOrAddProfileDir(profile.Name), HotbarsConfigFile);
+            var json = JsonConvert.SerializeObject(hotbarProfile, Formatting.Indented);
+            var profileFile = Path.Combine(_profileService.GetActiveActionMenusProfile().Path, HotbarsConfigFile);
 
             File.WriteAllText(profileFile, json);
-
-            if (TryGetActiveProfileName(out var activeName) && profile.Name.Equals(activeName, StringComparison.InvariantCultureIgnoreCase))
-            {
-                _activeProfile = GetProfile(activeName);
-            }
         }
 
-        public void UpdateProfile(HotbarsContainer hotbar, IHotbarProfileData profile)
+        public void Update(HotbarsContainer hotbar)
         {
-            profile.Rows = hotbar.Controller.GetRowCount();
-            profile.SlotsPerRow = hotbar.Controller.GetActionSlotsPerRow();
-            profile.Hotbars = hotbar.ToHotbarSlotData(profile.Hotbars.Cast<HotbarData>().ToArray());
+            GetProfile().Rows = hotbar.Controller.GetRowCount();
+            GetProfile().SlotsPerRow = hotbar.Controller.GetActionSlotsPerRow();
+            GetProfile().Hotbars = hotbar.ToHotbarSlotData(GetProfile().Hotbars.Cast<HotbarData>().ToArray());
 
-            SaveProfile(profile);
+            Save();
         }
 
-        public IHotbarProfileData AddHotbar(IHotbarProfileData profile)
+        public IHotbarProfile AddHotbar()
         {
-            int barIndex = profile.Hotbars.Last().HotbarIndex + 1;
+            int barIndex = GetProfile().Hotbars.Last().HotbarIndex + 1;
 
-            var profileClone = GetProfileData(profile.Name);
+            var profileClone = GetProfileData();
 
             var newBar = new HotbarData()
             {
@@ -156,67 +104,67 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                     $"RewiredActionName: {((ActionConfig)slotData.Config).RewiredActionName}\n\t");
             }
 
-            profile.Hotbars.Add(newBar);
-            SaveProfile(profile);
-            OnActiveProfileChanged?.Invoke(profile);
-            return profile;
+            GetProfile().Hotbars.Add(newBar);
+            Save();
+            OnProfileChanged?.Invoke(GetProfile());
+            return GetProfile();
         }
 
-        public IHotbarProfileData RemoveHotbar(IHotbarProfileData profile)
+        public IHotbarProfile RemoveHotbar()
         {
-            if (profile.Hotbars.Count > 1)
+            if (GetProfile().Hotbars.Count > 1)
             {
-                profile.Hotbars.RemoveAt(profile.Hotbars.Count - 1);
-                SaveProfile(profile);
-                OnActiveProfileChanged?.Invoke(profile);
+                GetProfile().Hotbars.RemoveAt(GetProfile().Hotbars.Count - 1);
+                Save();
+                OnProfileChanged?.Invoke(GetProfile());
             }
-            return profile;
+            return GetProfile();
         }
 
-        public IHotbarProfileData AddRow(IHotbarProfileData profile)
+        public IHotbarProfile AddRow()
         {
-            profile.Rows = profile.Rows + 1;
+            GetProfile().Rows = GetProfile().Rows + 1;
 
-            for (int b = 0; b < profile.Hotbars.Count; b++)
+            for (int b = 0; b < GetProfile().Hotbars.Count; b++)
             {
-                for (int s = 0; s < profile.SlotsPerRow; s++)
+                for (int s = 0; s < GetProfile().SlotsPerRow; s++)
                 {
-                    int slotIndex = s + profile.SlotsPerRow * (profile.Rows - 1);
+                    int slotIndex = s + GetProfile().SlotsPerRow * (GetProfile().Rows - 1);
 
-                    profile.Hotbars[b].Slots.Add(
-                        CreateSlotDataFrom(profile.Hotbars[b].Slots[s], slotIndex));
+                    GetProfile().Hotbars[b].Slots.Add(
+                        CreateSlotDataFrom(GetProfile().Hotbars[b].Slots[s], slotIndex));
                 }
             }
 
-            SaveProfile(profile);
-            OnActiveProfileChanged?.Invoke(profile);
-            return profile;
+            Save();
+            OnProfileChanged?.Invoke(GetProfile());
+            return GetProfile();
         }
-        public IHotbarProfileData RemoveRow(IHotbarProfileData profile)
+        public IHotbarProfile RemoveRow()
         {
-            if (profile.Rows <= 1)
-                return profile;
-            
-            profile.Rows--;
+            if (GetProfile().Rows <= 1)
+                return GetProfile();
 
-            for (int b = 0; b < profile.Hotbars.Count; b++)
+            GetProfile().Rows--;
+
+            for (int b = 0; b < GetProfile().Hotbars.Count; b++)
             {
-                int removeFrom = profile.SlotsPerRow * profile.Rows;
-                int removeAmount = profile.Hotbars[b].Slots.Count - removeFrom;
+                int removeFrom = GetProfile().SlotsPerRow * GetProfile().Rows;
+                int removeAmount = GetProfile().Hotbars[b].Slots.Count - removeFrom;
 
-                Logger.LogDebug($"Reducing hotbar {b}'s rows to {profile.Rows}. Removing {removeAmount} slots starting with slot index {removeFrom}.\n" +
-                    $"\tremoveFrom = {profile.SlotsPerRow} * {profile.Rows}\n" +
-                    $"\tremoveAmount = {profile.Hotbars[b].Slots.Count} - {removeFrom}");
+                Logger.LogDebug($"Reducing hotbar {b}'s rows to {GetProfile().Rows}. Removing {removeAmount} slots starting with slot index {removeFrom}.\n" +
+                    $"\tremoveFrom = {GetProfile().SlotsPerRow} * {GetProfile().Rows}\n" +
+                    $"\tremoveAmount = {GetProfile().Hotbars[b].Slots.Count} - {removeFrom}");
 
-                profile.Hotbars[b].Slots.RemoveRange(removeFrom, removeAmount);
+                GetProfile().Hotbars[b].Slots.RemoveRange(removeFrom, removeAmount);
             }
 
-            SaveProfile(profile);
-            OnActiveProfileChanged?.Invoke(profile);
-            return profile;
+            Save();
+            OnProfileChanged?.Invoke(GetProfile());
+            return GetProfile();
         }
 
-        public IHotbarProfileData AddSlot(IHotbarProfileData profile)
+        public IHotbarProfile AddSlot()
         {
 
             //for (int b = 0; b < profile.Hotbars.Count; b++)
@@ -229,54 +177,54 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             //    }
                 
             //}
-            for (int b = 0; b < profile.Hotbars.Count; b++)
+            for (int b = 0; b < GetProfile().Hotbars.Count; b++)
             {
-                int slotIndex = profile.Hotbars[b].Slots.Count;
-                profile.Hotbars[b].Slots.Add(
-                        CreateSlotDataFrom(profile.Hotbars[b].Slots.First(), slotIndex));
+                int slotIndex = GetProfile().Hotbars[b].Slots.Count;
+                GetProfile().Hotbars[b].Slots.Add(
+                        CreateSlotDataFrom(GetProfile().Hotbars[b].Slots.First(), slotIndex));
 
-                var lastIndex = slotIndex - profile.SlotsPerRow;
+                var lastIndex = slotIndex - GetProfile().SlotsPerRow;
 
-                for (int s = lastIndex; s > 0; s = s - profile.SlotsPerRow)
+                for (int s = lastIndex; s > 0; s = s - GetProfile().SlotsPerRow)
                 {
-                    profile.Hotbars[b].Slots.Insert(s,
-                        CreateSlotDataFrom(profile.Hotbars[b].Slots.First(), s));
+                    GetProfile().Hotbars[b].Slots.Insert(s,
+                        CreateSlotDataFrom(GetProfile().Hotbars[b].Slots.First(), s));
                 }
-                ReindexSlots(profile.Hotbars[b].Slots);
+                ReindexSlots(GetProfile().Hotbars[b].Slots);
             }
 
-            profile.SlotsPerRow++;
-            SaveProfile(profile);
-            OnActiveProfileChanged?.Invoke(profile);
-            return profile;
+            GetProfile().SlotsPerRow++;
+            Save();
+            OnProfileChanged?.Invoke(GetProfile());
+            return GetProfile();
         }
 
-        public IHotbarProfileData RemoveSlot(IHotbarProfileData profile)
+        public IHotbarProfile RemoveSlot()
         {
-            if (profile.SlotsPerRow <= 1)
-                return profile;
+            if (GetProfile().SlotsPerRow <= 1)
+                return GetProfile();
 
-            for (int b = 0; b < profile.Hotbars.Count; b++)
+            for (int b = 0; b < GetProfile().Hotbars.Count; b++)
             {
-                var lastIndex = profile.Hotbars[b].Slots.Count - 1;
-                for (int s = lastIndex; s > 0; s = s - profile.SlotsPerRow)
+                var lastIndex = GetProfile().Hotbars[b].Slots.Count - 1;
+                for (int s = lastIndex; s > 0; s = s - GetProfile().SlotsPerRow)
                 {
-                    profile.Hotbars[b].Slots.RemoveAt(s);
+                    GetProfile().Hotbars[b].Slots.RemoveAt(s);
                 }
-                ReindexSlots(profile.Hotbars[b].Slots);
+                ReindexSlots(GetProfile().Hotbars[b].Slots);
             }
 
-            profile.SlotsPerRow--;
-            SaveProfile(profile);
-            OnActiveProfileChanged?.Invoke(profile);
-            return profile;
+            GetProfile().SlotsPerRow--;
+            Save();
+            OnProfileChanged?.Invoke(GetProfile());
+            return GetProfile();
         }
 
-        public IHotbarProfileData SetCooldownTimer(IHotbarProfileData profile, bool showTimer, bool preciseTime)
+        public IHotbarProfile SetCooldownTimer(bool showTimer, bool preciseTime)
         {
             bool profileChanged = false;
 
-            foreach(var bar in profile.Hotbars)
+            foreach(var bar in GetProfile().Hotbars)
             {
                 foreach(var slot in bar.Slots)
                 {
@@ -291,29 +239,29 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
             if (profileChanged)
             {
-                SaveProfile(profile);
-                OnActiveProfileChanged?.Invoke(profile);
+                Save();
+                OnProfileChanged?.Invoke(GetProfile());
             }
             
-            return profile;
+            return GetProfile();
         }
-        public IHotbarProfileData SetCombatMode(IHotbarProfileData profile, bool combatMode)
+        public IHotbarProfile SetCombatMode(bool combatMode)
         {
-            if (profile.CombatMode != combatMode)
+            if (GetProfile().CombatMode != combatMode)
             {
-                profile.CombatMode = combatMode;
-                SaveProfile(profile);
-                OnActiveProfileChanged?.Invoke(profile);
+                GetProfile().CombatMode = combatMode;
+                Save();
+                OnProfileChanged?.Invoke(GetProfile());
             }
 
-            return profile;
+            return GetProfile();
         }
 
-        public IHotbarProfileData SetEmptySlotView(IHotbarProfileData profile, EmptySlotOptions option)
+        public IHotbarProfile SetEmptySlotView(EmptySlotOptions option)
         {
             bool profileChanged = false;
 
-            foreach (var bar in profile.Hotbars)
+            foreach (var bar in GetProfile().Hotbars)
             {
                 foreach (var slot in bar.Slots)
                 {
@@ -327,19 +275,10 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
             if (profileChanged)
             {
-                SaveProfile(profile);
-                OnActiveProfileChanged?.Invoke(profile);
+                Save();
+                OnProfileChanged?.Invoke(GetProfile());
             }
-            return profile;
-        }
-
-        public string GetOrAddProfileDir(string profileName)
-        {
-            string profileDir = Path.Combine(ProfilesPath, profileName);
-            if (!Directory.Exists(profileDir))
-                Directory.CreateDirectory(profileDir);
-
-            return profileDir;
+            return GetProfile();
         }
 
         private void ReindexSlots(List<ISlotData> slots)
@@ -374,9 +313,9 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             };
         }
 
-        private ProfileData GetProfileData(string name)
+        private HotbarProfileData GetProfileData()
         {
-            string profileFile = Path.Combine(GetOrAddProfileDir(name), HotbarsConfigFile);
+            string profileFile = Path.Combine(_profileService.GetActiveActionMenusProfile().Path, HotbarsConfigFile);
 
             if (!File.Exists(profileFile))
             {
@@ -385,7 +324,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             }
             Logger.LogDebug($"Loading profile file '{profileFile}'.");
             string json = File.ReadAllText(profileFile);
-            return JsonConvert.DeserializeObject<ProfileData>(json);
+            return JsonConvert.DeserializeObject<HotbarProfileData>(json);
         }
     }
 }

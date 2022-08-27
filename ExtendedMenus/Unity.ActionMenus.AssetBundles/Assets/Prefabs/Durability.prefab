@@ -874,6 +874,8 @@ GameObject:
   - component: {fileID: 5426929915458756232}
   - component: {fileID: 1581886216526331135}
   - component: {fileID: 5498260071529116664}
+  - component: {fileID: 6693589053397040793}
+  - component: {fileID: 6809912116816755980}
   m_Layer: 5
   m_Name: Durability
   m_TagString: Untagged
@@ -954,6 +956,36 @@ MonoBehaviour:
   RightHand: {fileID: 6132275798606311661}
   LeftHand: {fileID: 9193282081751707229}
   Feet: {fileID: 5240596182402847408}
+--- !u!114 &6693589053397040793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8213091987165397792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1968296212, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+--- !u!114 &6809912116816755980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8213091987165397792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &8232543930324933033
 GameObject:
   m_ObjectHideFlags: 0

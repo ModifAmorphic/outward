@@ -21,6 +21,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private Canvas _canvas;
 
+        private UnityServicesProvider _psp;
+
         private Dictionary<DurableEquipmentSlot, DurabilitySlot> _durabilitySlots = new Dictionary<DurableEquipmentSlot, DurabilitySlot>();
         public Dictionary<DurableEquipmentSlot, DurabilitySlot> DurabilitySlots => _durabilitySlots;
 
@@ -28,12 +30,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private Dictionary<DurableEquipmentSlot, Coroutine> _coroutines = new Dictionary<DurableEquipmentSlot, Coroutine>();
 
-        // Start is called before the first frame update
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         void Awake()
         {
-            if (PlayerActionMenus != null)
-                Psp.Instance.GetServicesProvider(PlayerActionMenus.PlayerID).AddSingleton(this);
+            //StartCoroutine(AddToPsp());
 
             _canvas = GetComponent<Canvas>();
 
@@ -48,11 +48,17 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 var changedSlot = slot;
                 slot.OnValueChanged += (v) => OnSlotValueChanged(changedSlot);
             }
-
-            RefreshDisplay();
-
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+        void Start()
+        {
+            var psp = Psp.Instance.GetServicesProvider(PlayerActionMenus.PlayerID);
+            if (!psp.TryGetService<DurabilityDisplay>(out _))
+                psp.AddSingleton(this);
+
+            RefreshDisplay();
+        }
         public void TrackDurability(IDurability durability)
         {
             SetMinimumDisplayValue(durability.DurableEquipmentSlot, durability.MinimumDisplayValue);
@@ -94,10 +100,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private void OnSlotValueChanged(DurabilitySlot equipSlot)
         {
-            Debug.Log($"OnSlotValueChanged({equipSlot.EquipmentSlot})");
+            //Debug.Log($"OnSlotValueChanged({equipSlot.EquipmentSlot})");
             if (_displayMinimums.TryGetValue(equipSlot.EquipmentSlot, out var minimum))
             {
-                Debug.Log($"OnSlotValueChanged({equipSlot.EquipmentSlot}) Got minimum value of {minimum}. equipSlot.Value == {equipSlot.Value}");
+                //Debug.Log($"OnSlotValueChanged({equipSlot.EquipmentSlot}) Got minimum value of {minimum}. equipSlot.Value == {equipSlot.Value}");
                 if ((equipSlot.Value <= minimum && !_canvas.enabled) || (equipSlot.Value > minimum && _canvas.enabled))
                     RefreshDisplay();
             }
@@ -106,7 +112,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private void RefreshDisplay()
         {
             bool canvasEnabled = false;
-            Debug.Log($"RefreshDisplay()");
+            //Debug.Log($"RefreshDisplay()");
             foreach (var slotKvp in _durabilitySlots)
             {
                 if (_displayMinimums.ContainsKey(slotKvp.Key))
@@ -138,6 +144,15 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 slot.SetValue(getDurability());
                 yield return new WaitForSeconds(Timings.DurabilityWait);
             }
+        }
+
+        private IEnumerator AddToPsp()
+        {
+            yield return new WaitUntil(() => Psp.Instance != null && PlayerActionMenus.PlayerID > -1);
+            
+            var psp = Psp.Instance.GetServicesProvider(PlayerActionMenus.PlayerID);
+            if (!psp.TryGetService<DurabilityDisplay>(out _))
+                psp.AddSingleton(this);
         }
 
     }

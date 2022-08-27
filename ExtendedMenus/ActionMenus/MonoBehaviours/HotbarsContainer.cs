@@ -125,8 +125,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 			_hotbars = new ActionSlot[0][];
 			_actionSlots = new Dictionary<int, ActionSlot>();
 		}
-		internal void Resize(float hotbarWidth) =>
+		internal void Resize(float hotbarWidth, float hotbarHeight)
+		{
 			GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, hotbarWidth + _leftDisplay.rect.width + _leftDisplay.rect.width * 0.15f);
+			GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, hotbarHeight);
+		}
 
 		internal void ConfigureHotbars(int barsAmount)
 		{

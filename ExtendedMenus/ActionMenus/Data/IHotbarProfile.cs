@@ -2,7 +2,7 @@
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
 {
-    public interface IHotbarProfileData
+    public interface IHotbarProfile
     {
         List<IHotbarSlotData> Hotbars { get; set; }
         string Name { get; set; }

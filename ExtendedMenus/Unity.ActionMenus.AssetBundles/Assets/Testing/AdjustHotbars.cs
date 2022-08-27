@@ -16,7 +16,7 @@ public class AdjustHotbars : MonoBehaviour
     public Sprite[] SlotIcons;
     public ActionsViewUser ActionsViewUser;
 
-    private IHotbarProfileData _profile;
+    private IHotbarProfile _profile;
     private HotbarsContainer _hotbarsContainer;
     private IHotbarController _hotbarController;
     private RandomActionAssignmentGenerator _actionGenerator;
@@ -32,7 +32,7 @@ public class AdjustHotbars : MonoBehaviour
         _hotbarController.ConfigureHotbars(_profile);
         _actionGenerator = new RandomActionAssignmentGenerator(_hotbarController);
         _actionGenerator.Generate(SlotIcons, this);
-        Psp.Instance.GetServicesProvider(0).AddSingleton<IHotbarProfileDataService>(new TestHotbarProfileDataService());
+        Psp.Instance.GetServicesProvider(0).AddSingleton<IHotbarProfileService>(new TestHotbarProfileDataService());
         Psp.Instance.GetServicesProvider(0).AddSingleton<IHotbarNavActions>(new HotbarNav());        
     }
     

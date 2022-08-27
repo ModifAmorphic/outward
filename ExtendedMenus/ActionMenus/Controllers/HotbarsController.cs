@@ -40,7 +40,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             }
         }
         
-        public void ConfigureHotbars(IHotbarProfileData profile)
+        public void ConfigureHotbars(IHotbarProfile profile)
         {
             //var slotConfigs = new IActionSlotConfig[profile.Hotbars.Count, profile.SlotsPerRow * profile.Rows];
             //for (int h = 0; h < profile.Hotbars.Count; h++)
@@ -232,15 +232,16 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         {
             //yield return new WaitForEndOfFrame();
             float btnWidth = _hbc.Hotbars[0][0].GetComponent<RectTransform>().rect.width;
+            float btnHeight = _hbc.Hotbars[0][0].GetComponent<RectTransform>().rect.height;
             if (btnWidth == 0)
                 return;
             //var glgRect = _hbc.Hotbars[0].GetComponent<RectTransform>().rect;
             //float width = glgRect.width;
             float hotbarWidth = (btnWidth + _hbc.HotbarGrid[0].spacing.x) * (_hbc.HotbarGrid[0].constraintCount) + _hbc.HotbarGrid[0].padding.horizontal * 2 - _hbc.HotbarGrid[0].spacing.x;
-
+            float hotbarHeight = (btnHeight + _hbc.HotbarGrid[0].spacing.y) * GetRowCount() + _hbc.HotbarGrid[0].padding.vertical * 2 - _hbc.HotbarGrid[0].spacing.y;
             Debug.Log("[Debug  :ActionMenus] ResizeLayoutGroup() called. Calculated width is " + hotbarWidth);
 
-            _hbc.Resize(hotbarWidth);
+            _hbc.Resize(hotbarWidth, hotbarHeight);
             _resizeNeeded = false;
         }
         

@@ -29,7 +29,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private readonly Player _player;
         private readonly Character _character;
         private readonly CharacterUI _characterUI;
-        private readonly IHotbarProfileDataService _profileData;
+        private readonly ProfileManager _profileManager;
         private readonly SlotDataService _slotData;
 
         private readonly LevelCoroutines _levelCoroutines;
@@ -39,14 +39,14 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private ControllerType _activeController;
         public ControllerType ActiveController => _activeController;
 
-        public HotbarService(HotbarsContainer hotbarsContainer, Player player, Character character, IHotbarProfileDataService profileData, SlotDataService slotData, LevelCoroutines levelCoroutines, HotbarSettings settings, Func<IModifLogger> getLogger)
+        public HotbarService(HotbarsContainer hotbarsContainer, Player player, Character character, ProfileManager profileManager, SlotDataService slotData, LevelCoroutines levelCoroutines, HotbarSettings settings, Func<IModifLogger> getLogger)
         {
             if (hotbarsContainer == null)
                 throw new ArgumentNullException(nameof(hotbarsContainer));
             if (character == null)
                 throw new ArgumentNullException(nameof(character));
-            if (profileData == null)
-                throw new ArgumentNullException(nameof(profileData));
+            if (profileManager == null)
+                throw new ArgumentNullException(nameof(profileManager));
             if (slotData == null)
                 throw new ArgumentNullException(nameof(slotData));
             if (settings == null)
@@ -58,7 +58,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             _player = player;
             _character = character;
             _characterUI = character.CharacterUI;
-            _profileData = profileData;
+            _profileManager = profileManager;
             _slotData = slotData;
             _settings = settings;
             _levelCoroutines = levelCoroutines;
@@ -85,11 +85,11 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             var profile = GetOrCreateActiveProfile();
             ConfigureHotbars(profile);
             _hotbars.ClearChanges();
-            _profileData.OnActiveProfileChanged += ConfigureHotbars;
+            _profileManager.HotbarProfileService.OnProfileChanged += ConfigureHotbars;
             _levelCoroutines.StartRoutine(CheckProfileForSave());
         }
 
-        public void ConfigureHotbars(IHotbarProfileData profile)
+        public void ConfigureHotbars(IHotbarProfile profile)
         {
             _saveDisabled = true;
 
@@ -113,7 +113,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 {
                     var profile = GetOrCreateActiveProfile();
                     Logger.LogDebug($"Hotbar changes found. Saving active profile '{profile.Name}'");
-                    _profileData.UpdateProfile(_hotbars, profile);
+                    _profileManager.HotbarProfileService.Update(_hotbars);
                     _hotbars.ClearChanges();
                 }
             }
@@ -142,25 +142,26 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 keyboard.gameObject.SetActive(false);
         }
 
-        private IHotbarProfileData GetOrCreateActiveProfile()
+        private IHotbarProfile GetOrCreateActiveProfile()
         {
-            var activeProfile = _profileData.GetActiveProfile();
+            var activeProfile = _profileManager.GetActiveProfile();
 
             if (activeProfile == null)
             {
                 Logger.LogDebug($"No active profile set. Checking if any profiles exist");
-                var names = _profileData.GetProfileNames();
+                var names = _profileManager.GetProfileNames();
                 if (names == null || !names.Any())
                 {
                     Logger.LogDebug($"No profiles found. Creating default profile '{HotbarSettings.DefaultProfile.Name}'");
-                    _profileData.SaveProfile(HotbarSettings.DefaultProfile);
-                    names = _profileData.GetProfileNames();
+                    _profileManager.SetActiveProfile(HotbarSettings.DefaultProfile.Name);
+                    _profileManager.HotbarProfileService.SaveNew(HotbarSettings.DefaultProfile);
+                    names = _profileManager.GetProfileNames();
                 }
-                _profileData.SetActiveProfile(names.First());
-                activeProfile = _profileData.GetActiveProfile();
+                else
+                    _profileManager.SetActiveProfile(names.First());
             }
-            Logger.LogDebug($"Got or Created Active Profile  '{activeProfile.Name}'");
-            return activeProfile;
+            Logger.LogDebug($"Got or Created Active Profile  '{activeProfile.ActiveProfile}'");
+            return _profileManager.HotbarProfileService.GetProfile();
         }
         
 
@@ -173,7 +174,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             //_levelCoroutines.InvokeAfterLevelAndPlayersLoaded(NetworkLevelLoader.Instance, () => AssignSlotActions(GetOrCreateActiveProfile()), 300);
         }
         
-        public void AssignSlotActions(IHotbarProfileData profile)
+        public void AssignSlotActions(IHotbarProfile profile)
         {
             //refresh item displays
             _characterUI.ShowMenu(CharacterUI.MenuScreens.Inventory);
@@ -204,10 +205,10 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             }
             _saveDisabled = false;
         }
-        private void SetProfileHotkeys(IHotbarProfileData profile)
+        private void SetProfileHotkeys(IHotbarProfile profile)
         {
             var keyMap = _player.controllers.maps.GetMap<KeyboardMap>(0, RewiredConstants.ActionSlots.CategoryMapId, 0);
-            var profileData = (ProfileData)profile;
+            var profileData = (HotbarProfileData)profile;
             profileData.NextHotkey = keyMap.ButtonMaps.FirstOrDefault(m => m.actionId == profileData.NextRewiredActionId)?.elementIdentifierName;
             profileData.PrevHotkey = keyMap.ButtonMaps.FirstOrDefault(m => m.actionId == profileData.PrevRewiredActionId)?.elementIdentifierName;
 

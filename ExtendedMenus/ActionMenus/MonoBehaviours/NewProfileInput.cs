@@ -17,7 +17,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public Button OkButton;
         public HotbarSettingsViewer HotbarSettingsViewer;
 
-        private IHotbarProfileDataService _profileService;
+        private IHotbarProfileService _profileService;
 
         public bool IsShowing => gameObject.activeSelf;
 
@@ -41,7 +41,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             
         }
 
-        public void Show(IHotbarProfileDataService profileService)
+        public void Show(IHotbarProfileService profileService)
         {
             Debug.Log("NewProfileInput::Show");
             _profileService = profileService;
@@ -64,10 +64,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             if (string.IsNullOrWhiteSpace(ProfileInputField.text))
                 return;
 
-            var activeProfile = _profileService.GetActiveProfile();
+            var activeProfile = _profileService.GetProfile();
             activeProfile.Name = ProfileInputField.text;
-            _profileService.SaveProfile(activeProfile);
-            _profileService.SetActiveProfile(activeProfile.Name);
+            _profileService.SaveNew(activeProfile);
             Hide();
         }
         private static readonly List<char> _validChars = new List<char>()

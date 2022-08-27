@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Assets.Testing
 {
-    internal class TestHotbarProfileData : IHotbarProfileData
+    internal class TestHotbarProfileData : IHotbarProfile
     {
         public List<IHotbarSlotData> Hotbars { get; set; }
         public string Name { get; set; } = "Profile 1";

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace ModifAmorphic.Outward.ActionMenus.DataModels
 {
-    internal class ProfileData : IHotbarProfileData
+    internal class HotbarProfileData : IHotbarProfile
     {
         public string Name { get; set; }
         public int Rows { get; set; }

@@ -36,13 +36,16 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public HotbarsContainer Hotbars;
 
-        private IHotbarProfileData _activeProfile => GetProfileData().GetActiveProfile();
 
         public bool IsShowing => gameObject.activeSelf && !NewProfileInput.IsShowing;
 
         public UnityEvent OnShow { get; } = new UnityEvent();
 
         public UnityEvent OnHide { get; } = new UnityEvent();
+
+        private IHotbarProfile _hotbarProfile => PlayerMenu.ProfileManager.HotbarProfileService.GetProfile();
+
+        private IHotbarProfileService _hotbarService => PlayerMenu.ProfileManager.HotbarProfileService;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
@@ -56,17 +59,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             Debug.Log("HotbarSettingsViewer::Show");
             gameObject.SetActive(true);
 
-            var activeProfile = GetProfileData().GetActiveProfile();
-
-            if (activeProfile == null)
-            {
-                var names = GetProfileData().GetProfileNames();
-                if (names != null && names.Any())
-                {
-                    activeProfile = GetProfileData().GetProfile(names.First());
-                    GetProfileData().SetActiveProfile(activeProfile.Name);
-                }
-            }
             SetControls();
             HookControls();
             OnShow?.Invoke();
@@ -84,17 +76,17 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         }
         private void SetControls()
         {
-            var config = _activeProfile.Hotbars.First().Slots.First().Config;
+            var config = _hotbarProfile.Hotbars.First().Slots.First().Config;
 
-            BarAmountInput.SetAmount(_activeProfile.Hotbars.Count);
-            RowAmountInput.SetAmount(_activeProfile.Rows);
-            SlotAmountInput.SetAmount(_activeProfile.SlotsPerRow);
+            BarAmountInput.SetAmount(_hotbarProfile.Hotbars.Count);
+            RowAmountInput.SetAmount(_hotbarProfile.Rows);
+            SlotAmountInput.SetAmount(_hotbarProfile.SlotsPerRow);
 
             SetProfiles();
 
             ShowCooldownTimer.isOn = config?.ShowCooldownTime ?? false;
             ShowPrecisionTime.isOn = config?.PreciseCooldownTime ?? false;
-            CombatMode.isOn = _activeProfile.CombatMode;
+            CombatMode.isOn = _hotbarProfile.CombatMode;
 
             EmptySlotDropdown.ClearOptions();
             var imageOptions = Enum.GetNames(typeof(EmptySlotOptions)).Select(name => new Dropdown.OptionData(name)).ToList();
@@ -111,43 +103,42 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             BarAmountInput.OnValueChanged.AddListener(amount =>
             {
-                if (_activeProfile.Hotbars.Count < amount)
-                    GetProfileData().AddHotbar(_activeProfile);
-                else if(_activeProfile.Hotbars.Count > amount)
-                    GetProfileData().RemoveHotbar(_activeProfile);
+                if (_hotbarProfile.Hotbars.Count < amount)
+                    _hotbarService.AddHotbar();
+                else if(_hotbarProfile.Hotbars.Count > amount)
+                    _hotbarService.RemoveHotbar();
             });
 
             RowAmountInput.OnValueChanged.AddListener(amount =>
             {
-                if (_activeProfile.Rows < amount)
-                    GetProfileData().AddRow(_activeProfile);
-                else if (_activeProfile.Rows > amount)
-                    GetProfileData().RemoveRow(_activeProfile);
+                if (_hotbarProfile.Rows < amount)
+                    _hotbarService.AddRow();
+                else if (_hotbarProfile.Rows > amount)
+                    _hotbarService.RemoveRow();
             });
 
             SlotAmountInput.OnValueChanged.AddListener(amount =>
             {
-                if (_activeProfile.SlotsPerRow < amount)
-                    GetProfileData().AddSlot(_activeProfile);
-                else if (_activeProfile.SlotsPerRow > amount)
-                    GetProfileData().RemoveSlot(_activeProfile);
+                if (_hotbarProfile.SlotsPerRow < amount)
+                    _hotbarService.AddSlot();
+                else if (_hotbarProfile.SlotsPerRow > amount)
+                    _hotbarService.RemoveSlot();
             });
 
             ShowCooldownTimer.onValueChanged.AddListener(isOn =>
-                GetProfileData().SetCooldownTimer(_activeProfile, ShowCooldownTimer.isOn, ShowPrecisionTime.isOn)
+                _hotbarService.SetCooldownTimer(ShowCooldownTimer.isOn, ShowPrecisionTime.isOn)
             );
             ShowPrecisionTime.onValueChanged.AddListener(isOn =>
-                GetProfileData().SetCooldownTimer(_activeProfile, ShowCooldownTimer.isOn, ShowPrecisionTime.isOn)
+                _hotbarService.SetCooldownTimer(ShowCooldownTimer.isOn, ShowPrecisionTime.isOn)
             );
             CombatMode.onValueChanged.AddListener(isOn =>
-                GetProfileData().SetCombatMode(_activeProfile, CombatMode.isOn)
+                _hotbarService.SetCombatMode(CombatMode.isOn)
             );
 
             EmptySlotDropdown.onValueChanged.AddListener(value =>
-                GetProfileData().SetEmptySlotView(_activeProfile, (EmptySlotOptions)value)
+                _hotbarService.SetEmptySlotView((EmptySlotOptions)value)
             );
         }
-        private IHotbarProfileDataService GetProfileData() => Psp.Instance.GetServicesProvider(PlayerMenu.PlayerID).GetService<IHotbarProfileDataService>();
 
         private void EnableHotkeyEdits()
         {
@@ -158,21 +149,21 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private void SetProfiles()
         {
             ProfileDropdown.ClearOptions();
-            var profiles = GetProfileData().GetProfileNames();
+            var profiles = PlayerMenu.ProfileManager.GetProfileNames();
             var profileOptions = profiles.OrderBy(p => p).Select(p => new Dropdown.OptionData(p)).ToList();
             profileOptions.Add(new Dropdown.OptionData("[New Profile]"));
             ProfileDropdown.AddOptions(profileOptions);
-            ProfileDropdown.value = profileOptions.FindIndex(o => o.text.Equals(_activeProfile.Name, System.StringComparison.InvariantCultureIgnoreCase));
+            ProfileDropdown.value = profileOptions.FindIndex(o => o.text.Equals(_hotbarProfile.Name, System.StringComparison.InvariantCultureIgnoreCase));
         }
         private void SelectProfile(int profileIndex)
         {
             if (profileIndex < ProfileDropdown.options.Count - 1)
             {
-                GetProfileData().SetActiveProfile(ProfileDropdown.options[profileIndex].text);
+                PlayerMenu.ProfileManager.SetActiveProfile(ProfileDropdown.options[profileIndex].text);
             }
             else
             {
-                NewProfileInput.Show(GetProfileData());
+                NewProfileInput.Show(_hotbarService);
             }
         }
     }

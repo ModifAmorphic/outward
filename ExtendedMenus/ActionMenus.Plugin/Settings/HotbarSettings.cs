@@ -123,7 +123,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Settings
             }
         };
 
-        internal static ProfileData DefaultProfile = new ProfileData()
+        internal static HotbarProfileData DefaultProfile = new HotbarProfileData()
         {
             Name = "Profile 1",
             Rows = 1,

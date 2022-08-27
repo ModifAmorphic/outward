@@ -1,4 +1,5 @@
 ﻿using ModifAmorphic.Outward.Unity.ActionMenus;
+using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +12,19 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     [UnityScriptComponent]
     public class PlayerActionMenus : MonoBehaviour
     {
-        private int _playerID;
+        private int _playerID = -1;
         public int PlayerID { get => _playerID; }
 
         public HotkeyCaptureMenu HotkeyCaptureMenu;
         public HotbarSettingsViewer HotbarSettingsViewer;
         public ActionsViewer ActionsViewer;
         //public GameObject BackPanel;
+
+        private UnityServicesProvider _servicesProvider;
+        public UnityServicesProvider ServicesProvider => _servicesProvider;
+
+        private ProfileManager _profileManager;
+        public ProfileManager ProfileManager => _profileManager;
 
         private IActionMenu[] _actionMenus = new IActionMenu[4];
 
@@ -32,7 +39,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         //public RectTransform canvasRectTransform;
 
 
-        public void SetIDs(int playerID) => (_playerID) = (playerID);
+        public void SetIDs(int playerID)
+        {
+            (_playerID) = (playerID);
+            _servicesProvider = Psp.Instance.GetServicesProvider(playerID);
+            _profileManager = new ProfileManager(playerID);
+        }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
@@ -42,7 +54,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             //canvasPosText = GetComponentsInChildren<Text>().First(t => t.name == "ActionCanvasPosText");
             //canvasRectTransform = GetComponentInChildren<Canvas>().GetComponent<RectTransform>();
-
             _actionMenus[0] = HotkeyCaptureMenu;
             _actionMenus[1] = HotbarSettingsViewer;
             _actionMenus[2] = ActionsViewer;

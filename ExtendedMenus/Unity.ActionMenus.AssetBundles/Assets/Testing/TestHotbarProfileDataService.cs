@@ -8,64 +8,63 @@ using System.Threading.Tasks;
 
 namespace Assets.Testing
 {
-    internal class TestHotbarProfileDataService : IHotbarProfileDataService
+    internal class TestHotbarProfileDataService : IHotbarProfileService
     {
         private string activeProfileName = TestDefaultProfile.DefaultProfile.Name;
-        public Dictionary<string, IHotbarProfileData> HotbarProfiles { get; set; } = new Dictionary<string, IHotbarProfileData>()
+        public Dictionary<string, IHotbarProfile> HotbarProfiles { get; set; } = new Dictionary<string, IHotbarProfile>()
         {
             { TestDefaultProfile.DefaultProfile.Name, TestDefaultProfile.DefaultProfile }
         };
 
-        public event Action<IHotbarProfileData> OnActiveProfileChanged;
+        public event Action<IHotbarProfile> OnProfileChanged;
 
-        public IHotbarProfileData AddHotbar(IHotbarProfileData profile)
+        public IHotbarProfile AddHotbar()
         {
             throw new NotImplementedException();
         }
 
-        public IHotbarProfileData AddRow(IHotbarProfileData profile)
+        public IHotbarProfile AddRow()
         {
             throw new NotImplementedException();
         }
 
-        public IHotbarProfileData AddSlot(IHotbarProfileData profile)
+        public IHotbarProfile AddSlot()
         {
             throw new NotImplementedException();
         }
 
-        public IHotbarProfileData GetActiveProfile()
+        public IHotbarProfile GetProfile()
         {
             return HotbarProfiles.ContainsKey(activeProfileName) ? HotbarProfiles[activeProfileName] : HotbarProfiles.Values.FirstOrDefault();
         }
 
-        public IHotbarProfileData GetProfile(string name)
-        {
-            if (HotbarProfiles.TryGetValue(name, out var profile))
-                return profile;
-            return null;
-        }
 
         public IEnumerable<string> GetProfileNames()
         {
             return HotbarProfiles.Keys;
         }
 
-        public IHotbarProfileData RemoveHotbar(IHotbarProfileData profile)
+        public IHotbarProfile RemoveHotbar()
         {
             throw new NotImplementedException();
         }
 
-        public IHotbarProfileData RemoveRow(IHotbarProfileData profile)
+        public IHotbarProfile RemoveRow()
         {
             throw new NotImplementedException();
         }
 
-        public IHotbarProfileData RemoveSlot(IHotbarProfileData profile)
+        public IHotbarProfile RemoveSlot()
         {
             throw new NotImplementedException();
         }
 
-        public void SaveProfile(IHotbarProfileData profile)
+        public void Save()
+        {
+            
+        }
+
+        public void SaveNew(IHotbarProfile profile)
         {
             if (!HotbarProfiles.ContainsKey(profile.Name))
                 HotbarProfiles.Add(profile.Name, profile);
@@ -78,18 +77,18 @@ namespace Assets.Testing
             activeProfileName = name;
         }
 
-        public IHotbarProfileData SetCombatMode(IHotbarProfileData profile, bool combatMode)
+        public IHotbarProfile SetCombatMode(bool combatMode)
         {
-            profile.CombatMode = combatMode;
-            return profile;
+            GetProfile().CombatMode = combatMode;
+            return GetProfile();
         }
 
-        public IHotbarProfileData SetCooldownTimer(IHotbarProfileData profile, bool showTimer, bool preciseTime)
+        public IHotbarProfile SetCooldownTimer(bool showTimer, bool preciseTime)
         {
             throw new NotImplementedException();
         }
 
-        public IHotbarProfileData SetEmptySlotView(IHotbarProfileData profile, EmptySlotOptions option)
+        public IHotbarProfile SetEmptySlotView(EmptySlotOptions option)
         {
             throw new NotImplementedException();
         }
@@ -99,9 +98,10 @@ namespace Assets.Testing
             throw new NotImplementedException();
         }
 
-        public void UpdateProfile(HotbarsContainer hotbar, IHotbarProfileData profile)
+        public void Update(HotbarsContainer hotbar)
         {
             throw new NotImplementedException();
         }
+
     }
 }

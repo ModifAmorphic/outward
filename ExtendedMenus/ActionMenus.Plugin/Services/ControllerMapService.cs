@@ -6,6 +6,7 @@ using ModifAmorphic.Outward.ActionMenus.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
+using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using Rewired;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,8 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private readonly Func<IModifLogger> _getLogger;
 
         private readonly HotkeyCaptureMenu _captureDialog;
-        private readonly HotbarProfileJsonService _profileData;
+        private readonly ProfileService _profileService;
+        private readonly HotbarProfileJsonService _hotbarData;
         private readonly HotbarService _hotbarService;
         private readonly Player _player;
         private readonly ModifCoroutine _coroutine;
@@ -34,13 +36,16 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private const string KeyboardMapFile = "KeyboardMap_ActionSlots.xml";
 
         public ControllerMapService(HotkeyCaptureMenu captureDialog,
-                                HotbarProfileJsonService profileData,
+                                ProfileManager profileManager,
                                 HotbarService hotbarService,
                                 Player player,
                                 ModifCoroutine coroutine,
                                 HotbarSettings settings, Func<IModifLogger> getLogger)
         {
-            (_captureDialog, _profileData, _hotbarService, _player, _coroutine, _settings, _getLogger) = (captureDialog, profileData, hotbarService, player, coroutine, settings, getLogger);
+            (_captureDialog, _hotbarService, _player, _coroutine, _settings, _getLogger) = (captureDialog, hotbarService, player, coroutine, settings, getLogger);
+            
+            _profileService = (ProfileService)profileManager.ProfileService;
+            _hotbarData = (HotbarProfileJsonService)profileManager.HotbarProfileService;
 
             RewiredInputsPatches.BeforeExportXmlData += RemoveActionMenusMaps;
             RewiredInputsPatches.AfterExportXmlData += RewiredInputsPatches_AfterExportXmlData;
@@ -88,7 +93,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         {
             Logger.LogDebug($"Setting ActionSlot Hotkey for Slot Index {id}.");
 
-            var profile = _profileData.GetActiveProfile();
+            var profile = _hotbarData.GetProfile();
             var hotbars = profile.Hotbars;
             var config = (ActionConfig)hotbars[0].Slots[id].Config;
             var eleMap = new ElementAssignment(keyGroup.KeyCode, GetModifierKeyFlags(keyGroup.Modifiers), config.RewiredActionId, Pole.Positive);
@@ -121,7 +126,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 hotbars[b].Slots[id].Config.HotkeyText = hotkey;
             }
 
-            _profileData.SaveProfile(profile);
+            _hotbarData.Save();
             _hotbarService.ConfigureHotbars(profile);
             SaveKeyboardMap(map);
         }
@@ -130,7 +135,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         {
             Logger.LogDebug($"Setting Hotbar Hotkey for Bar Index {id}.");
 
-            var profile = _profileData.GetActiveProfile();
+            var profile = _hotbarData.GetProfile();
             var hotbar = (HotbarData)profile.Hotbars[id];
             //var config = (ActionConfig)hotbars[0].Slots[id].Config;
             var eleMap = new ElementAssignment(keyGroup.KeyCode, GetModifierKeyFlags(keyGroup.Modifiers), hotbar.RewiredActionId, Pole.Positive);
@@ -160,7 +165,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
             hotbar.HotbarHotkey = map.ButtonMaps.FirstOrDefault(m => m.actionId == hotbar.RewiredActionId)?.elementIdentifierName;
 
-            _profileData.SaveProfile(profile);
+            _hotbarData.Save();
             _hotbarService.ConfigureHotbars(profile);
             SaveKeyboardMap(map);
         }
@@ -168,7 +173,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private void SetHotbarNavHotkey(HotkeyCategories category, KeyGroup keyGroup, KeyboardMap map)
         {
             //Logger.LogDebug($"Setting Hotbar Hotkey for Bar Index {id}.");
-            var profile = (ProfileData)_profileData.GetActiveProfile();
+            var profile = (HotbarProfileData)_hotbarData.GetProfile();
             var rewiredId = category == HotkeyCategories.NextHotbar ? profile.NextRewiredActionId : profile.PrevRewiredActionId;
 
             //var config = (ActionConfig)hotbars[0].Slots[id].Config;
@@ -211,7 +216,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             }
 
 
-            _profileData.SaveProfile(profile);
+            _hotbarData.Save();
             _hotbarService.ConfigureHotbars(profile);
             SaveKeyboardMap(map);
         }
@@ -231,11 +236,11 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 Logger.LogDebug($"ActionSlots KeyboardMap found for player {_player.id}");
                 return map;
             }
-            var activeProfile = (ProfileData)_profileData.GetActiveProfile();
+            var activeProfile = (HotbarProfileData)_hotbarData.GetProfile();
             var keyMapFile = RewiredConstants.ActionSlots.DefaultKeyboardMapFile;
             if (activeProfile != null)
             {
-                var profileDir = _profileData.GetOrAddProfileDir(activeProfile.Name);
+                var profileDir = _profileService.GetOrAddProfileDir(activeProfile.Name);
                 keyMapFile = Path.Combine(profileDir, KeyboardMapFile);
 
                 if (!File.Exists(keyMapFile))
@@ -252,8 +257,8 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
         private string GetProfileFolder()
         {
-            var activeProfile = (ProfileData)_profileData.GetActiveProfile();
-            return _profileData.GetOrAddProfileDir(activeProfile.Name);
+            var activeProfile = (HotbarProfileData)_hotbarData.GetProfile();
+            return _profileService.GetOrAddProfileDir(activeProfile.Name);
         }
 
         private ModifierKeyFlags GetModifierKeyFlags(IEnumerable<KeyCode> modifiers)

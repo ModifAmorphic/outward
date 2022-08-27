@@ -16,10 +16,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         void Awake()
         {
-            services = new ConcurrentDictionary<int, UnityServicesProvider>();
             Instance = this;
+            services = new ConcurrentDictionary<int, UnityServicesProvider>();
         }
 
-        public UnityServicesProvider GetServicesProvider(int playerId) => Instance.services.GetOrAdd(playerId, new UnityServicesProvider());
+        public UnityServicesProvider GetServicesProvider(int playerId) => services.GetOrAdd(playerId, new UnityServicesProvider());
     }
 }
