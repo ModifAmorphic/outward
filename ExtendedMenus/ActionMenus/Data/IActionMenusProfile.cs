@@ -6,6 +6,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
 {
     public interface IActionMenusProfile
     {
-        string ActiveProfile { get; }
+        string Name { get; set; }
+        bool ActionSlotsEnabled { get; set;  }
+        bool DurabilityDisplayEnabled { get; set;  }
     }
 }

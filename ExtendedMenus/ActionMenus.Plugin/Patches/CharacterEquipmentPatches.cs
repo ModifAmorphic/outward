@@ -29,7 +29,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Patches
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(CharacterManagerPatches)}::{nameof(EquipPostfix)}(): Exception disabling quickslots for character {___m_character?.name}.", ex);
+                Logger.LogException($"{nameof(CharacterEquipmentPatches)}::{nameof(EquipPostfix)}(): Exception disabling quickslots for character {___m_character?.name}.", ex);
             }
         }
     }

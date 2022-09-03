@@ -9,11 +9,38 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
     {
         private readonly int _playerId = -1;
 
-        public event Action<IActionMenusProfile> OnActiveProfileChanged;
+        public IActionMenusProfileService ProfileService
+        {
+            get
+            {
+                if (Psp.Instance.GetServicesProvider(_playerId).TryGetService<IActionMenusProfileService>(out var service))
+                    return service;
 
-        public IActionMenusProfileService ProfileService => Psp.Instance.GetServicesProvider(_playerId).GetService<IActionMenusProfileService>();
-        
-        public IHotbarProfileService HotbarProfileService => Psp.Instance.GetServicesProvider(_playerId).GetService<IHotbarProfileService>();
+                return null;
+            }
+        }
+
+        public IHotbarProfileService HotbarProfileService
+        {
+            get
+            {
+                if (Psp.Instance.GetServicesProvider(_playerId).TryGetService<IHotbarProfileService>(out var service))
+                    return service;
+
+                return null;
+            }
+        }
+
+        public IPositionsProfileService PositionsProfileService
+        {
+            get
+            {
+                if (Psp.Instance.GetServicesProvider(_playerId).TryGetService<IPositionsProfileService>(out var service))
+                    return service;
+
+                return null;
+            }
+        }
 
         public ProfileManager(int playerId) => _playerId = playerId;
 

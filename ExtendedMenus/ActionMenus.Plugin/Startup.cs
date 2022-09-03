@@ -16,6 +16,7 @@ using ModifAmorphic.Outward.ActionMenus.Plugin.Services;
 using Rewired;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using HarmonyLib;
+using ModifAmorphic.Outward.ActionMenus.Patches;
 
 namespace ModifAmorphic.Outward.ActionMenus
 {
@@ -44,28 +45,39 @@ namespace ModifAmorphic.Outward.ActionMenus
                                                    services.GetService<LevelCoroutines>(),
                                                    confSettings,
                                                    services.GetService<IModifLogger>));
-            
+
 
             _loggerFactory = services.GetServiceFactory<IModifLogger>();
 
             var actionMenusPrefab = ConfigureAssetBundle();
 
             services
+                .AddSingleton(new SharedServicesInjector(
+                    services, services.GetService<IModifLogger>))
                 .AddSingleton(new PlayerMenuService(services.GetService<BaseUnityPlugin>(),
                                                   actionMenusPrefab.GetComponentInChildren<PlayerActionMenus>(true).gameObject,
                                                   services.GetService<LevelCoroutines>(),
                                                   services.GetService<ModifGoService>(),
-                                                  services.GetService<HotbarSettings>(),
-                                                  services.GetService<IModifLogger>))
-                .AddSingleton(new HotbarServicesInjector(services,
-                                                  services.GetService<ModifGoService>(),
-                                                  services.GetService<LevelCoroutines>(),
-                                                  services.GetService<HotbarSettings>(),
                                                   services.GetService<IModifLogger>));
 
-            services.AddSingleton(new DurabilityDisplayStartup(
-                harmony, services, _loggerFactory));
 
+            SplitPlayerPatches.SetCharacterAfter += AddSharedServices;
+
+            services
+                .AddSingleton(new HotbarsStartup(
+                    services
+                    , services.GetService<ModifGoService>()
+                    , services.GetService<LevelCoroutines>()
+                    , services.GetService<HotbarSettings>()
+                    , _loggerFactory))
+                .AddSingleton(new DurabilityDisplayStartup(
+                    harmony
+                    , services
+                    , services.GetService<ModifGoService>()
+                    , services.GetService<LevelCoroutines>()
+                    , _loggerFactory));
+
+            services.GetService<HotbarsStartup>().Start();
             services.GetService<DurabilityDisplayStartup>().Start();
         }
         public GameObject ConfigureAssetBundle()
@@ -84,6 +96,12 @@ namespace ModifAmorphic.Outward.ActionMenus
             actionMenusPrefab.SetActive(false);
             Logger.LogDebug($"Loaded asset assets/prefabs/actionmenus.prefab.");
             UnityEngine.Object.DontDestroyOnLoad(actionMenusPrefab);
+
+            //var positionBgPrefab = menuBundle.LoadAsset<GameObject>("assets/prefabs/positionablebg.prefab");
+            //positionBgPrefab.SetActive(false);
+            //Logger.LogDebug($"Loaded asset assets/prefabs/positionablebg.prefab.");
+            //UnityEngine.Object.DontDestroyOnLoad(positionBgPrefab);
+
             menuBundle.Unload(false);
 
             var modGo = _services.GetService<ModifGoService>()
@@ -99,6 +117,10 @@ namespace ModifAmorphic.Outward.ActionMenus
             psp.transform.SetParent(modActiveGo.transform);
             psp.name = "PlayersServicesProvider";
 
+            var positionBgPrefab = actionMenusPrefab.transform.Find("PositionableBg").gameObject;
+            var positionBg = UnityEngine.Object.Instantiate(positionBgPrefab, modGo.transform);
+            positionBg.name = "PositionableBg";
+
             var actionSpritesPrefab = actionMenusPrefab.transform.Find("ActionSprites").gameObject;
             var actionSprites = UnityEngine.Object.Instantiate(actionSpritesPrefab);
 
@@ -106,6 +128,7 @@ namespace ModifAmorphic.Outward.ActionMenus
             actionSprites.name = "ActionSprites";
 
             UnityEngine.Object.Destroy(pspPrefab);
+            UnityEngine.Object.Destroy(positionBgPrefab);
             UnityEngine.Object.Destroy(actionSpritesPrefab);
             UnityEngine.Object.Destroy(scriptsGo);
 
@@ -137,6 +160,12 @@ namespace ModifAmorphic.Outward.ActionMenus
             {
                 return AssetBundle.LoadFromStream(assetStream);
             }
+        }
+
+        private void AddSharedServices(SplitPlayer splitPlayer, Character character)
+        {
+            var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
+            psp.AddSingleton(new ProfileManager(splitPlayer.RewiredID));
         }
     }
 }

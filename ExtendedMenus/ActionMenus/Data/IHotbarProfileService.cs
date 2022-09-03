@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
 {
     public interface IHotbarProfileService
     {
-        event Action<IHotbarProfile> OnProfileChanged;
+        UnityEvent<IHotbarProfile> OnProfileChanged { get; }
         IHotbarProfile GetProfile();
         void Save();
         void SaveNew(IHotbarProfile hotbarProfile);

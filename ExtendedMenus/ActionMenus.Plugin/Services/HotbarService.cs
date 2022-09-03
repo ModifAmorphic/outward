@@ -20,7 +20,6 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 {
     internal class HotbarService
     {
-        private readonly HotbarSettings _settings;
 
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
@@ -39,7 +38,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private ControllerType _activeController;
         public ControllerType ActiveController => _activeController;
 
-        public HotbarService(HotbarsContainer hotbarsContainer, Player player, Character character, ProfileManager profileManager, SlotDataService slotData, LevelCoroutines levelCoroutines, HotbarSettings settings, Func<IModifLogger> getLogger)
+        public HotbarService(HotbarsContainer hotbarsContainer, Player player, Character character, ProfileManager profileManager, SlotDataService slotData, LevelCoroutines levelCoroutines, Func<IModifLogger> getLogger)
         {
             if (hotbarsContainer == null)
                 throw new ArgumentNullException(nameof(hotbarsContainer));
@@ -49,8 +48,6 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 throw new ArgumentNullException(nameof(profileManager));
             if (slotData == null)
                 throw new ArgumentNullException(nameof(slotData));
-            if (settings == null)
-                throw new ArgumentNullException(nameof(settings));
 
             _hotbars = hotbarsContainer;
             //_hotbars = _hotbarsContainer.Controller;
@@ -60,7 +57,6 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             _characterUI = character.CharacterUI;
             _profileManager = profileManager;
             _slotData = slotData;
-            _settings = settings;
             _levelCoroutines = levelCoroutines;
             _getLogger = getLogger;
 
@@ -85,7 +81,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             var profile = GetOrCreateActiveProfile();
             ConfigureHotbars(profile);
             _hotbars.ClearChanges();
-            _profileManager.HotbarProfileService.OnProfileChanged += ConfigureHotbars;
+            _profileManager.HotbarProfileService.OnProfileChanged.AddListener(ConfigureHotbars);
             _levelCoroutines.StartRoutine(CheckProfileForSave());
         }
 
@@ -112,7 +108,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 if (_hotbars.HasChanges && !_saveDisabled)
                 {
                     var profile = GetOrCreateActiveProfile();
-                    Logger.LogDebug($"Hotbar changes found. Saving active profile '{profile.Name}'");
+                    Logger.LogDebug($"Hotbar changes found. Saving.");
                     _profileManager.HotbarProfileService.Update(_hotbars);
                     _hotbars.ClearChanges();
                 }
@@ -152,15 +148,19 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 var names = _profileManager.GetProfileNames();
                 if (names == null || !names.Any())
                 {
-                    Logger.LogDebug($"No profiles found. Creating default profile '{HotbarSettings.DefaultProfile.Name}'");
-                    _profileManager.SetActiveProfile(HotbarSettings.DefaultProfile.Name);
-                    _profileManager.HotbarProfileService.SaveNew(HotbarSettings.DefaultProfile);
+                    Logger.LogDebug($"No profiles found. Creating default profile '{ActionMenuSettings.DefaultProfile.Name}'");
+                    _profileManager.ProfileService.SaveNew(ActionMenuSettings.DefaultProfile);
                     names = _profileManager.GetProfileNames();
                 }
                 else
                     _profileManager.SetActiveProfile(names.First());
             }
-            Logger.LogDebug($"Got or Created Active Profile  '{activeProfile.ActiveProfile}'");
+
+            var hotbarProfile = _profileManager.HotbarProfileService.GetProfile();
+            if (hotbarProfile == null)
+                _profileManager.HotbarProfileService.SaveNew(HotbarSettings.DefaulHotbarProfile);
+
+            Logger.LogDebug($"Got or Created Active Profile  '{activeProfile.Name}'");
             return _profileManager.HotbarProfileService.GetProfile();
         }
         

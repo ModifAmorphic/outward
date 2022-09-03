@@ -9,7 +9,6 @@ namespace ModifAmorphic.Outward.ActionMenus.DataModels
 {
     internal class HotbarProfileData : IHotbarProfile
     {
-        public string Name { get; set; }
         public int Rows { get; set; }
         public int SlotsPerRow { get; set; }
         public bool CombatMode { get; set; } = true;

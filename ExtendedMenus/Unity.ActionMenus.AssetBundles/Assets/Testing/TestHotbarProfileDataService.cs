@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine.Events;
 
 namespace Assets.Testing
 {
@@ -15,6 +16,8 @@ namespace Assets.Testing
         {
             { TestDefaultProfile.DefaultProfile.Name, TestDefaultProfile.DefaultProfile }
         };
+
+        UnityEvent<IHotbarProfile> IHotbarProfileService.OnProfileChanged => throw new NotImplementedException();
 
         public event Action<IHotbarProfile> OnProfileChanged;
 
@@ -66,10 +69,10 @@ namespace Assets.Testing
 
         public void SaveNew(IHotbarProfile profile)
         {
-            if (!HotbarProfiles.ContainsKey(profile.Name))
-                HotbarProfiles.Add(profile.Name, profile);
-            else
-                HotbarProfiles[profile.Name] = profile;
+            //if (!HotbarProfiles.ContainsKey(profile.Name))
+            //    HotbarProfiles.Add(profile.Name, profile);
+            //else
+            //    HotbarProfiles[profile.Name] = profile;
         }
 
         public void SetActiveProfile(string name)

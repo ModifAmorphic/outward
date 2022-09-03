@@ -44,7 +44,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         void Start()
         {
             Clear();
-            //LeftNav.ClearViewTabs();
         }
         
         public void Clear()

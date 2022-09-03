@@ -12,7 +12,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     {
         public PlayerActionMenus PlayerMenu;
         public HotkeyCaptureMenu HotkeyCaptureDialog;
-        public HotbarSettingsViewer HotbarSettingsViewer;
+        public HotbarSettingsView HotbarSettingsViewer;
         public HotbarsContainer HotbarsContainer;
 
         //private Button _settingsButton;

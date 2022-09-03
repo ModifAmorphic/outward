@@ -317,9 +317,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 _cooldownService.StopTracking();
                 _cooldownService = null;
             }
+
+            ActionSlot.CooldownImage.gameObject.SetActive(true);
+
             if (ActionSlot.Config.ShowCooldownTime)
             {
-                ActionSlot.CooldownImage.gameObject.SetActive(true);
                 ActionSlot.CooldownText.gameObject.SetActive(true);
                 ActionSlot.CooldownTextBackground.gameObject.SetActive(true);
                 var bgColor = ActionSlot.CooldownTextBackground.color;

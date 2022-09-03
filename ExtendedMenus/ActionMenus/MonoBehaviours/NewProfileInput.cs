@@ -1,4 +1,5 @@
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
+using ModifAmorphic.Outward.Unity.ActionMenus.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,16 +11,18 @@ using UnityEngine.UI;
 namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
     [UnityScriptComponent]
-    public class NewProfileInput : MonoBehaviour, IActionMenu
+    public class NewProfileInput : MonoBehaviour, ISettingsView
     {
         public InputField ProfileInputField;
 
         public Button OkButton;
-        public HotbarSettingsViewer HotbarSettingsViewer;
+        public MainSettingsMenu MainSettingsMenu;
 
-        private IHotbarProfileService _profileService;
+        private IActionMenusProfileService _profileService => MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService;
 
-        public bool IsShowing => gameObject.activeSelf;
+        public bool IsShowing => gameObject.activeSelf && _isInit;
+
+        private bool _isInit;
 
         public UnityEvent OnShow { get; } = new UnityEvent();
 
@@ -29,46 +32,56 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
         {
-            //Hide();
+            Debug.Log("NewProfileInput::Awake");
             OkButton.onClick.AddListener(() => CreateProfile());
             ProfileInputField.onEndEdit.AddListener((profileName) => CreateProfile());
             ProfileInputField.onValidateInput += (string input, int charIndex, char addedChar) => ValidateEntry(addedChar);
+            Hide(false);
+            _isInit = true;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
-        private void Update()
-        {
-            
-        }
-
-        public void Show(IHotbarProfileService profileService)
+        public void Show()
         {
             Debug.Log("NewProfileInput::Show");
-            _profileService = profileService;
             gameObject.SetActive(true);
             ProfileInputField.text = String.Empty;
             ProfileInputField.Select();
             ProfileInputField.ActivateInputField();
 
             //HookControls();
-            OnShow?.Invoke();
+            OnShow?.TryInvoke();
         }
-        public void Hide()
-        {
-            Debug.Log("HotbarSettingsViewer::Hide");
-            gameObject.SetActive(false);
-            OnHide?.Invoke();
-        }
+
+        public void Hide() => Hide(true);
+
         public void CreateProfile()
         {
             if (string.IsNullOrWhiteSpace(ProfileInputField.text))
                 return;
 
-            var activeProfile = _profileService.GetProfile();
+            var activeProfile = _profileService.GetActiveProfile();
             activeProfile.Name = ProfileInputField.text;
+
+            var hotbarService = MainSettingsMenu.PlayerMenu.ProfileManager.HotbarProfileService;
+            var hotbarProfile = hotbarService.GetProfile();
+
             _profileService.SaveNew(activeProfile);
+            if (hotbarProfile != null)
+                hotbarService.SaveNew(hotbarProfile);
+
             Hide();
         }
+
+        private void Hide(bool raiseEvent)
+        {
+            Debug.Log("NewProfileInput::Hide");
+            gameObject.SetActive(false);
+            if (raiseEvent)
+            {
+                OnHide?.TryInvoke();
+            }
+        }
+
         private static readonly List<char> _validChars = new List<char>()
         {
             ' ', '.', '-', '_'

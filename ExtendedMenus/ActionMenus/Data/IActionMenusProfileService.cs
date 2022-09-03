@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
 {
@@ -8,7 +9,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
     {
         IEnumerable<string> GetProfileNames();
         IActionMenusProfile GetActiveProfile();
-        event Action<IActionMenusProfile> OnActiveProfileChanged;
+        UnityEvent<IActionMenusProfile> OnNewProfile { get; }
+        UnityEvent<IActionMenusProfile> OnActiveProfileChanged { get; }
         void SetActiveProfile(string name);
+        void Save();
+        void SaveNew(IActionMenusProfile profile);
     }
 }

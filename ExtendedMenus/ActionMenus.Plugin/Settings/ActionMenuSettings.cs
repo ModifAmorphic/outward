@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModifAmorphic.Outward.ActionMenus.DataModels;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -22,5 +23,13 @@ namespace ModifAmorphic.Outward.ActionMenus.Settings
             public const string ArmorTab = "Armor";
             public const string WeaponsTab = "Weapons";
         }
+
+        public static ActionMenusProfile DefaultProfile = new ActionMenusProfile()
+        {
+            Name = "Profile 1",
+            ActionSlotsEnabled = true,
+            DurabilityDisplayEnabled = true,
+        };
+
     }
 }

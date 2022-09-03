@@ -19,8 +19,6 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 {
     internal class ControllerMapService
     {
-        private readonly HotbarSettings _settings;
-
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
@@ -40,9 +38,9 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                                 HotbarService hotbarService,
                                 Player player,
                                 ModifCoroutine coroutine,
-                                HotbarSettings settings, Func<IModifLogger> getLogger)
+                                Func<IModifLogger> getLogger)
         {
-            (_captureDialog, _hotbarService, _player, _coroutine, _settings, _getLogger) = (captureDialog, hotbarService, player, coroutine, settings, getLogger);
+            (_captureDialog, _hotbarService, _player, _coroutine, _getLogger) = (captureDialog, hotbarService, player, coroutine, getLogger);
             
             _profileService = (ProfileService)profileManager.ProfileService;
             _hotbarData = (HotbarProfileJsonService)profileManager.HotbarProfileService;
@@ -207,11 +205,11 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             if (category == HotkeyCategories.NextHotbar)
             {
                 profile.NextHotkey = hotKey;
-                Logger.LogDebug($"Setting profile '{profile.Name}' NextHotkey text to {hotKey}.");
+                Logger.LogDebug($"Setting NextHotkey text to {hotKey}.");
             }
             else
             {
-                Logger.LogDebug($"Setting profile '{profile.Name}' PrevHotkey text to {hotKey}.");
+                Logger.LogDebug($"Setting PrevHotkey text to {hotKey}.");
                 profile.PrevHotkey = hotKey;
             }
 
@@ -236,12 +234,11 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 Logger.LogDebug($"ActionSlots KeyboardMap found for player {_player.id}");
                 return map;
             }
-            var activeProfile = (HotbarProfileData)_hotbarData.GetProfile();
+            var hotbarProfile = (HotbarProfileData)_hotbarData.GetProfile();
             var keyMapFile = RewiredConstants.ActionSlots.DefaultKeyboardMapFile;
-            if (activeProfile != null)
+            if (hotbarProfile != null)
             {
-                var profileDir = _profileService.GetOrAddProfileDir(activeProfile.Name);
-                keyMapFile = Path.Combine(profileDir, KeyboardMapFile);
+                keyMapFile = Path.Combine(GetProfileFolder(), KeyboardMapFile);
 
                 if (!File.Exists(keyMapFile))
                     File.Copy(RewiredConstants.ActionSlots.DefaultKeyboardMapFile, keyMapFile);
@@ -257,8 +254,8 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
         private string GetProfileFolder()
         {
-            var activeProfile = (HotbarProfileData)_hotbarData.GetProfile();
-            return _profileService.GetOrAddProfileDir(activeProfile.Name);
+            var activeProfile = (ActionMenusProfile)_profileService.GetActiveProfile();
+            return activeProfile.Path;
         }
 
         private ModifierKeyFlags GetModifierKeyFlags(IEnumerable<KeyCode> modifiers)

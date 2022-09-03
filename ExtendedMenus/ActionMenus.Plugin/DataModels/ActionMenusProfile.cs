@@ -9,7 +9,12 @@ namespace ModifAmorphic.Outward.ActionMenus.DataModels
 {
     public class ActionMenusProfile : IActionMenusProfile
     {
-        public string ActiveProfile { get; set; }
+        public string Name { get; set; }
+
+        public bool ActionSlotsEnabled { get; set; }
+
+        public bool DurabilityDisplayEnabled { get; set; }
+
         [JsonIgnore]
         public string Path { get; set; }
     }

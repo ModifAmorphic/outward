@@ -32,5 +32,27 @@ namespace ModifAmorphic.Outward.ActionMenus.Patches
                 Logger.LogException($"{nameof(EquipmentPatches)}::{nameof(OnEquipPostfix)}(): Exception disabling quickslots for character {_char?.name}.", ex);
             }
         }
+
+        public delegate void OnUnequipDelegate(Character character, Equipment equipment);
+        public static event OnUnequipDelegate AfterOnUnequip;
+
+        [HarmonyPatch("OnUnequip")]
+        [HarmonyPatch(new Type[] { typeof(Character) })]
+        [HarmonyPostfix]
+        private static void OnUnequipPostfix(Equipment __instance, Character _char)
+        {
+            try
+            {
+                if (!_char.IsLocalPlayer)
+                    return;
+
+                Logger.LogTrace($"{nameof(EquipmentPatches)}::{nameof(OnUnequipPostfix)}(): Invoked. Unequipped item '{__instance.name}' equiped from slot '{__instance.CurrentEquipmentSlot?.SlotType}' for character {_char?.name}. Invoking {nameof(AfterOnUnequip)}.");
+                AfterOnUnequip?.Invoke(_char, __instance);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(EquipmentPatches)}::{nameof(OnUnequipPostfix)}(): Exception disabling quickslots for character {_char?.name}.", ex);
+            }
+        }
     }
 }

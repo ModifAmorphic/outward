@@ -214,7 +214,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             for (int c = 0; c < allCanvases.Length; c++)
             {
                 var grid = allCanvases[c].GetComponentInChildren<GridLayoutGroup>(true);
-                if (grid != _hbc.BaseGrid)
+                if (grid != null && grid != _hbc.BaseGrid)
                 {
                     var actionSlots = grid.GetComponentsInChildren<ActionSlot>(true);
                     for (int s = 0; s < actionSlots.Length; s++)

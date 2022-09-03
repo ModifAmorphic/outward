@@ -123,9 +123,8 @@ namespace ModifAmorphic.Outward.ActionMenus.Settings
             }
         };
 
-        internal static HotbarProfileData DefaultProfile = new HotbarProfileData()
+        internal static HotbarProfileData DefaulHotbarProfile = new HotbarProfileData()
         {
-            Name = "Profile 1",
             Rows = 1,
             SlotsPerRow = hotbarAssignments.First().Slots.Count,
             Hotbars = hotbarAssignments,

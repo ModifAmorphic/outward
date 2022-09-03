@@ -15,10 +15,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private int _playerID = -1;
         public int PlayerID { get => _playerID; }
 
-        public HotkeyCaptureMenu HotkeyCaptureMenu;
-        public HotbarSettingsViewer HotbarSettingsViewer;
+        public MainSettingsMenu MainSettingsMenu;
+        //public SettingsView SettingsView;
+        //public HotkeyCaptureMenu HotkeyCaptureMenu;
+        //public HotbarSettingsView HotbarSettingsViewer;
         public ActionsViewer ActionsViewer;
-        //public GameObject BackPanel;
 
         private UnityServicesProvider _servicesProvider;
         public UnityServicesProvider ServicesProvider => _servicesProvider;
@@ -26,25 +27,24 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private ProfileManager _profileManager;
         public ProfileManager ProfileManager => _profileManager;
 
-        private IActionMenu[] _actionMenus = new IActionMenu[4];
+        private IActionMenu[] _actionMenus;
 
         private Func<bool> _exitRequested;
 
         private bool _isAwake = false;
-
-        //public Text posText;
-        //public RectTransform rectTransform;
-
-        //public Text canvasPosText;
-        //public RectTransform canvasRectTransform;
-
 
         public void SetIDs(int playerID)
         {
             (_playerID) = (playerID);
             _servicesProvider = Psp.Instance.GetServicesProvider(playerID);
             _profileManager = new ProfileManager(playerID);
+            var positionables = GetPositionableUIs();
+            foreach (var ui in positionables)
+                ui.SetProfileManager(_profileManager);
         }
+
+        public PositionableUI[] GetPositionableUIs() => 
+            transform.parent.GetComponentsInChildren<PositionableUI>(true);
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
@@ -54,10 +54,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             //canvasPosText = GetComponentsInChildren<Text>().First(t => t.name == "ActionCanvasPosText");
             //canvasRectTransform = GetComponentInChildren<Canvas>().GetComponent<RectTransform>();
-            _actionMenus[0] = HotkeyCaptureMenu;
-            _actionMenus[1] = HotbarSettingsViewer;
-            _actionMenus[2] = ActionsViewer;
-            _actionMenus[3] = HotbarSettingsViewer.NewProfileInput;
+            _actionMenus = GetComponentsInChildren<IActionMenu>(true);
 
             for (int i = 0; i < _actionMenus.Length; i++)
             {

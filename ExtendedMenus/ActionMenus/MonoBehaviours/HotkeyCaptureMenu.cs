@@ -16,7 +16,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public KeyCode KeyCode { get; set; }
     }
     [UnityScriptComponent]
-    public class HotkeyCaptureMenu : MonoBehaviour, IActionMenu
+    public class HotkeyCaptureMenu : MonoBehaviour, ISettingsView
     {
         public GameObject Dialog;
         public Image BackPanel;
@@ -40,19 +40,27 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private Text _text;
 
         private bool _monitorKeys = false;
+        private bool _isInit;
 
         public UnityEvent OnShow { get; } = new UnityEvent();
 
         public UnityEvent OnHide { get; } = new UnityEvent();
 
-        public bool IsShowing => gameObject.activeSelf;
+        public bool IsShowing => gameObject.activeSelf && _isInit;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
         {
             Debug.Log("HotkeyCaptureDialog::Awake");
             _text = GetComponentsInChildren<Text>().First(t => t.name.Equals("ContentText"));
-            gameObject.SetActive(false);
+            Hide(false);
+            _isInit = true;
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+        private void Start()
+        {
+            Debug.Log("HotkeyCaptureDialog::Start");
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
@@ -177,18 +185,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             CaptureHotkeyMenuText.gameObject.SetActive(true);
             Dialog.SetActive(false);
             Hotbars.Controller.ToggleHotkeyEdits(true);
-            OnShow?.Invoke();
+            OnShow?.TryInvoke();
         }
 
-        public void Hide()
-        {
-            Hotbars.Controller.ToggleHotkeyEdits(false);
-            HideDialog();
-            gameObject.SetActive(false);
-            BackPanel.gameObject.SetActive(false);
-            CaptureHotkeyMenuText.gameObject.SetActive(false);
-            OnHide?.Invoke();
-        }
+        public void Hide() => Hide(true);
 
         public void ShowDialog(int id, HotkeyCategories category)
         {
@@ -209,6 +209,21 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _keyGroup.Modifiers.Clear();
             Dialog.SetActive(false);
             _monitorKeys = false;
+        }
+
+        private void Hide(bool raiseEvent)
+        {
+            Hotbars.Controller?.ToggleHotkeyEdits(false);
+            
+            if (_isInit)
+                HideDialog();
+            gameObject.SetActive(false);
+            BackPanel.gameObject.SetActive(false);
+            CaptureHotkeyMenuText.gameObject.SetActive(false);
+            if (raiseEvent)
+            {
+                OnHide?.TryInvoke();
+            }
         }
 
         private bool IsModifier(KeyCode keyCode)

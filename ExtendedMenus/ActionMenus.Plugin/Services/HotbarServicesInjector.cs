@@ -1,6 +1,7 @@
 ﻿using ModifAmorphic.Outward.ActionMenus.Patches;
 using ModifAmorphic.Outward.ActionMenus.Settings;
 using ModifAmorphic.Outward.Coroutines;
+using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
@@ -16,34 +17,39 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
     internal class HotbarServicesInjector
     {
         private readonly ServicesProvider _provider;
-        private readonly ModifGoService _modifGoService;
+        //private readonly ModifGoService _modifGoService;
         private readonly LevelCoroutines _levelCoroutines;
-        private readonly HotbarSettings _settings;
+        //private readonly HotbarSettings _settings;
 
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
 
-        public HotbarServicesInjector(ServicesProvider provider, ModifGoService modifGoService, LevelCoroutines levelCoroutines, HotbarSettings settings, Func<IModifLogger> getLogger)
+        public HotbarServicesInjector(ServicesProvider provider, LevelCoroutines levelCoroutines, Func<IModifLogger> getLogger)
         {
-            (_provider, _modifGoService, _levelCoroutines, _settings, _getLogger) = (provider, modifGoService, levelCoroutines, settings, getLogger);
+            (_provider, _levelCoroutines, _getLogger) = (provider, levelCoroutines, getLogger);
             SplitPlayerPatches.SetCharacterAfter += AddHotbarServices;
         }
 
         private void AddHotbarServices(SplitPlayer splitPlayer, Character character)
         {
             var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
+            var profileService = psp.GetService<IActionMenusProfileService>() as ProfileService;
+
+            if (!profileService.GetActiveActionMenusProfile().ActionSlotsEnabled)
+            {
+                return;
+            }
+
             var playerMenus = psp.GetService<PlayerActionMenus>();
             var hotbars = playerMenus.gameObject.GetComponentInChildren<HotbarsContainer>();
             var player = ReInput.players.GetPlayer(splitPlayer.RewiredID);
-            var profileService = new ProfileService(Path.Combine(ActionMenuSettings.ProfilesPath, character.UID));
 
-            psp.AddSingleton(hotbars)
-                .AddSingleton<IActionMenusProfileService>(profileService)
+            psp
+                .AddSingleton(playerMenus.gameObject.GetComponentInChildren<HotbarsContainer>())
+                .AddSingleton(hotbars)
                 .AddSingleton<IHotbarProfileService>(
                     new HotbarProfileJsonService(profileService
-                                              , _settings
                                               , _getLogger))
-                .AddSingleton(new ProfileManager(splitPlayer.RewiredID))
                 .AddSingleton(new SlotDataService(player
                                         , splitPlayer.AssignedCharacter
                                         , _getLogger))
@@ -53,14 +59,13 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                                         , playerMenus.ProfileManager
                                         , psp.GetService<SlotDataService>()
                                         , _levelCoroutines
-                                        , _settings
                                         , _getLogger))
                 .AddSingleton(new ControllerMapService(psp.GetService<HotkeyCaptureMenu>()
                                         , playerMenus.ProfileManager
                                         , psp.GetService<HotbarService>()
                                         , player
                                         , _levelCoroutines
-                                        , _settings, _getLogger))
+                                        , _getLogger))
                 .AddSingleton<IActionViewData>(new SlotActionViewData(player
                                         , splitPlayer.AssignedCharacter
                                         , psp.GetService<SlotDataService>()
@@ -72,6 +77,24 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
             hotbars.OnAwake += () => _levelCoroutines.DoNextFrame(() => 
                 psp.GetService<HotbarService>().Start());
+        }
+        private void RemoveHotbarServices(int rewiredId)
+        {
+            var psp = Psp.Instance.GetServicesProvider(rewiredId);
+
+            psp.TryRemove<IHotbarNavActions>();
+            psp.TryRemove<IActionViewData>();
+            psp.TryRemove<ControllerMapService>();
+            psp.TryRemove<HotbarService>();
+            psp.TryRemove<SlotDataService>();
+            psp.TryRemove<HotbarProfileJsonService>();
+            psp.TryRemove<IHotbarProfileService>();
+            if (psp.TryGetService<HotbarsContainer>(out var hbc))
+            {
+                hbc.gameObject.Destroy();
+                psp.TryRemove<HotbarsContainer>();
+            }
+            psp.TryRemove<HotbarsContainer>();
         }
     }
 }

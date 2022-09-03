@@ -61,14 +61,14 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         }
         public void TrackDurability(IDurability durability)
         {
+            StopTracking(durability.DurableEquipmentSlot);
+
             SetMinimumDisplayValue(durability.DurableEquipmentSlot, durability.MinimumDisplayValue);
             
             foreach (var range in durability.ColorRanges)
                 _durabilitySlots[durability.DurableEquipmentSlot].AddColorRange(range);
 
             _durabilitySlots[durability.DurableEquipmentSlot].SetEquipmentType(durability.DurableEquipmentType);
-
-            StopTracking(durability.DurableEquipmentSlot);
 
             _coroutines.Add(
                 durability.DurableEquipmentSlot,
@@ -85,6 +85,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             {
                 StopCoroutine(_coroutines[slot]);
                 _coroutines.Remove(slot);
+                _durabilitySlots[slot].ResetColorRanges();
+                _durabilitySlots[slot].SetValue(0f);
+                SetMinimumDisplayValue(slot, -1f);
+                RefreshDisplay();
             }
         }
 
