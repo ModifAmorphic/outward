@@ -40,7 +40,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private void RefreshCachedProfile(IActionMenusProfile obj)
         {
             _hotbarProfile = GetProfileData();
-            OnProfileChanged?.TryInvoke(_hotbarProfile);
+            OnProfileChanged.TryInvoke(_hotbarProfile);
         }
 
         public IHotbarProfile GetProfile()
@@ -105,7 +105,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
             GetProfile().Hotbars.Add(newBar);
             Save();
-            OnProfileChanged?.TryInvoke(GetProfile());
+            OnProfileChanged.TryInvoke(GetProfile());
             return GetProfile();
         }
 
@@ -115,7 +115,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             {
                 GetProfile().Hotbars.RemoveAt(GetProfile().Hotbars.Count - 1);
                 Save();
-                OnProfileChanged?.TryInvoke(GetProfile());
+                OnProfileChanged.TryInvoke(GetProfile());
             }
             return GetProfile();
         }
@@ -136,7 +136,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             }
 
             Save();
-            OnProfileChanged?.TryInvoke(GetProfile());
+            OnProfileChanged.TryInvoke(GetProfile());
             return GetProfile();
         }
         public IHotbarProfile RemoveRow()
@@ -159,7 +159,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             }
 
             Save();
-            OnProfileChanged?.TryInvoke(GetProfile());
+            OnProfileChanged.TryInvoke(GetProfile());
             return GetProfile();
         }
 
@@ -194,7 +194,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
             GetProfile().SlotsPerRow++;
             Save();
-            OnProfileChanged?.TryInvoke(GetProfile());
+            OnProfileChanged.TryInvoke(GetProfile());
             return GetProfile();
         }
 
@@ -215,7 +215,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
             GetProfile().SlotsPerRow--;
             Save();
-            OnProfileChanged?.TryInvoke(GetProfile());
+            OnProfileChanged.TryInvoke(GetProfile());
             return GetProfile();
         }
 
@@ -239,7 +239,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             if (profileChanged)
             {
                 Save();
-                OnProfileChanged?.TryInvoke(GetProfile());
+                OnProfileChanged.TryInvoke(GetProfile());
             }
             
             return GetProfile();
@@ -250,7 +250,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             {
                 GetProfile().CombatMode = combatMode;
                 Save();
-                OnProfileChanged?.TryInvoke(GetProfile());
+                OnProfileChanged.TryInvoke(GetProfile());
             }
 
             return GetProfile();
@@ -275,7 +275,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             if (profileChanged)
             {
                 Save();
-                OnProfileChanged?.TryInvoke(GetProfile());
+                OnProfileChanged.TryInvoke(GetProfile());
             }
             return GetProfile();
         }

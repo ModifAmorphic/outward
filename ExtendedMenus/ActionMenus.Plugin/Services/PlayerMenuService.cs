@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using ModifAmorphic.Outward.ActionMenus.DataModels;
+using ModifAmorphic.Outward.ActionMenus.Monobehaviours;
 using ModifAmorphic.Outward.ActionMenus.Patches;
 using ModifAmorphic.Outward.ActionMenus.Settings;
 using ModifAmorphic.Outward.Coroutines;
@@ -28,6 +29,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private readonly BaseUnityPlugin _baseUnityPlugin;
 
         private readonly GameObject _playerMenuPrefab;
+        private readonly PositionsService _positionsService;
         private readonly LevelCoroutines _coroutine;
         private readonly GameObject _modInactivableGo;
 
@@ -41,12 +43,14 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
         public PlayerMenuService(BaseUnityPlugin baseUnityPlugin,
                                 GameObject playerMenuPrefab,
+                                PositionsService positionsService,
                                 LevelCoroutines coroutine,
                                 ModifGoService modifGoService,
                                 Func<IModifLogger> getLogger)
         {
             _baseUnityPlugin = baseUnityPlugin;
             _playerMenuPrefab = playerMenuPrefab;
+            _positionsService = positionsService;
             _coroutine = coroutine;
             _modInactivableGo = modifGoService.GetModResources(ModInfo.ModId, false);
             _getLogger = getLogger;
@@ -55,12 +59,8 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             SplitPlayerPatches.InitAfter += InjectMenus;
             SplitPlayerPatches.SetCharacterAfter += SetPlayerMenuCharacter;
             SplitScreenManagerPatches.RemoveLocalPlayerAfter += RemovePlayerMenu;
-            PauseMenuPatches.AfterRefreshDisplay += ResizePauseMenu;
-
-            //coroutine.InvokeAfterPlayersLoaded(() => NetworkLevelLoader.Instance, LoadDefaultControllerMaps, 300);
-
+            PauseMenuPatches.AfterRefreshDisplay += (pauseMenu) => _coroutine.StartRoutine(ResizePauseMenu(pauseMenu));
         }
-        private Coroutine AAKeepAliveCoroutine;
 
         private void InjectMenus(SplitPlayer splitPlayer)
         {
@@ -78,14 +78,26 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             var playerMenu = playerMenuGo.GetComponent<PlayerActionMenus>();
             psp.AddSingleton(playerMenu);
 
-            InjectPositionableUIs(splitPlayer.CharUI);
+            _positionsService.InjectPositionableUIs(splitPlayer.CharUI);
 
             playerMenu.SetIDs(splitPlayer.RewiredID);
-            //MenuManagerPatches.GetIsApplicationFocused = playerMenu.AnyActionMenuShowing;
-            CharacterUIPatches.GetIsMenuFocused = playerMenu.AnyActionMenuShowing;
+
+            if (!CharacterUIPatches.GetIsMenuFocused.ContainsKey(splitPlayer.RewiredID))
+                CharacterUIPatches.GetIsMenuFocused.Add(splitPlayer.RewiredID, (playerId) => GetAnyMenuShowing(playerMenu, playerId));
+            
             UnityEngine.Object.DontDestroyOnLoad(playerMenuGo);
 
             InjectPauseMenu(splitPlayer, playerMenu);
+
+        }
+
+        private bool GetAnyMenuShowing(PlayerActionMenus actionMenus, int playerId)
+        {
+            if (actionMenus.PlayerID != playerId)
+                return false;
+            var isShowing = actionMenus.AnyActionMenuShowing();
+
+            return isShowing;
         }
 
         private void SetPlayerMenuCharacter(SplitPlayer splitPlayer, Character character)
@@ -97,19 +109,25 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             playerMenuGo.SetActive(true);
 
             var profile = GetOrCreateActiveProfile(playerMenu.ProfileManager);
-            ToggleQuickslotsPositonable(profile, playerMenu, character.CharacterUI);
+            _positionsService.ToggleQuickslotsPositonable(profile, playerMenu, character.CharacterUI);
 
             var player = ReInput.players.GetPlayer(splitPlayer.RewiredID);
 
             var hud = splitPlayer.CharUI.transform.Find("Canvas/GameplayPanels/HUD");
-            //playerMenuGo.transform.SetParent(gamePanels.transform);
             playerMenu.ConfigureExit(() => player.GetButtonDown(ControlsInput.GetMenuActionName(ControlsInput.MenuActions.Cancel)));
 
-            var uiPositionScreen = playerMenuGo.GetComponentInChildren<UIPositionScreen>();
-            var positonables = hud.GetComponentsInChildren<PositionableUI>(true).Where(p => p != null);
-            uiPositionScreen.OnShow.AddListener(() => AAKeepAliveCoroutine = _coroutine.StartRoutine(KeepPositionablesVisible(positonables.ToArray())));
+            AddSplitScreenScaler(playerMenu, character.CharacterUI);
 
-            //_coroutine.StartRoutine(SetSortOrderNextFrame(playerMenuGo));
+            _positionsService.StartKeepPostionablesVisible(playerMenu, character.CharacterUI);
+
+            if (profile.ActionSlotsEnabled)
+            {
+                //Add canvas with 0 sort order to drop panel to allow drag and drop to the hotbar.
+                var dropPanel = splitPlayer.CharUI.transform.Find("Canvas/GameplayPanels/Menus/DropPanel");
+                var dropCanvas = dropPanel.GetOrAddComponent<Canvas>();
+                dropCanvas.overrideSorting = true;
+                dropCanvas.sortingOrder = 0;
+            }
         }
 
         private ActionMenusProfile GetOrCreateActiveProfile(ProfileManager profileManager)
@@ -133,119 +151,14 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             return (ActionMenusProfile)profileManager.GetActiveProfile();
         }
 
-        private IEnumerator KeepPositionablesVisible(PositionableUI[] positionables)
+        private void AddSplitScreenScaler(PlayerActionMenus actionMenus, CharacterUI characterUI)
         {
-            var needsDisable = new List<PositionableUI>();
-            var zeroAlphas = new List<CanvasGroup>();
-            var noBlocks = new List<CanvasGroup>();
-
-            var cdl = positionables.FirstOrDefault(p => p.name == "ConfirmDeployListener");
-            var cdlNeedsInactive = false;
-            if (cdl != null)
+            var menus = actionMenus.GetComponentsInChildren<IActionMenu>(true);
+            foreach(var menu in menus)
             {
-                var interactionPress = cdl.transform.Find("InteractionPress").gameObject;
-                if (!interactionPress.activeSelf)
-                {
-                    cdlNeedsInactive = true;
-                    interactionPress.SetActive(true);
-                }
+                var screenScaler = ((MonoBehaviour)menu).gameObject.GetOrAddComponent<SplitScreenScaler>();
+                screenScaler.CharacterUI = characterUI;
             }
-
-            //yield return new WaitForEndOfFrame();
-            while (positionables[0].IsPositionable)
-            {
-                for (int i = 1; i < positionables.Length; i++)
-                {
-                    if (!positionables[i].gameObject.activeSelf)
-                    {
-                        positionables[i].gameObject.SetActive(true);
-                        needsDisable.Add(positionables[i]);
-                    }
-                    var cg = positionables[i].GetComponent<CanvasGroup>();
-                    if (cg != null)
-                    {
-                        if (cg.alpha == 0f)
-                        {
-                            cg.alpha = 1f;
-                            zeroAlphas.Add(cg);
-                        }
-                        if (!cg.blocksRaycasts)
-                        {
-                            cg.blocksRaycasts = true;
-                            noBlocks.Add(cg);
-                        }
-                    }
-                }
-                yield return new WaitForEndOfFrame();
-            }
-            
-            if (cdlNeedsInactive)
-                cdl.transform.Find("InteractionPress").gameObject.SetActive(false);
-
-            foreach (var positionable in needsDisable)
-            {
-                if (positionable.gameObject.activeSelf)
-                    positionable.gameObject.SetActive(false);
-            }
-            foreach (var cg in zeroAlphas)
-            {
-                if (cg.alpha > 0f)
-                    cg.alpha = 0f;
-            }
-            foreach (var cg in noBlocks)
-            {
-                if (cg.blocksRaycasts)
-                    cg.blocksRaycasts = false;
-            }
-        }
-
-        private void ToggleQuickslotsPositonable(ActionMenusProfile profile, PlayerActionMenus actionMenus, CharacterUI characterUI)
-        {
-            if (!profile.ActionSlotsEnabled)
-            {
-                var hotbars = actionMenus.gameObject.GetComponentInChildren<HotbarsContainer>();
-                hotbars.gameObject.Destroy();
-            }
-            else
-            {
-                var hud = characterUI.transform.Find("Canvas/GameplayPanels/HUD");
-                var quickSlot = hud.Find("QuickSlot").gameObject;
-                UnityEngine.Object.Destroy(quickSlot.GetComponent<PositionableUI>());
-                UnityEngine.Object.Destroy(quickSlot.transform.Find("PositionableBg").gameObject);
-            }
-        }
-
-        private HashSet<string> _positionBlocklist = new HashSet<string>()
-        {
-            "CorruptionSmog", "PanicOverlay", "TargetingFlare", "CharacterBars", "LowHealth", "LowStamina", "Chat - Panel"
-        };
-        private void InjectPositionableUIs(CharacterUI characterUI)
-        {
-            var hud = characterUI.transform.Find("Canvas/GameplayPanels/HUD");
-            //hud.GetOrAddComponent<GraphicRaycaster>();
-
-            for (int i = 0; i < hud.childCount; i++)
-            {
-                if (hud.GetChild(i) is RectTransform uiRect)
-                {
-                    if (uiRect.name == "Tutorialization_DropBag" || uiRect.name == "Tutorialization_UseBandage")
-                        uiRect = uiRect.Find("Panel") as RectTransform;
-
-                    if (!_positionBlocklist.Contains(uiRect.name))
-                        AddPositionableUI(uiRect);
-                }
-            }
-        }
-        private void AddPositionableUI(RectTransform transform)
-        {
-            var bgPrefab = _modInactivableGo.transform.Find("PositionableBg") as RectTransform;
-            var bg = UnityEngine.Object.Instantiate(bgPrefab, transform);
-            bg.name = bgPrefab.name;
-            bg.SetAsLastSibling();
-            var positionableUI = transform.gameObject.AddComponent<PositionableUI>();
-            positionableUI.BackgroundImage = bg.GetComponent<Image>();
-            positionableUI.ResetButton = bg.GetComponentInChildren<Button>();
-            bg.GetComponentInChildren<Text>().text = transform.name;
         }
 
         private IEnumerator SetSortOrderNextFrame(GameObject actionMenus)
@@ -257,10 +170,14 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             mainCanvas.overrideSorting = true;
             mainCanvas.sortingOrder = 2;
         }
+
         private void RemovePlayerMenu(SplitScreenManager splitScreenManager, SplitPlayer player, string playerId)
         {
             if (Psp.Instance.GetServicesProvider(player.RewiredID).TryGetService<PlayerActionMenus>(out var playerMenu))
             {
+                if (CharacterUIPatches.GetIsMenuFocused.ContainsKey(player.RewiredID))
+                    CharacterUIPatches.GetIsMenuFocused.Remove(player.RewiredID);
+
                 UnityEngine.Object.Destroy(playerMenu.gameObject);
                 Psp.Instance.GetServicesProvider(player.RewiredID).TryRemove<PlayerActionMenus>();
             }
@@ -289,15 +206,11 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 pauseMenu.Hide();
                 actionMenus.MainSettingsMenu.Show();
             });
-            //_actionSlotsButton.transform.SetParent(pauseMenu.transform, false);
         }
 
-        private void ResizePauseMenu(PauseMenu pauseMenu)
+        private IEnumerator ResizePauseMenu(PauseMenu pauseMenu)
         {
-            //var pauseMenuPrefab = Resources.FindObjectsOfTypeAll<PauseMenu>().First(p => p.gameObject.GetPath().Equals("/PlayerUI/Canvas/PauseMenu"));
-            //var prefabRect = pauseMenuPrefab.transform.Find("Buttons").GetComponent<RectTransform>();
-            //var prefabButtons = pauseMenuPrefab.transform.Find("Buttons/Content/HideOnPause").GetComponentsInChildren<Button>();
-
+            yield return null;
             var parentRect = pauseMenu.transform.Find("Buttons").GetComponent<RectTransform>();
             if (_initialPauseMenuHeight == 0f)
                 _initialPauseMenuHeight = parentRect.rect.height;

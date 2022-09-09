@@ -20,8 +20,9 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private readonly Player _rewiredPlayer;
         private readonly Character _character;
         private readonly CharacterInventory _inventory;
+        private readonly HotbarProfileJsonService _profileService;
 
-        public SlotDataService(Player rewiredPlayer, Character character, Func<IModifLogger> getLogger)
+        public SlotDataService(Player rewiredPlayer, Character character, HotbarProfileJsonService profileService, Func<IModifLogger> getLogger)
         {
             if (rewiredPlayer == null)
                 throw new ArgumentNullException(nameof(rewiredPlayer));
@@ -32,6 +33,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             _rewiredPlayer = rewiredPlayer;
             _character = character;
             _inventory = character.Inventory;
+            _profileService = profileService;
             _getLogger = getLogger;
         }
 
@@ -110,6 +112,32 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         {
             item = ResourcesPrefabManager.Instance.GetItemPrefab(itemId);
             return item != null;
+        }
+
+        public ISlotAction GetSlotAction(Item item)
+        {
+            if (item is Skill skill)
+            {
+                return new SkillSlotAction(skill, _rewiredPlayer, _character, this, _profileService.GetProfile()?.CombatMode ?? true, _getLogger)
+                {
+                    Cooldown = new ItemCooldownTracker(item),
+                };
+            }
+            else if (item is Equipment equipment)
+            {
+                return new EquipmentSlotAction(equipment, _rewiredPlayer, _character, this, _profileService.GetProfile()?.CombatMode ?? true, _getLogger)
+                {
+                    Cooldown = new ItemCooldownTracker(item),
+                };
+            }
+            else
+            {
+                return new ItemSlotAction(item, _rewiredPlayer, _character, this, _profileService.GetProfile()?.CombatMode ?? true, _getLogger)
+                {
+                    Cooldown = new ItemCooldownTracker(item),
+                    Stack = item.IsStackable() ? item.ToStackable(_character.Inventory) : null
+                };
+            }
         }
     }
 }

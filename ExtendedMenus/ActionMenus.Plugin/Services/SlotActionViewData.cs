@@ -103,46 +103,19 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         {
             var allWeapons = new List<ISlotAction>();
 
-            allWeapons.AddRange(_inventory.Pouch.GetContainedItems().Where(i => i is Weapon).Select(w => GetSlotAction(w)));
+            allWeapons.AddRange(_inventory.Pouch.GetContainedItems().Where(i => i is Weapon).Select(w => _slotData.GetSlotAction(w)));
             if (_inventory.HasABag)
-                allWeapons.AddRange(_inventory.EquippedBag.Container.GetContainedItems().Where(i => i is Weapon).Select(w => GetSlotAction(w)));
+                allWeapons.AddRange(_inventory.EquippedBag.Container.GetContainedItems().Where(i => i is Weapon).Select(w => _slotData.GetSlotAction(w)));
             
             return allWeapons;
         }
-        public IEnumerable<ISlotAction> GetSkills() => _inventory.SkillKnowledge.GetLearnedItems().Select(s => GetSlotAction(s));
+        public IEnumerable<ISlotAction> GetSkills() => _inventory.SkillKnowledge.GetLearnedItems().Select(s => _slotData.GetSlotAction(s));
         public IEnumerable<ISlotAction> GetConsumables() => _inventory.GetOwnedItems(TagSourceManager.Consumable)
                                                       .GroupBy(i => i.ItemID)
-                                                      .Select(i => GetSlotAction(i.First()));
-        public IEnumerable<ISlotAction> GetDeployables() => _inventory.GetOwnedItems(TagSourceManager.Deployable).Select(s => GetSlotAction(s));
+                                                      .Select(i => _slotData.GetSlotAction(i.First()));
+        public IEnumerable<ISlotAction> GetDeployables() => _inventory.GetOwnedItems(TagSourceManager.Deployable).Select(s => _slotData.GetSlotAction(s));
 
-        public IEnumerable<ISlotAction> GetEquipped() => _inventory.Equipment.EquipmentSlots.Where(s => s != null && s.HasItemEquipped).Select(e => GetSlotAction(e.EquippedItem));
-        public IEnumerable<ISlotAction> GetArmor() => _inventory.GetOwnedItems(TagSourceManager.Armor).Select(s => GetSlotAction(s));
-
-
-        private ISlotAction GetSlotAction(Item item)
-        {
-            if (item is Skill skill)
-            {
-                return new SkillSlotAction(skill, _player, _character, _slotData, _profileService.GetProfile()?.CombatMode ?? true, _getLogger)
-                {
-                    Cooldown = new ItemCooldownTracker(item),
-                };
-            }
-            else if (item is Equipment equipment)
-            {
-                return new EquipmentSlotAction(equipment, _player, _character, _slotData, _profileService.GetProfile()?.CombatMode ?? true, _getLogger)
-                {
-                    Cooldown = new ItemCooldownTracker(item),
-                };
-            }
-            else
-            {
-                return new ItemSlotAction(item, _player, _character, _slotData, _profileService.GetProfile()?.CombatMode ?? true, _getLogger)
-                {
-                    Cooldown = new ItemCooldownTracker(item),
-                    Stack = item.IsStackable() ? item.ToStackable(_character.Inventory) : null
-                };
-            }
-        }
+        public IEnumerable<ISlotAction> GetEquipped() => _inventory.Equipment.EquipmentSlots.Where(s => s != null && s.HasItemEquipped).Select(e => _slotData.GetSlotAction(e.EquippedItem));
+        public IEnumerable<ISlotAction> GetArmor() => _inventory.GetOwnedItems(TagSourceManager.Armor).Select(s => _slotData.GetSlotAction(s));
     }
 }

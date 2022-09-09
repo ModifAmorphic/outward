@@ -31,15 +31,13 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private void AddPositionsServices(SplitPlayer splitPlayer, Character character)
         {
             var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
-            var playerMenus = psp.GetService<PlayerActionMenus>();
-            var hotbars = playerMenus.gameObject.GetComponentInChildren<HotbarsContainer>();
-            var player = ReInput.players.GetPlayer(splitPlayer.RewiredID);
-            var profileService = new ProfileService(Path.Combine(ActionMenuSettings.ProfilesPath, character.UID));
+            var actionMenus = psp.GetService<PlayerActionMenus>();
+            var profileService = (ProfileService)psp.GetService<IActionMenusProfileService>();
 
-            psp.AddSingleton(hotbars)
-                .AddSingleton<IActionMenusProfileService>(profileService)
+            psp
                 .AddSingleton<IPositionsProfileService>(
                     new PositionsProfileJsonService(profileService, _getLogger));
+                
         }
     }
 }

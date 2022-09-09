@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.ActionMenus.Services
@@ -56,6 +57,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             if (_activeProfile != null && _activeProfile.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                 return;
 
+            Debug.Log($"[Debug  :ActionMenus] ProfileService::SetActiveProfile: Setting active profile to {name}.");
             var profiles = GetOrCreateProfiles();
             if (profiles.ActiveProfile.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                 return;
@@ -79,7 +81,9 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             profiles.ActiveProfile = name;
             
             SaveProfiles(profiles);
-            OnActiveProfileChanged?.TryInvoke(GetActiveActionMenusProfile());
+
+            Debug.Log($"[Debug  :ActionMenus] ProfileService::SetActiveProfile: OnActiveProfileChanged UnityEvent.");
+            OnActiveProfileChanged.TryInvoke(GetActiveActionMenusProfile());
         }
 
         public string GetOrAddProfileDir(string profileName)
@@ -106,16 +110,21 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         {
             var profiles = GetOrCreateProfiles();
             _ = GetOrAddProfileDir(profile.Name);
-            if (!profiles.Profiles.Any(p => p.Name.Equals(profile.Name, StringComparison.InvariantCultureIgnoreCase)))
+            var profileIndex = profiles.Profiles.FindIndex(p => p.Name.Equals(profile.Name, StringComparison.InvariantCultureIgnoreCase));
+            if (profileIndex == -1)
             {
                 profiles.Profiles.Add((ActionMenusProfile)profile);
+            }
+            else
+            {
+                profiles.Profiles[profileIndex] = (ActionMenusProfile)profile;
             }
             profiles.ActiveProfile = profile.Name;
             SaveProfiles(profiles);
             _activeProfile = null;
 
             if (raiseEvent)
-                OnActiveProfileChanged?.TryInvoke(GetActiveActionMenusProfile());
+                OnActiveProfileChanged.TryInvoke(GetActiveActionMenusProfile());
         }
 
         private List<string> GetProfileDirectories()

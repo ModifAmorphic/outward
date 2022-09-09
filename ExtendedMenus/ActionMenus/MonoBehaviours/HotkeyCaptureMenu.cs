@@ -15,6 +15,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public List<KeyCode> Modifiers { get; set; } = new List<KeyCode>();
         public KeyCode KeyCode { get; set; }
     }
+    
     [UnityScriptComponent]
     public class HotkeyCaptureMenu : MonoBehaviour, ISettingsView
     {
@@ -119,6 +120,17 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 || CloseButton.GetSelectionState() == ButtonExtensions.SelectionState.Highlighted
                 || CloseButton.GetSelectionState() == ButtonExtensions.SelectionState.Pressed);
         }
+
+        private static Dictionary<KeyCode, string> MouseButtonNames = new Dictionary<KeyCode, string>()
+        {
+            { KeyCode.Mouse0, "LMB" },
+            { KeyCode.Mouse1, "RMB" },
+            { KeyCode.Mouse2, "MWheel" },
+            { KeyCode.Mouse3, "Mouse 3" },
+            { KeyCode.Mouse4, "Mouse 4" },
+            { KeyCode.Mouse5, "Mouse 5" },
+        };
+
         private void AddKeyCode(KeyCode key)
         {
             if (!string.IsNullOrWhiteSpace(_text.text))
@@ -163,6 +175,17 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 case KeyCode.Alpha9:
                     _keyGroup.KeyCode = key;
                     _text.text += (key - 48).ToString();
+                    break;
+                case KeyCode.Mouse0:
+                case KeyCode.Mouse1:
+                case KeyCode.Mouse2:
+                case KeyCode.Mouse3:
+                case KeyCode.Mouse4:
+                case KeyCode.Mouse5:
+                case KeyCode.Mouse6:
+                    _keyGroup.Modifiers.Clear();
+                    _keyGroup.KeyCode = key;
+                    _text.text = MouseButtonNames[key];
                     break;
                 default:
                     _keyGroup.KeyCode = key;

@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.ActionMenus.Patches;
+﻿using HarmonyLib;
+using ModifAmorphic.Outward.ActionMenus.Patches;
 using ModifAmorphic.Outward.ActionMenus.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
@@ -52,6 +53,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                                               , _getLogger))
                 .AddSingleton(new SlotDataService(player
                                         , splitPlayer.AssignedCharacter
+                                        , (HotbarProfileJsonService)psp.GetService<IHotbarProfileService>()
                                         , _getLogger))
                 .AddSingleton(new HotbarService(hotbars
                                         , player

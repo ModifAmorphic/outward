@@ -21,23 +21,30 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         private Coroutine _iconCoroutine;
 
         public bool IsUpdateEnabled => ActionSlot.SlotAction?.TargetAction != null && ActionSlot.SlotAction.CheckOnUpdate;
-        public bool IsActionNeeded => ActionSlot.ParentCanvas != null && ActionSlot.ParentCanvas.enabled && ActionSlot.SlotAction?.TargetAction != null && ActionSlot.SlotAction.GetIsActionRequested() && ActionSlot.ActionButton.interactable;
+        public bool IsActionNeeded => 
+            ActionSlot.ParentCanvas != null && ActionSlot.ParentCanvas.enabled && ActionSlot.SlotAction?.TargetAction != null 
+            && ActionSlot.SlotAction.GetIsActionRequested() && ActionSlot.ActionButton.interactable
+            && !ActionSlot.HotbarsContainer.IsInActionSlotEditMode;
 
         public ActionSlotController(ActionSlot actionSlot)
         {
             ActionSlot = actionSlot ?? throw new ArgumentNullException(nameof(actionSlot));
 
-            actionSlot.MouseClickListener.OnRightClick.AddListener(OnEditRequested);
+            actionSlot.MouseClickListener.OnRightClick.AddListener(OnRemoveRequested);
+            actionSlot.ActionButton.onClick.AddListener(OnActionButtonClicked);
+
             actionSlot.KeyButton.onClick.AddListener(OnHotkeyEditRequested);
         }
 
         public void AssignEmptyAction()
         {
             UnassignSlotAction();
+            dynamicSprites = null;
             //ActionSlot.ActionImage.overrideSprite = null;
             //ActionSlot.ActionImage.sprite = null;
             ActionSlot.ActionImages.ClearImages();
             DisableCooldownService();
+            DisableStackService();
             ActionSlot.StackText.enabled = false;
 
             foreach (var bar in ActionSlot.ProgressBars.Values)
@@ -114,6 +121,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             StartEnableToggleService(slotAction.GetEnabled);
 
             slotAction.SlotActionAssigned(ActionSlot);
+
+            ActionSlot.HotbarsContainer.HasChanges = true;
             //ActionSlot.HotbarsContainer.HasChanges = true;
         }
 
@@ -144,12 +153,24 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
 
             if (IsActionNeeded)
             {
-                ExecuteEvents.Execute(ActionSlot.ActionButton.gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+                //ExecuteEvents.Execute(ActionSlot.ActionButton.gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
                 ActionSlot.SlotAction.TargetAction.Invoke();
             }
             else if (ActionSlot.SlotAction.GetIsEditRequested())
             {
                 ActionSlot.HotbarsContainer.ActionsViewer.Show(ActionSlot.SlotId);
+            }
+        }
+
+        private void OnActionButtonClicked()
+        {
+            if (ActionSlot.HotbarsContainer.IsInActionSlotEditMode)
+            {
+                OnEditRequested();
+            }
+            else if (ActionSlot.SlotAction != null)
+            {
+                OnActionRequested();
             }
         }
 
@@ -199,7 +220,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             }
             else if (!interactive && ActionSlot.ActionButton.interactable)
             {
-                ActionSlot.ActionButton.interactable = true;
+                ActionSlot.ActionButton.interactable = false;
             }
         }
         
@@ -233,6 +254,16 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 ActionSlot.HotbarsContainer.ActionsViewer.Show(ActionSlot.SlotId);
         }
 
+        private void OnRemoveRequested()
+        {
+            Debug.Log($"[Debug  :ActionMenus] ActionSlotController:OnRemoveRequested");
+            if (ActionSlot.ParentCanvas != null && ActionSlot.ParentCanvas.enabled && ActionSlot.ActionButton.interactable)
+            {
+                AssignEmptyAction();
+                ActionSlot.HotbarsContainer.HasChanges = true;
+            }
+        }
+
         private void OnHotkeyEditRequested()
         {
             if (ActionSlot.ParentCanvas != null && ActionSlot.ParentCanvas.enabled && ActionSlot.ActionButton.interactable)
@@ -256,6 +287,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             if (ActionSlot.SlotAction != null)
             {
                 ActionSlot.SlotAction.OnActionRequested -= OnActionRequested;
+                ActionSlot.SlotAction.OnEditRequested -= OnEditRequested;
+                
+                if (!ActionSlot.SlotAction.HasDynamicIcon)
+                    ActionSlot.SlotAction.OnIconsChanged -= AssignSlotIcons;
+                
                 ActionSlot.SlotAction.SlotActionUnassigned();
                 ActionSlot.SlotAction = null;
             }
@@ -264,6 +300,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 ActionSlot.StopCoroutine(_iconCoroutine);
                 _iconCoroutine = null;
             }
+            ActionSlot.CooldownText.text = String.Empty;
+            ActionSlot.StackText.text = String.Empty;
         }
 
         private ActionSlotIcon[] dynamicSprites;

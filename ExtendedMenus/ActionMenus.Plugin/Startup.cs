@@ -54,11 +54,20 @@ namespace ModifAmorphic.Outward.ActionMenus
             services
                 .AddSingleton(new SharedServicesInjector(
                     services, services.GetService<IModifLogger>))
+                .AddSingleton(new PositionsService(
+                        services.GetService<LevelCoroutines>(),
+                        services.GetService<ModifGoService>(),
+                        services.GetService<IModifLogger>))
                 .AddSingleton(new PlayerMenuService(services.GetService<BaseUnityPlugin>(),
                                                   actionMenusPrefab.GetComponentInChildren<PlayerActionMenus>(true).gameObject,
+                                                  services.GetService<PositionsService>(),
                                                   services.GetService<LevelCoroutines>(),
                                                   services.GetService<ModifGoService>(),
-                                                  services.GetService<IModifLogger>));
+                                                  services.GetService<IModifLogger>))
+                .AddSingleton(new PositionsServicesInjector(_services,
+                                services.GetService<ModifGoService>(),
+                                services.GetService<LevelCoroutines>(),
+                                services.GetService<IModifLogger>));
 
 
             SplitPlayerPatches.SetCharacterAfter += AddSharedServices;
@@ -71,8 +80,7 @@ namespace ModifAmorphic.Outward.ActionMenus
                     , services.GetService<HotbarSettings>()
                     , _loggerFactory))
                 .AddSingleton(new DurabilityDisplayStartup(
-                    harmony
-                    , services
+                    services
                     , services.GetService<ModifGoService>()
                     , services.GetService<LevelCoroutines>()
                     , _loggerFactory));

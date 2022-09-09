@@ -12,20 +12,20 @@ namespace ModifAmorphic.Outward.ActionMenus.Patches
     {
         private static IModifLogger Logger => LoggerFactory.GetLogger(ModInfo.ModId);
 
-        public delegate void StartInit(QuickSlotControllerSwitcher controllerSwitcher, ref CanvasGroup canvasGroup);
+        public delegate void StartInit(QuickSlotControllerSwitcher controllerSwitcher);
         public static event StartInit StartInitAfter;
         [HarmonyPatch("StartInit")]
         [HarmonyPostfix]
-        private static void StartInitPostfix(QuickSlotControllerSwitcher __instance, ref CanvasGroup ___m_keyboardQuickSlots)
+        private static void StartInitPostfix(QuickSlotControllerSwitcher __instance)
         {
             try
             {
-                Logger.LogTrace($"{nameof(QuickSlotControllerSwitcherPatches)}::{nameof(StartInitPostfix)}(): Invoked. Invoking {nameof(StartInitAfter)}({nameof(KeyboardQuickSlotPanel)}, {nameof(CanvasGroup)}).");
-                StartInitAfter?.Invoke(__instance, ref ___m_keyboardQuickSlots);
+                Logger.LogTrace($"{nameof(QuickSlotControllerSwitcherPatches)}::{nameof(StartInitPostfix)}(): Invoked. Invoking {nameof(StartInitAfter)}({nameof(KeyboardQuickSlotPanel)}).");
+                StartInitAfter?.Invoke(__instance);
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(QuickSlotControllerSwitcherPatches)}::{nameof(StartInitPostfix)}(): Exception Invoking {nameof(StartInitAfter)}({nameof(KeyboardQuickSlotPanel)}, {nameof(CanvasGroup)}).", ex);
+                Logger.LogException($"{nameof(QuickSlotControllerSwitcherPatches)}::{nameof(StartInitPostfix)}(): Exception Invoking {nameof(StartInitAfter)}({nameof(KeyboardQuickSlotPanel)}).", ex);
             }
         }
     }

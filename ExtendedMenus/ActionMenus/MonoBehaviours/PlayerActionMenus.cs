@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
@@ -16,6 +17,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public int PlayerID { get => _playerID; }
 
         public MainSettingsMenu MainSettingsMenu;
+        public DurabilityDisplay DurabilityDisplay;
         //public SettingsView SettingsView;
         //public HotkeyCaptureMenu HotkeyCaptureMenu;
         //public HotbarSettingsView HotbarSettingsViewer;
@@ -32,6 +34,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private Func<bool> _exitRequested;
 
         private bool _isAwake = false;
+        private bool _isPlayerAssigned = false;
+        public bool IsPlayerAssigned => _isPlayerAssigned;
+
+        private static readonly UnityEvent<PlayerActionMenus> _onPlayerIdAssigned = new UnityEvent<PlayerActionMenus>();
+        public static UnityEvent<PlayerActionMenus> OnPlayerIdAssigned => _onPlayerIdAssigned;
 
         public void SetIDs(int playerID)
         {
@@ -41,6 +48,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             var positionables = GetPositionableUIs();
             foreach (var ui in positionables)
                 ui.SetProfileManager(_profileManager);
+
+            _isPlayerAssigned = true;
+            _onPlayerIdAssigned.Invoke(this);
         }
 
         public PositionableUI[] GetPositionableUIs() => 

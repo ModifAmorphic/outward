@@ -24,7 +24,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private UIPosition _originPosition;
         public UIPosition OriginPosition => _originPosition;
 
-        public bool HasMoved => _startPosition != default && (!Mathf.Approximately(_startPosition.x, RectTransform.position.x) || !Mathf.Approximately(_startPosition.y, RectTransform.position.y));
+        public bool HasMoved => _startPosition != default && (!Mathf.Approximately(_startPosition.x, RectTransform.anchoredPosition.x) || !Mathf.Approximately(_startPosition.y, RectTransform.anchoredPosition.y));
+
+        public UnityEvent<bool> OnIsPositionableChanged { get; private set; } = new UnityEvent<bool>();
 
         private bool _positioningEnabled = false;
         public bool IsPositionable => _positioningEnabled;
@@ -59,7 +61,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             if (_profileManager != null && _profileManager.PositionsProfileService != null)
                 SetPositionFromProfile(_profileManager.PositionsProfileService.GetProfile());
 
-            _startPosition = new Vector2(RectTransform.position.x, RectTransform.position.y);
+            _startPosition = new Vector2(RectTransform.anchoredPosition.x, RectTransform.anchoredPosition.y);
 
             if (BackgroundImage != null)
                 BackgroundImage.gameObject.SetActive(_positioningEnabled);
@@ -70,8 +72,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         {
             if (profileChangeEventNeeded && _profileManager != null && _profileManager.PositionsProfileService != null)
             {
-                profileChangeEventNeeded = true;
-                _profileManager.PositionsProfileService.OnProfileChanged.AddListener(SetPositionFromProfile);
+                profileChangeEventNeeded = false;
+                Debug.Log($"[Debug  :ActionMenus] PositionableUI{{{name}}}::Update: Adding OnProfileChanged listener.");
+                _profileManager.PositionsProfileService.OnProfileChanged.AddListener(OnProfileChanged);
             }
         }
 
@@ -81,7 +84,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             profileChangeEventNeeded = true;
             if (_profileManager.PositionsProfileService != null)
             {
-                _profileManager.PositionsProfileService.OnProfileChanged.AddListener(SetPositionFromProfile);
+                Debug.Log($"[Debug  :ActionMenus] PositionableUI{{{name}}}::SetProfileManager: Adding OnProfileChanged listener.");
+                _profileManager.PositionsProfileService.OnProfileChanged.AddListener(OnProfileChanged);
                 profileChangeEventNeeded = false;
                 SetPositionFromProfile(_profileManager.PositionsProfileService.GetProfile());
             }
@@ -105,6 +109,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 gameObject.AddComponent<GraphicRaycaster>();
                 _raycasterAdded = true;
             }
+            OnIsPositionableChanged.Invoke(_positioningEnabled);
         }
 
         public void DisableMovement()
@@ -129,28 +134,36 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 
                 _canvasAdded = false;
             }
+            OnIsPositionableChanged.Invoke(_positioningEnabled);
         }
-
-        public void SetPosition(Vector2 position) => SetPosition(position.x, position.y);
         
-        public void SetPosition(float x, float y) => RectTransform.position = new Vector2(x, y);
+        public void SetPosition(float x, float y) => RectTransform.anchoredPosition = new Vector2(x, y);
 
-        public void SetPosition(UIPosition position) => SetPosition(position.Position.X, position.Position.Y);
+        public void SetPosition(UIPosition position) => SetPosition(position.AnchoredPosition.X, position.AnchoredPosition.Y);
 
         public void SetPositionFromProfile(PositionsProfile profile)
         {
             var position = profile.Positions?.FirstOrDefault(p => p.TransformPath == TransformPath);
             if (position != default)
             {
+                Debug.Log($"[Debug  :ActionMenus] PositionableUI{{{name}}}: Setting position of PositionableUI {name} to modified position of ({position.ModifiedPosition.AnchoredPosition.X}, {position.ModifiedPosition.AnchoredPosition.Y}).");
                 SetPosition(position.ModifiedPosition);
                 _originPosition = position.OriginPosition;
             }
+        }
+
+        private void OnProfileChanged(PositionsProfile profile)
+        {
+            Debug.Log($"[Debug  :ActionMenus] PositionableUI{{{name}}}: OnProfileChanged for PositionableUI {name}.");
+            ResetToOrigin();
+            SetPositionFromProfile(profile);
         }
 
         public void ResetToOrigin()
         {
             if (_originPosition != null)
             {
+                Debug.Log($"[Debug  :ActionMenus] PositionableUI{{{name}}}: Setting position of PositionableUI {name} to origin position of ({_originPosition.AnchoredPosition.X}, {_originPosition.AnchoredPosition.Y}).");
                 SetPosition(_originPosition);
             }
         }
@@ -170,7 +183,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 {
                     _originPosition = RectTransform.ToRectTransformPosition();
                 }
-                _startPosition = new Vector2(RectTransform.position.x, RectTransform.position.y);
+                _startPosition = new Vector2(RectTransform.anchoredPosition.x, RectTransform.anchoredPosition.y);
                 _offset = eventData.position - new Vector2(RectTransform.position.x, RectTransform.position.y);
             }
         }

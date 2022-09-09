@@ -31,12 +31,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             //}
         }
 
-        public void AssignSlotAction(int slotId, ISlotAction slotAction)
+        private void AssignSlotAction(int slotId, ISlotAction slotAction)
         {
             if (_hbc.ActionSlots.TryGetValue(slotId, out var slot))
             {
                 slot.Controller.AssignSlotAction(slotAction);
-                _hbc.HasChanges = true;
+                //_hbc.HasChanges = true;
             }
         }
         
@@ -104,46 +104,31 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 SelectHotbar(_hbc.SelectedHotbar);
 
         }
-        //public void ConfigureHotbars(int hotbars, int rows, int slotsPerRow, IActionSlotConfig[,] slotConfigs)
-        //{
-        //    if (hotbars < 1)
-        //        throw new ArgumentOutOfRangeException(nameof(hotbars));
-        //    if (rows < 1)
-        //        throw new ArgumentOutOfRangeException(nameof(rows));
-        //    if (slotsPerRow < 1)
-        //        throw new ArgumentOutOfRangeException(nameof(slotsPerRow));
 
-        //    Reset();
-        //    _hbc.BaseGrid.constraintCount = slotsPerRow;
-        //    _hbc.ConfigureHotbars(hotbars);
-        //    Debug.Log("[Debug  :ActionMenus] Configuring ActionSlots.");
-        //    for (int h = 0; h < hotbars; h++)
-        //    {
-        //        var barCanvas = UnityEngine.Object.Instantiate(_hbc.BaseHotbarCanvas, _hbc.BaseHotbarCanvas.transform.parent);
-        //        barCanvas.name = "HotbarCanvas" + h;
-        //        barCanvas.gameObject.SetActive(true);
-        //        _hbc.HotbarGrid[h] = UnityEngine.Object.Instantiate(_hbc.BaseGrid, barCanvas.transform);
-        //        _hbc.HotbarGrid[h].name = "HotbarsGrid" + h;
-        //        _hbc.HotbarGrid[h].gameObject.SetActive(true);
-        //        _hbc.ConfigureActionSlots(h, slotsPerRow * rows);
-        //        for (int s = 0; s < slotsPerRow * rows; s++)
-        //        {
-        //            var newSlot = UnityEngine.Object.Instantiate(_hbc.BaseActionSlot, _hbc.HotbarGrid[h].transform);
-        //            var actionSlot = newSlot.GetComponent<ActionSlot>();
-        //            actionSlot.SlotIndex = s;
-        //            actionSlot.HotbarIndex = h;
-        //            actionSlot.HotbarsContainer = _hbc;
-        //            actionSlot.Config = slotConfigs[h, s];
-        //            newSlot.SetActive(true);
-        //            _hbc.Hotbars[h][s] = actionSlot;
-        //            _hbc.ActionSlots.Add(actionSlot.SlotId, actionSlot);
-        //        }
-        //        barCanvas.enabled = h == 0;
-        //    }
-        //    Debug.Log($"[Debug  :ActionMenus] Added {_hbc.Hotbars.Length} Hotbars with {_hbc.Hotbars.FirstOrDefault()?.Length} Action Slots each. Calling StartCoroutine ResizeLayoutGroup().");
-        //    _resizeNeeded = true;
-        //    _hbc.HasChanges = true;
-        //}
+        public void EnableHotbars()
+        {
+            _hbc.ActionBarsCanvas.gameObject.SetActive(true);
+            var positionable = _hbc.GetComponent<PositionableUI>();
+            if (positionable != null)
+            {
+                positionable.enabled = true;
+                if (positionable.BackgroundImage != null)
+                    positionable.BackgroundImage.gameObject.SetActive(true);
+            }
+        }
+
+        public void DisableHotbars()
+        {
+            _hbc.ActionBarsCanvas.gameObject.SetActive(false);
+
+            var positionable = _hbc.GetComponent<PositionableUI>();
+            if (positionable != null)
+            {
+                positionable.enabled = false;
+                if (positionable.BackgroundImage != null)
+                    positionable.BackgroundImage.gameObject.SetActive(false);
+            }
+        }
 
         public void SelectHotbar(int barIndex)
         {
@@ -231,14 +216,15 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         void ResizeLayoutGroup()
         {
             //yield return new WaitForEndOfFrame();
-            float btnWidth = _hbc.Hotbars[0][0].GetComponent<RectTransform>().rect.width;
-            float btnHeight = _hbc.Hotbars[0][0].GetComponent<RectTransform>().rect.height;
-            if (btnWidth == 0)
+            //float btnWidth = _hbc.Hotbars[0][0].GetComponent<RectTransform>().rect.width;
+            //float btnHeight = _hbc.Hotbars[0][0].GetComponent<RectTransform>().rect.height;
+            if (_hbc.HotbarGrid[0].cellSize.x == 0)
                 return;
+
             //var glgRect = _hbc.Hotbars[0].GetComponent<RectTransform>().rect;
             //float width = glgRect.width;
-            float hotbarWidth = (btnWidth + _hbc.HotbarGrid[0].spacing.x) * (_hbc.HotbarGrid[0].constraintCount) + _hbc.HotbarGrid[0].padding.horizontal * 2 - _hbc.HotbarGrid[0].spacing.x;
-            float hotbarHeight = (btnHeight + _hbc.HotbarGrid[0].spacing.y) * GetRowCount() + _hbc.HotbarGrid[0].padding.vertical * 2 - _hbc.HotbarGrid[0].spacing.y;
+            float hotbarWidth = (_hbc.HotbarGrid[0].cellSize.x + _hbc.HotbarGrid[0].spacing.x) * (_hbc.HotbarGrid[0].constraintCount) + _hbc.HotbarGrid[0].padding.horizontal * 2 - _hbc.HotbarGrid[0].spacing.x;
+            float hotbarHeight = (_hbc.HotbarGrid[0].cellSize.y + _hbc.HotbarGrid[0].spacing.y) * GetRowCount() + _hbc.HotbarGrid[0].padding.vertical * 2 - _hbc.HotbarGrid[0].spacing.y;
             Debug.Log("[Debug  :ActionMenus] ResizeLayoutGroup() called. Calculated width is " + hotbarWidth);
 
             _hbc.Resize(hotbarWidth, hotbarHeight);

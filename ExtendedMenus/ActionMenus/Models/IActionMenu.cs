@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
-    internal interface IActionMenu
+    public interface IActionMenu
     {
         bool IsShowing { get; }
         UnityEvent OnShow { get; }

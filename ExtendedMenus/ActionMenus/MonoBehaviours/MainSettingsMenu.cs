@@ -45,7 +45,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
         {
-            Debug.Log("MainSettingsViewer::Awake");
+            Debug.Log("MainSettingsMenu::Awake");
             _menus = new Dictionary<ActionSettingsMenus, ISettingsView>();
             _menus.Add(ActionSettingsMenus.Settings, SettingsView);
             _menus.Add(ActionSettingsMenus.ActionSlots, HotbarSettingsView);
@@ -62,7 +62,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Start()
         {
-            Debug.Log("MainSettingsViewer::Start");
+            Debug.Log("MainSettingsMenu::Start");
             if (!_isInit)
                 Hide(false);
 
@@ -71,7 +71,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public void Show()
         {
-            Debug.Log("MainSettingsViewer::Show");
+            Debug.Log("MainSettingsMenu::Show");
             gameObject.SetActive(true);
 
             OnShow?.TryInvoke();
@@ -85,7 +85,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private void Hide(bool raiseEvent)
         {
-            Debug.Log("MainSettingsViewer::Hide");
+            Debug.Log("MainSettingsMenu::Hide");
 
             var hideMenus = _menus
                 .Where(kvp => kvp.Value.IsShowing && kvp.Key != ActionSettingsMenus.ActionSlots && kvp.Key != ActionSettingsMenus.Settings)
@@ -97,14 +97,14 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 menu.Hide();
                 showMe = true;
             }
-            Debug.Log($"MainSettingsViewer::Hide: hideMenus.Count == {hideMenus?.Count()}");
+            Debug.Log($"MainSettingsMenu::Hide: hideMenus.Count == {hideMenus?.Count()}");
             if (showMe)
             {
                 Show();
             }
             else if (gameObject.activeSelf)
             {
-                Debug.Log($"MainSettingsViewer::Hide: SetActive(false)");
+                Debug.Log($"MainSettingsMenu::Hide: SetActive(false)");
                 gameObject.SetActive(false);
                 if (raiseEvent)
                     OnHide?.TryInvoke();

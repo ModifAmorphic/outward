@@ -229,10 +229,10 @@ RectTransform:
   m_Father: {fileID: 1363118463374932722}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.20500001}
-  m_AnchorMax: {x: 0, y: 0.7933443}
-  m_AnchoredPosition: {x: -125.4, y: 0.61257935}
-  m_SizeDelta: {x: 168, y: -0.61261}
+  m_AnchorMin: {x: 0, y: 0.36600003}
+  m_AnchorMax: {x: 0, y: 0.94900006}
+  m_AnchoredPosition: {x: -125.3, y: 0}
+  m_SizeDelta: {x: 168, y: -0.61260986}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &3449898034059630784
 CanvasRenderer:
@@ -316,11 +316,11 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 90}
-  m_SizeDelta: {x: 1200, y: 740}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -20}
+  m_SizeDelta: {x: 1200, y: 920}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &4018707473406196876
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1388,6 +1388,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8552991946982728986, guid: ce369cc17569d5c4d84eb4d906b2be42, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ce369cc17569d5c4d84eb4d906b2be42, type: 3}
 --- !u!1 &6372441272208641556 stripped
@@ -1493,7 +1497,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5561013077163278033, guid: 14bdd222671a74c4c9853edf5d8fc610, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.9875467
       objectReference: {fileID: 0}
     - target: {fileID: 5561013077163278033, guid: 14bdd222671a74c4c9853edf5d8fc610, type: 3}
       propertyPath: m_Value

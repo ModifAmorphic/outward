@@ -1,7 +1,6 @@
 ﻿using ModifAmorphic.Outward.ActionMenus.DataModels;
 using ModifAmorphic.Outward.ActionMenus.Extensions;
 using ModifAmorphic.Outward.ActionMenus.Models;
-using ModifAmorphic.Outward.ActionMenus.Monobehaviours;
 using ModifAmorphic.Outward.ActionMenus.Patches;
 using ModifAmorphic.Outward.ActionMenus.Settings;
 using ModifAmorphic.Outward.Coroutines;
@@ -21,7 +20,7 @@ using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.ActionMenus.Services
 {
-    internal class HotbarService
+    internal class HotbarServiceSwitched
     {
 
         private IModifLogger Logger => _getLogger.Invoke();
@@ -41,7 +40,12 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private ControllerType _activeController;
         public ControllerType ActiveController => _activeController;
 
-        public HotbarService(HotbarsContainer hotbarsContainer, Player player, Character character, ProfileManager profileManager, SlotDataService slotData, LevelCoroutines levelCoroutines, Func<IModifLogger> getLogger)
+        private QuickSlotControllerSwitcher _quickSlotControllerSwitcher;
+        private KeyboardQuickSlotPanel _quickslotKeyboard;
+        private CanvasGroup _quickslotKeyboardCanvasGroup;
+        private bool _hotbarsEnabled;
+
+        public HotbarServiceSwitched(HotbarsContainer hotbarsContainer, Player player, Character character, ProfileManager profileManager, SlotDataService slotData, LevelCoroutines levelCoroutines, Func<IModifLogger> getLogger)
         {
             if (hotbarsContainer == null)
                 throw new ArgumentNullException(nameof(hotbarsContainer));
@@ -63,27 +67,36 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             _levelCoroutines = levelCoroutines;
             _getLogger = getLogger;
 
-            QuickSlotPanelPatches.StartInitAfter += DisableKeyboardQuickslots;
+            QuickSlotPanelPatches.StartInitAfter += (keyboard) =>
+            {
+                if (_quickslotKeyboard == null)
+                    _quickslotKeyboard = keyboard;
+                if (_profileManager.ProfileService.GetActiveProfile().ActionSlotsEnabled)
+                {
+                    DisableKeyboardQuickslots();
+                }
+            };
             QuickSlotControllerSwitcherPatches.StartInitAfter += SwapCanvasGroup;
+
             NetworkLevelLoader.Instance.onOverallLoadingDone += () =>
             {
                 if (_profileManager.ProfileService.GetActiveProfile().ActionSlotsEnabled)
                     AssignSlotActions(GetOrCreateActiveProfile());
                 _isProfileInit = true;
             };
-            SkillMenuPatches.AfterOnSectionSelected += SetSkillsMovable;
 
-
-
-        }
-
-        private void SetSkillsMovable(ItemListDisplay itemListDisplay)
-        {
-            var displays = itemListDisplay.GetComponentsInChildren<ItemDisplay>();
-            for (int i = 0; i < displays.Length; i++)
+            _profileManager.ProfileService.OnActiveProfileChanged.AddListener(profile =>
             {
-                displays[i].Movable = true;
-            }
+                if (profile.ActionSlotsEnabled && !_hotbarsEnabled)
+                    EnableHotbars();
+                else if (!profile.ActionSlotsEnabled && _hotbarsEnabled)
+                    EnableKeyboardQuickslots();
+            });
+            //CharacterManagerPatches.AfterApplyQuickSlots += (c) =>
+            //{
+            //    if (c.UID == _character.UID)
+            //        QueueActionSlotAssignments();
+            //};
         }
 
         public void Start()
@@ -91,11 +104,17 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             _saveDisabled = true;
 
             var profile = GetOrCreateActiveProfile();
-            ConfigureHotbars(profile);
-            _hotbars.ClearChanges();
-            _profileManager.HotbarProfileService.OnProfileChanged.AddListener(ConfigureHotbars);
-            _levelCoroutines.StartRoutine(CheckProfileForSave());
-
+            if (_profileManager.GetActiveProfile().ActionSlotsEnabled)
+            {
+                ConfigureHotbars(profile);
+                _hotbars.ClearChanges();
+                _profileManager.HotbarProfileService.OnProfileChanged.AddListener(ConfigureHotbars);
+                _levelCoroutines.StartRoutine(CheckProfileForSave());
+            }
+            else
+            {
+                ToggleQuickslotPositonable(true);
+            }
         }
 
         public void ConfigureHotbars(IHotbarProfile profile)
@@ -117,7 +136,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         {
             while (true)
             {
-                yield return new WaitForSecondsRealtime(35);
+                yield return new WaitForSecondsRealtime(5);
                 if (_hotbars.HasChanges && !_saveDisabled)
                 {
                     var profile = GetOrCreateActiveProfile();
@@ -132,32 +151,107 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         {
             if (controllerSwitcher.name != "QuickSlot")
                 return;
-            var canvasGroup = controllerSwitcher.GetPrivateField<QuickSlotControllerSwitcher, CanvasGroup>("m_keyboardQuickSlots");
+            _quickSlotControllerSwitcher = controllerSwitcher;
+            var canvasGroup = _quickSlotControllerSwitcher.GetPrivateField<QuickSlotControllerSwitcher, CanvasGroup>("m_keyboardQuickSlots");
             var keyboard = canvasGroup.GetComponent<KeyboardQuickSlotPanel>();
             if (keyboard != null)
             {
                 if (keyboard.CharacterUI.RewiredID == _characterUI.RewiredID)
                 {
+                    if (_quickslotKeyboardCanvasGroup == null)
+                        _quickslotKeyboardCanvasGroup = canvasGroup;
+                    if (_quickslotKeyboard == null)
+                        _quickslotKeyboard = keyboard;
                     _activeController = ControllerType.Keyboard;
-                    var hotbarCanvasGroup = _hotbars.GetComponent<CanvasGroup>();
-                    controllerSwitcher.SetPrivateField("m_keyboardQuickSlots", hotbarCanvasGroup);
-                    DisableKeyboardQuickslots(keyboard);
+                    if (_profileManager.ProfileService.GetActiveProfile().ActionSlotsEnabled)
+                        EnableHotbars();
+                    else
+                        DisableHotbars();
                 }
             }
             else
                 _activeController = ControllerType.Mouse;
-
         }
 
-        public void DisableKeyboardQuickslots(KeyboardQuickSlotPanel keyboard)
+        public void EnableKeyboardQuickslots()
         {
-            if (keyboard != null && keyboard.CharacterUI.RewiredID == _characterUI.RewiredID)
+            Logger.LogDebug($"Enabling Keyboard Quickslots for player RewiredID {_quickslotKeyboard?.CharacterUI?.RewiredID}.");
+            if (_quickslotKeyboard != null && _quickslotKeyboardCanvasGroup != null)
             {
-                Logger.LogDebug($"Disabling Keyboard QuickSlots for RewiredID {keyboard?.CharacterUI?.RewiredID}.");
-                keyboard.gameObject.SetActive(false);
+                _quickslotKeyboard.gameObject.SetActive(true);
+                _quickSlotControllerSwitcher.SetPrivateField("m_keyboardQuickSlots", _quickslotKeyboardCanvasGroup);
+                ControlsInput.SetQuickSlotActive(_characterUI.RewiredID, true);
+                DisableHotbars();
+                ToggleQuickslotPositonable(true);
             }
         }
 
+        public void DisableKeyboardQuickslots()
+        {
+            if (_quickslotKeyboard != null && _quickslotKeyboard.CharacterUI.RewiredID == _characterUI.RewiredID)
+            {
+                Logger.LogDebug($"Disabling Keyboard QuickSlots for RewiredID {_quickslotKeyboard?.CharacterUI?.RewiredID}.");
+                ToggleQuickslotPositonable(false);
+                _quickslotKeyboard.gameObject.SetActive(false);
+            }
+        }
+
+        public void EnableHotbars()
+        {
+            if (_quickSlotControllerSwitcher != null)
+            {
+                _hotbars.Controller.EnableHotbars();
+                _quickSlotControllerSwitcher.SetPrivateField("m_keyboardQuickSlots", _hotbars.GetComponent<CanvasGroup>());
+                DisableKeyboardQuickslots();
+                ControlsInput.SetQuickSlotActive(_characterUI.RewiredID, false);
+
+                ConfigureHotbars(GetOrCreateActiveProfile());
+                _hotbars.ClearChanges();
+                _profileManager.HotbarProfileService.OnProfileChanged.AddListener(ConfigureHotbars);
+                
+                var positionable = _hotbars.GetComponent<PositionableUI>();
+                positionable.SetPositionFromProfile(_profileManager.PositionsProfileService.GetProfile());
+                if (positionable.BackgroundImage != null && positionable.BackgroundImage.gameObject.activeSelf)
+                    positionable.BackgroundImage.gameObject.SetActive(false);
+
+                _levelCoroutines.StartRoutine(CheckProfileForSave());
+                _hotbarsEnabled = true;
+            }
+        }
+
+        public void DisableHotbars()
+        {
+            _profileManager.HotbarProfileService.OnProfileChanged.RemoveListener(ConfigureHotbars);
+            _levelCoroutines.StopRoutine(CheckProfileForSave());
+
+            _hotbars.Controller.DisableHotbars();
+            _hotbarsEnabled = false;
+        }
+
+        private void ToggleQuickslotPositonable(bool enabled)
+        {
+            
+            var keyboard = _characterUI.transform.Find("Canvas/GameplayPanels/HUD/QuickSlot/Keyboard");
+            var positionable = keyboard.GetComponent<PositionableUI>();
+            if (enabled)
+            {
+                var slotsGroup = keyboard.GetComponent<HorizontalLayoutGroup>();
+                var slots = slotsGroup.GetComponentsInChildren<EditorQuickSlotDisplayPlacer>();
+                var slotRect = slots.First().GetComponent<RectTransform>().rect;
+                var width = (slotRect.width + slotsGroup.spacing) * 8 + slotsGroup.padding.horizontal * 2 - slotsGroup.spacing;
+                var height = slotRect.height + slotsGroup.padding.horizontal * 2;
+                Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(ToggleQuickslotPositonable)}(): {slots.Length} QuickSlots found. Setting PositionableBg rect dimensions to ({width}, {height}).  Slot size ({slotRect.width}, {slotRect.height})");
+                var rectTranform = positionable.BackgroundImage.GetComponent<RectTransform>();
+                rectTranform.anchorMin = new Vector2(1f, 0f);
+                rectTranform.anchorMax = new Vector2(1f, 1f);
+                rectTranform.pivot = new Vector2(1f, .5f);
+                rectTranform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width * 1.2f);
+
+                positionable.SetPositionFromProfile(_profileManager.PositionsProfileService.GetProfile());
+            }
+
+            positionable.enabled = enabled;
+        }
 
         private IHotbarProfile GetOrCreateActiveProfile()
         {
@@ -197,17 +291,15 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             {
                 for (int s = 0; s < profile.Hotbars[hb].Slots.Count; s++)
                 {
-                    var slotData = profile.Hotbars[hb].Slots[s] as SlotData;
-                    var actionSlot = _hotbars.Controller.GetActionSlots()[hb][s];
-                    if (!_slotData.TryGetItemSlotAction(slotData, profile.CombatMode, out var slotAction))
+                    var slot = profile.Hotbars[hb].Slots[s] as SlotData;
+                    if (!_slotData.TryGetItemSlotAction(slot, profile.CombatMode, out var slotAction))
                     {
-                        actionSlot.Controller.AssignEmptyAction();
+                        _hotbars.Controller.GetActionSlots()[hb][s].Controller.AssignEmptyAction();
                     }
                     else
                     {
-                        actionSlot.Controller.AssignSlotAction(slotAction);
+                        _hotbars.Controller.GetActionSlots()[hb][s].Controller.AssignSlotAction(slotAction);
                     }
-                    actionSlot.ActionButton.gameObject.GetOrAddComponent<ActionSlotDropper>(); //.SetLogger(_getLogger);
                 }
             }
             SetProfileHotkeys(profile);

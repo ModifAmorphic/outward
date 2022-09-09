@@ -1,10 +1,12 @@
 ﻿using ModifAmorphic.Outward.ActionMenus.Extensions;
 using ModifAmorphic.Outward.ActionMenus.Patches;
+using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
+using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace ModifAmorphic.Outward.ActionMenus.Services
 {
@@ -14,6 +16,8 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private IModifLogger Logger => _loggerFactory.Invoke();
 
         private bool _unequipedAdded;
+
+        private bool _equipTracked = false;
 
         private readonly static UnequippedDurabilityTracker UnequippedHelm = new UnequippedDurabilityTracker(DurableEquipmentSlot.Head, DurableEquipmentType.Helm, 1f);
         private readonly static UnequippedDurabilityTracker UnequippedChest = new UnequippedDurabilityTracker(DurableEquipmentSlot.Chest, DurableEquipmentType.Chest, 1f);
@@ -26,18 +30,95 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             { UnequippedBoots.DurableEquipmentSlot, UnequippedBoots }
         };
 
-        public DurabilityDisplayService( Func<IModifLogger> loggerFactory)
+        public DurabilityDisplayService(Func<IModifLogger> loggerFactory)
         {
             (_loggerFactory) = (loggerFactory);
 
             EquipmentPatches.AfterOnEquip += TrackEquippedItem;
             EquipmentPatches.AfterOnUnequip += UntrackEquippedItem;
+            SplitPlayerPatches.SetCharacterAfter += ConfigureShowHide;
+            SplitScreenManagerPatches.RemoveLocalPlayerAfter += SplitScreenManagerPatches_RemoveLocalPlayerAfter;
         }
 
-        private void AddUnequipedTrackers(int playerId)
+        private void ConfigureShowHide(SplitPlayer splitPlayer, Character character)
         {
+            var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
+            var actionMenus = psp.GetService<PlayerActionMenus>();
+            var profileService = actionMenus.ProfileManager.ProfileService;
+
+            profileService.OnActiveProfileChanged.AddListener((profile) => ShowHide(splitPlayer.RewiredID, profile.DurabilityDisplayEnabled));
+            var display = GetDurabilityDisplay(splitPlayer.RewiredID);
+
+            if (display.IsAwake)
+                ShowHide(splitPlayer.RewiredID, profileService.GetActiveProfile().DurabilityDisplayEnabled);
+            else
+                display.OnAwake.AddListener(() => ShowHide(splitPlayer.RewiredID, profileService.GetActiveProfile().DurabilityDisplayEnabled));
+        }
+
+        private void ShowHide(int playerId, bool showDurabilityDisplay)
+        {
+            Logger.LogDebug($"{nameof(DurabilityDisplayService)}::{nameof(ShowHide)}: playerId={playerId}, showDurabilityDisplay={showDurabilityDisplay}");
             var psp = Psp.Instance.GetServicesProvider(playerId);
-            var display = psp.GetService<DurabilityDisplay>();
+            var actionMenus = psp.GetService<PlayerActionMenus>();
+            var display = actionMenus.DurabilityDisplay;
+            if (showDurabilityDisplay)
+            {
+                if (!display.gameObject.activeSelf)
+                {
+                    display.gameObject.SetActive(true);
+                }
+                _equipTracked = true;
+                //if (!_equipTracked)
+                //{
+                var splitPlayer = SplitScreenManager.Instance.LocalPlayers.FirstOrDefault(p => p.RewiredID == playerId);
+                if (splitPlayer != null && splitPlayer?.AssignedCharacter != null)
+                {
+
+                    AddUnequippedTrackers(splitPlayer.RewiredID);
+                    display.StopTracking(DurableEquipmentSlot.LeftHand);
+                    display.StopTracking(DurableEquipmentSlot.RightHand);
+                    TrackAllEquipment(splitPlayer.AssignedCharacter);
+                }
+                //}
+
+            }
+            else
+            {
+                if (display.gameObject.activeSelf)
+                    display.gameObject.SetActive(false);
+                if (_equipTracked)
+                {
+                    display.StopAllTracking();
+                    _equipTracked = false;
+                }
+            }
+
+        }
+
+        private void TrackAllEquipment(Character character)
+        {
+            Logger.LogDebug($"{nameof(DurabilityDisplayService)}::{nameof(TrackAllEquipment)}: Player RewiredID {character.CharacterUI.RewiredID}");
+            TrackEquipmentSlot(character, EquipmentSlot.EquipmentSlotIDs.Helmet);
+            TrackEquipmentSlot(character, EquipmentSlot.EquipmentSlotIDs.Chest);
+            TrackEquipmentSlot(character, EquipmentSlot.EquipmentSlotIDs.Foot);
+            TrackEquipmentSlot(character, EquipmentSlot.EquipmentSlotIDs.RightHand);
+            TrackEquipmentSlot(character, EquipmentSlot.EquipmentSlotIDs.LeftHand);
+        }
+
+        private void TrackEquipmentSlot(Character character, EquipmentSlot.EquipmentSlotIDs slot)
+        {
+            if (!(character.Inventory.Equipment.IsEquipmentSlotEmpty(slot)))
+                TrackEquippedItem(character, (Equipment)character.Inventory.Equipment.GetEquippedItem(slot));
+        }
+
+        private void SplitScreenManagerPatches_RemoveLocalPlayerAfter(SplitScreenManager splitScreenManager, SplitPlayer player, string playerUID) => 
+            ShowHide(player.RewiredID, false);
+
+
+        private void AddUnequippedTrackers(int playerId)
+        {
+            Logger.LogDebug($"{nameof(DurabilityDisplayService)}::{nameof(AddUnequippedTrackers)}: Adding Unequipped Helm, Chest and Boots trackers for  for playerId {playerId}");
+            var display = GetDurabilityDisplay(playerId);
             display.TrackDurability(UnequippedHelm);
             display.TrackDurability(UnequippedChest);
             display.TrackDurability(UnequippedBoots);
@@ -47,11 +128,13 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
         private void TrackEquippedItem(Character character, Equipment equipment)
         {
-            if (!_unequipedAdded)
-                AddUnequipedTrackers(character.OwnerPlayerSys.PlayerID);
+            if (!_equipTracked)
+                return;
 
-            var psp = Psp.Instance.GetServicesProvider(character.OwnerPlayerSys.PlayerID);
-            var display = psp.GetService<DurabilityDisplay>();
+            if (!_unequipedAdded)
+                AddUnequippedTrackers(character.OwnerPlayerSys.PlayerID);
+
+            var display = GetDurabilityDisplay(character.OwnerPlayerSys.PlayerID);
             var durableSlot = equipment.CurrentEquipmentSlot.SlotType.ToDurableEquipmentSlot();
 
             if (durableSlot == DurableEquipmentSlot.None
@@ -72,14 +155,16 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
         private void UntrackEquippedItem(Character character, Equipment equipment)
         {
+            if (!_equipTracked)
+                return;
+
             if (!_unequipedAdded)
-                AddUnequipedTrackers(character.OwnerPlayerSys.PlayerID);
+                AddUnequippedTrackers(character.OwnerPlayerSys.PlayerID);
 
             if (!character.Inventory.Equipment.IsEquipmentSlotEmpty(equipment.EquipSlot))
                 return;
 
-            var psp = Psp.Instance.GetServicesProvider(character.OwnerPlayerSys.PlayerID);
-            var display = psp.GetService<DurabilityDisplay>();
+            var display = GetDurabilityDisplay(character.OwnerPlayerSys.PlayerID);
             var durableSlot = equipment.CurrentEquipmentSlot.SlotType.ToDurableEquipmentSlot();
 
             if (durableSlot == DurableEquipmentSlot.None
@@ -95,6 +180,12 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
             display.StopTracking(durableSlot);
             Logger.LogDebug($"Stopped tracking durability of equipment {equipment.name} for player {character.OwnerPlayerSys.PlayerID}.");
+        }
+        private DurabilityDisplay GetDurabilityDisplay(int playerId)
+        {
+            var psp = Psp.Instance.GetServicesProvider(playerId);
+            var actionMenus = psp.GetService<PlayerActionMenus>();
+            return actionMenus.DurabilityDisplay;
         }
     }
 }

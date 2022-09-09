@@ -17,18 +17,22 @@ namespace ModifAmorphic.Outward.ActionMenus
         private readonly Func<IModifLogger> _loggerFactory;
         private readonly ModifGoService _modifGoService;
         private readonly ModifCoroutine _coroutines;
+        private readonly string DurabilityModId = ModInfo.ModId + ".DurabilityDisplay";
 
         private IModifLogger Logger => _loggerFactory.Invoke();
 
-        public DurabilityDisplayStartup(Harmony harmony, ServicesProvider services, ModifGoService modifGoService, ModifCoroutine coroutines, Func<IModifLogger> loggerFactory) =>
-            (_harmony, _services, _modifGoService, _coroutines, _loggerFactory) = (harmony, services, modifGoService, coroutines, loggerFactory);
+        public DurabilityDisplayStartup(ServicesProvider services, ModifGoService modifGoService, ModifCoroutine coroutines, Func<IModifLogger> loggerFactory)
+        {
+            (_services, _modifGoService, _coroutines, _loggerFactory) = (services, modifGoService, coroutines, loggerFactory);
+            _harmony = new Harmony(DurabilityModId);
+        }
         
         public void Start() 
         {
             Logger.LogInfo("Starting Durability Display...");
             _harmony.PatchAll(typeof(EquipmentPatches));
 
-            _services.AddSingleton(new PositionsServicesInjector(_services, _modifGoService, _coroutines, _loggerFactory))
+            _services
                      .AddSingleton(new DurabilityDisplayService(_loggerFactory));
 
         }

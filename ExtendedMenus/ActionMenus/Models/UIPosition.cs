@@ -19,13 +19,13 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         {
             if (other == null) return false;
 
-            return Position.Equals(other.Position)
-                && AnchoredPosition.Equals(other.AnchoredPosition)
-                && AnchoredMin.Equals(other.AnchoredMin)
-                && AnchoredMax.Equals(other.AnchoredMax)
-                && OffsetMin.Equals(other.OffsetMin)
-                && OffsetMax.Equals(other.OffsetMax)
-                && Pivot.Equals(other.Pivot);
+            return AnchoredPosition.Equals(other.AnchoredPosition);
+                //&& AnchoredPosition.Equals(other.AnchoredPosition)
+                //&& AnchoredMin.Equals(other.AnchoredMin)
+                //&& AnchoredMax.Equals(other.AnchoredMax)
+                //&& OffsetMin.Equals(other.OffsetMin)
+                //&& OffsetMax.Equals(other.OffsetMax)
+                //&& Pivot.Equals(other.Pivot);
         }
 
         public override bool Equals(System.Object obj)

@@ -58,14 +58,14 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         {
             GetProfile().AddOrReplacePosition(position);
             Save();
-            OnProfileChanged?.TryInvoke(GetProfile());
+            OnProfileChanged.TryInvoke(GetProfile());
         }
 
         public void Remove(UIPositions position)
         {
             GetProfile().RemovePosition(position);
             Save();
-            OnProfileChanged?.TryInvoke(GetProfile());
+            OnProfileChanged.TryInvoke(GetProfile());
         }
 
         private PositionsProfile LoadProfile()
@@ -84,8 +84,9 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
         private void RefreshCachedProfile(IActionMenusProfile actionMenusProfile)
         {
+            Logger.LogDebug($"PositionsProfileJsonService::RefreshCachedProfile Called for action menu profile {actionMenusProfile.Name}.");
             _positionsProfile = null;
-            OnProfileChanged?.TryInvoke(GetProfile());
+            OnProfileChanged.TryInvoke(GetProfile());
         }
 
         private void SaveProfile(PositionsProfile positonsProfile)

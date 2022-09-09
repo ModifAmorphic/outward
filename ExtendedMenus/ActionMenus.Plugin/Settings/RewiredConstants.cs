@@ -50,6 +50,8 @@ namespace ModifAmorphic.Outward.ActionMenus.Settings
             public const string SelectHotbarNameFormat = "SelectHotbar_00";
 
             public static readonly string DefaultKeyboardMapFile = Path.Combine(ActionMenuSettings.PluginPath, "Profiles", "Default", "Default-Keyboard-Map_ActionSlots.xml");
+            public static readonly string DefaultMouseMapFile = Path.Combine(ActionMenuSettings.PluginPath, "Profiles", "Default", "Default-Mouse-Map_ActionSlots.xml");
+            public static readonly string DefaultJoystickMapFile = string.Empty;
 
             static ActionSlots()
             {

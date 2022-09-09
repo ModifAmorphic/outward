@@ -16,10 +16,15 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 		private IHotbarController _controller;
 		public IHotbarController Controller { get => _controller; }
 
-  //      private Button _settingsButton;
+		//      private Button _settingsButton;
 		//public Button SettingsButton => _settingsButton;
-
+		public PlayerActionMenus PlayerActionMenus;
 		public ActionsViewer ActionsViewer;
+
+		public bool HotbarsEnabled => _actionBarsCanvas.gameObject.activeSelf;
+
+		private Canvas _actionBarsCanvas;
+		public Canvas ActionBarsCanvas => _actionBarsCanvas;
 
 		//private LeftHotbarNav _leftHotbarNav;
 		public LeftHotbarNav LeftHotbarNav; // => _leftHotbarNav;
@@ -106,6 +111,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 		}
 		private void SetComponents()
 		{
+			_actionBarsCanvas = transform.parent.GetComponent<Canvas>();
 			//_leftHotbarNav = GetComponentInChildren<LeftHotbarNav>();
 			_leftDisplay = transform.Find("LeftDisplay").GetComponent<RectTransform>();
 			//_settingsButton = _leftDisplay.Find("Settings").GetComponent<Button>();

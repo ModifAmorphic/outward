@@ -1,3 +1,4 @@
+using ModifAmorphic.Outward.ActionMenus.Extensions;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using System.Collections;
 using System.Collections.Generic;
@@ -58,11 +59,11 @@ public class ActionImages : MonoBehaviour
     {
         foreach(var image in _bottomImages.Values)
         {
-            Destroy(image);
+            image.gameObject.Destroy();
         }
         foreach (var image in _topImages.Values)
         {
-            Destroy(image);
+            image.gameObject.Destroy();
         }
 
         _bottomImages.Clear();
