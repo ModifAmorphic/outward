@@ -5,6 +5,16 @@ namespace ModifAmorphic.Outward.Extensions
 {
     public static class GameObjectExtensions
     {
+        public static void Destroy(this GameObject gameObject)
+        {
+            if (Application.isEditor)
+                UnityEngine.Object.DestroyImmediate(gameObject);
+            else
+                UnityEngine.Object.Destroy(gameObject);
+
+            gameObject = null;
+        }
+        
         public static string GetPath(this GameObject gameObject)
         {
             var path = gameObject.name;

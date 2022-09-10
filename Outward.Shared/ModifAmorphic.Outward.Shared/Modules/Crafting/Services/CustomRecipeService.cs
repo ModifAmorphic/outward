@@ -2,6 +2,7 @@
 using ModifAmorphic.Outward.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ModifAmorphic.Outward.Modules.Crafting.Services
 {
@@ -23,9 +24,11 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
             m_recipes.Add(recipe.UID, recipe);
             var stationRecipes = AddOrGetCraftingStationRecipes(recipe.CraftingStationType);
             stationRecipes.Add(recipe.UID);
+            Logger.LogDebug($"{nameof(CustomRecipeService)}:{nameof(AddRecipe)}:: Added recipe '{recipe.UID} - {recipe.Name}' to RecipeManager for CraftingStationType {recipe.CraftingStationType}.");
         }
         public void AddRecipes(IEnumerable<Recipe> recipes)
         {
+            Logger.LogDebug($"{nameof(CustomRecipeService)}:{nameof(AddRecipe)}:: Adding {recipes.Count()} recipes to RecipeManager.");
             foreach (var r in recipes)
                 AddRecipe(r);
         }
