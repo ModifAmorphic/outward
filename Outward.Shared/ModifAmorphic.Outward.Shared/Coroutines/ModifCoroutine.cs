@@ -168,20 +168,5 @@ namespace ModifAmorphic.Outward.Coroutines
                     $" Invoking action {action.Method.Name}.");
             action.Invoke();
         }
-        public void DoNextFrame(Action action) => _unityPlugin.StartCoroutine(NextFrameCoroutine(action));
-
-        public void DoWhen(Func<bool> condition, Action action, int timeoutSecs, float waitTicSecs = 0f, Func<bool> cancelCondition = null) =>
-            _unityPlugin.StartCoroutine(InvokeAfter(condition, action, timeoutSecs, waitTicSecs, cancelCondition));
-
-        public void DoWhen<T>(Func<bool> condition, Action<T> action, Func<T> valueFactory, int timeoutSecs, float waitTicSecs = 0f, Func<bool> cancelCondition = null) =>
-            _unityPlugin.StartCoroutine(InvokeAfter(condition, action, valueFactory, timeoutSecs, waitTicSecs, cancelCondition));
-
-        private IEnumerator NextFrameCoroutine(Action action)
-        {
-            yield return null;
-            Logger.LogDebug($"{this.GetType().Name}::{nameof(NextFrameCoroutine)}:" +
-                    $" Invoking action {action.Method.Name}.");
-            action.Invoke();
-        }
     }
 }
