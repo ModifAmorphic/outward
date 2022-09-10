@@ -2,11 +2,13 @@
 
 namespace ModifAmorphic.Outward.Logging
 {
-    internal class NullLogger : IModifLogger
+    public class NullLogger : IModifLogger
     {
         public string LoggerName => "NullLogger";
 
         public LogLevel LogLevel => default;
+
+        public static NullLogger Instance { get; } = new NullLogger();
 
         public void Log(LogLevel logLevel, string message)
         {

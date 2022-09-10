@@ -158,7 +158,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
         public void RegisterRecipe<T>(Recipe recipe) where T : CustomCraftingMenu
         {
             ValidateRecipe(recipe);
-
+            Logger.LogTrace($"{nameof(CustomCraftingModule)}:{nameof(RegisterRecipe)}:: Recipe {recipe.name} is valid.  Registering recipe.");
             var recipes = _customRecipes.GetOrAdd(typeof(T), new Dictionary<string, RecipeMetadata>());
 
             if (recipes.ContainsKey(recipe.UID.ToString()))
@@ -286,7 +286,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                         //set the actual recipe value as well.
                         kvp.Value.Recipe.SetCraftingType(_craftingStationTypes[stationRecipes.Key]);
                         return kvp.Value.Recipe;
-                    });
+                    }).ToList();
+                Logger.LogDebug($"{nameof(CustomCraftingModule)}:{nameof(TryAddRecipes)}:: Registering {recipes?.Count()} recipes for crafting station type {stationRecipes.Key}.");
                 _customRecipeService.AddRecipes(recipes);
             }
         }
