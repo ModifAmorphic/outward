@@ -133,7 +133,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 		}
 		internal void Resize(float hotbarWidth, float hotbarHeight)
 		{
-			GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, hotbarWidth + _leftDisplay.rect.width + _leftDisplay.rect.width * 0.15f);
+			GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, hotbarWidth + _leftDisplay.rect.width);
 			GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, hotbarHeight);
 		}
 

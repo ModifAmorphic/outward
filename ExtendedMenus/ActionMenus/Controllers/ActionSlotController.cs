@@ -141,8 +141,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             {
                 _cooldownService?.Configure(ActionSlot.Config.ShowCooldownTime, ActionSlot.Config.PreciseCooldownTime);
                 _stackService?.Configure(ActionSlot.Config.ShowZeroStackAmount);
-                ActionSlot.KeyText.text = ActionSlot.Config.HotkeyText;
+                SetHotkeyText(ActionSlot.Config.HotkeyText);
             }
+            else
+                SetHotkeyText(string.Empty);
+
             ToggleHotkeyEditMode(false);
         }
 
@@ -181,7 +184,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             Refresh();
             _cooldownService?.Configure(ActionSlot.Config.ShowCooldownTime, ActionSlot.Config.PreciseCooldownTime);
             _stackService?.Configure(ActionSlot.Config.ShowZeroStackAmount);
-            ActionSlot.KeyText.text = ActionSlot.Config.HotkeyText;
+            SetHotkeyText(ActionSlot.Config.HotkeyText);
             //ActionSlot.HotbarsContainer.HasChanges = true;
         }
 
@@ -422,6 +425,15 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 _progressBarServices.Remove(barPosition);
             }
             HideSlider(barPosition);
+        }
+
+        private void SetHotkeyText(string text)
+        {
+            ActionSlot.KeyText.text = text;
+            if (!string.IsNullOrEmpty(text))
+                ActionSlot.HotkeyPanel.enabled = true;
+            else
+                ActionSlot.HotkeyPanel.enabled = false;
         }
 
         private void StartEnableToggleService(Func<bool> getEnabled)

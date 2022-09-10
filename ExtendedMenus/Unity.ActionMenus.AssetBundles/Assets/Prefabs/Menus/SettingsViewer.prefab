@@ -7982,20 +7982,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1350158005385134056, guid: 08a23b118a9a630498602b965a18dde3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: HotbarSettings, Assembly-CSharp
+      value: ModifAmorphic.Outward.Unity.ActionMenus.MainSettingsMenu, ModifAmorphic.Outward.ActionMenus
       objectReference: {fileID: 0}
     - target: {fileID: 1350158005385134056, guid: 08a23b118a9a630498602b965a18dde3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
-    - target: {fileID: 3432839065900677416, guid: 08a23b118a9a630498602b965a18dde3, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: c6b0cf7ca5a045d43955fd0bee583471, type: 3}
-    - target: {fileID: 4679541576735344948, guid: 08a23b118a9a630498602b965a18dde3, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 2682cb353175e634aabb501ca9be5011, type: 3}
     - target: {fileID: 5742485158193222170, guid: 08a23b118a9a630498602b965a18dde3, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -8197,7 +8189,7 @@ PrefabInstance:
     - target: {fileID: 5850973646467944289, guid: 316eedd2351f7d1468ba68f178142379, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 59a2c817f09fb064d9313795a4c0aa72, type: 3}
+      objectReference: {fileID: 21300000, guid: 80a63c8386beffd42a0480969bab6e6a, type: 3}
     - target: {fileID: 8672820389706484500, guid: 316eedd2351f7d1468ba68f178142379, type: 3}
       propertyPath: m_IsOn
       value: 0

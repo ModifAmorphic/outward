@@ -20,10 +20,14 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private Button _nextHotkeyButton;
         private Button _previousButton;
         private Button _previousHotkeyButton;
-        private Button _hotkeyButton;
+        
         private Text _barText;
         private Text _nextHotkeyText;
         private Text _previousHotkeyText;
+        
+
+        private GameObject _barHotkeyGo;
+        private Button _hotkeyButton;
         private Text _hotkeyText;
 
         private List<string> _hotbarHotkeys = new List<string>();
@@ -40,6 +44,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private bool _inEditMode;
         public bool InEditMode => _inEditMode;
+
+        private bool _inHotkeyEditMode;
+        public bool InHotkeyEditMode => _inHotkeyEditMode;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
@@ -90,9 +97,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _previousHotkeyButton = previousHotbar.GetComponentsInChildren<Button>().First(b => b.name.Equals("HotkeyButton"));
             _previousHotkeyText = previousHotbar.GetComponentInChildren<Text>();
 
-            var barHotkey = transform.Find("BarNumber/BarHotkey").gameObject;
-            _hotkeyButton = barHotkey.GetComponentsInChildren<Button>().First(b => b.name.Equals("HotkeyButton"));
-            _hotkeyText = barHotkey.GetComponentInChildren<Text>();
+            _barHotkeyGo = transform.Find("BarNumber/BarHotkey").gameObject;
+            _hotkeyButton = _barHotkeyGo.GetComponentsInChildren<Button>().First(b => b.name.Equals("HotkeyButton"));
+            _hotkeyText = _barHotkeyGo.GetComponentInChildren<Text>();
 
             var barIcon = transform.Find("BarNumber/BarIcon").gameObject;
             _barText = barIcon.GetComponentInChildren<Text>();
@@ -101,13 +108,21 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public void SetBarText(string text) => _barText.text = text;
         public void SetNextHotkeyText(string text) => _nextHotkeyText.text = text;
         public void SetPreviousHotkeyText(string text) => _previousHotkeyText.text = text;
-        public void SetHotkeyText(string text) => _hotkeyText.text = text;
+        public void SetHotkeyText(string text)
+        {
+            _hotkeyText.text = text;
+
+            if (string.IsNullOrWhiteSpace(text) && _barHotkeyGo.activeSelf && !_inEditMode)
+                _barHotkeyGo.SetActive(false);
+            else if (!string.IsNullOrWhiteSpace(text) && !_barHotkeyGo.activeSelf)
+                _barHotkeyGo.SetActive(true);
+        }
         public void SetHotkeys(IEnumerable<string> hotbarTexts) => _hotbarHotkeys = hotbarTexts.ToList();
 
         public void SelectHotbar(int barIndex)
         {
             _barText.text = (barIndex + 1).ToString();
-            _hotkeyText.text = _hotbarHotkeys?.Count > barIndex ? _hotbarHotkeys[barIndex] : string.Empty;
+            SetHotkeyText(_hotbarHotkeys?.Count > barIndex ? _hotbarHotkeys[barIndex] : string.Empty);
         }
 
         public void ToggleActionSlotEditMode(bool enableEdits)
@@ -120,17 +135,23 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             //_settingsButton.gameObject.SetActive(enableEdits);
             _nextButton.gameObject.SetActive(enableEdits);
             _previousButton.gameObject.SetActive(enableEdits);
-            
-            
+
         }
         public void ToggleHotkeyEditMode(bool enableEdits)
         {
             if (!_awake)
                 return;
 
+            _inHotkeyEditMode = enableEdits;
+            
             _nextHotkeyButton.gameObject.SetActive(enableEdits);
             _previousHotkeyButton.gameObject.SetActive(enableEdits);
             _hotkeyButton.gameObject.SetActive(enableEdits);
+
+            if (enableEdits)
+                _barHotkeyGo.SetActive(true);
+            else if (!enableEdits && string.IsNullOrWhiteSpace(_hotkeyText.text))
+                _barHotkeyGo.SetActive(false);
         }
 
         private void HookButtonEvents()

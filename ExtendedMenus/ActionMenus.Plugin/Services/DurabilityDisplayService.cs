@@ -137,8 +137,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             var display = GetDurabilityDisplay(character.OwnerPlayerSys.PlayerID);
             var durableSlot = equipment.CurrentEquipmentSlot.SlotType.ToDurableEquipmentSlot();
 
-            if (durableSlot == DurableEquipmentSlot.None
-                || equipment.IsIndestructible)
+            if (equipment.IsIndestructible || !character.Inventory.Equipment.HasItemEquipped(equipment.CurrentEquipmentSlot.SlotType))
             {
                 if (Unequipped.TryGetValue(durableSlot, out var unequippedTracker))
                     display.TrackDurability(unequippedTracker);
@@ -167,8 +166,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             var display = GetDurabilityDisplay(character.OwnerPlayerSys.PlayerID);
             var durableSlot = equipment.CurrentEquipmentSlot.SlotType.ToDurableEquipmentSlot();
 
-            if (durableSlot == DurableEquipmentSlot.None
-                || equipment.IsIndestructible)
+            if (!character.Inventory.Equipment.HasItemEquipped(equipment.CurrentEquipmentSlot.SlotType))
             {
                 if (Unequipped.TryGetValue(durableSlot, out var unequippedTracker))
                 {

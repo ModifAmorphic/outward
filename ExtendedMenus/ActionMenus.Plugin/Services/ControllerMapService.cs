@@ -30,8 +30,14 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private readonly Player _player;
         private readonly ModifCoroutine _coroutine;
 
-        private const string ActionSlotsPlayer0Key = "RewiredData&amp;playerName=Player0&amp;dataType=ControllerMap&amp;controllerMapType=KeyboardMap&amp;categoryId=131000&amp;layoutId=0&amp;hardwareIdentifier=Keyboard";
-        private const string ActionSlotsPlayer1Key = "RewiredData&amp;playerName=Player1&amp;dataType=ControllerMap&amp;controllerMapType=KeyboardMap&amp;categoryId=131000&amp;layoutId=0&amp;hardwareIdentifier=Keyboard";
+        private readonly static HashSet<string> ActionMenusMapKeys = new HashSet<string>()
+        {
+            "RewiredData&playerName=Player0&dataType=ControllerMap&controllerMapType=KeyboardMap&categoryId=131000&layoutId=0&hardwareIdentifier=Keyboard",
+            "RewiredData&playerName=Player0&dataType=ControllerMap&controllerMapType=MouseMap&categoryId=131000&layoutId=0&hardwareIdentifier=Mouse",
+            "RewiredData&playerName=Player1&dataType=ControllerMap&controllerMapType=KeyboardMap&categoryId=131000&layoutId=0&hardwareIdentifier=Keyboard",
+            "RewiredData&playerName=Player1&dataType=ControllerMap&controllerMapType=MouseMap&categoryId=131000&layoutId=0&hardwareIdentifier=Mouse",
+        };
+        
 
         private const string KeyboardMapFile = "KeyboardMap_ActionSlots.xml";
         private const string MouseMapFile = "Mouse_ActionSlots.xml";
@@ -109,11 +115,24 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             if (playerId != _player.id)
                 return;
 
-            if (playerId == 0 && mappingData.ContainsKey(ActionSlotsPlayer0Key))
-                mappingData.Remove(ActionSlotsPlayer0Key);
+            foreach(string mapKey in ActionMenusMapKeys)
+            {
+                try
+                {
+                    Logger.LogDebug($"Removing ControllerMap '{mapKey}'");
+                    mappingData.Remove(mapKey);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogException($"Exception removing ControllerMap '{mapKey}'", ex);
+                }
+            }
 
-            if (playerId == 1 && mappingData.ContainsKey(ActionSlotsPlayer1Key))
-                mappingData.Remove(ActionSlotsPlayer1Key);
+            //if (playerId == 0 && mappingData.ContainsKey(ActionSlotsPlayer0Key))
+            //    mappingData.Remove(ActionSlotsPlayer0Key);
+
+            //if (playerId == 1 && mappingData.ContainsKey(ActionSlotsPlayer1Key))
+            //    mappingData.Remove(ActionSlotsPlayer1Key);
         }
 
         public void LoadConfigMaps()
@@ -281,7 +300,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             foreach (var map in maps)
             {
                 int elementIdentifierId = map.controllerType == ControllerType.Mouse ? MouseButtons[keyGroup.KeyCode].elementIdentifierId : -1;
-                Logger.LogDebug($"ControllerType is {ControllerType.Mouse}. Setting elementIdentifierId to {elementIdentifierId}.");
+                Logger.LogDebug($"Configuring Button Mapping for ControllerType {map.controllerType}. Setting elementIdentifierId to {elementIdentifierId}.  Keycode is {keyGroup.KeyCode}");
                 var eleMap = new ElementAssignment(map.controllerType, ControllerElementType.Button, elementIdentifierId, AxisRange.Positive, keyGroup.KeyCode, GetModifierKeyFlags(keyGroup.Modifiers), rewiredActionId, Pole.Positive, false);
                 var existingMaps = map.ButtonMaps.Where(m => m.actionId == rewiredActionId).ToArray();
 
