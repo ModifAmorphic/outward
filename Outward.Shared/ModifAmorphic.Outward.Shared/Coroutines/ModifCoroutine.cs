@@ -147,9 +147,41 @@ namespace ModifAmorphic.Outward.Coroutines
                     $" Exiting Coroutine.");
         }
 
-        public void StartRoutine(IEnumerator routine)
+        public Coroutine StartRoutine(IEnumerator routine) => _unityPlugin.StartCoroutine(routine);
+        public void StopRoutine(IEnumerator routine) => _unityPlugin.StopCoroutine(routine);
+
+        public Coroutine DoNextFrame(Action action) => _unityPlugin.StartCoroutine(NextFrameCoroutine(action));
+
+        public Coroutine DoWhen(Func<bool> condition, Action action, int timeoutSecs, float waitTicSecs = 0f, Func<bool> cancelCondition = null) =>
+            _unityPlugin.StartCoroutine(InvokeAfter(condition, action, timeoutSecs, waitTicSecs, cancelCondition));
+
+        public Coroutine DoWhen<T>(Func<bool> condition, Action<T> action, Func<T> valueFactory, int timeoutSecs, float waitTicSecs = 0f, Func<bool> cancelCondition = null) =>
+            _unityPlugin.StartCoroutine(InvokeAfter(condition, action, valueFactory, timeoutSecs, waitTicSecs, cancelCondition));
+
+        public Coroutine DoWhile(Func<bool> whileCondition, Action action, float waitTicSecs = 0f) =>
+            _unityPlugin.StartCoroutine(InvokeUntil(() => !whileCondition(), action, waitTicSecs));
+
+        private IEnumerator NextFrameCoroutine(Action action)
         {
-            _unityPlugin.StartCoroutine(routine);
+            yield return null;
+            Logger.LogDebug($"{this.GetType().Name}::{nameof(NextFrameCoroutine)}:" +
+                    $" Invoking action {action.Method.Name}.");
+            action.Invoke();
+        }
+        public void DoNextFrame(Action action) => _unityPlugin.StartCoroutine(NextFrameCoroutine(action));
+
+        public void DoWhen(Func<bool> condition, Action action, int timeoutSecs, float waitTicSecs = 0f, Func<bool> cancelCondition = null) =>
+            _unityPlugin.StartCoroutine(InvokeAfter(condition, action, timeoutSecs, waitTicSecs, cancelCondition));
+
+        public void DoWhen<T>(Func<bool> condition, Action<T> action, Func<T> valueFactory, int timeoutSecs, float waitTicSecs = 0f, Func<bool> cancelCondition = null) =>
+            _unityPlugin.StartCoroutine(InvokeAfter(condition, action, valueFactory, timeoutSecs, waitTicSecs, cancelCondition));
+
+        private IEnumerator NextFrameCoroutine(Action action)
+        {
+            yield return null;
+            Logger.LogDebug($"{this.GetType().Name}::{nameof(NextFrameCoroutine)}:" +
+                    $" Invoking action {action.Method.Name}.");
+            action.Invoke();
         }
     }
 }
