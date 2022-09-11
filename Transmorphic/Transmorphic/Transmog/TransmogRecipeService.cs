@@ -43,7 +43,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                 (baseUnityPlugin, recipeGen, craftingModule, preFabricator, coroutine, recipeSaveData, settings, getLogger);
 
             if (!SideLoaderEx.TryHookOnPacksLoaded(this, LoadRecipesFromSave))
-                TransmorphRecipeManagerPatches.LoadCraftingRecipeAfter += (r) => LoadRecipesFromSave();
+                TmogRecipeManagerPatches.LoadCraftingRecipeAfter += (r) => LoadRecipesFromSave();
             TransmorphNetworkLevelLoaderPatches.MidLoadLevelAfter += (n) => _coroutine.InvokeAfterLevelAndPlayersLoaded(n, LearnCharacterRecipesFromSave, 300, 1);
             TmogCharacterEquipmentPatches.EquipItemBefore += (equipArgs) => CheckAddTmogRecipe(equipArgs.Character.Inventory, equipArgs.Equipment);
             TmogCharacterRecipeKnowledgePatches.LearnRecipeBefore += TryLearnTransmogRecipe;

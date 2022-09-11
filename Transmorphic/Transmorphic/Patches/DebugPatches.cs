@@ -8,6 +8,70 @@ using System.Text;
 
 namespace ModifAmorphic.Outward.Transmorphic.Patches
 {
+	[HarmonyPatch(typeof(ItemManager))]
+	internal static class EnchantItemManagerPatches
+	{
+		private static IModifLogger Logger => LoggerFactory.GetLogger(ModInfo.ModId);
+
+		public static event Action<ItemManager, bool> AfterIsAllItemSynced;
+
+#pragma warning disable IDE0051 // Remove unused private members
+		[HarmonyPatch(nameof(ItemManager.IsAllItemSynced), MethodType.Getter)]
+		[HarmonyPostfix]
+		private static void IsAllItemSyncedPostfix(ItemManager __instance, bool __result)
+		{
+			try
+			{
+				if (!__result)
+					return;
+
+				Logger.LogDebug($"{nameof(EnchantItemManagerPatches)}::{nameof(IsAllItemSyncedPostfix)}: Invoking {nameof(AfterIsAllItemSynced)}().");
+				AfterIsAllItemSynced?.Invoke(__instance, __result);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogException($"{nameof(EnchantItemManagerPatches)}::{nameof(IsAllItemSyncedPostfix)}(): Exception Invoking {nameof(AfterIsAllItemSynced)}().", ex);
+			}
+		}
+	}
+
+	[HarmonyPatch(typeof(ResourcesPrefabManager))]
+	static class ResourcesPrefabManagerPatches
+	{
+		private static IModifLogger Logger => LoggerFactory.GetLogger(ModInfo.ModId);
+		[HarmonyPatch("GenerateItem", MethodType.Normal)]
+		[HarmonyPrefix]
+		static void GenerateItemPrefix(string _itemIDString)
+		{
+			try
+			{
+				Logger.LogDebug($"{nameof(ResourcesPrefabManagerPatches)}:{nameof(GenerateItemPrefix)}:: _itemIDString == {_itemIDString}");
+			}
+			catch (Exception ex)
+			{
+				Logger.LogException($"{nameof(ResourcesPrefabManagerPatches)}:{nameof(GenerateItemPrefix)}:: Exception _itemIDString == {_itemIDString}.", ex);
+			}
+		}
+	}
+
+	[HarmonyPatch(typeof(ItemDetailsDisplay))]
+	static class ItemDetailsDisplayPatches
+    {
+		private static IModifLogger Logger => LoggerFactory.GetLogger(ModInfo.ModId);
+		[HarmonyPatch("RefreshDetail", MethodType.Normal)]
+		[HarmonyPrefix]
+		static void RefreshDetailPrefix(int _rowIndex, ItemDetailsDisplay.DisplayedInfos _infoType)
+		{
+			try
+			{
+				Logger.LogDebug($"{nameof(ItemDetailsDisplayPatches)}:{nameof(RefreshDetailPrefix)}:: _rowIndex == {_rowIndex}, _infoType == {_infoType}");
+			}
+			catch (Exception ex)
+			{
+				Logger.LogException($"{nameof(ItemDetailsDisplayPatches)}:{nameof(RefreshDetailPrefix)}:: Exception.", ex);
+			}
+		}
+	}
 	[HarmonyPatch(typeof(Weapon))]
 	static class WeaponPatches
     {

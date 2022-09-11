@@ -75,7 +75,11 @@ Transmorphic adds a new crafting system focused on customizing your equipment's 
 
 # Change Logs
 
-## Latest Release ${PACKAGE_VERSION}
+## Release ${PACKAGE_VERSION}
+  - Enchant Menu should work without Sideloader.
+  - Fix for weapon enchants in enchanting menu.
+
+## Release 1.0.4
   - Fix for Enchants not carrying over fully when adding or removing a transmog to an enchanted item.
 
 ## Release 1.0.3
