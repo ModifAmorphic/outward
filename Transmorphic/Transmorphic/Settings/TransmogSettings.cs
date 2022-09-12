@@ -53,7 +53,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
             public static string UID => "APpxHqi-NE2vG_MISt7C0Q";
             public static int RecipeID => (-1303000000);
             public static string RecipeName => "Remove Tranmogrify";
-            public static int SecondIngredientID => 4300190; //Hex Potion
+            public static int SecondIngredientID = 4300190; //Hex Potion
             private readonly static Tag transmogTag;
             public static Tag TransmogTag => transmogTag;
             public static string IconFile => Path.Combine(PluginPath, Path.Combine("assets", "tex_men_transmogRemoverArmor.png"));
@@ -130,6 +130,20 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
                 _transmogRecipeSecondaryItemID = value;
                 if (oldValue != _transmogRecipeSecondaryItemID)
                     TransmogRecipeSecondaryItemIDChanged?.Invoke(_transmogRecipeSecondaryItemID);
+            }
+        }
+
+        public event Action<int> RemoverRecipeSecondaryItemIDChanged;
+        private int _removerRecipeSecondaryItemID;
+        public int RemoverRecipeSecondaryItemID
+        {
+            get => _removerRecipeSecondaryItemID;
+            set
+            {
+                var oldValue = _removerRecipeSecondaryItemID;
+                _removerRecipeSecondaryItemID = value;
+                if (oldValue != _removerRecipeSecondaryItemID)
+                    RemoverRecipeSecondaryItemIDChanged?.Invoke(_transmogRecipeSecondaryItemID);
             }
         }
     }

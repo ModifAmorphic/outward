@@ -38,15 +38,15 @@ namespace ModifAmorphic.Outward.Transmorphic
                 harmony.PatchAll(typeof(TmogItemManagerPatches));
                 harmony.PatchAll(typeof(EnchantCharacterRecipeKnowledgePatches));
                 harmony.PatchAll(typeof(EnchantRecipeManagerPatches));
+                harmony.PatchAll(typeof(EnchantItemManagerPatches));
 
-                harmony.PatchAll(typeof(ItemPatches));
-                harmony.PatchAll(typeof(ResourcesPrefabManagerPatches));
-                harmony.PatchAll(typeof(ItemManagerPatches));
+#if DEBUG
+                //harmony.PatchAll(typeof(ItemPatches));
+                //harmony.PatchAll(typeof(ResourcesPrefabManagerPatches));
+                //harmony.PatchAll(typeof(ItemManagerPatches));
 
                 //harmony.PatchAll(typeof(ResourcesPrefabManagerPatches));
-                //harmony.PatchAll(typeof(EnchantItemManagerPatches));
-
-                harmony.PatchAll(typeof(ItemDetailsDisplayPatches));
+                //harmony.PatchAll(typeof(ItemDetailsDisplayPatches));
 
 
                 //harmony.PatchAll(typeof(WeaponPatches));
@@ -57,7 +57,7 @@ namespace ModifAmorphic.Outward.Transmorphic
                 //harmony.PatchAll(typeof(CraftingMenuPatches));
                 //harmony.PatchAll(typeof(SplitScreenManagerPatches));
                 //harmony.PatchAll(typeof(SplitPlayerPatches));
-
+#endif
                 var startup = new Startup();
                 logger.LogInfo($"Starting {ModInfo.ModName} {ModInfo.ModVersion}...");
                 _servicesProvider = new ServicesProvider(this);
@@ -70,6 +70,7 @@ namespace ModifAmorphic.Outward.Transmorphic
                 throw;
             }
         }
+#if DEBUG
         private Modules.Crafting.CustomCraftingModule GetCustomCraftingModule()
         {
             return _servicesProvider.GetService<Modules.Crafting.CustomCraftingModule>();
@@ -78,5 +79,6 @@ namespace ModifAmorphic.Outward.Transmorphic
         {
             return _servicesProvider.GetService<Modules.Items.ItemVisualizer>();
         }
+#endif
     }
 }

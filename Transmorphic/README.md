@@ -76,6 +76,11 @@ Transmorphic adds a new crafting system focused on customizing your equipment's 
 # Change Logs
 
 ## Release ${PACKAGE_VERSION}
+  - Fix for infinite "Loading Items" load screen compatibility with other mods.
+  - Removed Ammunition Transmogs.
+  - Made Secondary Ingredient for "Remove Transmog" recipe configurable.
+
+## Release 1.0.5
   - Enchant Menu should work without Sideloader.
   - Fix for weapon enchants in enchanting menu.
 

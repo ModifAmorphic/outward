@@ -183,7 +183,18 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
             DefaultValue = 6300030,
             Section = TransmogSection,
             DisplayName = "  • Secondary Transmogrify Ingredient",
-            Description = $"Secondary ingredient which is consumed when transmogrifying an item.  Default is a Gold Ingot (6300030). A valid item ID is required. Requires restart before change is applied.",
+            Description = $"Secondary ingredient which is consumed when transmogrifying an item.  Default is a Gold Ingot (6300030). A valid item ID is required. Not all items tested. Silver not supported. Requires restart before change is applied.",
+            Order = TransmogTopOrder - 3,
+            IsAdvanced = false
+        };
+
+        public ConfigSetting<int> SecondaryTransmogRemoverIngredient { get; } = new ConfigSetting<int>()
+        {
+            Name = nameof(SecondaryTransmogRemoverIngredient),
+            DefaultValue = 4300190,
+            Section = TransmogSection,
+            DisplayName = "  • Secondary Remover Ingredient",
+            Description = $"Secondary ingredient which is consumed when removing a transmog from an item.  Default is a Hex Potion (4300190). A valid item ID is required. Not all items tested. Silver not supported. Requires restart before change is applied.",
             Order = TransmogTopOrder - 3,
             IsAdvanced = false
         };

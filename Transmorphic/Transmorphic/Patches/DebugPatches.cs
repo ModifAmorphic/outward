@@ -48,7 +48,28 @@ namespace ModifAmorphic.Outward.Transmorphic.Patches
                 Logger.LogException($"{nameof(ItemManagerPatches)}::{nameof(RequestItemInitializationPostfix)}(): Exception invoking {nameof(AfterRequestItemInitialization)}.", ex);
             }
         }
-    }
+
+		public static event Action<ItemManager, bool> AfterIsAllItemSynced;
+
+#pragma warning disable IDE0051 // Remove unused private members
+		[HarmonyPatch(nameof(ItemManager.IsAllItemSynced), MethodType.Getter)]
+		[HarmonyPostfix]
+		private static void IsAllItemSyncedPostfix(ItemManager __instance, bool __result)
+		{
+			try
+			{
+				if (!__result)
+					return;
+
+				Logger.LogDebug($"{nameof(EnchantItemManagerPatches)}::{nameof(IsAllItemSyncedPostfix)}: Invoking {nameof(AfterIsAllItemSynced)}().");
+				AfterIsAllItemSynced?.Invoke(__instance, __result);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogException($"{nameof(EnchantItemManagerPatches)}::{nameof(IsAllItemSyncedPostfix)}(): Exception Invoking {nameof(AfterIsAllItemSynced)}().", ex);
+			}
+		}
+	}
 
 	[HarmonyPatch(typeof(Item))]
 	internal static class ItemPatches
@@ -71,33 +92,6 @@ namespace ModifAmorphic.Outward.Transmorphic.Patches
 			catch (Exception ex)
 			{
 				Logger.LogException($"{nameof(ItemPatches)}::{nameof(OnAwakePrefix)}(): Exception.", ex);
-			}
-		}
-	}
-
-	[HarmonyPatch(typeof(ItemManager))]
-	internal static class EnchantItemManagerPatches
-	{
-		private static IModifLogger Logger => LoggerFactory.GetLogger(ModInfo.ModId);
-
-		public static event Action<ItemManager, bool> AfterIsAllItemSynced;
-
-#pragma warning disable IDE0051 // Remove unused private members
-		[HarmonyPatch(nameof(ItemManager.IsAllItemSynced), MethodType.Getter)]
-		[HarmonyPostfix]
-		private static void IsAllItemSyncedPostfix(ItemManager __instance, bool __result)
-		{
-			try
-			{
-				if (!__result)
-					return;
-
-				Logger.LogDebug($"{nameof(EnchantItemManagerPatches)}::{nameof(IsAllItemSyncedPostfix)}: Invoking {nameof(AfterIsAllItemSynced)}().");
-				AfterIsAllItemSynced?.Invoke(__instance, __result);
-			}
-			catch (Exception ex)
-			{
-				Logger.LogException($"{nameof(EnchantItemManagerPatches)}::{nameof(IsAllItemSyncedPostfix)}(): Exception Invoking {nameof(AfterIsAllItemSynced)}().", ex);
 			}
 		}
 	}

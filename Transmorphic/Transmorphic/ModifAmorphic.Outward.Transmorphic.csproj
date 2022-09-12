@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\outward-shared\outward\Outward.Shared\ModifAmorphic.Outward.Shared\ModifAmorphic.Outward.Shared.csproj" />
+    <PackageReference Include="ModifAmorphic.Outward" Version="0.5.13" />
   </ItemGroup>
 
   <ItemGroup>
