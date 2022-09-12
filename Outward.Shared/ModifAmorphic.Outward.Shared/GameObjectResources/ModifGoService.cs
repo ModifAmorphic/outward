@@ -38,6 +38,13 @@ namespace ModifAmorphic.Outward.GameObjectResources
             return activable ? GetOrAddActivableModGo(modName) : GetOrAddInactivableModGo(modName);
         }
 
+        public ModifItemPrefabs GetItemPrefabs(string modId)
+        {
+            var modGo = GetModResources(modId, true);
+
+            return modGo.GetOrAddComponent<ModifItemPrefabs>();
+        }
+
         private GameObject GetOrAddModifRoot()
         {
             var root = GameObject.Find(RootPath)?.gameObject;
