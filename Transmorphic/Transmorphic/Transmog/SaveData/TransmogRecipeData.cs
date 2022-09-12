@@ -49,6 +49,22 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog.SaveData
                 File.WriteAllText(_recipeFilePath, sb.ToString());
             }
         }
+        public void RemoveRecipe(int visualItemID)
+        {
+            if (!_recipeCache.ContainsKey(visualItemID))
+                return;
+            lock (_updateLock)
+            {
+                if (_recipeCache.ContainsKey(visualItemID))
+                    _recipeCache.Remove(visualItemID);
+
+                var sb = new StringBuilder();
+                foreach (var kvp in _recipeCache)
+                    sb.AppendLine(kvp.Key + ", " + kvp.Value);
+
+                File.WriteAllText(_recipeFilePath, sb.ToString());
+            }
+        }
         private void LoadRecipesCache()
         {
             lock (_updateLock)

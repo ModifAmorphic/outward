@@ -50,7 +50,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
 			}
 
 			var recipeTag = ingredientFilter.AddedIngredientType.Tag;
-			if (recipeTag == Tag.None || TransmogSettings.ExcludedItemIDs.Contains(potentialIngredient.ItemID))
+			if (recipeTag == Tag.None || TransmogSettings.ExcludedItemIDs.Contains(potentialIngredient.ItemID) || potentialIngredient.ItemPrefab is Ammunition)
 			{
 				isMatch = false;
 				return true;

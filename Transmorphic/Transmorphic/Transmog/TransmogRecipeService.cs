@@ -85,6 +85,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
             AddRemoverRecipe();
 
             var saves = _recipeSaveData.GetAllRecipes();
+            var removeRecipes = new List<int>();
             foreach (var r in saves)
             {
                 try
@@ -94,7 +95,13 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                 catch (Exception ex)
                 {
                     Logger.LogException($"Could not load recipe {r.Key} - {r.Value} from save!", ex);
+                    removeRecipes.Add(r.Key);
                 }
+            }
+            foreach(var recipeID in removeRecipes)
+            {
+                _recipeSaveData.RemoveRecipe(recipeID);
+                Logger.LogDebug($"Removed invalid Transmog Recipe {recipeID} from save.");
             }
         }
         private void AddRemoverRecipe()
@@ -104,7 +111,8 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                 var removerResult = _preFabricator.CreatePrefab<Item>(TransmogSettings.RemoveRecipe.SourceResultItemID,
                                                                 TransmogSettings.RemoveRecipe.ResultItemID,
                                                                 TransmogSettings.RemoveRecipe.ResultItemName,
-                                                                TransmogSettings.RemoveRecipe.ResultItemDesc)
+                                                                TransmogSettings.RemoveRecipe.ResultItemDesc,
+                                                                false)
                               .ConfigureItemIcon(TransmogSettings.RemoveRecipe.IconFile);
                 Logger.LogDebug($"Added Transmog Remover Recipe placeholder prefab {removerResult.ItemID} - {removerResult.DisplayName}.");
             }
@@ -216,7 +224,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
 
         public TransmogRecipe AddOrGetRecipe(Equipment equipment)
         {
-            if (TransmogSettings.ExcludedItemIDs.Contains(equipment.ItemID))
+            if (TransmogSettings.ExcludedItemIDs.Contains(equipment.ItemID) || equipment is Ammunition)
                 throw new ArgumentException($"Visual for ItemID {equipment.ItemID} is excluded from Transmogs. It probably doesn't work correctly.", nameof(equipment));
 
             if (!TryGetTransmogRecipe(equipment.ItemID, out var recipe))
@@ -243,6 +251,10 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
             if (!TryGetTransmogRecipe(recipeUid.ToString(), out var recipe))
             {
                 var equipment = (ResourcesPrefabManager.Instance.GetItemPrefab(visualItemID) ?? ResourcesPrefabManager.Instance.GenerateItem(visualItemID.ToString())) as Equipment;
+                if (equipment is Ammunition)
+                {
+                    throw new ArgumentException($"Visual for ItemID {visualItemID} is excluded from Transmogs. It probably doesn't work correctly.", nameof(visualItemID));
+                }
                 return AddRecipe(equipment, recipeUid);
             }
 

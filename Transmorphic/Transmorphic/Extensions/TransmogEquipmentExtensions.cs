@@ -11,6 +11,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Extensions
                                                                                     || equipment.HasTag(ItemTags.BackpackTag)
                                                                                     || equipment.HasTag(ItemTags.LanternTag)
                                                                                     || equipment.HasTag(ItemTags.LexiconTag))
-                                                                              && !TransmogSettings.ExcludedItemIDs.Contains(equipment.ItemID);
+                                                                              && !TransmogSettings.ExcludedItemIDs.Contains(equipment.ItemID)
+                                                                              && !(equipment is Ammunition);
     }
 }

@@ -39,11 +39,15 @@ namespace ModifAmorphic.Outward.Transmorphic
                 harmony.PatchAll(typeof(EnchantCharacterRecipeKnowledgePatches));
                 harmony.PatchAll(typeof(EnchantRecipeManagerPatches));
 
+                harmony.PatchAll(typeof(ItemPatches));
+                harmony.PatchAll(typeof(ResourcesPrefabManagerPatches));
+                harmony.PatchAll(typeof(ItemManagerPatches));
+
                 //harmony.PatchAll(typeof(ResourcesPrefabManagerPatches));
                 //harmony.PatchAll(typeof(EnchantItemManagerPatches));
 
-                //harmony.PatchAll(typeof(ItemDetailsDisplayPatches));
-                
+                harmony.PatchAll(typeof(ItemDetailsDisplayPatches));
+
 
                 //harmony.PatchAll(typeof(WeaponPatches));
                 //harmony.PatchAll(typeof(TmogItemDisplayPatches));
