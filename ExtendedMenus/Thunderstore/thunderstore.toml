@@ -3,10 +3,10 @@ schemaVersion = "0.0.1"
 
 [package]
 namespace = "ModifAmorphic"
-name = "ExtendedMenus"
+name = "ActionMenus"
 versionNumber = "${PACKAGE_VERSION}"
-description = "Extends Menus"
-websiteUrl = "https://github.com/ModifAmorphic/outward/tree/master/ExtendedMenus"
+description = "Action Menus"
+websiteUrl = "https://github.com/ModifAmorphic/outward/tree/master/ActionMenus"
 containsNsfwContent = false
 
 [package.dependencies]
@@ -24,6 +24,10 @@ target = "files/plugins/"
 [[build.copy]]
 source = "../Assets/asset-bundles"
 target = "files/plugins/asset-bundles"
+
+[[build.copy]]
+source = "../Assets/Profiles"
+target = "files/plugins/Profiles"
 
 [publish]
 repository = "https://outward.thunderstore.io"

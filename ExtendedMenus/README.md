@@ -1,10 +1,10 @@
 # Summary
-**⚡Go Go Extending Menus⚡**
+**⚡Action Menus⚡**
 &nbsp;
 - - - -
 &nbsp;
 
-## **Extends!!!**
+## **Action!!!**
 
 
 ## Latest Release ${PACKAGE_VERSION}
