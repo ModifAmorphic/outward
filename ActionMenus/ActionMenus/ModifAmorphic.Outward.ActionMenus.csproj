@@ -24,9 +24,6 @@
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.CoreModule.dll</HintPath>
       <CopyLocal>false</CopyLocal>
     </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>..\..\outward-shared-assemblies\UnityEngine.IMGUIModule.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
