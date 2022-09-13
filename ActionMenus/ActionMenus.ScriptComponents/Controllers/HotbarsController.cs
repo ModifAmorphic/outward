@@ -20,7 +20,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         {
             _hbc = hotbarsContainer ?? throw new ArgumentNullException(nameof(hotbarsContainer));
 
-            _hbc.ActionsViewer.OnSlotActionSelected += AssignSlotAction;
+            _hbc.PlayerActionMenus.ActionsViewer.OnSlotActionSelected += AssignSlotAction;
             //_hbc.HotkeyCapture.OnKeyPressed += AssignSlotHotkey;
             //public void AssignSlotHotkey(int slotId, KeyCode keyCode)
             //{

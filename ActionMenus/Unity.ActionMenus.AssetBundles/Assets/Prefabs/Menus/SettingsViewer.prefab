@@ -1148,7 +1148,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1741822644574540096}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1335699475, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  m_Script: {fileID: -1335699475, guid: b425107209c85854f9d2e57648e64259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   OnBarsChanged:
@@ -1160,14 +1160,14 @@ MonoBehaviour:
   OnSlotsChanged:
     m_PersistentCalls:
       m_Calls: []
-  MainSettingsMenu: {fileID: 6621170473788074504}
+  MainSettingsMenu: {fileID: 788824144446511939}
   HotkeyCaptureMenu: {fileID: 0}
   BarAmountInput: {fileID: 3855184783388709585}
   RowAmountInput: {fileID: 2033153619265674636}
   SlotAmountInput: {fileID: 5705243933226387547}
   ShowCooldownTimer: {fileID: 3459903924658767011}
   ShowPrecisionTime: {fileID: 7055604276746130476}
-  CombatMode: {fileID: 535060959545960495}
+  CombatMode: {fileID: 3459903924658767011}
   EmptySlotDropdown: {fileID: 1039904017436950167}
   SetHotkeys: {fileID: 2800677425708820596}
   Hotbars: {fileID: 0}
@@ -2818,7 +2818,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3459903924658767037}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -449930734, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  m_Script: {fileID: -449930734, guid: b425107209c85854f9d2e57648e64259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Children:
@@ -3757,11 +3757,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 4336812454400029729}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 2019490716, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  m_Script: {fileID: 2019490716, guid: b425107209c85854f9d2e57648e64259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   NewProfileInput: {fileID: 8612584850186948099}
-  MainSettingsMenu: {fileID: 6621170473788074504}
+  MainSettingsMenu: {fileID: 788824144446511939}
   ProfileDropdown: {fileID: 4420211586829174574}
   ActionSlotsToggle: {fileID: 4083687147222060449}
   DurabilityToggle: {fileID: 1482429641078896669}
@@ -3928,12 +3928,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 4550559797254147906}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -575888604, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  m_Script: {fileID: -575888604, guid: b425107209c85854f9d2e57648e64259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ProfileInputField: {fileID: 1945151123328958167}
   OkButton: {fileID: 6464219063157572717}
-  MainSettingsMenu: {fileID: 6621170473788074504}
+  MainSettingsMenu: {fileID: 788824144446511939}
 --- !u!1 &4784276972677688552
 GameObject:
   m_ObjectHideFlags: 0
@@ -5140,8 +5140,8 @@ GameObject:
   - component: {fileID: 7174815688616181028}
   - component: {fileID: 3117325107941733731}
   - component: {fileID: 63655808442209025}
-  - component: {fileID: 6621170473788074504}
   - component: {fileID: 931690365748780926}
+  - component: {fileID: 788824144446511939}
   m_Layer: 5
   m_Name: SettingsViewer
   m_TagString: Untagged
@@ -5211,26 +5211,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6621170473788074504
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6621170473788074487}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 849063533, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PlayerMenu: {fileID: 0}
-  SettingsView: {fileID: 6289435962630328008}
-  NewProfileInput: {fileID: 8612584850186948099}
-  HotbarSettingsView: {fileID: 5200133373099988398}
-  HotkeyCaptureMenu: {fileID: 0}
-  UIPositionScreen: {fileID: 0}
-  SettingsViewToggle: {fileID: 2236611817294044240}
-  HotbarViewToggle: {fileID: 2727821977968474846}
 --- !u!114 &931690365748780926
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5244,6 +5224,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_AllowSwitchOff: 0
+--- !u!114 &788824144446511939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6621170473788074487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 849063533, guid: b425107209c85854f9d2e57648e64259, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerMenu: {fileID: 0}
+  SettingsView: {fileID: 6289435962630328008}
+  NewProfileInput: {fileID: 8612584850186948099}
+  HotbarSettingsView: {fileID: 5200133373099988398}
+  HotkeyCaptureMenu: {fileID: 0}
+  UIPositionScreen: {fileID: 0}
+  SettingsViewToggle: {fileID: 2236611817294044240}
+  HotbarViewToggle: {fileID: 2727821977968474846}
 --- !u!1 &6700480683766606887
 GameObject:
   m_ObjectHideFlags: 0
@@ -6226,7 +6226,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8485597680729520186}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 64035627, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  m_Script: {fileID: 64035627, guid: b425107209c85854f9d2e57648e64259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   EnabledColor: {r: 0.8392157, g: 0.7215686, b: 0.3921569, a: 1}
@@ -7332,7 +7332,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1160063426, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  m_Script: {fileID: -1160063426, guid: b425107209c85854f9d2e57648e64259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &7045473881205996389 stripped
@@ -7941,7 +7941,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1160063426, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  m_Script: {fileID: -1160063426, guid: b425107209c85854f9d2e57648e64259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!224 &1975895139815137775 stripped
@@ -7971,7 +7971,7 @@ PrefabInstance:
     - target: {fileID: 1350158005385134056, guid: 08a23b118a9a630498602b965a18dde3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 6621170473788074504}
+      objectReference: {fileID: 788824144446511939}
     - target: {fileID: 1350158005385134056, guid: 08a23b118a9a630498602b965a18dde3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
@@ -7982,7 +7982,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1350158005385134056, guid: 08a23b118a9a630498602b965a18dde3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: ModifAmorphic.Outward.Unity.ActionMenus.MainSettingsMenu, ModifAmorphic.Outward.ActionMenus
+      value: ModifAmorphic.Outward.Unity.ActionMenus.MainSettingsMenu, ModifAmorphic.Outward.ActionMenus.ScriptComponents
       objectReference: {fileID: 0}
     - target: {fileID: 1350158005385134056, guid: 08a23b118a9a630498602b965a18dde3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -8576,6 +8576,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1160063426, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  m_Script: {fileID: -1160063426, guid: b425107209c85854f9d2e57648e64259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

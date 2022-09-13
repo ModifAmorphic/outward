@@ -161,7 +161,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             }
             else if (ActionSlot.SlotAction.GetIsEditRequested())
             {
-                ActionSlot.HotbarsContainer.ActionsViewer.Show(ActionSlot.SlotId);
+                ActionSlot.HotbarsContainer.PlayerActionMenus.ActionsViewer.Show(ActionSlot.SlotId);
             }
         }
 
@@ -254,7 +254,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         private void OnEditRequested()
         {
             if (ActionSlot.ParentCanvas != null && ActionSlot.ParentCanvas.enabled && ActionSlot.ActionButton.interactable)
-                ActionSlot.HotbarsContainer.ActionsViewer.Show(ActionSlot.SlotId);
+                ActionSlot.HotbarsContainer.PlayerActionMenus.ActionsViewer.Show(ActionSlot.SlotId);
         }
 
         private void OnRemoveRequested()
@@ -270,7 +270,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         private void OnHotkeyEditRequested()
         {
             if (ActionSlot.ParentCanvas != null && ActionSlot.ParentCanvas.enabled && ActionSlot.ActionButton.interactable)
-                ActionSlot.HotkeyCapture.ShowDialog(ActionSlot.SlotIndex, HotkeyCategories.ActionSlot);
+                ActionSlot.HotbarsContainer.PlayerActionMenus.MainSettingsMenu.HotkeyCaptureMenu.ShowDialog(ActionSlot.SlotIndex, HotkeyCategories.ActionSlot);
         }
 
         private void EnableActiveSlot()

@@ -11,8 +11,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     public class LeftHotbarNav : MonoBehaviour
     {
         public PlayerActionMenus PlayerMenu;
-        public HotkeyCaptureMenu HotkeyCaptureDialog;
-        public HotbarSettingsView HotbarSettingsViewer;
+        //public HotkeyCaptureMenu HotkeyCaptureDialog;
+        //public HotbarSettingsView HotbarSettingsViewer;
         public HotbarsContainer HotbarsContainer;
 
         //private Button _settingsButton;
@@ -161,9 +161,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _nextButton.onClick.AddListener(() => HotbarsContainer.Controller.SelectNext());
             _previousButton.onClick.AddListener(() => HotbarsContainer.Controller.SelectPrevious());
 
-            _nextHotkeyButton.onClick.AddListener(() => HotkeyCaptureDialog.ShowDialog(0, HotkeyCategories.NextHotbar));
-            _previousHotkeyButton.onClick.AddListener(() => HotkeyCaptureDialog.ShowDialog(1, HotkeyCategories.PreviousHotbar));
-            _hotkeyButton.onClick.AddListener(() => HotkeyCaptureDialog.ShowDialog(HotbarsContainer.SelectedHotbar, HotkeyCategories.Hotbar));
+            _nextHotkeyButton.onClick.AddListener(() => PlayerMenu.MainSettingsMenu.HotkeyCaptureMenu.ShowDialog(0, HotkeyCategories.NextHotbar));
+            _previousHotkeyButton.onClick.AddListener(() => PlayerMenu.MainSettingsMenu.HotkeyCaptureMenu.ShowDialog(1, HotkeyCategories.PreviousHotbar));
+            _hotkeyButton.onClick.AddListener(() => PlayerMenu.MainSettingsMenu.HotkeyCaptureMenu.ShowDialog(HotbarsContainer.SelectedHotbar, HotkeyCategories.Hotbar));
         }
     }
 }

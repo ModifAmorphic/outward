@@ -46,7 +46,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 245795331425079313}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1735896362, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  m_Script: {fileID: -1735896362, guid: b425107209c85854f9d2e57648e64259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   BaseImage: {fileID: 7748646402289801455}
@@ -277,7 +277,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3034597240821434762}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1352836752, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  m_Script: {fileID: -1352836752, guid: b425107209c85854f9d2e57648e64259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   BaseActionGo: {fileID: 6372441272208641556}
@@ -330,7 +330,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3070270397972852257}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1431360530, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  m_Script: {fileID: 1431360530, guid: b425107209c85854f9d2e57648e64259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerMenu: {fileID: 0}
@@ -758,7 +758,7 @@ GameObject:
   - component: {fileID: 1786359630055579253}
   - component: {fileID: 2600429485196854741}
   - component: {fileID: 2015762997100619000}
-  - component: {fileID: 121511684441374006}
+  - component: {fileID: 1835691491071420467}
   m_Layer: 5
   m_Name: BaseSlotPanel
   m_TagString: Untagged
@@ -808,7 +808,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7202988350144772906}
   m_CullTransparentMesh: 1
---- !u!114 &121511684441374006
+--- !u!114 &1835691491071420467
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -817,10 +817,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 7202988350144772906}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -2132296311, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  m_Script: {fileID: -2132296311, guid: b425107209c85854f9d2e57648e64259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ActionImages: {fileID: 4189644651298496209}
+  ActionImages: {fileID: 0}
 --- !u!1 &7204693004132775589
 GameObject:
   m_ObjectHideFlags: 0
@@ -1497,7 +1497,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5561013077163278033, guid: 14bdd222671a74c4c9853edf5d8fc610, type: 3}
       propertyPath: m_Size
-      value: 0.9875467
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5561013077163278033, guid: 14bdd222671a74c4c9853edf5d8fc610, type: 3}
       propertyPath: m_Value

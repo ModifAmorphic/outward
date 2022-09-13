@@ -44,4 +44,8 @@
     <Folder Include="EventTriggers\" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;$(SolutionDir)Unity.ActionMenus.AssetBundles\Assets\Plugins&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(SolutionDir)Unity.ActionMenus.AssetBundles\Assets\Plugins&quot;" />
+  </Target>
+
 </Project>

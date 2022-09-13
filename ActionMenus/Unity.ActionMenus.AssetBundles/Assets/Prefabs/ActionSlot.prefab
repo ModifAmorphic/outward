@@ -123,7 +123,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1513726843278197502}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 445401529, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  m_Script: {fileID: 445401529, guid: b425107209c85854f9d2e57648e64259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   OnLeftClick:
@@ -438,7 +438,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2569787681504494945}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1684164496, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  m_Script: {fileID: 1684164496, guid: b425107209c85854f9d2e57648e64259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &4217308674893524024
@@ -1146,7 +1146,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7073540720848846307}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1149775767, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  m_Script: {fileID: -1149775767, guid: b425107209c85854f9d2e57648e64259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   HotkeyCapture: {fileID: 0}
@@ -1287,7 +1287,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8176236104144191320}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1735896362, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
+  m_Script: {fileID: -1735896362, guid: b425107209c85854f9d2e57648e64259, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   BaseImage: {fileID: 6169819881826258100}

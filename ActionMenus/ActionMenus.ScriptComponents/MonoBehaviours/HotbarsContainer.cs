@@ -19,7 +19,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 		//      private Button _settingsButton;
 		//public Button SettingsButton => _settingsButton;
 		public PlayerActionMenus PlayerActionMenus;
-		public ActionsViewer ActionsViewer;
+		//public ActionsViewer ActionsViewer;
 
 		public bool HotbarsEnabled => _actionBarsCanvas.gameObject.activeSelf;
 

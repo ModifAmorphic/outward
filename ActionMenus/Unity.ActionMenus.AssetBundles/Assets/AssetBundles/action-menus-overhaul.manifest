@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 1742698457
+CRC: 3509173724
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 2dfdc292881427ef3fcd9b52a07125c3
+    Hash: 58f70b5e3745192adf794e84e4d7add9
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 3f38637794eba9238ccde1879118ffed
+    Hash: 6a278f58d5b7cfacb1819b78e2953315
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -20,15 +20,15 @@ ClassTypes:
 - Class: 48
   Script: {instanceID: 0}
 - Class: 114
-  Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
 - Class: 114
   Script: {fileID: 1948066178, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
-- Class: 114
   Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
 - Class: 114
@@ -41,8 +41,6 @@ ClassTypes:
   Script: {fileID: -1160063426, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
 - Class: 114
   Script: {fileID: 1056829355, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
-- Class: 114
-  Script: {fileID: 1460552717, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
 - Class: 114
   Script: {fileID: -898740916, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
 - Class: 114
@@ -75,6 +73,8 @@ ClassTypes:
   Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+- Class: 114
+  Script: {fileID: 1460552717, guid: c7fd7523ccb46244dab7c35485d6235a, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
@@ -96,10 +96,6 @@ SerializeReferenceClassIdentifiers:
   ClassName: UnityEngine.Events.PersistentCallGroup
 - AssemblyName: UnityEngine.CoreModule
   ClassName: UnityEngine.Events.PersistentListenerMode
-- AssemblyName: UnityEngine.CoreModule
-  ClassName: UnityEngine.Events.UnityEvent
-- AssemblyName: UnityEngine.CoreModule
-  ClassName: UnityEngine.Events.UnityEvent`1[System.Int32]
 - AssemblyName: UnityEngine.CoreModule
   ClassName: UnityEngine.RectOffset
 - AssemblyName: UnityEngine.UI

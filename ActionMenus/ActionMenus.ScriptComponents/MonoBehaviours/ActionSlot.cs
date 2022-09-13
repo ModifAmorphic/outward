@@ -13,7 +13,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     {
         public HotbarsContainer HotbarsContainer { get; internal set; }
 
-        public HotkeyCaptureMenu HotkeyCapture;
+        //public HotkeyCaptureMenu HotkeyCapture;
 
         private MouseClickListener _mouseClickListener;
         public MouseClickListener MouseClickListener => _mouseClickListener;
