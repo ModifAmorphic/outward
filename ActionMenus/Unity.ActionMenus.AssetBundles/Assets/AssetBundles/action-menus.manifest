@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2923715245
+CRC: 2831240620
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: adfc6e875d997bc38c7d140ea0e1fda0
+    Hash: 1a0ac890ea4e46270c7d08a4b56c35b4
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 1533542fbbef599a8b925dcfb15b1c97
+    Hash: 5a50fe338d0940bd7d417eef5c2f83b1
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -22,9 +22,9 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 1699647011, guid: b425107209c85854f9d2e57648e64259, type: 3}
 - Class: 114
-  Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
-- Class: 114
   Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
 - Class: 114
@@ -120,6 +120,10 @@ SerializeReferenceClassIdentifiers:
   ClassName: UnityEngine.Events.PersistentCallGroup
 - AssemblyName: UnityEngine.CoreModule
   ClassName: UnityEngine.Events.PersistentListenerMode
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.UnityEvent
+- AssemblyName: UnityEngine.CoreModule
+  ClassName: UnityEngine.Events.UnityEvent`1[System.Int32]
 - AssemblyName: UnityEngine.CoreModule
   ClassName: UnityEngine.RectOffset
 - AssemblyName: UnityEngine.UI

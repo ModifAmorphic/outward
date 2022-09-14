@@ -1,0 +1,83 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>ModifAmorphic.Outward.ActionMenus</RootNamespace>
+    <DebugType>portable</DebugType>
+    <Configurations>Debug;Release</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>portable</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ModifAmorphic.Outward" Version="0.5.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ActionMenus\ModifAmorphic.Outward.ActionMenus.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\outward-shared-assemblies\0Harmony.dll</HintPath>
+      <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\outward-shared-assemblies\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
+    <Reference Include="Assembly-CSharp-firstpass">
+      <HintPath>..\..\outward-shared-assemblies\Assembly-CSharp-firstpass.dll</HintPath>
+      <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
+    <Reference Include="BepInEx">
+      <HintPath>..\..\outward-shared-assemblies\BepInEx.dll</HintPath>
+      <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\outward-shared-assemblies\Newtonsoft.Json.dll</HintPath>
+      <CopyLocal>true</CopyLocal>
+      <EmbedInteropTypes></EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Rewired_Core">
+      <HintPath>..\..\outward-shared-assemblies\Rewired_Core.dll</HintPath>
+      <EmbedInteropTypes></EmbedInteropTypes>
+      <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+      <EmbedInteropTypes></EmbedInteropTypes>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.AssetBundleModule.dll</HintPath>
+      <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.UI.dll</HintPath>
+      <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.UIModule.dll</HintPath>
+      <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
+  </ItemGroup>
+
+</Project>

@@ -55,8 +55,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             SettingsViewToggle.onValueChanged.AddListener(isOn => ShowMenu(ActionSettingsMenus.Settings));
             HotbarViewToggle.onValueChanged.AddListener(isOn => ShowMenu(ActionSettingsMenus.ActionSlots));
-
-            //Hide(false);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]

@@ -156,6 +156,9 @@ namespace ModifAmorphic.Outward.ActionMenus
                 Logger.LogTrace($"Attaching script {t.FullName}");
                 scriptGo.AddComponent(t);
             }
+
+            //Logger.LogDebug($"Attached component scripts at {scriptGo.GetPath()}.");
+
             return scriptGo;
         }
 

@@ -2,66 +2,43 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>ModifAmorphic.Outward.ActionMenus</RootNamespace>
+    <RootNamespace>ModifAmorphic.Outward.Unity.ActionMenus</RootNamespace>
+    <AssemblyName>$(MSBuildProjectName)</AssemblyName>
     <DebugType>portable</DebugType>
-    <Configurations>Debug;Release</Configurations>
+    <Configurations>Debug;Release;DebugLocal</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>portable</DebugType>
-    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>$(DefineConstants)TRACE;UNITY_5_5_OR_NEWER;UNITY_2018_3_OR_NEWER</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugLocal|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE;UNITY_5_5_OR_NEWER;UNITY_2018_3_OR_NEWER</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE;UNITY_5_5_OR_NEWER;UNITY_2018_3_OR_NEWER</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ModifAmorphic.Outward" Version="0.5.13" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\..\outward-shared-assemblies\0Harmony.dll</HintPath>
-      <Private>false</Private>
-      <CopyLocal>false</CopyLocal>
-    </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\outward-shared-assemblies\Assembly-CSharp.dll</HintPath>
-      <Private>false</Private>
-      <CopyLocal>false</CopyLocal>
-    </Reference>
-    <Reference Include="Assembly-CSharp-firstpass">
-      <HintPath>..\..\outward-shared-assemblies\Assembly-CSharp-firstpass.dll</HintPath>
-      <Private>false</Private>
-      <CopyLocal>false</CopyLocal>
-    </Reference>
-    <Reference Include="BepInEx">
-      <HintPath>..\..\outward-shared-assemblies\BepInEx.dll</HintPath>
-      <Private>false</Private>
-      <CopyLocal>false</CopyLocal>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\outward-shared-assemblies\Newtonsoft.Json.dll</HintPath>
-      <CopyLocal>true</CopyLocal>
-      <EmbedInteropTypes></EmbedInteropTypes>
-    </Reference>
-    <Reference Include="Rewired_Core">
-      <HintPath>..\..\outward-shared-assemblies\Rewired_Core.dll</HintPath>
-      <EmbedInteropTypes></EmbedInteropTypes>
-      <Private>false</Private>
-      <CopyLocal>false</CopyLocal>
-    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.dll</HintPath>
-      <Private>false</Private>
-      <EmbedInteropTypes></EmbedInteropTypes>
-      <CopyLocal>false</CopyLocal>
-    </Reference>
-    <Reference Include="UnityEngine.AssetBundleModule">
-      <HintPath>..\..\outward-shared-assemblies\UnityEngine.AssetBundleModule.dll</HintPath>
       <Private>false</Private>
       <CopyLocal>false</CopyLocal>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.InputLegacyModule.dll</HintPath>
+	  <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule">
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.InputModule.dll</HintPath>
+	  <Private>false</Private>
       <CopyLocal>false</CopyLocal>
     </Reference>
     <Reference Include="UnityEngine.UI">
@@ -77,7 +54,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ActionMenus.ScriptComponents\ModifAmorphic.Outward.ActionMenus.ScriptComponents.csproj" />
+    <Folder Include="EventTriggers\" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(ConfigurationName) == DebugLocal">
+    <Exec Command="copy /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;$(SolutionDir)Unity.ActionMenus.AssetBundles\Assets\Plugins\ModifAmorphic.Outward.ActionMenus.dll&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(SolutionDir)Unity.ActionMenus.AssetBundles\Assets\Plugins\ModifAmorphic.Outward.ActionMenus.pdb&quot;" />
+  </Target>
 
 </Project>
