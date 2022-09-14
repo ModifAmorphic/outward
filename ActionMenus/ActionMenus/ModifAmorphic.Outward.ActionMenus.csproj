@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>ModifAmorphic.Outward.ActionMenus</RootNamespace>
     <DebugType>portable</DebugType>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -38,7 +39,7 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\outward-shared-assemblies\Newtonsoft.Json.dll</HintPath>
-      <CopyLocal>True</CopyLocal>
+      <CopyLocal>true</CopyLocal>
       <EmbedInteropTypes></EmbedInteropTypes>
     </Reference>
     <Reference Include="Rewired_Core">
