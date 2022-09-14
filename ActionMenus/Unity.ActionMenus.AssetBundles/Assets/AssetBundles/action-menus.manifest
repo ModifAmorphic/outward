@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 1129135213
+CRC: 2923715245
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 140ba1d8794dcbc576b03a0c14e3a135
+    Hash: adfc6e875d997bc38c7d140ea0e1fda0
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 9caee7c6e43447f4c09ebe00896359e1
+    Hash: 1533542fbbef599a8b925dcfb15b1c97
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -120,10 +120,6 @@ SerializeReferenceClassIdentifiers:
   ClassName: UnityEngine.Events.PersistentCallGroup
 - AssemblyName: UnityEngine.CoreModule
   ClassName: UnityEngine.Events.PersistentListenerMode
-- AssemblyName: UnityEngine.CoreModule
-  ClassName: UnityEngine.Events.UnityEvent
-- AssemblyName: UnityEngine.CoreModule
-  ClassName: UnityEngine.Events.UnityEvent`1[System.Int32]
 - AssemblyName: UnityEngine.CoreModule
   ClassName: UnityEngine.RectOffset
 - AssemblyName: UnityEngine.UI

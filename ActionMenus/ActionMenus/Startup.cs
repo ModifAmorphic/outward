@@ -90,7 +90,7 @@ namespace ModifAmorphic.Outward.ActionMenus
         }
         public GameObject ConfigureAssetBundle()
         {
-            var scriptsGo = AttachScripts(typeof(ActionSlot).Assembly);
+            var scriptsGo = AttachScripts(typeof(PlayerActionMenus).Assembly);
             Logger.LogDebug($"Loading asset bundle action-menus.");
             var menuBundle = LoadAssetBundle(_services.GetService<BaseUnityPlugin>().GetPluginDirectory(), "asset-bundles", "action-menus");
             var allAssetNames = menuBundle.GetAllAssetNames();
@@ -153,6 +153,7 @@ namespace ModifAmorphic.Outward.ActionMenus
 
             foreach (var t in scriptComponentTypes)
             {
+                Logger.LogTrace($"Attaching script {t.FullName}");
                 scriptGo.AddComponent(t);
             }
             return scriptGo;

@@ -40,8 +40,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         {
             UnassignSlotAction();
             dynamicSprites = null;
-            //ActionSlot.ActionImage.overrideSprite = null;
-            //ActionSlot.ActionImage.sprite = null;
             ActionSlot.ActionImages.ClearImages();
             DisableCooldownService();
             DisableStackService();
@@ -54,8 +52,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             {
                 var color = Color.grey;
                 color.a = .05f;
-                //ActionSlot.ActionImage.color = color;
-                //ActionSlot.ActionImage.enabled = true;
                 ActionSlot.EmptyImage.gameObject.SetActive(false);
                 var emptyImage = ActionSlot.ActionImages.AddOrUpdateImage(new ActionSlotIcon() { Name = "emptyTransparentAction", Icon = null });
                 emptyImage.color = color;
@@ -63,18 +59,14 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             }
             else if (ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Image)
             {
-                //ActionSlot.ActionImage.enabled = false;
                 ActionSlot.EmptyImage.gameObject.SetActive(true);
                 ActionSlot.CanvasGroup.alpha = 1;
             }
             else if (ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Hidden)
             {
-                //ActionSlot.ActionImage.enabled = false;
                 ActionSlot.EmptyImage.gameObject.SetActive(false);
                 ActionSlot.CanvasGroup.alpha = 0;
             }
-
-            //ActionSlot.HotbarsContainer.HasChanges = true;
 
         }
 
@@ -123,7 +115,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             slotAction.SlotActionAssigned(ActionSlot);
 
             ActionSlot.HotbarsContainer.HasChanges = true;
-            //ActionSlot.HotbarsContainer.HasChanges = true;
         }
 
         public void Refresh()
@@ -185,7 +176,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             _cooldownService?.Configure(ActionSlot.Config.ShowCooldownTime, ActionSlot.Config.PreciseCooldownTime);
             _stackService?.Configure(ActionSlot.Config.ShowZeroStackAmount);
             SetHotkeyText(ActionSlot.Config.HotkeyText);
-            //ActionSlot.HotbarsContainer.HasChanges = true;
         }
 
         public void HideCooldown()
@@ -230,10 +220,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         public void ToggleEnabled(bool enabled)
         {
             ActionSlot.ActionImages.ToggleEnabled(enabled);
-            //if (enabled && ActionSlot.ActionButton.colors.normalColor != Color.white)
-            //    ActionSlot.SetButtonNormalColor(Color.white);
-            //else if (!enabled && ActionSlot.ActionButton.colors.normalColor != ActionSlot.DisabledColor)
-            //    ActionSlot.SetButtonNormalColor(ActionSlot.DisabledColor);
         }
         
         public void ToggleHotkeyEditMode(bool toggle)
@@ -278,7 +264,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             ActionSlot.CooldownImage.enabled = true;
             ActionSlot.CooldownText.enabled = true;
             ActionSlot.StackText.enabled = true;
-            //ActionSlot.ActionImage.enabled = true;
             ActionSlot.CanvasGroup.alpha = 1;
 
             ActionSlot.CooldownText.text = String.Empty;

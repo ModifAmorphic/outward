@@ -21,14 +21,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             _hbc = hotbarsContainer ?? throw new ArgumentNullException(nameof(hotbarsContainer));
 
             _hbc.PlayerActionMenus.ActionsViewer.OnSlotActionSelected += AssignSlotAction;
-            //_hbc.HotkeyCapture.OnKeyPressed += AssignSlotHotkey;
-            //public void AssignSlotHotkey(int slotId, KeyCode keyCode)
-            //{
-            //    if (_hbc.ActionSlots.TryGetValue(slotId, out var slot))
-            //    {
-
-            //    }
-            //}
         }
 
         private void AssignSlotAction(int slotId, ISlotAction slotAction)
@@ -36,23 +28,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             if (_hbc.ActionSlots.TryGetValue(slotId, out var slot))
             {
                 slot.Controller.AssignSlotAction(slotAction);
-                //_hbc.HasChanges = true;
             }
         }
         
         public void ConfigureHotbars(IHotbarProfile profile)
         {
-            //var slotConfigs = new IActionSlotConfig[profile.Hotbars.Count, profile.SlotsPerRow * profile.Rows];
-            //for (int h = 0; h < profile.Hotbars.Count; h++)
-            //{
-            //    var bar = profile.Hotbars[h];
-            //    for (int s = 0; s < bar.Slots.Count; s++)
-            //    {
-            //        slotConfigs[h, s] = bar.Slots[s].Config;
-            //        Debug.Log($"[Debug  :ActionMenus] Setting Slot[{h},{s}].Config to '{(bar.Slots[s].Config == null ? "null" : "an ActionSlotConfig instance.")}'.");
-            //    }
-            //}
-            //ConfigureHotbars(profile.Hotbars.Count, profile.Rows, profile.SlotsPerRow, slotConfigs);
             int selectedIndex = _hbc.SelectedHotbar;
 
             Reset();
@@ -68,7 +48,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             {
                 var barCanvas = UnityEngine.Object.Instantiate(_hbc.BaseHotbarCanvas);
                 barCanvas.transform.SetParent(_hbc.BaseHotbarCanvas.transform.parent, false);
-                //barCanvas.transform.localScale = Vector3.one;
                 barCanvas.name = "HotbarCanvas" + h;
                 barCanvas.gameObject.SetActive(true);
                 _hbc.HotbarGrid[h] = UnityEngine.Object.Instantiate(_hbc.BaseGrid, barCanvas.transform);
@@ -80,7 +59,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 {
                     var newSlot = UnityEngine.Object.Instantiate(_hbc.BaseActionSlot);
                     newSlot.transform.SetParent(_hbc.HotbarGrid[h].transform, false);
-                    //newSlot.transform.localScale = Vector3.one;
                     var actionSlot = newSlot.GetComponent<ActionSlot>();
                     actionSlot.SlotIndex = s;
                     actionSlot.HotbarIndex = h;
@@ -94,7 +72,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             }
             Debug.Log($"[Debug  :ActionMenus] Added {_hbc.Hotbars.Length} Hotbars with {_hbc.Hotbars.FirstOrDefault()?.Length} Action Slots each. Calling StartCoroutine ResizeLayoutGroup().");
             _resizeNeeded = true;
-            //_hbc.HasChanges = true;
 
             if (selectedIndex != _hbc.SelectedHotbar && selectedIndex < GetHotbarCount())
                 SelectHotbar(selectedIndex);
@@ -189,7 +166,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             if (_resizeNeeded)
             {
                 ResizeLayoutGroup();
-                //_hbc.StartCoroutine(ResizeLayoutGroupNextFrame());
             }
         }
         private void Reset()
@@ -215,14 +191,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         }
         void ResizeLayoutGroup()
         {
-            //yield return new WaitForEndOfFrame();
-            //float btnWidth = _hbc.Hotbars[0][0].GetComponent<RectTransform>().rect.width;
-            //float btnHeight = _hbc.Hotbars[0][0].GetComponent<RectTransform>().rect.height;
             if (_hbc.HotbarGrid[0].cellSize.x == 0)
                 return;
 
-            //var glgRect = _hbc.Hotbars[0].GetComponent<RectTransform>().rect;
-            //float width = glgRect.width;
             float hotbarWidth = (_hbc.HotbarGrid[0].cellSize.x + _hbc.HotbarGrid[0].spacing.x) * (_hbc.HotbarGrid[0].constraintCount) + _hbc.HotbarGrid[0].padding.horizontal;
             float hotbarHeight = (_hbc.HotbarGrid[0].cellSize.y + _hbc.HotbarGrid[0].spacing.y) * GetRowCount() + _hbc.HotbarGrid[0].padding.vertical;
             Debug.Log("[Debug  :ActionMenus] ResizeLayoutGroup() called. Calculated width is " + hotbarWidth);
@@ -235,10 +206,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         {
             _hbc.IsInActionSlotEditMode = editMode;
             _hbc.LeftHotbarNav.ToggleActionSlotEditMode(editMode);
-            //foreach (var slot in _hbc.ActionSlots.Values)
-            //{
-            //    slot.Controller.ToggleEditMode(editMode);
-            //}
         }
 
         public void ToggleHotkeyEdits(bool editMode)
