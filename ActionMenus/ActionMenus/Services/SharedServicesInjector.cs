@@ -29,7 +29,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private void AddSharedServices(SplitPlayer splitPlayer, Character character)
         {
             var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
-            var profileService = new ProfileService(Path.Combine(ActionMenuSettings.ProfilesPath, character.UID));
+            var profileService = new ProfileService(Path.Combine(ActionMenuSettings.ProfilesPath, character.UID), _getLogger);
 
             psp
                 .AddSingleton<IActionMenusProfileService>(profileService);

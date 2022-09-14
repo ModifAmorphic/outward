@@ -132,23 +132,23 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
         private ActionMenusProfile GetOrCreateActiveProfile(ProfileManager profileManager)
         {
-            var activeProfile = profileManager.GetActiveProfile();
+            var activeProfile = profileManager.ProfileService.GetActiveProfile();
 
             if (activeProfile == null)
             {
                 Logger.LogDebug($"No active profile set. Checking if any profiles exist");
-                var names = profileManager.GetProfileNames();
+                var names = profileManager.ProfileService.GetProfileNames();
                 if (names == null || !names.Any())
                 {
                     Logger.LogDebug($"No profiles found. Creating default profile '{ActionMenuSettings.DefaultProfile.Name}'");
                     profileManager.ProfileService.SaveNew(ActionMenuSettings.DefaultProfile);
-                    names = profileManager.GetProfileNames();
+                    names = profileManager.ProfileService.GetProfileNames();
                 }
                 else
-                    profileManager.SetActiveProfile(names.First());
+                    profileManager.ProfileService.SetActiveProfile(names.First());
             }
 
-            return (ActionMenusProfile)profileManager.GetActiveProfile();
+            return (ActionMenusProfile)profileManager.ProfileService.GetActiveProfile();
         }
 
         private void AddSplitScreenScaler(PlayerActionMenus actionMenus, CharacterUI characterUI)

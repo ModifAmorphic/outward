@@ -104,7 +104,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             _saveDisabled = true;
 
             var profile = GetOrCreateActiveProfile();
-            if (_profileManager.GetActiveProfile().ActionSlotsEnabled)
+            if (_profileManager.ProfileService.GetActiveProfile().ActionSlotsEnabled)
             {
                 ConfigureHotbars(profile);
                 _hotbars.ClearChanges();
@@ -255,20 +255,20 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
         private IHotbarProfile GetOrCreateActiveProfile()
         {
-            var activeProfile = _profileManager.GetActiveProfile();
+            var activeProfile = _profileManager.ProfileService.GetActiveProfile();
 
             if (activeProfile == null)
             {
                 Logger.LogDebug($"No active profile set. Checking if any profiles exist");
-                var names = _profileManager.GetProfileNames();
+                var names = _profileManager.ProfileService.GetProfileNames();
                 if (names == null || !names.Any())
                 {
                     Logger.LogDebug($"No profiles found. Creating default profile '{ActionMenuSettings.DefaultProfile.Name}'");
                     _profileManager.ProfileService.SaveNew(ActionMenuSettings.DefaultProfile);
-                    names = _profileManager.GetProfileNames();
+                    names = _profileManager.ProfileService.GetProfileNames();
                 }
                 else
-                    _profileManager.SetActiveProfile(names.First());
+                    _profileManager.ProfileService.SetActiveProfile(names.First());
             }
 
             var hotbarProfile = _profileManager.HotbarProfileService.GetProfile();

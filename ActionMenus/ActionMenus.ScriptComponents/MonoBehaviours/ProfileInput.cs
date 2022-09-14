@@ -11,11 +11,12 @@ using UnityEngine.UI;
 namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
     [UnityScriptComponent]
-    public class NewProfileInput : MonoBehaviour, ISettingsView
+    public class ProfileInput : MonoBehaviour, ISettingsView
     {
         public InputField ProfileInputField;
-
         public Button OkButton;
+        public Text Caption;
+
         public MainSettingsMenu MainSettingsMenu;
 
         private IActionMenusProfileService _profileService => MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService;
@@ -23,6 +24,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public bool IsShowing => gameObject.activeSelf && _isInit;
 
         private bool _isInit;
+
+        private bool _isRename = false;
+        private string _profileName;
 
         public UnityEvent OnShow { get; } = new UnityEvent();
 
@@ -32,9 +36,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
         {
-            Debug.Log("NewProfileInput::Awake");
-            OkButton.onClick.AddListener(() => CreateProfile());
-            ProfileInputField.onEndEdit.AddListener((profileName) => CreateProfile());
+            OkButton.onClick.AddListener(EndInput);
+            ProfileInputField.onEndEdit.AddListener((profileName) => EndInput());
             ProfileInputField.onValidateInput += (string input, int charIndex, char addedChar) => ValidateEntry(addedChar);
             Hide(false);
             _isInit = true;
@@ -42,17 +45,75 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public void Show()
         {
-            Debug.Log("NewProfileInput::Show");
+            _isRename = false;
             gameObject.SetActive(true);
+            Caption.text = "New Profile";
             ProfileInputField.text = String.Empty;
             ProfileInputField.Select();
             ProfileInputField.ActivateInputField();
 
-            //HookControls();
+            OnShow?.TryInvoke();
+        }
+
+        public void Show(string profileName)
+        {
+            _isRename = true;
+            gameObject.SetActive(true);
+            Caption.text = "Rename Profile";
+
+            _profileName = profileName;
+            ProfileInputField.text = profileName;
+            ProfileInputField.Select();
+            ProfileInputField.ActivateInputField();
+
             OnShow?.TryInvoke();
         }
 
         public void Hide() => Hide(true);
+
+        private void EndInput()
+        {
+            if (!_isRename)
+            {
+                Debug.Log("ProfileInput: Calling CreateProfile()");
+                CreateProfile();
+            }
+            else
+            {
+                Debug.Log("ProfileInput: Calling RenameProfile()");
+                RenameProfile();
+            }
+        }
+
+        public void RenameProfile()
+        {
+            if (string.IsNullOrWhiteSpace(ProfileInputField.text))
+                return;
+
+
+            var activeProfile = _profileService.GetActiveProfile();
+            Debug.Log($"ProfileInput::RenameProfile: _profileName=='{_profileName}', activeProfile.Name == '{activeProfile.Name}'");
+            if (!activeProfile.Name.Equals(_profileName, StringComparison.InvariantCultureIgnoreCase))
+                _profileService.SetActiveProfile(_profileName);
+
+            if (activeProfile.Name.Equals(ProfileInputField.text, StringComparison.InvariantCultureIgnoreCase))
+            {
+                Debug.Log($"ProfileInput::RenameProfile: activeProfile Name '{activeProfile.Name}' equals renamed profile. Exiting without changes.");
+                Hide();
+                return;
+            }
+
+            var names = _profileService.GetProfileNames();
+            if (names.Contains(ProfileInputField.text))
+            {
+                Debug.Log($"ProfileInput::RenameProfile: Renamed profile '{ProfileInputField.text}' already exists. Keeping profile window open.");
+                return;
+            }
+
+            Debug.Log($"ProfileInput::RenameProfile: Attempting rename of profile '{activeProfile.Name}' to '{ProfileInputField.text}'.");
+            _profileService.Rename(ProfileInputField.text);
+            Hide();
+        }
 
         public void CreateProfile()
         {
@@ -74,7 +135,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private void Hide(bool raiseEvent)
         {
-            Debug.Log("NewProfileInput::Hide");
+            Debug.Log("ProfileInput::Hide");
             gameObject.SetActive(false);
             if (raiseEvent)
             {

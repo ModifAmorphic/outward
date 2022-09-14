@@ -24,7 +24,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     {
         public PlayerActionMenus PlayerMenu;
         public SettingsView SettingsView;
-        public NewProfileInput NewProfileInput;
+        public ProfileInput ProfileInput;
         public HotbarSettingsView HotbarSettingsView;
         public HotkeyCaptureMenu HotkeyCaptureMenu;
         public UIPositionScreen UIPositionScreen;
@@ -32,7 +32,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public Toggle SettingsViewToggle;
         public Toggle HotbarViewToggle;
 
-        public bool IsShowing => gameObject.activeSelf || HotkeyCaptureMenu.IsShowing || NewProfileInput.IsShowing || UIPositionScreen.IsShowing;
+        public bool IsShowing => gameObject.activeSelf || HotkeyCaptureMenu.IsShowing || ProfileInput.IsShowing || UIPositionScreen.IsShowing;
 
         public UnityEvent OnShow { get; } = new UnityEvent();
 
@@ -49,7 +49,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _menus = new Dictionary<ActionSettingsMenus, ISettingsView>();
             _menus.Add(ActionSettingsMenus.Settings, SettingsView);
             _menus.Add(ActionSettingsMenus.ActionSlots, HotbarSettingsView);
-            _menus.Add(ActionSettingsMenus.NewProfile, NewProfileInput);
+            _menus.Add(ActionSettingsMenus.NewProfile, ProfileInput);
             _menus.Add(ActionSettingsMenus.HotkeyCapture, HotkeyCaptureMenu);
             _menus.Add(ActionSettingsMenus.UIPosition, UIPositionScreen);
 

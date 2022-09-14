@@ -131,11 +131,15 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             if (!_equipTracked)
                 return;
 
+            var durableSlot = equipment.CurrentEquipmentSlot.SlotType.ToDurableEquipmentSlot();
+
+            if (durableSlot == DurableEquipmentSlot.None)
+                return;
+
             if (!_unequipedAdded)
                 AddUnequippedTrackers(character.OwnerPlayerSys.PlayerID);
 
             var display = GetDurabilityDisplay(character.OwnerPlayerSys.PlayerID);
-            var durableSlot = equipment.CurrentEquipmentSlot.SlotType.ToDurableEquipmentSlot();
 
             if (equipment.IsIndestructible || !character.Inventory.Equipment.HasItemEquipped(equipment.CurrentEquipmentSlot.SlotType))
             {
@@ -157,6 +161,11 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             if (!_equipTracked)
                 return;
 
+            var durableSlot = equipment.CurrentEquipmentSlot.SlotType.ToDurableEquipmentSlot();
+
+            if (durableSlot == DurableEquipmentSlot.None)
+                return;
+
             if (!_unequipedAdded)
                 AddUnequippedTrackers(character.OwnerPlayerSys.PlayerID);
 
@@ -164,7 +173,6 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 return;
 
             var display = GetDurabilityDisplay(character.OwnerPlayerSys.PlayerID);
-            var durableSlot = equipment.CurrentEquipmentSlot.SlotType.ToDurableEquipmentSlot();
 
             if (!character.Inventory.Equipment.HasItemEquipped(equipment.CurrentEquipmentSlot.SlotType))
             {

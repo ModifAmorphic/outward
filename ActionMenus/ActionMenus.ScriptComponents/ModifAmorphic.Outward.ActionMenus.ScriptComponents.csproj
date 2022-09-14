@@ -5,9 +5,14 @@
     <RootNamespace>ModifAmorphic.Outward.Unity.ActionMenus</RootNamespace>
     <AssemblyName>$(MSBuildProjectName)</AssemblyName>
     <DebugType>portable</DebugType>
+    <Configurations>Debug;Release;DebugLocal</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE;UNITY_5_5_OR_NEWER;UNITY_2018_3_OR_NEWER</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugLocal|AnyCPU'">
     <DefineConstants>$(DefineConstants)TRACE;UNITY_5_5_OR_NEWER;UNITY_2018_3_OR_NEWER</DefineConstants>
   </PropertyGroup>
 
@@ -44,7 +49,7 @@
     <Folder Include="EventTriggers\" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(ConfigurationName) == DebugLocal">
     <Exec Command="copy /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;$(SolutionDir)Unity.ActionMenus.AssetBundles\Assets\Plugins&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(SolutionDir)Unity.ActionMenus.AssetBundles\Assets\Plugins&quot;" />
   </Target>
 

@@ -24,7 +24,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private UIPosition _originPosition;
         public UIPosition OriginPosition => _originPosition;
 
-        public bool HasMoved => _startPosition != default && (!Mathf.Approximately(_startPosition.x, RectTransform.anchoredPosition.x) || !Mathf.Approximately(_startPosition.y, RectTransform.anchoredPosition.y));
+        public bool HasMoved => _startPositionSet && (!Mathf.Approximately(StartPosition.x, RectTransform.anchoredPosition.x) || !Mathf.Approximately(StartPosition.y, RectTransform.anchoredPosition.y));
 
         public UnityEvent<bool> OnIsPositionableChanged { get; private set; } = new UnityEvent<bool>();
 
@@ -38,6 +38,16 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private bool _canvasAdded;
 
         private Vector2 _startPosition;
+        private bool _startPositionSet;
+        public Vector2 StartPosition
+        {
+            get => _startPosition;
+            private set
+            {
+                _startPosition = value;
+                _startPositionSet = true;
+            }
+        }
         private Vector2 _offset;
         
 
@@ -61,7 +71,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             if (_profileManager != null && _profileManager.PositionsProfileService != null)
                 SetPositionFromProfile(_profileManager.PositionsProfileService.GetProfile());
 
-            _startPosition = new Vector2(RectTransform.anchoredPosition.x, RectTransform.anchoredPosition.y);
+            StartPosition = new Vector2(RectTransform.anchoredPosition.x, RectTransform.anchoredPosition.y);
 
             if (BackgroundImage != null)
                 BackgroundImage.gameObject.SetActive(_positioningEnabled);
@@ -183,7 +193,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 {
                     _originPosition = RectTransform.ToRectTransformPosition();
                 }
-                _startPosition = new Vector2(RectTransform.anchoredPosition.x, RectTransform.anchoredPosition.y);
+                StartPosition = new Vector2(RectTransform.anchoredPosition.x, RectTransform.anchoredPosition.y);
                 _offset = eventData.position - new Vector2(RectTransform.position.x, RectTransform.position.y);
             }
         }

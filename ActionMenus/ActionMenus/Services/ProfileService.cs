@@ -27,7 +27,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         public UnityEvent<IActionMenusProfile> OnNewProfile { get; } = new UnityEvent<IActionMenusProfile>();
         public UnityEvent<IActionMenusProfile> OnActiveProfileChanged { get; } = new UnityEvent<IActionMenusProfile>();
 
-        public ProfileService(string profilesRootPath) => ProfilesPath = profilesRootPath;
+        public ProfileService(string profilesRootPath, Func<IModifLogger> getLogger) => (ProfilesPath, _getLogger) = (profilesRootPath, getLogger);
 
         public IActionMenusProfile GetActiveProfile() => GetActiveActionMenusProfile();
 
@@ -39,7 +39,11 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             var profiles = GetOrCreateProfiles();
             if (profiles.Profiles.Any())
             {
-                _activeProfile = profiles.Profiles.First(p => p.Name.Equals(profiles.ActiveProfile, StringComparison.OrdinalIgnoreCase));
+                _activeProfile = profiles.Profiles.FirstOrDefault(p => p.Name.Equals(profiles.ActiveProfile, StringComparison.OrdinalIgnoreCase));
+                if (_activeProfile == default)
+                {
+                    _activeProfile = profiles.Profiles.First();
+                }
                 _activeProfile.Path = Path.Combine(ProfilesPath, _activeProfile.Name);
             }
 
@@ -57,7 +61,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             if (_activeProfile != null && _activeProfile.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                 return;
 
-            Debug.Log($"[Debug  :ActionMenus] ProfileService::SetActiveProfile: Setting active profile to {name}.");
+            Logger.LogInfo($"Setting active profile to profile '{name}'.");
             var profiles = GetOrCreateProfiles();
             if (profiles.ActiveProfile.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                 return;
@@ -82,7 +86,6 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             
             SaveProfiles(profiles);
 
-            Debug.Log($"[Debug  :ActionMenus] ProfileService::SetActiveProfile: OnActiveProfileChanged UnityEvent.");
             OnActiveProfileChanged.TryInvoke(GetActiveActionMenusProfile());
         }
 
@@ -121,10 +124,37 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             }
             profiles.ActiveProfile = profile.Name;
             SaveProfiles(profiles);
+            Logger.LogDebug($"Saved profile '{profile.Name}'.");
             _activeProfile = null;
 
             if (raiseEvent)
                 OnActiveProfileChanged.TryInvoke(GetActiveActionMenusProfile());
+        }
+
+        public void Rename(string newName)
+        {
+            if (string.IsNullOrWhiteSpace(newName))
+                throw new ArgumentNullException(nameof(newName));
+
+
+            var profile = GetActiveActionMenusProfile();
+
+            Logger.LogInfo($"Renaming profile from {profile.Name} to {newName}");
+            profile.Name = newName;
+
+            Logger.LogDebug($"Profile directory '{profile.Path}' {(Directory.Exists(profile.Path) ? "" : "does not ")}exist.");
+            //If renaming an unsaved profile, then just save it with the new name.
+            if (!Directory.Exists(profile.Path))
+            {
+                SaveProfile(profile);
+                
+                return;
+            }
+            string newDir = Path.Combine(ProfilesPath, newName);
+            Logger.LogDebug($"Moving profile folder from '{profile.Path}' to '{newDir}'.");
+            Directory.Move(profile.Path, newDir);
+            SaveProfile(profile);
+
         }
 
         private List<string> GetProfileDirectories()

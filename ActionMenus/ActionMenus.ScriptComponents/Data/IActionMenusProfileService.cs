@@ -14,5 +14,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
         void SetActiveProfile(string name);
         void Save();
         void SaveNew(IActionMenusProfile profile);
+        void Rename(string newName);
     }
 }

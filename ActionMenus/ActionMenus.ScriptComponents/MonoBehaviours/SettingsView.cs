@@ -12,10 +12,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     [UnityScriptComponent]
     public class SettingsView : MonoBehaviour, ISettingsView
     {
-        public NewProfileInput NewProfileInput;
         public MainSettingsMenu MainSettingsMenu;
 
         public Dropdown ProfileDropdown;
+        public Button ProfileRenameButton;
 
         public Toggle ActionSlotsToggle;
         public Toggle DurabilityToggle;
@@ -23,17 +23,15 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public Button MoveUIButton;
         public Button ResetUIButton;
 
-        public bool IsShowing => gameObject.activeSelf && !NewProfileInput.IsShowing;
+        public bool IsShowing => gameObject.activeSelf && !MainSettingsMenu.ProfileInput.IsShowing;
 
         public UnityEvent OnShow { get; } = new UnityEvent();
 
         public UnityEvent OnHide { get; } = new UnityEvent();
 
-        private IActionMenusProfile _profile => MainSettingsMenu.PlayerMenu.ProfileManager.GetActiveProfile();
+        private IActionMenusProfile _profile => MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService.GetActiveProfile();
 
         private IActionMenusProfileService _profileService => MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService;
-
-        private Dictionary<ActionSettingsMenus, IActionMenu> _menus = new Dictionary<ActionSettingsMenus, IActionMenu>();
 
         private bool _settingProfiles;
 
@@ -61,9 +59,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public void Hide()
         {
             Debug.Log("SettingsView::Hide");
-            if (NewProfileInput.IsShowing)
+            if (MainSettingsMenu.ProfileInput.IsShowing)
             {
-                NewProfileInput.Hide();
+                MainSettingsMenu.ProfileInput.Hide();
                 return;
             }
             gameObject.SetActive(false);
@@ -79,7 +77,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private void HookControls()
         {
             ProfileDropdown.onValueChanged.AddListener(SelectProfile);
-            NewProfileInput.OnHide.AddListener(SetProfiles);
+            ProfileRenameButton.onClick.AddListener(RenameProfile);
+            MainSettingsMenu.ProfileInput.OnHide.AddListener(SetProfiles);
             
             ActionSlotsToggle.onValueChanged.AddListener(isOn =>
             {
@@ -97,6 +96,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 _profileService.Save();
             });
 
+            
             MoveUIButton.onClick.AddListener(ShowPositionScreen);
             ResetUIButton.onClick.AddListener(ResetUIPositions);
         }
@@ -105,7 +105,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         {
             _settingProfiles = true;
             ProfileDropdown.ClearOptions();
-            var profiles = MainSettingsMenu.PlayerMenu.ProfileManager.GetProfileNames();
+            var profiles = MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService.GetProfileNames();
             var profileOptions = profiles.OrderBy(p => p).Select(p => new Dropdown.OptionData(p)).ToList();
             profileOptions.Add(new Dropdown.OptionData("[New Profile]"));
             ProfileDropdown.AddOptions(profileOptions);
@@ -119,13 +119,18 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             if (profileIndex < ProfileDropdown.options.Count - 1)
             {
-                MainSettingsMenu.PlayerMenu.ProfileManager.SetActiveProfile(ProfileDropdown.options[profileIndex].text);
+                MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService.SetActiveProfile(ProfileDropdown.options[profileIndex].text);
                 SetControls();
             }
             else
             {
-                NewProfileInput.Show();
+                MainSettingsMenu.ProfileInput.Show();
             }
+        }
+
+        private void RenameProfile()
+        {
+            MainSettingsMenu.ProfileInput.Show(MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService.GetActiveProfile().Name);
         }
 
         private void ShowPositionScreen()
