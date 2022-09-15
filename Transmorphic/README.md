@@ -1,5 +1,5 @@
 # Summary
-**⚡Definitive Edition⚡ Transmogrify your equipment with a new crafting system. Weapons, Armor and now Backpacks, Lanterns and Lexicons. Plus an Enchanting menu.**
+**Transmogrify and enchant your equipment with built in crafting menus. Transmog Weapons, Armor, Backpacks, Lanterns and Lexicons. Enchant gear through a crafting menu. No more fiddling around with pillar placements.**
 &nbsp;
 - - - -
 &nbsp;
