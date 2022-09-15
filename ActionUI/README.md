@@ -1,4 +1,4 @@
-# ![Action UI](https://github.com/ModifAmorphic/outward/blob/mods/actionui/ActionUI/Assets/ReadmeAssets/Banner.png?raw=true)
+# ![Action UI](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/Banner.png?raw=true)
 
 ## ⚡ Additional Quickslots, UI Positioning, Durability Display ⚡
 
@@ -14,21 +14,21 @@
 
 ## Highly Configurabe Hotbars and Action Slots
 
-![Hotbar Settings](https://github.com/ModifAmorphic/outward/blob/mods/actionui/ActionUI/Assets/ReadmeAssets/HotbarSettingsView_small.png?raw=true)
+![Hotbar Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/HotbarSettingsView_small.png?raw=true)
 
-![Hotbars](https://github.com/ModifAmorphic/outward/raw/mods/actionui/ActionUI/Assets/ReadmeAssets/Hotbar.png?raw=true)
+![Hotbars](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/Hotbar.png?raw=true)
 
 ## Drag Actions to Slots right from Inventory!
 
-[ ![Assign Actions YouTube Video](https://github.com/ModifAmorphic/outward/blob/mods/actionui/ActionUI/Assets/ReadmeAssets/AssignActionSlotVideo.png?raw=true) ](https://youtu.be/nJT76DLFIqw)
+[ ![Assign Actions YouTube Video](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/AssignActionSlotVideo.png?raw=true) ](https://youtu.be/nJT76DLFIqw)
 
 ## Reposition UI Elements
 
-[ ![UI Positioning YouTube Video](https://github.com/ModifAmorphic/outward/blob/mods/actionui/ActionUI/Assets/ReadmeAssets/UIPositioningVideo.png?raw=true) ](https://youtu.be/zoY1qEdeATg)
+[ ![UI Positioning YouTube Video](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/UIPositioningVideo.png?raw=true) ](https://youtu.be/zoY1qEdeATg)
 
 ## Equipment Durability UI
 
-![Durability Display](https://github.com/ModifAmorphic/outward/blob/mods/actionui/ActionUI/Assets/ReadmeAssets/DurabilityDisplay.png?raw=true)
+![Durability Display](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/DurabilityDisplay.png?raw=true)
 
 ## Latest Release ${PACKAGE_VERSION}
   - Dev Release
