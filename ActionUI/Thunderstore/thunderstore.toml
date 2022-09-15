@@ -6,7 +6,7 @@ namespace = "ModifAmorphic"
 name = "ActionUI"
 versionNumber = "${PACKAGE_VERSION}"
 description = "⚡ Additional Quickslots, UI Positioning, Durability Display ⚡"
-websiteUrl = "https://github.com/ModifAmorphic/outward/tree/master/ActionUI"
+websiteUrl = "https://github.com/ModifAmorphic/outward/wiki/Action-UI"
 containsNsfwContent = false
 
 [package.dependencies]
