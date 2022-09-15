@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
-{ 
+{
     public class ActionSlotIcon
     {
         public string Name { get; set; }

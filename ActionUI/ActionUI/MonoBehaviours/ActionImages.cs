@@ -1,8 +1,6 @@
 using ModifAmorphic.Outward.ActionMenus.Extensions;
 using ModifAmorphic.Outward.Unity.ActionMenus;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -57,7 +55,7 @@ public class ActionImages : MonoBehaviour
 
     public void ClearImages()
     {
-        foreach(var image in _bottomImages.Values)
+        foreach (var image in _bottomImages.Values)
         {
             image.gameObject.Destroy();
         }
@@ -73,7 +71,7 @@ public class ActionImages : MonoBehaviour
     private void SetSiblingIndexes()
     {
         int siblingIndex = 0;
-        foreach(var image in _bottomImages.Values)
+        foreach (var image in _bottomImages.Values)
         {
             image.transform.SetSiblingIndex(siblingIndex);
             siblingIndex++;

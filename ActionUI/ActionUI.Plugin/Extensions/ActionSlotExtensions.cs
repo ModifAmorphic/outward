@@ -1,9 +1,6 @@
 ﻿using ModifAmorphic.Outward.UI.DataModels;
 using ModifAmorphic.Outward.UI.Models;
 using ModifAmorphic.Outward.Unity.ActionMenus;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.UI.Extensions
 {

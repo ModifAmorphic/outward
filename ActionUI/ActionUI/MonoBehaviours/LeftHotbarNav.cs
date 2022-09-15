@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
@@ -17,11 +15,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private Button _nextHotkeyButton;
         private Button _previousButton;
         private Button _previousHotkeyButton;
-        
+
         private Text _barText;
         private Text _nextHotkeyText;
         private Text _previousHotkeyText;
-        
+
 
         private GameObject _barHotkeyGo;
         private Button _hotkeyButton;
@@ -35,7 +33,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             var psp = Psp.Instance?.GetServicesProvider(PlayerMenu.PlayerID);
             if (psp != null && psp.TryGetService<IHotbarNavActions>(out var navActions))
                 return navActions;
-            
+
             return null;
         }
 
@@ -56,9 +54,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             SetHotkeyText(string.Empty);
 
             HookButtonEvents();
-            
+
             _awake = true;
-            
+
             ToggleActionSlotEditMode(false);
             ToggleHotkeyEditMode(false);
         }
@@ -126,7 +124,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 return;
 
             _inEditMode = enableEdits;
-            
+
             //_settingsButton.gameObject.SetActive(enableEdits);
             _nextButton.gameObject.SetActive(enableEdits);
             _previousButton.gameObject.SetActive(enableEdits);
@@ -138,7 +136,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 return;
 
             _inHotkeyEditMode = enableEdits;
-            
+
             _nextHotkeyButton.gameObject.SetActive(enableEdits);
             _previousHotkeyButton.gameObject.SetActive(enableEdits);
             _hotkeyButton.gameObject.SetActive(enableEdits);

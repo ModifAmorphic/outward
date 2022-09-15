@@ -1,22 +1,21 @@
 ﻿
-using ModifAmorphic.Outward.Coroutines;
-using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.Settings;
 using BepInEx;
+using HarmonyLib;
+using ModifAmorphic.Outward.Coroutines;
+using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.GameObjectResources;
+using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.UI.Patches;
+using ModifAmorphic.Outward.UI.Plugin.Services;
+using ModifAmorphic.Outward.UI.Services;
+using ModifAmorphic.Outward.UI.Settings;
+using ModifAmorphic.Outward.Unity.ActionMenus;
+using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using System;
 using System.IO;
-using UnityEngine;
-using System.Reflection;
-using ModifAmorphic.Outward.Extensions;
-using ModifAmorphic.Outward.Unity.ActionMenus;
 using System.Linq;
-using ModifAmorphic.Outward.GameObjectResources;
-using ModifAmorphic.Outward.UI.Services;
-using ModifAmorphic.Outward.UI.Plugin.Services;
-using Rewired;
-using ModifAmorphic.Outward.Unity.ActionMenus.Data;
-using HarmonyLib;
-using ModifAmorphic.Outward.UI.Patches;
+using System.Reflection;
+using UnityEngine;
 
 namespace ModifAmorphic.Outward.UI
 {

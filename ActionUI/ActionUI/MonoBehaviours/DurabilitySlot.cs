@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
@@ -38,7 +35,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         }
         private void SetDisplayImage(DurableEquipmentType equipmentType)
         {
-            foreach(var kvp in _equipmentImages)
+            foreach (var kvp in _equipmentImages)
             {
                 kvp.Value.enabled = kvp.Key == equipmentType;
             }

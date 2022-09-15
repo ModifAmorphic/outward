@@ -1,7 +1,6 @@
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
+using ModifAmorphic.Outward.Unity.ActionUI;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
@@ -50,7 +49,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public void Show()
         {
-            Debug.Log("SettingsView::Show");
+            DebugLogger.Log("SettingsView::Show");
             gameObject.SetActive(true);
             SetControls();
 
@@ -58,7 +57,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         }
         public void Hide()
         {
-            Debug.Log("SettingsView::Hide");
+            DebugLogger.Log("SettingsView::Hide");
             if (MainSettingsMenu.ProfileInput.IsShowing)
             {
                 MainSettingsMenu.ProfileInput.Hide();
@@ -79,15 +78,15 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             ProfileDropdown.onValueChanged.AddListener(SelectProfile);
             ProfileRenameButton.onClick.AddListener(RenameProfile);
             MainSettingsMenu.ProfileInput.OnHide.AddListener(SetProfiles);
-            
+
             ActionSlotsToggle.onValueChanged.AddListener(isOn =>
             {
                 _profile.ActionSlotsEnabled = isOn;
-                Debug.Log($"Before ProfileService: isOn == {isOn}; ActionSlotsEnabled == {_profile.ActionSlotsEnabled}");
+                DebugLogger.Log($"Before ProfileService: isOn == {isOn}; ActionSlotsEnabled == {_profile.ActionSlotsEnabled}");
                 var profileService = _profileService;
-                Debug.Log($"Before Save: isOn == {isOn}; ActionSlotsEnabled == {_profile.ActionSlotsEnabled}");
+                DebugLogger.Log($"Before Save: isOn == {isOn}; ActionSlotsEnabled == {_profile.ActionSlotsEnabled}");
                 profileService.Save();
-                Debug.Log($"After Save: isOn == {isOn}; ActionSlotsEnabled == {_profile.ActionSlotsEnabled}");
+                DebugLogger.Log($"After Save: isOn == {isOn}; ActionSlotsEnabled == {_profile.ActionSlotsEnabled}");
             });
 
             DurabilityToggle.onValueChanged.AddListener(isOn =>
@@ -96,11 +95,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 _profileService.Save();
             });
 
-            
+
             MoveUIButton.onClick.AddListener(ShowPositionScreen);
             ResetUIButton.onClick.AddListener(ResetUIPositions);
         }
-        
+
         private void SetProfiles()
         {
             _settingProfiles = true;
@@ -147,7 +146,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             var positions = positonService.GetProfile();
             bool saveNeeded = false;
 
-            Debug.Log($"Checking {uis.Length} UI Element positons for changes.");
+            DebugLogger.Log($"Checking {uis.Length} UI Element positons for changes.");
 
             foreach (var ui in uis)
             {

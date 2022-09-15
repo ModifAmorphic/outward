@@ -1,14 +1,11 @@
-﻿using ModifAmorphic.Outward.UI.DataModels;
-using ModifAmorphic.Outward.UI.Extensions;
+﻿using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.UI.Models;
 using ModifAmorphic.Outward.UI.Settings;
-using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using Rewired;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.UI.Services
 {
@@ -106,7 +103,7 @@ namespace ModifAmorphic.Outward.UI.Services
             allWeapons.AddRange(_inventory.Pouch.GetContainedItems().Where(i => i is Weapon).Select(w => _slotData.GetSlotAction(w)));
             if (_inventory.HasABag)
                 allWeapons.AddRange(_inventory.EquippedBag.Container.GetContainedItems().Where(i => i is Weapon).Select(w => _slotData.GetSlotAction(w)));
-            
+
             return allWeapons;
         }
         public IEnumerable<ISlotAction> GetSkills() => _inventory.SkillKnowledge.GetLearnedItems().Select(s => _slotData.GetSlotAction(s));

@@ -1,8 +1,5 @@
-using ModifAmorphic.Outward.Unity.ActionMenus.Controllers;
-using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using ModifAmorphic.Outward.Unity.ActionMenus.Extensions;
-using System;
-using System.Collections;
+using ModifAmorphic.Outward.Unity.ActionUI;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,7 +12,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     {
         Settings,
         ActionSlots,
-        NewProfile,
+        ProfileName,
         HotkeyCapture,
         UIPosition
     }
@@ -45,11 +42,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
         {
-            Debug.Log("MainSettingsMenu::Awake");
+            DebugLogger.Log("MainSettingsMenu::Awake");
             _menus = new Dictionary<ActionSettingsMenus, ISettingsView>();
             _menus.Add(ActionSettingsMenus.Settings, SettingsView);
             _menus.Add(ActionSettingsMenus.ActionSlots, HotbarSettingsView);
-            _menus.Add(ActionSettingsMenus.NewProfile, ProfileInput);
+            _menus.Add(ActionSettingsMenus.ProfileName, ProfileInput);
             _menus.Add(ActionSettingsMenus.HotkeyCapture, HotkeyCaptureMenu);
             _menus.Add(ActionSettingsMenus.UIPosition, UIPositionScreen);
 
@@ -60,7 +57,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Start()
         {
-            Debug.Log("MainSettingsMenu::Start");
+            DebugLogger.Log("MainSettingsMenu::Start");
             if (!_isInit)
                 Hide(false);
 
@@ -69,7 +66,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public void Show()
         {
-            Debug.Log("MainSettingsMenu::Show");
+            DebugLogger.Log("MainSettingsMenu::Show");
             gameObject.SetActive(true);
 
             OnShow?.TryInvoke();
@@ -83,26 +80,26 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private void Hide(bool raiseEvent)
         {
-            Debug.Log("MainSettingsMenu::Hide");
+            DebugLogger.Log("MainSettingsMenu::Hide");
 
             var hideMenus = _menus
                 .Where(kvp => kvp.Value.IsShowing && kvp.Key != ActionSettingsMenus.ActionSlots && kvp.Key != ActionSettingsMenus.Settings)
                 .Select(kvp => kvp.Value);
-            
+
             bool showMe = false;
             foreach (var menu in hideMenus)
             {
                 menu.Hide();
                 showMe = true;
             }
-            Debug.Log($"MainSettingsMenu::Hide: hideMenus.Count == {hideMenus?.Count()}");
+            DebugLogger.Log($"MainSettingsMenu::Hide: hideMenus.Count == {hideMenus?.Count()}");
             if (showMe)
             {
                 Show();
             }
             else if (gameObject.activeSelf)
             {
-                Debug.Log($"MainSettingsMenu::Hide: SetActive(false)");
+                DebugLogger.Log($"MainSettingsMenu::Hide: SetActive(false)");
                 gameObject.SetActive(false);
                 if (raiseEvent)
                     OnHide?.TryInvoke();

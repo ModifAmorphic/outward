@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
@@ -20,12 +18,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             if (other == null) return false;
 
             return AnchoredPosition.Equals(other.AnchoredPosition);
-                //&& AnchoredPosition.Equals(other.AnchoredPosition)
-                //&& AnchoredMin.Equals(other.AnchoredMin)
-                //&& AnchoredMax.Equals(other.AnchoredMax)
-                //&& OffsetMin.Equals(other.OffsetMin)
-                //&& OffsetMax.Equals(other.OffsetMax)
-                //&& Pivot.Equals(other.Pivot);
+            //&& AnchoredPosition.Equals(other.AnchoredPosition)
+            //&& AnchoredMin.Equals(other.AnchoredMin)
+            //&& AnchoredMax.Equals(other.AnchoredMax)
+            //&& OffsetMin.Equals(other.OffsetMin)
+            //&& OffsetMax.Equals(other.OffsetMax)
+            //&& Pivot.Equals(other.Pivot);
         }
 
         public override bool Equals(System.Object obj)

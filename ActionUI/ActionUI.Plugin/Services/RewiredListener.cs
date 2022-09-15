@@ -1,17 +1,14 @@
 ﻿using BepInEx;
-using ModifAmorphic.Outward.UI.Patches;
-using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.UI.Patches;
+using ModifAmorphic.Outward.UI.Settings;
 using Rewired;
 using Rewired.Data;
 using Rewired.Data.Mapping;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.UI.Plugin.Services
 {

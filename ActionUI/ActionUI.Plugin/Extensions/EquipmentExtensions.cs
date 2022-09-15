@@ -1,7 +1,4 @@
 ﻿using ModifAmorphic.Outward.Unity.ActionMenus;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using static EquipmentSlot;
 
 namespace ModifAmorphic.Outward.UI.Extensions
@@ -18,19 +15,19 @@ namespace ModifAmorphic.Outward.UI.Extensions
                     return DurableEquipmentType.Chest;
                 case EquipmentSlotIDs.LeftHand:
                 case EquipmentSlotIDs.RightHand:
-                {
-                    if (equipment is MeleeWeapon weapon)
                     {
+                        if (equipment is MeleeWeapon weapon)
+                        {
                             if (weapon.Type == Weapon.WeaponType.Shield)
                                 return DurableEquipmentType.Shield;
                             else
                                 return DurableEquipmentType.MeleeWeapon;
-                    }
-                    else if (equipment is ProjectileWeapon)
-                        return DurableEquipmentType.RangedWeapon;
+                        }
+                        else if (equipment is ProjectileWeapon)
+                            return DurableEquipmentType.RangedWeapon;
 
-                    return DurableEquipmentType.None;
-                }
+                        return DurableEquipmentType.None;
+                    }
                 case EquipmentSlotIDs.Legs:
                     return DurableEquipmentType.Boots;
                 default:

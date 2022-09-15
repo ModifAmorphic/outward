@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
 {
-    public class UIPositions: IEquatable<UIPositions>, IComparable<UIPositions>
+    public class UIPositions : IEquatable<UIPositions>, IComparable<UIPositions>
     {
         public string TransformPath { get; set; }
         public ActionMenus.UIPosition OriginPosition { get; set; }

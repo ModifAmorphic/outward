@@ -2,10 +2,7 @@
 using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.UI.Extensions
 {

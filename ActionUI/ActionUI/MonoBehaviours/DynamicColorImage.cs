@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModifAmorphic.Outward.Unity.ActionUI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -29,7 +30,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _isAwake = true;
             if (initColorRanges.Any())
             {
-                //Debug.Log("Init Colors ranges found. Adding ColorMaps for image.");
+                DebugLogger.Log("Init Colors ranges found. Adding ColorMaps for image.");
                 foreach (var colorRange in initColorRanges)
                     AddColorMaps(colorRange);
 
@@ -67,7 +68,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         {
             if (value < 0 || value > 1f)
                 throw new ArgumentOutOfRangeException("value");
-            //Debug.Log($"SetValue({value}).  Current _value == {_value}");
+            //DebugLogger.Log($"SetValue({value}).  Current _value == {_value}");
             var rounded = (int)(value * 1000);
 
             if (colorMap.TryGetValue(rounded, out var color) && Image.color != color)
@@ -78,7 +79,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             if (_value != value)
             {
                 _value = value;
-                //Debug.Log($"Raising OnValueChanged({_value})");
+                //DebugLogger.Log($"Raising OnValueChanged({_value})");
                 OnValueChanged?.Invoke(_value);
             }
         }

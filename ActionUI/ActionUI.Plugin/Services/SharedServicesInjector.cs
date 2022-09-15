@@ -1,15 +1,10 @@
-﻿using ModifAmorphic.Outward.UI.Patches;
+﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.UI.Patches;
 using ModifAmorphic.Outward.UI.Settings;
-using ModifAmorphic.Outward.Coroutines;
-using ModifAmorphic.Outward.GameObjectResources;
-using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
-using Rewired;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace ModifAmorphic.Outward.UI.Services
 {

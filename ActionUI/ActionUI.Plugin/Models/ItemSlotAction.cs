@@ -1,14 +1,10 @@
-﻿using ModifAmorphic.Outward.UI.Services;
-using ModifAmorphic.Outward.UI.Settings;
-using ModifAmorphic.Outward.Extensions;
+﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.UI.Services;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using Rewired;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.UI.Models

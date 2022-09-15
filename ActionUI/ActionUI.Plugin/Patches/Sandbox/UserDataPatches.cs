@@ -1,13 +1,9 @@
 ﻿using HarmonyLib;
-using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using Rewired;
 using Rewired.Data;
-using Rewired.Data.Mapping;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.UI.Patches
 {
@@ -100,7 +96,7 @@ namespace ModifAmorphic.Outward.UI.Patches
                     {
                         logMsg += $"\n\t name: {a.name}" +
                                     $"\n\t\t descriptiveName: {a.descriptiveName}" +
-                                    $"\n\t\t categoryId: {a.categoryId}" + 
+                                    $"\n\t\t categoryId: {a.categoryId}" +
                                     $"\n\t\t id: {a.id}";
                     }
                     Logger.LogDebug(logMsg);

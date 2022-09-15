@@ -45,7 +45,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         {
             Clear();
         }
-        
+
         public void Clear()
         {
             var children = GetComponentsInChildren<ActionItemView>();

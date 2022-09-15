@@ -1,7 +1,4 @@
 ﻿using ModifAmorphic.Outward.Unity.ActionMenus;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.UI.Models
@@ -23,7 +20,7 @@ namespace ModifAmorphic.Outward.UI.Models
         }
 
         public float GetSecondsRemaining() => skill.RealCooldown * (1f - skill.CoolDownProgress);
-        
+
         public ItemCooldownTracker(Item item) => skill = item as Skill;
     }
 }

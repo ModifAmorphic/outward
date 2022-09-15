@@ -1,21 +1,18 @@
 ﻿using BepInEx;
+using ModifAmorphic.Outward.Coroutines;
+using ModifAmorphic.Outward.GameObjectResources;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.UI.DataModels;
 using ModifAmorphic.Outward.UI.Monobehaviours;
 using ModifAmorphic.Outward.UI.Patches;
 using ModifAmorphic.Outward.UI.Settings;
-using ModifAmorphic.Outward.Coroutines;
-using ModifAmorphic.Outward.Extensions;
-using ModifAmorphic.Outward.GameObjectResources;
-using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using Rewired;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -84,7 +81,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
             if (!CharacterUIPatches.GetIsMenuFocused.ContainsKey(splitPlayer.RewiredID))
                 CharacterUIPatches.GetIsMenuFocused.Add(splitPlayer.RewiredID, (playerId) => GetAnyMenuShowing(playerMenu, playerId));
-            
+
             UnityEngine.Object.DontDestroyOnLoad(playerMenuGo);
 
             InjectPauseMenu(splitPlayer, playerMenu);
@@ -154,7 +151,7 @@ namespace ModifAmorphic.Outward.UI.Services
         private void AddSplitScreenScaler(PlayerActionMenus actionMenus, CharacterUI characterUI)
         {
             var menus = actionMenus.GetComponentsInChildren<IActionMenu>(true);
-            foreach(var menu in menus)
+            foreach (var menu in menus)
             {
                 var screenScaler = ((MonoBehaviour)menu).gameObject.GetOrAddComponent<SplitScreenScaler>();
                 screenScaler.CharacterUI = characterUI;
@@ -202,7 +199,8 @@ namespace ModifAmorphic.Outward.UI.Services
             //This removes any persistent (set in Unity Editor) onClick listeners.
             _actionMenusButton.onClick = new Button.ButtonClickedEvent();
             //Add a new listener to hide the pause menu and show the Action Setting Menu
-            _actionMenusButton.onClick.AddListener(() => {
+            _actionMenusButton.onClick.AddListener(() =>
+            {
                 pauseMenu.Hide();
                 actionMenus.MainSettingsMenu.Show();
             });
@@ -221,7 +219,7 @@ namespace ModifAmorphic.Outward.UI.Services
             var buttons = hideOnPause.GetComponentsInChildren<Button>();
 
             float btnHeight = buttons.First().GetComponent<RectTransform>().rect.height;
-                
+
             float increaseHeight = (vertLayout.spacing + btnHeight) * (buttons.Length - _baseActivePauseButtons);
             Logger.LogDebug($"Resizing Pause Menu height from {parentRect.rect.height} to {_initialPauseMenuHeight + increaseHeight}.");
             parentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, _initialPauseMenuHeight + increaseHeight);

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,7 +23,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _text = GetComponentsInChildren<Text>(true).First(t => t.name.Equals("ActionText"));
             _stackText = _button.GetComponentsInChildren<Text>(true).First(t => t.name.Equals("StackText"));
         }
-       
+
         public void SetViewItem(ISlotAction action)
         {
             _slotAction = action;

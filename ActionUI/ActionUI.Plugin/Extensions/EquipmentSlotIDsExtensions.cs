@@ -1,7 +1,4 @@
 ﻿using ModifAmorphic.Outward.Unity.ActionMenus;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using static EquipmentSlot;
 
 namespace ModifAmorphic.Outward.UI.Extensions

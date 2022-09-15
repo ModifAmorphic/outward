@@ -1,5 +1,5 @@
-﻿using ModifAmorphic.Outward.UI.DataModels;
-using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.UI.DataModels;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using ModifAmorphic.Outward.Unity.ActionMenus.Extensions;
 using Newtonsoft.Json;
@@ -7,8 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using UnityEngine;
 using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.UI.Services
@@ -26,6 +24,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
         public UnityEvent<IActionUIProfile> OnNewProfile { get; } = new UnityEvent<IActionUIProfile>();
         public UnityEvent<IActionUIProfile> OnActiveProfileChanged { get; } = new UnityEvent<IActionUIProfile>();
+        public UnityEvent<IActionUIProfile> OnActiveProfileSwitched { get; } = new UnityEvent<IActionUIProfile>();
 
         public ProfileService(string profilesRootPath, Func<IModifLogger> getLogger) => (ProfilesPath, _getLogger) = (profilesRootPath, getLogger);
 
@@ -65,11 +64,14 @@ namespace ModifAmorphic.Outward.UI.Services
             var profiles = GetOrCreateProfiles();
             if (profiles.ActiveProfile.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                 return;
-            
+
             var profile = profiles.Profiles.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
 
+            bool isNewProfile = false;
             if (profile != null)
+            {
                 profile.Name = name;
+            }
             else
             {
                 profile = new ActionUIProfile()
@@ -80,13 +82,17 @@ namespace ModifAmorphic.Outward.UI.Services
                     Path = Path.Combine(ProfilesPath, name),
                 };
                 profiles.Profiles.Add(profile);
+                isNewProfile = true;
             }
-            
+
             profiles.ActiveProfile = name;
-            
+
             SaveProfiles(profiles);
 
-            OnActiveProfileChanged.TryInvoke(GetActiveActionUIProfile());
+            if (isNewProfile)
+                OnActiveProfileChanged.TryInvoke(GetActiveActionUIProfile());
+            else
+                OnActiveProfileSwitched.TryInvoke(GetActiveActionUIProfile());
         }
 
         public string GetOrAddProfileDir(string profileName)
@@ -147,7 +153,7 @@ namespace ModifAmorphic.Outward.UI.Services
             if (!Directory.Exists(profile.Path))
             {
                 SaveProfile(profile);
-                
+
                 return;
             }
             string newDir = Path.Combine(ProfilesPath, newName);
@@ -190,7 +196,7 @@ namespace ModifAmorphic.Outward.UI.Services
                         saveNeeded = true;
                     }
                 }
-                foreach(var i in removeProfiles)
+                foreach (var i in removeProfiles)
                     profiles.Profiles.RemoveAt(i);
             }
             else

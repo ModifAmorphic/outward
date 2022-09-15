@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-using UnityEngine.Events;
+﻿using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
 {

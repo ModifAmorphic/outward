@@ -1,11 +1,9 @@
 ﻿using ModifAmorphic.Outward.Unity.ActionMenus.Services;
+using ModifAmorphic.Outward.Unity.ActionUI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
 {
@@ -21,8 +19,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         private Coroutine _iconCoroutine;
 
         public bool IsUpdateEnabled => ActionSlot.SlotAction?.TargetAction != null && ActionSlot.SlotAction.CheckOnUpdate;
-        public bool IsActionNeeded => 
-            ActionSlot.ParentCanvas != null && ActionSlot.ParentCanvas.enabled && ActionSlot.SlotAction?.TargetAction != null 
+        public bool IsActionNeeded =>
+            ActionSlot.ParentCanvas != null && ActionSlot.ParentCanvas.enabled && ActionSlot.SlotAction?.TargetAction != null
             && ActionSlot.SlotAction.GetIsActionRequested() && ActionSlot.ActionButton.interactable
             && !ActionSlot.HotbarsContainer.IsInActionSlotEditMode;
 
@@ -89,7 +87,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 AssignSlotIcons(slotAction.ActionIcons);
             else
                 AssignDynamicIcon(slotAction.GetDynamicIcons);
-            
+
             ActionSlot.EmptyImage.gameObject.SetActive(false);
 
             if (slotAction.Cooldown != null && slotAction.Cooldown.HasCooldown)
@@ -109,7 +107,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 else
                     DisableBarService(kvp.Key);
             }
-     
+
             StartEnableToggleService(slotAction.GetEnabled);
 
             slotAction.SlotActionAssigned(ActionSlot);
@@ -216,12 +214,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 ActionSlot.ActionButton.interactable = false;
             }
         }
-        
+
         public void ToggleEnabled(bool enabled)
         {
             ActionSlot.ActionImages.ToggleEnabled(enabled);
         }
-        
+
         public void ToggleHotkeyEditMode(bool toggle)
         {
             ActionSlot.KeyButton.gameObject.SetActive(toggle);
@@ -245,7 +243,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
 
         private void OnRemoveRequested()
         {
-            Debug.Log($"[Debug  :ActionMenus] ActionSlotController:OnRemoveRequested");
+            DebugLogger.Log($"[Debug  :ActionMenus] ActionSlotController:OnRemoveRequested");
             if (ActionSlot.ParentCanvas != null && ActionSlot.ParentCanvas.enabled && ActionSlot.ActionButton.interactable)
             {
                 AssignEmptyAction();
@@ -276,10 +274,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             {
                 ActionSlot.SlotAction.OnActionRequested -= OnActionRequested;
                 ActionSlot.SlotAction.OnEditRequested -= OnEditRequested;
-                
+
                 if (!ActionSlot.SlotAction.HasDynamicIcon)
                     ActionSlot.SlotAction.OnIconsChanged -= AssignSlotIcons;
-                
+
                 ActionSlot.SlotAction.SlotActionUnassigned();
                 ActionSlot.SlotAction = null;
             }

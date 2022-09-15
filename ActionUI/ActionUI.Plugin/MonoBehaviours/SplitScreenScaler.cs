@@ -1,8 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.UI.Monobehaviours
 {
@@ -34,7 +30,7 @@ namespace ModifAmorphic.Outward.UI.Monobehaviours
         {
             if (CharacterUI == null || !gameObject.activeSelf)
                 return;
-        
+
             var rectTransform = GetComponent<RectTransform>();
             var rect = rectTransform.rect;
             var charRectTransform = CharacterUI.transform as RectTransform;

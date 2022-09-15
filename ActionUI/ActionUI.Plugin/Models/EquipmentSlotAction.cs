@@ -1,14 +1,10 @@
-﻿using ModifAmorphic.Outward.UI.Services;
-using ModifAmorphic.Outward.UI.Settings;
-using ModifAmorphic.Outward.Coroutines;
-using ModifAmorphic.Outward.Extensions;
+﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.UI.Services;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using Rewired;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -70,7 +66,7 @@ namespace ModifAmorphic.Outward.UI.Models
         public EquipmentSlotAction(Equipment equipment, Player player, Character character, SlotDataService slotData, bool combatModeEnabled, Func<IModifLogger> getLogger)
         {
             (this.equipment, this.player, this.character, this.slotData, _getLogger) = (equipment, player, character, slotData, getLogger);
-            
+
             this.inventory = character.Inventory;
             this.ActionIcons = GetItemSprites(false);
             this.DisplayName = equipment.DisplayName;
@@ -178,7 +174,7 @@ namespace ModifAmorphic.Outward.UI.Models
                 return false;
 
             if (inventory.OwnsItem(equipment.UID))
-            { 
+            {
                 if (!equipment.IsEquipped)
                     return true;
                 else

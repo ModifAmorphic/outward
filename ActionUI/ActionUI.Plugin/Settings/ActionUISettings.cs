@@ -1,8 +1,5 @@
 ﻿using ModifAmorphic.Outward.UI.DataModels;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace ModifAmorphic.Outward.UI.Settings
 {

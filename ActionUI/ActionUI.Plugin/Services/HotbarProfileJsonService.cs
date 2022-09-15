@@ -1,13 +1,12 @@
-﻿using ModifAmorphic.Outward.UI.DataModels;
+﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.UI.DataModels;
 using ModifAmorphic.Outward.UI.Extensions;
 using ModifAmorphic.Outward.UI.Models;
 using ModifAmorphic.Outward.UI.Settings;
-using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using ModifAmorphic.Outward.Unity.ActionMenus.Extensions;
 using Newtonsoft.Json;
-using Rewired;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +15,7 @@ using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.UI.Services
 {
-    
+
     public class HotbarProfileJsonService : IHotbarProfileService
     {
         Func<IModifLogger> _getLogger;
@@ -34,10 +33,11 @@ namespace ModifAmorphic.Outward.UI.Services
         public HotbarProfileJsonService(ProfileService profileService, Func<IModifLogger> getLogger)
         {
             (_profileService, _getLogger) = (profileService, getLogger);
-            profileService.OnActiveProfileChanged.AddListener(RefreshCachedProfile);
+            profileService.OnActiveProfileChanged.AddListener((profile) => RefreshCachedProfile(profile));
+            profileService.OnActiveProfileSwitched.AddListener((profile) => RefreshCachedProfile(profile, true));
         }
 
-        private void RefreshCachedProfile(IActionUIProfile obj)
+        private void RefreshCachedProfile(IActionUIProfile obj, bool suppressChangedEvent = false)
         {
             _hotbarProfile = GetProfileData();
             OnProfileChanged.TryInvoke(_hotbarProfile);
@@ -174,7 +174,7 @@ namespace ModifAmorphic.Outward.UI.Services
             //        profile.Hotbars[b].Slots.Add(
             //            CreateFrom(profile.Hotbars[b].Slots.Last(), slotIndex + r));
             //    }
-                
+
             //}
             for (int b = 0; b < GetProfile().Hotbars.Count; b++)
             {
@@ -223,9 +223,9 @@ namespace ModifAmorphic.Outward.UI.Services
         {
             bool profileChanged = false;
 
-            foreach(var bar in GetProfile().Hotbars)
+            foreach (var bar in GetProfile().Hotbars)
             {
-                foreach(var slot in bar.Slots)
+                foreach (var slot in bar.Slots)
                 {
                     if (slot.Config.ShowCooldownTime != showTimer || slot.Config.PreciseCooldownTime != preciseTime)
                     {
@@ -241,7 +241,7 @@ namespace ModifAmorphic.Outward.UI.Services
                 Save();
                 OnProfileChanged.TryInvoke(GetProfile());
             }
-            
+
             return GetProfile();
         }
         public IHotbarProfile SetCombatMode(bool combatMode)

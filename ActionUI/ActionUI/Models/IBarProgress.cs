@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
-{ 
+{
     public enum BarPositions
     {
         Top,

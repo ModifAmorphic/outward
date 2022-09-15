@@ -1,8 +1,6 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.UI.Patches
 {
@@ -30,7 +28,7 @@ namespace ModifAmorphic.Outward.UI.Patches
                 Logger.LogException($"{nameof(SplitScreenManagerPatches)}::{nameof(AwakePostfix)}(): Exception Invoking {nameof(AwakeAfter)}({nameof(SplitScreenManager)}, ref {nameof(CharacterUI)}).", ex);
             }
         }
-        
+
         public static event Action<SplitScreenManager> AddLocalPlayerAfter;
         [HarmonyPatch("AddLocalPlayer")]
         [HarmonyPostfix]

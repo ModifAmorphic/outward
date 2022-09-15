@@ -1,8 +1,6 @@
 ﻿using ModifAmorphic.Outward.Unity.ActionMenus.Controllers;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,7 +17,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Services
         private bool _showWhenZero;
 
         private readonly Text _text;
-        
+
         private bool disposedValue;
 
         public StackService(Text stackText, bool showWhenZero, ActionSlotController controller)
@@ -56,7 +54,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Services
             {
                 var remaining = _getAmount();
                 if (remaining > 0 || _showWhenZero)
-                {   
+                {
                     _hideNeeded = true;
                     _text.text = remaining.ToString();
                 }

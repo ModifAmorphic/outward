@@ -1,6 +1,5 @@
 using ModifAmorphic.Outward.Unity.ActionMenus.Controllers;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -57,7 +56,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         //private Image _actionImage;
         //public Image ActionImage  => _actionImage;
-        
+
         //Cooldown Resources
         private Image _cooldownImage;
         public Image CooldownImage => _cooldownImage;
@@ -90,7 +89,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public bool IsInEditMode => HotbarsContainer.IsInHotkeyEditMode;
 
-        public Func<Action, bool> ActionRequested { get; private set;  }
+        public Func<Action, bool> ActionRequested { get; private set; }
 
         #region MonoBehaviour Methods
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]

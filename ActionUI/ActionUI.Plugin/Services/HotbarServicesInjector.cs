@@ -1,17 +1,11 @@
-﻿using HarmonyLib;
-using ModifAmorphic.Outward.UI.Patches;
-using ModifAmorphic.Outward.UI.Settings;
-using ModifAmorphic.Outward.Coroutines;
+﻿using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
-using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.UI.Patches;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using Rewired;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace ModifAmorphic.Outward.UI.Services
 {
@@ -77,7 +71,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
             psp.GetService<ControllerMapService>().LoadConfigMaps();
 
-            hotbars.OnAwake += () => _levelCoroutines.DoNextFrame(() => 
+            hotbars.OnAwake += () => _levelCoroutines.DoNextFrame(() =>
                 psp.GetService<HotbarService>().Start());
         }
         private void RemoveHotbarServices(int rewiredId)

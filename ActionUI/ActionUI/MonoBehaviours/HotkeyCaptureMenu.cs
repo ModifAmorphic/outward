@@ -1,6 +1,6 @@
 using ModifAmorphic.Outward.Unity.ActionMenus.Extensions;
+using ModifAmorphic.Outward.Unity.ActionUI;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -15,7 +15,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public List<KeyCode> Modifiers { get; set; } = new List<KeyCode>();
         public KeyCode KeyCode { get; set; }
     }
-    
+
     [UnityScriptComponent]
     public class HotkeyCaptureMenu : MonoBehaviour, ISettingsView
     {
@@ -52,7 +52,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
         {
-            Debug.Log("HotkeyCaptureDialog::Awake");
+            DebugLogger.Log("HotkeyCaptureDialog::Awake");
             _text = GetComponentsInChildren<Text>().First(t => t.name.Equals("ContentText"));
             Hide(false);
             _isInit = true;
@@ -61,7 +61,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Start()
         {
-            Debug.Log("HotkeyCaptureDialog::Start");
+            DebugLogger.Log("HotkeyCaptureDialog::Start");
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
@@ -215,7 +215,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public void ShowDialog(int id, HotkeyCategories category)
         {
-            Debug.Log($"Capturing Hotkey for id {id} in category {category}.");
+            DebugLogger.Log($"Capturing Hotkey for id {id} in category {category}.");
             _id = id;
             _category = category;
             Dialog.SetActive(true);
@@ -237,7 +237,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private void Hide(bool raiseEvent)
         {
             Hotbars.Controller?.ToggleHotkeyEdits(false);
-            
+
             if (_isInit)
                 HideDialog();
             gameObject.SetActive(false);

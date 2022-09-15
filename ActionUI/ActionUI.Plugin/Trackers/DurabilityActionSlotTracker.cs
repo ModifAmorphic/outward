@@ -1,8 +1,6 @@
 ﻿using ModifAmorphic.Outward.UI.Models;
 using ModifAmorphic.Outward.Unity.ActionMenus;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.UI.Services
@@ -17,7 +15,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
         private float _lastDurability = -1f;
 
-        public bool IsEnabled {get; internal set;}
+        public bool IsEnabled { get; internal set; }
 
         private readonly static Color Grey = new Color(.5f, .5f, .5f, 1f);
         private readonly static Color Yellow = new Color(0.7830189f, 0.7024478f, 0.04924639f, 1f);
@@ -35,7 +33,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
         public DurabilityActionSlotTracker(EquipmentSlotAction equipSlotAction, BarPositions barPosition) => (_equipSlotAction, _equipment, _barPosition, IsEnabled) = (equipSlotAction, equipSlotAction.ActionEquipment, barPosition, true);
 
-        public float GetProgress() 
+        public float GetProgress()
         {
             if (_equipment.CurrentDurability != _lastDurability)
             {

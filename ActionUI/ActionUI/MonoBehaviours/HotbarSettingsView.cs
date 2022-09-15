@@ -1,8 +1,6 @@
-using ModifAmorphic.Outward.Unity.ActionMenus.Controllers;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
+using ModifAmorphic.Outward.Unity.ActionUI;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
@@ -66,7 +64,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public void Show()
         {
-            Debug.Log("HotbarSettingsViewer::Show");
+            DebugLogger.Log("HotbarSettingsViewer::Show");
             gameObject.SetActive(true);
 
             SetControls();
@@ -77,7 +75,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private void Hide(bool raiseEvent)
         {
-            Debug.Log("HotbarSettingsViewer::Hide");
+            DebugLogger.Log("HotbarSettingsViewer::Hide");
             gameObject.SetActive(false);
             if (raiseEvent)
                 OnHide?.Invoke();
@@ -107,7 +105,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             {
                 if (_hotbarProfile.Hotbars.Count < amount)
                     _hotbarService.AddHotbar();
-                else if(_hotbarProfile.Hotbars.Count > amount)
+                else if (_hotbarProfile.Hotbars.Count > amount)
                     _hotbarService.RemoveHotbar();
             });
 

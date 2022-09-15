@@ -1,14 +1,10 @@
-﻿using ModifAmorphic.Outward.UI.Services;
-using ModifAmorphic.Outward.UI.Settings;
-using ModifAmorphic.Outward.Extensions;
+﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.UI.Services;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using Rewired;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.UI.Models
@@ -67,7 +63,7 @@ namespace ModifAmorphic.Outward.UI.Models
         public SkillSlotAction(Skill skill, Player player, Character character, SlotDataService slotData, bool combatModeEnabled, Func<IModifLogger> getLogger)
         {
             (this.skill, this.player, this.character, this.slotData, _getLogger) = (skill, player, character, slotData, getLogger);
-            
+
             this.inventory = character.Inventory;
             this.ActionIcons = GetSkillSprites(false);
             this.DisplayName = skill.DisplayName;
@@ -82,7 +78,7 @@ namespace ModifAmorphic.Outward.UI.Models
         public ActionSlotIcon[] GetDynamicIcons()
         {
             bool isLocked = !skill.IsChildToCharacter || !skill.GetIsQuickSlotReq();
-            
+
             return GetSkillSprites(isLocked);
         }
         private static HashSet<string> ignored = new HashSet<string>()
@@ -110,7 +106,7 @@ namespace ModifAmorphic.Outward.UI.Models
                         sprites.Add(new ActionSlotIcon() { Name = image.name, Icon = image.overrideSprite ?? image.sprite });
                 }
             }
-            
+
             return sprites.ToArray();
         }
 

@@ -1,13 +1,11 @@
 ﻿using HarmonyLib;
-using ModifAmorphic.Outward.UI.Patches;
-using ModifAmorphic.Outward.UI.Services;
-using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.UI.Patches;
+using ModifAmorphic.Outward.UI.Services;
+using ModifAmorphic.Outward.UI.Settings;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.UI
 {
@@ -28,12 +26,12 @@ namespace ModifAmorphic.Outward.UI
             (_services, _modifGoService, _coroutines, _settings, _loggerFactory) = (services, modifGoService, coroutines, settings, loggerFactory);
             _harmony = new Harmony(HotbarsModId);
         }
-        
-        public void Start() 
+
+        public void Start()
         {
             Logger.LogInfo("Starting Hotbars...");
             Logger.LogInfo($"Patching...");
-            
+
             _harmony.PatchAll(typeof(InputManager_BasePatches));
             _harmony.PatchAll(typeof(RewiredInputsPatches));
             _harmony.PatchAll(typeof(CharacterUIPatches));

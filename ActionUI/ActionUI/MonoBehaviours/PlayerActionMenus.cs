@@ -1,12 +1,9 @@
-﻿using ModifAmorphic.Outward.Unity.ActionMenus;
-using ModifAmorphic.Outward.Unity.ActionMenus.Data;
+﻿using ModifAmorphic.Outward.Unity.ActionMenus.Data;
+using ModifAmorphic.Outward.Unity.ActionUI;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
@@ -53,7 +50,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _onPlayerIdAssigned.Invoke(this);
         }
 
-        public PositionableUI[] GetPositionableUIs() => 
+        public PositionableUI[] GetPositionableUIs() =>
             transform.parent.GetComponentsInChildren<PositionableUI>(true);
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
@@ -68,7 +65,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             for (int i = 0; i < _actionMenus.Length; i++)
             {
-                Debug.Log($"_actionMenus[{i}] == null == {_actionMenus[i] == null}. _actionMenus[{i}].OnShow == null == {_actionMenus[i]?.OnShow == null}");
+                DebugLogger.Log($"_actionMenus[{i}] == null == {_actionMenus[i] == null}. _actionMenus[{i}].OnShow == null == {_actionMenus[i]?.OnShow == null}");
                 var menuIndex = i;
                 _actionMenus[i].OnShow.AddListener(() => OnShowMenu(menuIndex));
                 _actionMenus[i].OnHide.AddListener(OnHideMenu);
@@ -93,9 +90,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         }
 
         public void ConfigureExit(Func<bool> exitRequested) => _exitRequested = exitRequested;
-        
+
         public bool AnyActionMenuShowing() => _isAwake && _actionMenus.Any(m => m.IsShowing);
-        
+
         private void OnShowMenu(int menuIndex)
         {
             for (int i = 0; i < _actionMenus.Length; i++)
@@ -108,9 +105,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private void OnHideMenu()
         {
             //if (!_actionMenus.Any(m => m.IsShowing))
-                //BackPanel.SetActive(false);
+            //BackPanel.SetActive(false);
         }
-        
-        
+
+
     }
 }

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -64,7 +63,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             if (!_viewTabs.ContainsKey(selectedTabId))
                 throw new ArgumentOutOfRangeException(nameof(selectedTabId));
 
-            foreach(var kvp in _viewTabs)
+            foreach (var kvp in _viewTabs)
                 ToggleViewTab(kvp.Value, kvp.Key == selectedTabId);
             _lastSelectedId = selectedTabId;
 

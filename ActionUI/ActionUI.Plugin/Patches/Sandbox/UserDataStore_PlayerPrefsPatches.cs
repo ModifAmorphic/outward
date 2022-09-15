@@ -1,13 +1,7 @@
 ﻿using HarmonyLib;
-using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
-using Rewired;
 using Rewired.Data;
-using Rewired.Data.Mapping;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.UI.Patches
 {
@@ -24,7 +18,7 @@ namespace ModifAmorphic.Outward.UI.Patches
             try
             {
                 Logger.LogTrace($"{nameof(UserDataStore_PlayerPrefsPatches)}::{nameof(OnInitializePostfix)}(): Invoked. Adding new ActionCategory and Actions");
-                
+
             }
             catch (Exception ex)
             {

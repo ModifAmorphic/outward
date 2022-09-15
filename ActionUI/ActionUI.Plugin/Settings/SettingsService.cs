@@ -33,7 +33,7 @@ namespace ModifAmorphic.Outward.UI.Settings
             }
 
             #region Main Section
-            
+
 
             #endregion
 

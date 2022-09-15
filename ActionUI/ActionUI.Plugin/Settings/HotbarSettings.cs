@@ -1,11 +1,9 @@
 ﻿using ModifAmorphic.Outward.UI.DataModels;
 using ModifAmorphic.Outward.UI.Models;
-using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.UI.Settings
 {
@@ -50,7 +48,7 @@ namespace ModifAmorphic.Outward.UI.Settings
                     new SlotData()
                     {
                         SlotIndex = 3,
-                        Config = new ActionConfig() { 
+                        Config = new ActionConfig() {
                             HotkeyText = "1",
                             RewiredActionName = RewiredConstants.ActionSlots.Actions[0].name,
                             RewiredActionId = RewiredConstants.ActionSlots.Actions[0].id,

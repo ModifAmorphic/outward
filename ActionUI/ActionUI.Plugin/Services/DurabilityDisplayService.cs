@@ -1,9 +1,7 @@
-﻿using ModifAmorphic.Outward.UI.Extensions;
+﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.UI.Extensions;
 using ModifAmorphic.Outward.UI.Patches;
-using ModifAmorphic.Outward.Extensions;
-using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
-using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -111,7 +109,7 @@ namespace ModifAmorphic.Outward.UI.Services
                 TrackEquippedItem(character, (Equipment)character.Inventory.Equipment.GetEquippedItem(slot));
         }
 
-        private void SplitScreenManagerPatches_RemoveLocalPlayerAfter(SplitScreenManager splitScreenManager, SplitPlayer player, string playerUID) => 
+        private void SplitScreenManagerPatches_RemoveLocalPlayerAfter(SplitScreenManager splitScreenManager, SplitPlayer player, string playerUID) =>
             ShowHide(player.RewiredID, false);
 
 
@@ -147,12 +145,12 @@ namespace ModifAmorphic.Outward.UI.Services
                     display.TrackDurability(unequippedTracker);
                 else
                     display.StopTracking(durableSlot);
-                
+
                 return;
             }
 
             Logger.LogDebug($"Tracking durability of equipment {equipment.name} for player {character.OwnerPlayerSys.PlayerID}.");
-            
+
             display.TrackDurability(new DurabilityTracker(equipment));
         }
 
@@ -181,7 +179,7 @@ namespace ModifAmorphic.Outward.UI.Services
                     display.TrackDurability(unequippedTracker);
                     return;
                 }
-                
+
             }
 
             display.StopTracking(durableSlot);

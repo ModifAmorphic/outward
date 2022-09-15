@@ -5,11 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
-    
+
     [UnityScriptComponent]
     public class DurabilityDisplay : MonoBehaviour
     {
@@ -77,7 +76,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             StopTracking(durability.DurableEquipmentSlot);
 
             SetMinimumDisplayValue(durability.DurableEquipmentSlot, durability.MinimumDisplayValue);
-            
+
             foreach (var range in durability.ColorRanges)
                 _durabilitySlots[durability.DurableEquipmentSlot].AddColorRange(range);
 
@@ -124,10 +123,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private void OnSlotValueChanged(DurabilitySlot equipSlot)
         {
-            //Debug.Log($"OnSlotValueChanged({equipSlot.EquipmentSlot})");
+            //DebugLogger.Log($"OnSlotValueChanged({equipSlot.EquipmentSlot})");
             if (_displayMinimums.TryGetValue(equipSlot.EquipmentSlot, out var minimum))
             {
-                //Debug.Log($"OnSlotValueChanged({equipSlot.EquipmentSlot}) Got minimum value of {minimum}. equipSlot.Value == {equipSlot.Value}");
+                //DebugLogger.Log($"OnSlotValueChanged({equipSlot.EquipmentSlot}) Got minimum value of {minimum}. equipSlot.Value == {equipSlot.Value}");
                 if ((equipSlot.Value <= minimum && !_canvas.enabled) || (equipSlot.Value > minimum && _canvas.enabled))
                     RefreshDisplay();
             }
@@ -135,8 +134,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private void RefreshDisplay()
         {
-            bool canvasEnabled = _positionable?.IsPositionable??false;
-            //Debug.Log($"RefreshDisplay()");
+            bool canvasEnabled = _positionable?.IsPositionable ?? false;
+            //DebugLogger.Log($"RefreshDisplay()");
             foreach (var slotKvp in _durabilitySlots)
             {
                 if (_displayMinimums.ContainsKey(slotKvp.Key))
@@ -176,7 +175,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private IEnumerator AddToPsp()
         {
             yield return new WaitUntil(() => Psp.Instance != null && PlayerActionMenus.PlayerID > -1);
-            
+
             var psp = Psp.Instance.GetServicesProvider(PlayerActionMenus.PlayerID);
             if (!psp.TryGetService<DurabilityDisplay>(out _))
                 psp.AddSingleton(this);

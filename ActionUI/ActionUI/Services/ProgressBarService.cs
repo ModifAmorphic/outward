@@ -1,10 +1,7 @@
 ﻿using ModifAmorphic.Outward.Unity.ActionMenus.Controllers;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus.Services
 {
@@ -34,7 +31,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Services
             _bar.ResetColorRanges();
             if (_barProgress.ColorRanges != null)
             {
-                foreach(var range in _barProgress.ColorRanges)
+                foreach (var range in _barProgress.ColorRanges)
                     _bar.AddColorRange(range);
             }
             _controller.ShowSlider(_barPosition);

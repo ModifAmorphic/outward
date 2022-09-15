@@ -1,22 +1,15 @@
-﻿using ModifAmorphic.Outward.UI.DataModels;
-using ModifAmorphic.Outward.UI.Extensions;
-using ModifAmorphic.Outward.UI.Models;
-using ModifAmorphic.Outward.UI.Settings;
-using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Unity.ActionMenus;
+﻿using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using ModifAmorphic.Outward.Unity.ActionMenus.Extensions;
 using Newtonsoft.Json;
-using Rewired;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.UI.Services
 {
-    
+
     public class PositionsProfileJsonService : IPositionsProfileService
     {
 
@@ -34,7 +27,8 @@ namespace ModifAmorphic.Outward.UI.Services
         public PositionsProfileJsonService(ProfileService profileService, Func<IModifLogger> getLogger)
         {
             (_profileService, _getLogger) = (profileService, getLogger);
-            profileService.OnActiveProfileChanged.AddListener(RefreshCachedProfile);
+            profileService.OnActiveProfileChanged.AddListener((profile) => RefreshCachedProfile(profile));
+            profileService.OnActiveProfileSwitched.AddListener((profile) => RefreshCachedProfile(profile, true));
         }
 
         public PositionsProfile GetProfile()
@@ -82,7 +76,7 @@ namespace ModifAmorphic.Outward.UI.Services
             return JsonConvert.DeserializeObject<PositionsProfile>(json);
         }
 
-        private void RefreshCachedProfile(IActionUIProfile actionMenusProfile)
+        private void RefreshCachedProfile(IActionUIProfile actionMenusProfile, bool suppressChangeEvent = false)
         {
             Logger.LogDebug($"PositionsProfileJsonService::RefreshCachedProfile Called for action menu profile {actionMenusProfile.Name}.");
             _positionsProfile = null;

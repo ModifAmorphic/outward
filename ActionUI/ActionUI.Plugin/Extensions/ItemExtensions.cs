@@ -1,7 +1,4 @@
 ﻿using ModifAmorphic.Outward.UI.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.UI.Extensions
 {

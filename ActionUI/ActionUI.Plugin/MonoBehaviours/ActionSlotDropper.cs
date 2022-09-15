@@ -1,9 +1,7 @@
-﻿using ModifAmorphic.Outward.UI.Services;
-using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.UI.Services;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
 

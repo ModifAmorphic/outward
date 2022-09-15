@@ -1,13 +1,9 @@
 ﻿using HarmonyLib;
-using ModifAmorphic.Outward.UI.Services;
-using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
-using ModifAmorphic.Outward.Unity.ActionMenus.Controllers;
 using Rewired;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.UI.Patches
 {
@@ -29,7 +25,7 @@ namespace ModifAmorphic.Outward.UI.Patches
             {
                 if (ControlsInput.IsLastActionGamepad(_playerID))
                     return;
-                
+
                 //Logger.LogTrace($"{nameof(ControlsInputPatches)}::{nameof(SetQuickSlotActivePrefix)}(): Invoked. Disabling quickslots for player {_playerID}.");
                 if (Psp.Instance.GetServicesProvider(_playerID).TryGetService<HotbarsContainer>(out var hotbars) && hotbars.IsAwake)
                 {

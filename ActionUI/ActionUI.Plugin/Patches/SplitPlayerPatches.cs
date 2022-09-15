@@ -1,8 +1,6 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.UI.Patches
 {
@@ -26,7 +24,7 @@ namespace ModifAmorphic.Outward.UI.Patches
                 Logger.LogException($"{nameof(SplitPlayerPatches)}::{nameof(InitPostfix)}(): Exception Invoking {nameof(InitAfter)}({nameof(SplitPlayer)}).", ex);
             }
         }
-        
+
         public delegate void SetCharacter(SplitPlayer splitPlayer, Character character);
         public static event SetCharacter SetCharacterAfter;
         [HarmonyPatch(nameof(SplitPlayer.SetCharacter))]

@@ -1,9 +1,5 @@
 using ModifAmorphic.Outward.Unity.ActionMenus.Extensions;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using ModifAmorphic.Outward.Unity.ActionUI;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -29,7 +25,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
         {
-            Debug.Log("UIPositionScreen::Awake");
+            DebugLogger.Log("UIPositionScreen::Awake");
             Hide(false);
             _isInit = true;
         }
@@ -37,7 +33,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Start()
         {
-            Debug.Log("UIPositionScreen::Start");
+            DebugLogger.Log("UIPositionScreen::Start");
         }
 
 
@@ -55,7 +51,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private void Hide(bool raiseEvent)
         {
-            Debug.Log("UIPositionScreen::Hide");
+            DebugLogger.Log("UIPositionScreen::Hide");
             gameObject.SetActive(false);
             BackPanel.gameObject.SetActive(false);
             ExitScreenText.gameObject.SetActive(false);
@@ -81,7 +77,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             var positonService = MainSettingsMenu.PlayerMenu.ProfileManager.PositionsProfileService;
             var positions = positonService.GetProfile();
             bool saveNeeded = false;
-            Debug.Log($"Checking {uis.Length} UI Element positons for changes.");
+            DebugLogger.Log($"Checking {uis.Length} UI Element positons for changes.");
             foreach (var ui in uis)
             {
                 ui.DisableMovement();
@@ -89,7 +85,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 if (ui.HasMoved)
                 {
                     positions.AddOrReplacePosition(ui.GetUIPositions());
-                    Debug.Log($"Found position change for UI element '{ui.TransformPath}.");
+                    DebugLogger.Log($"Found position change for UI element '{ui.TransformPath}.");
                     saveNeeded = true;
                 }
             }

@@ -1,8 +1,7 @@
 using ModifAmorphic.Outward.ActionMenus.Extensions;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
+using ModifAmorphic.Outward.Unity.ActionUI;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,7 +29,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 slot.Controller.AssignSlotAction(slotAction);
             }
         }
-        
+
         public void ConfigureHotbars(IHotbarProfile profile)
         {
             int selectedIndex = _hbc.SelectedHotbar;
@@ -38,7 +37,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             Reset();
             _hbc.BaseGrid.constraintCount = profile.SlotsPerRow;
             _hbc.ConfigureHotbars(profile.Hotbars.Count);
-            Debug.Log("[Debug  :ActionMenus] Configuring ActionSlots.");
+            DebugLogger.Log("[Debug  :ActionMenus] Configuring ActionSlots.");
             _hbc.LeftHotbarNav.SetNextHotkeyText(profile.NextHotkey);
             _hbc.LeftHotbarNav.SetPreviousHotkeyText(profile.PrevHotkey);
             _hbc.LeftHotbarNav.SetHotkeys(profile.Hotbars.Select(b => b.HotbarHotkey));
@@ -53,7 +52,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 _hbc.HotbarGrid[h] = UnityEngine.Object.Instantiate(_hbc.BaseGrid, barCanvas.transform);
                 _hbc.HotbarGrid[h].name = "HotbarsGrid" + h;
                 _hbc.HotbarGrid[h].gameObject.SetActive(true);
-                
+
                 _hbc.ConfigureActionSlots(h, profile.SlotsPerRow * profile.Rows);
                 for (int s = 0; s < profile.SlotsPerRow * profile.Rows; s++)
                 {
@@ -70,7 +69,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 }
                 barCanvas.enabled = h == 0;
             }
-            Debug.Log($"[Debug  :ActionMenus] Added {_hbc.Hotbars.Length} Hotbars with {_hbc.Hotbars.FirstOrDefault()?.Length} Action Slots each. Calling StartCoroutine ResizeLayoutGroup().");
+            DebugLogger.Log($"[Debug  :ActionMenus] Added {_hbc.Hotbars.Length} Hotbars with {_hbc.Hotbars.FirstOrDefault()?.Length} Action Slots each. Calling StartCoroutine ResizeLayoutGroup().");
             _resizeNeeded = true;
 
             if (selectedIndex != _hbc.SelectedHotbar && selectedIndex < GetHotbarCount())
@@ -109,9 +108,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
 
         public void SelectHotbar(int barIndex)
         {
-            if (barIndex < 0 || barIndex >= _hbc.HotbarGrid.Length )
+            if (barIndex < 0 || barIndex >= _hbc.HotbarGrid.Length)
                 throw new ArgumentOutOfRangeException(nameof(barIndex));
-            
+
             for (int h = 0; h < _hbc.HotbarGrid.Length; h++)
             {
                 _hbc.HotbarGrid[h].transform.parent.GetComponent<Canvas>().enabled = h == barIndex;
@@ -133,7 +132,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         }
 
         public int GetHotbarCount()
-        { 
+        {
             if (_hbc.HotbarGrid == null)
                 return 0;
             return _hbc.HotbarGrid.Length;
@@ -196,12 +195,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
 
             float hotbarWidth = (_hbc.HotbarGrid[0].cellSize.x + _hbc.HotbarGrid[0].spacing.x) * (_hbc.HotbarGrid[0].constraintCount) + _hbc.HotbarGrid[0].padding.horizontal;
             float hotbarHeight = (_hbc.HotbarGrid[0].cellSize.y + _hbc.HotbarGrid[0].spacing.y) * GetRowCount() + _hbc.HotbarGrid[0].padding.vertical;
-            Debug.Log("[Debug  :ActionMenus] ResizeLayoutGroup() called. Calculated width is " + hotbarWidth);
+            DebugLogger.Log("[Debug  :ActionMenus] ResizeLayoutGroup() called. Calculated width is " + hotbarWidth);
 
             _hbc.Resize(hotbarWidth, hotbarHeight);
             _resizeNeeded = false;
         }
-        
+
         public void ToggleActionSlotEdits(bool editMode)
         {
             _hbc.IsInActionSlotEditMode = editMode;

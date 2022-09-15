@@ -1,12 +1,7 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
-using System;
 using Rewired;
-using System.Collections.Generic;
-using System.Text;
-using ModifAmorphic.Outward.Extensions;
-using Rewired.Data;
-using Rewired.Data.Mapping;
+using System;
 
 namespace ModifAmorphic.Outward.UI.Patches
 {

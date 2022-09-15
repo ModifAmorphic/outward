@@ -1,12 +1,6 @@
 ﻿using HarmonyLib;
-using ModifAmorphic.Outward.UI.Services;
-using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Logging;
-using Rewired;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine.EventSystems;
 
 namespace ModifAmorphic.Outward.UI.Patches
 {

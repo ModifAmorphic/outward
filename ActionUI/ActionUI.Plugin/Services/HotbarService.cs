@@ -1,23 +1,18 @@
-﻿using ModifAmorphic.Outward.UI.DataModels;
-using ModifAmorphic.Outward.UI.Extensions;
+﻿using ModifAmorphic.Outward.Coroutines;
+using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.UI.DataModels;
 using ModifAmorphic.Outward.UI.Models;
 using ModifAmorphic.Outward.UI.Monobehaviours;
 using ModifAmorphic.Outward.UI.Patches;
 using ModifAmorphic.Outward.UI.Settings;
-using ModifAmorphic.Outward.Coroutines;
-using ModifAmorphic.Outward.Extensions;
-using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
-using ModifAmorphic.Outward.Unity.ActionMenus.Controllers;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using Rewired;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.UI.Services
 {
@@ -184,7 +179,7 @@ namespace ModifAmorphic.Outward.UI.Services
             Logger.LogDebug($"Got or Created Active Profile '{activeProfile.Name}'");
             return _profileManager.HotbarProfileService.GetProfile();
         }
-        
+
         public void AssignSlotActions(IHotbarProfile profile)
         {
             //refresh item displays
@@ -232,7 +227,7 @@ namespace ModifAmorphic.Outward.UI.Services
                 foreach (var slot in bar.Slots)
                 {
                     var config = ((ActionConfig)slot.Config);
-                        var eleMap = keyMap.ButtonMaps.FirstOrDefault(m => m.actionId == config.RewiredActionId);
+                    var eleMap = keyMap.ButtonMaps.FirstOrDefault(m => m.actionId == config.RewiredActionId);
 
                     if (eleMap != null)
                         slot.Config.HotkeyText = eleMap.elementIdentifierName;

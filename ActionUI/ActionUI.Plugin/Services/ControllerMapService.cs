@@ -1,10 +1,9 @@
-﻿using BepInEx;
+﻿using ModifAmorphic.Outward.Coroutines;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.UI.DataModels;
 using ModifAmorphic.Outward.UI.Models;
 using ModifAmorphic.Outward.UI.Patches;
 using ModifAmorphic.Outward.UI.Settings;
-using ModifAmorphic.Outward.Coroutines;
-using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using Rewired;
@@ -37,7 +36,7 @@ namespace ModifAmorphic.Outward.UI.Services
             "RewiredData&playerName=Player1&dataType=ControllerMap&controllerMapType=KeyboardMap&categoryId=131000&layoutId=0&hardwareIdentifier=Keyboard",
             "RewiredData&playerName=Player1&dataType=ControllerMap&controllerMapType=MouseMap&categoryId=131000&layoutId=0&hardwareIdentifier=Mouse",
         };
-        
+
 
         private const string KeyboardMapFile = "KeyboardMap_ActionSlots.xml";
         private const string MouseMapFile = "Mouse_ActionSlots.xml";
@@ -91,7 +90,7 @@ namespace ModifAmorphic.Outward.UI.Services
                                 Func<IModifLogger> getLogger)
         {
             (_captureDialog, _hotbarService, _player, _coroutine, _getLogger) = (captureDialog, hotbarService, player, coroutine, getLogger);
-            
+
             _profileService = (ProfileService)profileManager.ProfileService;
             _hotbarData = (HotbarProfileJsonService)profileManager.HotbarProfileService;
 
@@ -115,7 +114,7 @@ namespace ModifAmorphic.Outward.UI.Services
             if (playerId != _player.id)
                 return;
 
-            foreach(string mapKey in ActionUIMapKeys)
+            foreach (string mapKey in ActionUIMapKeys)
             {
                 try
                 {
@@ -146,13 +145,13 @@ namespace ModifAmorphic.Outward.UI.Services
 
             var keyboardMap = GetActionSlotsMap<KeyboardMap>();
             var mouseMap = GetActionSlotsMap<MouseMap>();
-            
+
             var maps = new List<ControllerMap>();
 
             var keyboardKeyName = Keyboard.GetKeyName(keyGroup.KeyCode, GetModifierKeyFlags(keyGroup.Modifiers));
 
             Logger.LogDebug($"KeyCode {keyGroup.KeyCode} has Keyboard KeyName {keyboardKeyName}.");
-            
+
 
             if (!string.IsNullOrWhiteSpace(keyboardKeyName) && keyGroup.KeyCode != KeyCode.None && !MouseKeyCodes.Contains(keyGroup.KeyCode))
                 maps.Add(keyboardMap);
@@ -331,9 +330,9 @@ namespace ModifAmorphic.Outward.UI.Services
 
         private void RemoveExistingAssignments(ElementAssignment assignment, ControllerMap map)
         {
-                var conflict = CreateConflictCheck(map, assignment);
-                var removed = map.RemoveElementAssignmentConflicts(conflict);
-                Logger.LogDebug($"Removed {removed} conflicts for key {assignment.keyboardKey} and modifiers {assignment.modifierKeyFlags}.");
+            var conflict = CreateConflictCheck(map, assignment);
+            var removed = map.RemoveElementAssignmentConflicts(conflict);
+            Logger.LogDebug($"Removed {removed} conflicts for key {assignment.keyboardKey} and modifiers {assignment.modifierKeyFlags}.");
         }
         private ElementAssignmentConflictCheck CreateConflictCheck(ControllerMap map, ElementAssignment assignment)
         {
@@ -354,7 +353,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(mapXml);
-            
+
             var filePath = Path.Combine(GetProfileFolder(), MapFiles[controllerMap.controllerType]);
             // Save the document to a file and auto-indent the output.
             using (XmlTextWriter writer = new XmlTextWriter(filePath, Encoding.UTF8))

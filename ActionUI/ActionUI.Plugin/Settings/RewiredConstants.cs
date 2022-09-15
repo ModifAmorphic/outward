@@ -1,10 +1,7 @@
-﻿using ModifAmorphic.Outward.UI.Settings;
-using ModifAmorphic.Outward.Extensions;
+﻿using ModifAmorphic.Outward.Extensions;
 using Rewired;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace ModifAmorphic.Outward.UI.Settings
 {
@@ -73,7 +70,7 @@ namespace ModifAmorphic.Outward.UI.Settings
                     actionCategoryId: ActionCategory.id,
                     startingId: 131500,
                     amount: 64);
-                
+
                 HotbarNavActions = GetHotbarNavActions(
                     nameFormat: NavNameFormat,
                     descriptiveNameFormat: "Hotbar ##0",
@@ -141,7 +138,7 @@ namespace ModifAmorphic.Outward.UI.Settings
                 actions.Add(inputAction);
             }
 
-            return actions;   
+            return actions;
         }
         private static List<InputAction> GetHotbarNavActions(string nameFormat, string descriptiveNameFormat, InputActionType inputActionType, bool userAssignable, int actionCategoryId, int startingId, int amount)
         {
@@ -166,14 +163,14 @@ namespace ModifAmorphic.Outward.UI.Settings
         public static InputAction GetAction(int id, string name, string descriptiveName, InputActionType inputActionType, bool userAssignable, int actionCategoryId)
         {
             var inputAction = new InputAction();
-            
+
             inputAction.SetPrivateField("_id", id);
             inputAction.SetPrivateField("_name", name);
             inputAction.SetPrivateField("_descriptiveName", descriptiveName);
             inputAction.SetPrivateField("_type", inputActionType);
             inputAction.SetPrivateField("_userAssignable", userAssignable);
             inputAction.SetPrivateField("_categoryId", actionCategoryId);
-            
+
             return inputAction;
         }
     }

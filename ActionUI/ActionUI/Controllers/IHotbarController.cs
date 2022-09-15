@@ -1,7 +1,4 @@
 ﻿using ModifAmorphic.Outward.Unity.ActionMenus.Data;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
