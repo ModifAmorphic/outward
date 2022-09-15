@@ -1,36 +1,34 @@
 # ![Action UI](https://github.com/ModifAmorphic/outward/blob/mods/actionui/ActionUI/Assets/ReadmeAssets/Banner.png?raw=true)
 
 ## ⚡ Additional Quickslots, UI Positioning, Durability Display ⚡
-&nbsp;
-- - - -
-&nbsp;
 
-## Configure with Action UI in game menu.
-  ![Action UI Menu Button](https://github.com/ModifAmorphic/outward/blob/mods/actionui/ActionUI/Assets/ReadmeAssets/PauseMenu.png?raw=true)
+***
 
-&nbsp;
-- - - -
-&nbsp;
+- Add Multiple Hotbars and Action Slots (Quick Slots)
+- Combat Mode: Extra Slots without ruining game balance.
+- Reposition UI Elements with Drag and Drop
+- New Durability UI Displays Equipment
+- See the [Action UI Wiki](https://github.com/ModifAmorphic/outward/wiki/Action-UI) for more details
 
-## Create Profiles, Toggle components and Position UI Elements
-  ![Action UI Settings](https://github.com/ModifAmorphic/outward/blob/mods/actionui/ActionUI/Assets/ReadmeAssets/MainSettingsMenu.png?raw=true)
+***
 
-&nbsp;
-- - - -
-&nbsp;
+## Highly Configurabe Hotbars and Action Slots
 
-## Add Hotbars, Action Slots (Quickslots), Set Hotkeys
-  ![Hotbar Settings](https://github.com/ModifAmorphic/outward/blob/mods/actionui/ActionUI/Assets/ReadmeAssets/HotbarSettingsView.png?raw=true)
+![Hotbar Settings](https://github.com/ModifAmorphic/outward/blob/mods/actionui/ActionUI/Assets/ReadmeAssets/HotbarSettingsView_small.png?raw=true)
 
-### Set Hotkeys with a Click
-  ![Hotkey Capture](https://github.com/ModifAmorphic/outward/blob/mods/actionui/ActionUI/Assets/ReadmeAssets/HotbarCapture.png?raw=true)
+![Hotbars](https://github.com/ModifAmorphic/outward/raw/mods/actionui/ActionUI/Assets/ReadmeAssets/Hotbar.png?raw=true)
 
-&nbsp;
-- - - -
-&nbsp;
+## Drag Actions to Slots right from Inventory!
 
-## Drag Skills, Items from right from Inventory 
-![Drag and Drop to Action Slots](https://github.com/ModifAmorphic/outward/blob/mods/actionui/ActionUI/Assets/ReadmeAssets/ActionSlotsDragging.png?raw=true)
+[ ![Assign Actions YouTube Video](https://github.com/ModifAmorphic/outward/blob/mods/actionui/ActionUI/Assets/ReadmeAssets/AssignActionSlotVideo.png?raw=true) ](https://youtu.be/nJT76DLFIqw)
+
+## Reposition UI Elements
+
+[ ![UI Positioning YouTube Video](https://github.com/ModifAmorphic/outward/blob/mods/actionui/ActionUI/Assets/ReadmeAssets/UIPositioningVideo.png?raw=true) ](https://youtu.be/zoY1qEdeATg)
+
+## Equipment Durability UI
+
+![Durability Display](https://github.com/ModifAmorphic/outward/blob/mods/actionui/ActionUI/Assets/ReadmeAssets/DurabilityDisplay.png?raw=true)
 
 ## Latest Release ${PACKAGE_VERSION}
   - Dev Release
