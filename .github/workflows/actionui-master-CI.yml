@@ -11,6 +11,7 @@ on:
     - 'ActionUI/**'
     - '!**/README.md'
     - '!**/readme.md'
+    - '!**/ReadmeAssets/*'
     - '!**/workflows/*'
     - '!**/manifest.json'
     - '!**/icon.png'
