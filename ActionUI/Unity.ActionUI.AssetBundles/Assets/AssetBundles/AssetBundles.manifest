@@ -1,7 +1,7 @@
 ManifestFileVersion: 0
-CRC: 3857975879
+CRC: 4275401474
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: action-menus
+      Name: action-ui
       Dependencies: {}

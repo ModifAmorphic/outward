@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: actionmenus-master-CI
+name: actionui-master-CI
 
 # Controls when the workflow will run
 on:
@@ -8,7 +8,7 @@ on:
   push:
     branches: [ master ]
     paths:
-    - 'ActionMenus/**'
+    - 'ActionUI/**'
     - '!**/README.md'
     - '!**/readme.md'
     - '!**/workflows/*'
@@ -29,12 +29,12 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
     build:
-        name: Run ActionMenus Master Azure Build Pipeline
+        name: Run ActionUI Master Azure Build Pipeline
         runs-on: ubuntu-latest
         steps:
-        - name: Run Build actionmenus-master-build
+        - name: Run Build actionui-master-build
           uses: Azure/pipelines@v1
           with:
             azure-devops-project-url: https://dev.azure.com/ModifAmorphic/outward
-            azure-pipeline-name: 'actionmenus-master-build'
+            azure-pipeline-name: 'actionui-master-build'
             azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>ModifAmorphic.Outward.Unity.ActionMenus</RootNamespace>
+    <RootNamespace>ModifAmorphic.Outward.Unity.ActionUI</RootNamespace>
     <AssemblyName>$(MSBuildProjectName)</AssemblyName>
     <DebugType>portable</DebugType>
     <Configurations>Debug;Release;DebugLocal</Configurations>
@@ -58,7 +58,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$(ConfigurationName) == DebugLocal">
-    <Exec Command="copy /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;$(SolutionDir)Unity.ActionMenus.AssetBundles\Assets\Plugins\ModifAmorphic.Outward.ActionMenus.dll&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(SolutionDir)Unity.ActionMenus.AssetBundles\Assets\Plugins\ModifAmorphic.Outward.ActionMenus.pdb&quot;" />
+    <Exec Command="copy /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;$(SolutionDir)Unity.ActionUI.AssetBundles\Assets\Plugins\&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)$(ProjectName).pdb&quot; &quot;$(SolutionDir)Unity.ActionUI.AssetBundles\Assets\Plugins\&quot;" />
   </Target>
 
 </Project>

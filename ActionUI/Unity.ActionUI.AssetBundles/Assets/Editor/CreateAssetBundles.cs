@@ -5,7 +5,7 @@ public class CreateAssetBundles
 {
     private readonly static string AssetBundleDirectory = Path.Combine("Assets", "AssetBundles");
 
-    private const string ActionMenusBundleName = "action-menus";
+    private const string ActionMenusBundleName = "action-ui";
     private readonly static string ActionMenusPublishDirectory = Path.Combine("..", "Assets", "asset-bundles");
 
     [MenuItem("Assets/Build AssetBundles")]
