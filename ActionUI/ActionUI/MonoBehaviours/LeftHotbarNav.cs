@@ -11,11 +11,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     public class LeftHotbarNav : MonoBehaviour
     {
         public PlayerActionMenus PlayerMenu;
-        //public HotkeyCaptureMenu HotkeyCaptureDialog;
-        //public HotbarSettingsView HotbarSettingsViewer;
         public HotbarsContainer HotbarsContainer;
 
-        //private Button _settingsButton;
         private Button _nextButton;
         private Button _nextHotkeyButton;
         private Button _previousButton;
@@ -85,8 +82,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private void SetComponents()
         {
-            //_settingsButton = GetComponentsInChildren<Button>().First(b => b.name.Equals("Settings"));
-
             var nextHotbar = transform.Find("BarNumber/NextHotbar").gameObject;
             _nextButton = nextHotbar.GetComponentsInChildren<Button>().First(b => b.name.Equals("NextButton"));
             _nextHotkeyButton = nextHotbar.GetComponentsInChildren<Button>().First(b => b.name.Equals("HotkeyButton"));

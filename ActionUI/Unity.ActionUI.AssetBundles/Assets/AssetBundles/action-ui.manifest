@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 3720356602
+CRC: 2031184575
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 0b55fb30bdd417166e140369c94b5286
+    Hash: 391ceb6a26681342890b770ac3b1a204
   TypeTreeHash:
     serializedVersion: 2
     Hash: bf6d40652977c70f80444873bc97966e
@@ -157,5 +157,5 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.Toggle/ToggleEvent
 Assets:
-- Assets/Prefabs/ActionMenus.prefab
+- Assets/Prefabs/ActionUI.prefab
 Dependencies: []

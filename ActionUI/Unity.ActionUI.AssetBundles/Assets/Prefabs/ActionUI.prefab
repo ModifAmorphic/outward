@@ -175,7 +175,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7768535189674516206}
   m_Layer: 5
-  m_Name: ActionMenus
+  m_Name: ActionUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
