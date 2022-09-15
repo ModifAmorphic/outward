@@ -195,7 +195,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
             var menuText = _actionMenusButton.GetComponentInChildren<Text>();
             UnityEngine.Object.Destroy(menuText.GetComponent<UILocalize>());
-            menuText.text = "Action Menus";
+            menuText.text = "Action UI";
 
             //get the PauseMenu component so the PauseMenu UI can be hidden later
             var pauseMenu = splitPlayer.CharUI.transform.Find("Canvas/PauseMenu").GetComponent<PauseMenu>();
