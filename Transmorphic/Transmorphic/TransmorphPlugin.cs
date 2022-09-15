@@ -32,15 +32,22 @@ namespace ModifAmorphic.Outward.Transmorphic
                 logger.LogInfo($"Patching...");
 
                 harmony.PatchAll(typeof(TransmorphNetworkLevelLoaderPatches));
-                harmony.PatchAll(typeof(TransmorphRecipeManagerPatches));
+                harmony.PatchAll(typeof(TmogRecipeManagerPatches));
                 harmony.PatchAll(typeof(TmogCharacterRecipeKnowledgePatches));
                 harmony.PatchAll(typeof(TmogCharacterEquipmentPatches));
                 harmony.PatchAll(typeof(TmogItemManagerPatches));
                 harmony.PatchAll(typeof(EnchantCharacterRecipeKnowledgePatches));
+                harmony.PatchAll(typeof(EnchantRecipeManagerPatches));
+
+                //harmony.PatchAll(typeof(ResourcesPrefabManagerPatches));
+                //harmony.PatchAll(typeof(EnchantItemManagerPatches));
+
+                //harmony.PatchAll(typeof(ItemDetailsDisplayPatches));
+                
 
                 //harmony.PatchAll(typeof(WeaponPatches));
                 //harmony.PatchAll(typeof(TmogItemDisplayPatches));
-                
+
                 //harmony.PatchAll(typeof(TransmogCraftingMenuPatches));
                 //harmony.PatchAll(typeof(CharacterUIPatches));
                 //harmony.PatchAll(typeof(CraftingMenuPatches));

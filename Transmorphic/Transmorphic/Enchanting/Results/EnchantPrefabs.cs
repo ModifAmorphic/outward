@@ -232,7 +232,17 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
                     resultPreFab.ActiveEnchantments.Add(activeEnchant);
                     resultPreFab.SetPrivateField<Equipment, bool>("m_enchantmentsHaveChanged", true);
                 }
-
+                if (resultPreFab is Weapon weapon)
+                {
+                    var baseDamage = weapon.GetPrivateField<Weapon, DamageList>("m_baseDamage");
+                    if (baseDamage == null)
+                    {
+                        baseDamage = weapon.Stats == null ? new DamageList(DamageType.Types.Physical, weapon.GetPrivateField<Weapon, WeaponBaseData>("m_weaponStats").Damage) : weapon.Stats.BaseDamage.Clone();
+                        baseDamage.IgnoreHalfResistances = weapon.IgnoreHalfResistances;
+                        weapon.SetPrivateField<Weapon, DamageList>("m_baseDamage", baseDamage);
+                        weapon.SetPrivateField<Weapon, DamageList>("m_activeBaseDamage", baseDamage.Clone());
+                    }
+                }
                 resultItems.Add(itemID, resultPreFab.ItemID);
 
                 Logger.LogDebug($"Created Enchantment placeholder prefab {resultPreFab.name}: {resultPreFab.ItemID} - {resultPreFab.DisplayName}. " +

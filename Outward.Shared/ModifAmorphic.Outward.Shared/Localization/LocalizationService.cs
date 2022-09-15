@@ -1,10 +1,8 @@
 ﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Patches;
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Localization
 {
@@ -31,7 +29,7 @@ namespace ModifAmorphic.Outward.Localization
         public static void RegisterLocalization(string key, string localization)
         {
             _localizations.AddOrUpdate(key, localization, (k, v) => localization);
-            
+
             if (_localizationManager != null)
                 AddLocalizationsToManager();
         }

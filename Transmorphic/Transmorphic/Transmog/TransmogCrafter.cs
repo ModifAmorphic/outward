@@ -1,4 +1,6 @@
-﻿using ModifAmorphic.Outward.Logging;
+﻿using ModifAmorphic.Outward.Coroutines;
+using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Modules.Items;
 using ModifAmorphic.Outward.Transmorphic.Extensions;
@@ -6,9 +8,6 @@ using ModifAmorphic.Outward.Transmorphic.Settings;
 using ModifAmorphic.Outward.Transmorphic.Transmog.Models;
 using ModifAmorphic.Outward.Transmorphic.Transmog.Recipes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Transmorphic.Transmog
 {
@@ -18,13 +17,14 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
         private IModifLogger Logger => _loggerFactory.Invoke();
 
         private readonly ItemVisualizer _itemVisualizer;
+        private readonly ModifCoroutine _coroutine;
 
-        public TransmogCrafter(ItemVisualizer itemVisualizer, Func<IModifLogger> loggerFactory) =>
-            (_itemVisualizer, _loggerFactory) = (itemVisualizer, loggerFactory);
+        public TransmogCrafter(ItemVisualizer itemVisualizer, ModifCoroutine coroutine, Func<IModifLogger> loggerFactory) =>
+            (_itemVisualizer, _coroutine, _loggerFactory) = (itemVisualizer, coroutine, loggerFactory);
 
         public bool TryCraftItem(Recipe recipe, ItemReferenceQuantity recipeResult, out Item item, out bool tryEquipItem)
         {
-            if (!(recipe is TransmogRecipe || recipe is TransmogRemoverRecipe) 
+            if (!(recipe is TransmogRecipe || recipe is TransmogRemoverRecipe)
                 || !(recipeResult is DynamicCraftingResult dynamicResult)
                 || dynamicResult.DynamicItemID == -1)
             {
@@ -60,19 +60,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                 {
                     try
                     {
-                        Logger.LogDebug($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): " +
-                            $"Ingredient {item.ItemID} was enchanted. " +
-                            $"Adding echantments to new transmog item.\n" +
-                            $"\tEnchantmentData: {enchantData}");
-                        var enchantIds = enchantData.Split(';');
-                        foreach (var enchantId in enchantIds)
-                        {
-                            Logger.LogTrace($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): Processing enchant ID '{enchantId}' for ItemID '{tmogEquip?.ItemID}'");
-                            if (int.TryParse(enchantId, out int id))
-                                tmogEquip.AddEnchantment(id, true);
-                            else
-                                Logger.LogWarning($"Unexpected enchant Id '{enchantId}'. Expected an integer.");
-                        }
+                        AddEnchants(enchantData, tmogEquip);
                     }
                     catch (Exception ex)
                     {
@@ -115,7 +103,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
 
         private bool TryCraftRemoveTransmog(TransmogRemoverRecipe recipe, DynamicCraftingResult dynamicResult, out Item item)
         {
-            item = GenerateItemNoTransmog(dynamicResult.DynamicItemID);
+            item = ItemManager.Instance.GenerateItemNetwork(dynamicResult.DynamicItemID); // GenerateItemNoTransmog(dynamicResult.DynamicItemID);
 
             if (dynamicResult.IngredientCraftData.ConsumedItems.TryGetValue(dynamicResult.DynamicItemID, out var counsumed))
             {
@@ -130,27 +118,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
             {
                 if (dynamicResult.IngredientCraftData.IngredientEnchantData.TryGetValue(item.ItemID, out var enchantData))
                 {
-                    try
-                    {
-                        Logger.LogDebug($"{nameof(TransmogCrafter)}::{nameof(TryCraftRemoveTransmog)}(): " +
-                            $"Ingredient {item.ItemID} was enchanted. " +
-                            $"Adding echantments to untransmog'd item.\n" +
-                            $"\tEnchantmentData: {enchantData}");
-                        var enchantIds = enchantData.Split(';');
-                        foreach (var enchantId in enchantIds)
-                        {
-                            Logger.LogTrace($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): Processing enchant ID '{enchantId}' for ItemID '{equip?.ItemID}'");
-                            if (int.TryParse(enchantId, out int id))
-                                equip.AddEnchantment(id, true);
-                            else
-                                Logger.LogWarning($"Unexpected enchant Id '{enchantId}'. Expected an integer.");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogException($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): Could not re-enchant item {equip.ItemID}({equip.UID}).", ex);
-
-                    }
+                    AddEnchants(enchantData, equip);
                 }
             }
 
@@ -172,6 +140,31 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
             }
 
             return item;
+        }
+        private Equipment AddEnchants(string enchantData, Equipment equipment)
+        {
+            try
+            {
+                Logger.LogDebug($"{nameof(TransmogCrafter)}::{nameof(TryCraftRemoveTransmog)}(): " +
+                    $"Ingredient {equipment.ItemID} was enchanted. " +
+                    $"Adding enchantments to new item.\n" +
+                    $"\tEnchantmentData: {enchantData}");
+                var enchantIds = enchantData.Split(';');
+                foreach (var enchantId in enchantIds)
+                {
+                    Logger.LogTrace($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): Processing enchant ID '{enchantId}' for ItemID '{equipment?.ItemID}'");
+                    if (int.TryParse(enchantId, out int id))
+                        equipment.AddEnchantment(id, true);
+                    else
+                        Logger.LogWarning($"Unexpected enchant Id '{enchantId}'. Expected an integer.");
+                }
+                _coroutine.DoWhen(() => equipment.Stats != null, () => equipment.InvokePrivateMethod("RefreshEnchantmentModifiers"), 120);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(TransmogCrafter)}::{nameof(TryCraftItem)}(): Could not re-enchant item {equipment.ItemID}({equipment.UID}).", ex);
+            }
+            return equipment;
         }
     }
 }

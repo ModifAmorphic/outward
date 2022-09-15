@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ModifAmorphic.Outward.Models
+﻿namespace ModifAmorphic.Outward.Models
 {
     public class CustomGuaranteedDrop
     {

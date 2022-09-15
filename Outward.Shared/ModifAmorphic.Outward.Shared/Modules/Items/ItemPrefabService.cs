@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.Modules.Items
@@ -20,51 +19,65 @@ namespace ModifAmorphic.Outward.Modules.Items
         private IModifLogger Logger => _loggerFactory.Invoke();
 
         private readonly ModifGoService _modifGoService;
-        private readonly Transform _itemPrefabParent;
+        private readonly ModifItemPrefabs _modifItemPrefabs;
+        public ModifItemPrefabs ModifItemPrefabs => _modifItemPrefabs;
+        //private readonly Transform _itemPrefabParent;
 
         private readonly Func<ResourcesPrefabManager> _prefabManagerFactory;
         private ResourcesPrefabManager PrefabManager => _prefabManagerFactory.Invoke();
 
         private readonly Dictionary<int, ItemLocalization> _itemLocalizations = new Dictionary<int, ItemLocalization>();
 
+        private Dictionary<string, Item> _itemPrefabs;
+
         internal ItemPrefabService(string modId, ModifGoService modifGoService, Func<ResourcesPrefabManager> prefabManagerFactory, Func<IModifLogger> loggerFactory)
         {
             this._modId = modId;
             this._loggerFactory = loggerFactory;
             this._modifGoService = modifGoService;
-            this._itemPrefabParent = modifGoService.GetModResources(modId, true).GetOrAddComponent<ItemPrefabs>().gameObject.transform;
+            this._modifItemPrefabs = modifGoService.GetModResources(modId, true).GetOrAddComponent<ModifItemPrefabs>();
             this._prefabManagerFactory = prefabManagerFactory;
 
             LocalizationManagerPatches.LoadItemLocalizationAfter += RegisterItemLocalizations;
             ItemPatches.GetItemIconBefore += SetCustomItemIcon;
+            ResourcesPrefabManagerPatches.TryGetItemPrefabActions.Add((int itemID, out Item item) =>
+            {
+                if (_modifItemPrefabs.Prefabs.ContainsKey(itemID))
+                {
+                    item = _modifItemPrefabs.Prefabs[itemID];
+                    return true;
+                }
+                item = null;
+                return false;
+            });
         }
         private void SetCustomItemIcon(Item item)
         {
             if (item.TryGetCustomIcon(out var icon))
                 item.SetItemIcon(icon);
         }
-        public T CreatePrefab<T>(int baseItemID, int newItemID, string name, string description, bool setFields) where T : Item
+        public T CreatePrefab<T>(int baseItemID, int newItemID, string name, string description, bool addToResoucesPrefabManager, bool setFields) where T : Item
         {
             var basePrefab = (T)PrefabManager.GetItemPrefab(baseItemID);
 
-            return CreatePrefab(basePrefab, newItemID, name, description, setFields);
+            return CreatePrefab(basePrefab, newItemID, name, description, addToResoucesPrefabManager, setFields);
         }
-        public T CreatePrefab<T>(T basePrefab, int newItemID, string name, string description, bool setFields) where T : Item
+        public T CreatePrefab<T>(T basePrefab, int newItemID, string name, string description, bool addToResoucesPrefabManager, bool setFields) where T : Item
         {
             if (string.IsNullOrEmpty(description))
                 description = basePrefab.Description;
 
             var baseActiveStatus = basePrefab.gameObject.activeSelf;
             basePrefab.gameObject.SetActive(false);
-            var prefab = (T)GameObject.Instantiate(basePrefab, _itemPrefabParent, false).GetComponent<Item>();
+            var prefab = (T)GameObject.Instantiate(basePrefab, _modifItemPrefabs.transform, false).GetComponent<Item>();
             prefab.gameObject.DeCloneNames();
             prefab.transform.ResetLocal();
             basePrefab.gameObject.SetActive(baseActiveStatus);
-            
+
             //UnityEngine.Object.DontDestroyOnLoad(prefab.gameObject);
             //basePrefab.gameObject.SetActive(baseActiveStatus);
             //prefab.hideFlags |= HideFlags.HideAndDontSave;
-            
+
 
             if (setFields)
             {
@@ -97,12 +110,13 @@ namespace ModifAmorphic.Outward.Modules.Items
             prefab.IsPrefab = true;
             prefab.SetNames(name)
                   .SetDescription(description);
-            var preActiveName = prefab.name;
-            Logger.LogDebug($"Prefab name before: {prefab.name}");
-            //prefab.gameObject.SetActive(true);
 
-            prefab.name = preActiveName;
-            Logger.LogDebug($"Prefab name after: {prefab.name}");
+            //var preActiveName = prefab.name;
+            //Logger.LogDebug($"Prefab name before: {prefab.name}");
+            ////prefab.gameObject.SetActive(true);
+
+            //prefab.name = preActiveName;
+            //Logger.LogDebug($"Prefab name after: {prefab.name}");
 
             var localization = new ItemLocalization(name, description);
             _itemLocalizations.AddOrUpdate(prefab.ItemID, new ItemLocalization(name, description));
@@ -110,7 +124,10 @@ namespace ModifAmorphic.Outward.Modules.Items
                                     .GetPrivateField<LocalizationManager, Dictionary<int, ItemLocalization>>("m_itemLocalization");
             localizations.AddOrUpdate(prefab.ItemID, localization);
 
-            GetItemPrefabs().AddOrUpdate(prefab.ItemIDString, prefab);
+            if (addToResoucesPrefabManager)
+                GetItemPrefabs().AddOrUpdate(prefab.ItemIDString, prefab);
+            else
+                _modifItemPrefabs.Add(prefab);
 
             return prefab;
         }
@@ -148,7 +165,6 @@ namespace ModifAmorphic.Outward.Modules.Items
             target.SetPrivateField("m_enchantmentIDs", source.GetPrivateField<Equipment, List<int>>("m_enchantmentIDs")?.ToList());
             target.SetPrivateField<Equipment, SummonedEquipment>("m_summonedEquipment", null);
         }
-        private Dictionary<string, Item> _itemPrefabs;
         public Dictionary<string, Item> GetItemPrefabs()
         {
             if (_itemPrefabs == null)

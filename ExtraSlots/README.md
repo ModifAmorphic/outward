@@ -38,6 +38,9 @@ Extra QuickSlots enables additional Keyboard QuickSlots and repositioning of the
 # Change Logs
 
 ## Latest Version ${PACKAGE_VERSION}
+- Fix for localization error occuring on startup.
+
+## Version ${1.0.3}
 - Built using Definitive Edition Dlls.
 
 ## Version 1.0.2

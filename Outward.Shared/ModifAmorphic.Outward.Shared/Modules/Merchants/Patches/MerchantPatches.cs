@@ -10,7 +10,7 @@ namespace ModifAmorphic.Outward.Modules.Merchants
     {
         [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
-        
+
         public static event Action<(Merchant Merchant, Transform MerchantInventoryTablePrefab, Dropable DropableInventory)> InitDropTableGameObjectAfter;
         //check the path Interactions/NPCs/NPC_Minor/MarketTradersHighPrices/UNPC_DLC_Market_Alchemy/NPC/MerchantSettings/
         //m_merchantInventoryTablePrefab.GetComponent<Dropable>() //Contains droptables
@@ -19,9 +19,7 @@ namespace ModifAmorphic.Outward.Modules.Merchants
 
         [HarmonyPatch("InitDropTableGameObject", MethodType.Normal)]
         [HarmonyPostfix]
-#pragma warning disable IDE0051 // Remove unused private members
         private static void InitDropTableGameObjectPostfix(Merchant __instance, ref Transform ___m_merchantInventoryTablePrefab, ref Dropable ___m_dropableInventory)
-#pragma warning restore IDE0051 // Remove unused private members
         {
             try
             {

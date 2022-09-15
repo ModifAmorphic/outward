@@ -1,9 +1,6 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
 
 namespace ModifAmorphic.Outward.Modules.Items.Patches
 {
@@ -25,7 +22,7 @@ namespace ModifAmorphic.Outward.Modules.Items.Patches
             try
             {
                 if (_item == null || string.IsNullOrEmpty(_item.UID))
-                    return ;
+                    return;
 
                 Logger.LogTrace($"{nameof(ItemManagerPatches)}::{nameof(GetSpecialVisualsPostfix)}(): Invoked on Item {_item.ItemID} - {_item.DisplayName} ({_item.UID}). Invoking {nameof(GetSpecialVisualsByItemAfter)}().");
                 GetSpecialVisualsByItemAfter?.Invoke(_item, ref __result);
@@ -46,7 +43,7 @@ namespace ModifAmorphic.Outward.Modules.Items.Patches
             try
             {
                 if (_item == null || string.IsNullOrEmpty(_item.UID))
-                    return ;
+                    return;
 
                 Logger.LogTrace($"{nameof(ItemManagerPatches)}::{nameof(GetVisualsByItemPostfix)}(): Invoked on Item {_item.ItemID} - {_item.DisplayName} ({_item.UID}). Invoking {nameof(GetVisualsByItemPostfix)}()");
                 GetVisualsByItemAfter?.Invoke(_item, ref __result);

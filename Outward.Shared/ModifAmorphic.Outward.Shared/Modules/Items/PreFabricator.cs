@@ -1,15 +1,9 @@
-﻿using Localizer;
-using ModifAmorphic.Outward.Patches;
+﻿using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.Modules.Items.Patches;
+using ModifAmorphic.Outward.Patches;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
-using UnityEngine;
-using ModifAmorphic.Outward.Extensions;
-using System.Reflection;
-using System.Collections.Concurrent;
-using ModifAmorphic.Outward.Modules.Items.Patches;
 
 namespace ModifAmorphic.Outward.Modules.Items
 {
@@ -20,19 +14,24 @@ namespace ModifAmorphic.Outward.Modules.Items
         private IModifLogger Logger => _loggerFactory.Invoke();
         private readonly ItemPrefabService _itemPrefabService;
 
+        public ModifItemPrefabs ModifItemPrefabs => _itemPrefabService.ModifItemPrefabs;
+
         public HashSet<Type> PatchDependencies => new HashSet<Type>() {
             typeof(LocalizationManagerPatches),
-            typeof(ItemPatches)
+            typeof(ItemPatches),
+            typeof(ResourcesPrefabManagerPatches),
         };
 
         public HashSet<Type> EventSubscriptions => new HashSet<Type>() {
             typeof(LocalizationManagerPatches),
-            typeof(ItemPatches)
+            typeof(ItemPatches),
+            typeof(ResourcesPrefabManagerPatches)
         };
 
         public HashSet<Type> DepsWithMultiLogger => new HashSet<Type>() {
             typeof(LocalizationManagerPatches),
-            typeof(ItemPatches)
+            typeof(ItemPatches),
+            typeof(ResourcesPrefabManagerPatches)
         };
 
         internal PreFabricator(string modId, ItemPrefabService itemPrefabService, Func<IModifLogger> loggerFactory)
@@ -42,13 +41,26 @@ namespace ModifAmorphic.Outward.Modules.Items
             this._itemPrefabService = itemPrefabService;
         }
 
-        public T CreatePrefab<T>(int baseItemID, int newItemID, string name, string description, bool setFields = false) where T : Item
+        public T CreatePrefab<T>(int baseItemID, int newItemID, string name, string description, bool addToResourcesPrefabManager, bool setFields = false) where T : Item
         {
-            return _itemPrefabService.CreatePrefab<T>(baseItemID, newItemID, name, description, setFields);
+            return _itemPrefabService.CreatePrefab<T>(baseItemID, newItemID, name, description, addToResourcesPrefabManager, setFields);
         }
-        public T CreatePrefab<T>(T basePrefab, int newItemID, string name, string description, bool setFields = false) where T : Item
+        public T CreatePrefab<T>(T basePrefab, int newItemID, string name, string description, bool addToResourcesPrefabManager, bool setFields = false) where T : Item
         {
-            return _itemPrefabService.CreatePrefab<T>(basePrefab, newItemID, name, description, setFields);
+            return _itemPrefabService.CreatePrefab<T>(basePrefab, newItemID, name, description, addToResourcesPrefabManager, setFields);
         }
+        public T GetPrefab<T>(int itemID) where T : Item
+        {
+            if (ModifItemPrefabs.Prefabs.TryGetValue(itemID, out var prefab) && prefab is T castPrefab)
+                return castPrefab;
+
+            return null;
+        }
+        public bool TryGetPrefab<T>(int itemID, out T prefab) where T : Item
+        {
+            prefab = GetPrefab<T>(itemID);
+            return prefab != null;
+        }
+        public void RemovePrefab(int itemID) => ModifItemPrefabs.Remove(itemID);
     }
 }

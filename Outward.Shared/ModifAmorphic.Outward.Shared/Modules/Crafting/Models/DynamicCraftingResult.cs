@@ -1,14 +1,11 @@
-﻿using ModifAmorphic.Outward.Extensions;
-using ModifAmorphic.Outward.Modules.Crafting.Models;
-using System;
+﻿using ModifAmorphic.Outward.Modules.Crafting.Models;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Modules.Crafting
 {
     public class DynamicCraftingResult : ItemReferenceQuantity
     {
-        IDynamicResultService _resultService;
+        private readonly IDynamicResultService _resultService;
         public IDynamicResultService ResultService => _resultService;
 
         private int _dynamicItemID = -1;

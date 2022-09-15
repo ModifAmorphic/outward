@@ -1,6 +1,5 @@
 ﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Models;
 using ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients;
 using ModifAmorphic.Outward.Modules.Crafting.Patches;
 using ModifAmorphic.Outward.Modules.Crafting.Services;
@@ -9,8 +8,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Modules.Crafting
 {
@@ -28,7 +25,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
         internal CustomCraftingService CustomCraftingService => _craftingService;
 
 
-        private readonly List<CraftingMenuMetadata> _registeredMenus = 
+        private readonly List<CraftingMenuMetadata> _registeredMenus =
             new List<CraftingMenuMetadata>();
 
         private readonly ConcurrentDictionary<int, List<CraftingMenuMetadata>> _characterMenus =
@@ -40,7 +37,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
         private readonly ConcurrentDictionary<Type, Dictionary<string, RecipeMetadata>> _customRecipes =
            new ConcurrentDictionary<Type, Dictionary<string, RecipeMetadata>>();
 
-        private readonly ConcurrentDictionary<Type, Recipe.CraftingType> _craftingStationTypes = 
+        private readonly ConcurrentDictionary<Type, Recipe.CraftingType> _craftingStationTypes =
             new ConcurrentDictionary<Type, Recipe.CraftingType>();
 
         public HashSet<Type> PatchDependencies => new HashSet<Type>() {
@@ -62,11 +59,11 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             typeof(CompatibleIngredientPatches),
             typeof(LocalizationManagerPatches)
         };
-        
+
         public readonly CraftingMenuEvents CraftingMenuEvents;
         internal CustomCraftingModule(CraftingMenuUIService menuUIService, RecipeDisplayService recipeDisplayService, CustomRecipeService customRecipeService, CustomCraftingService craftingService, CraftingMenuEvents craftingMenuEvents, Func<IModifLogger> loggerFactory)
         {
-            (_menuUiService, _recipeDisplayService, _customRecipeService, _craftingService, CraftingMenuEvents, _loggerFactory) = 
+            (_menuUiService, _recipeDisplayService, _customRecipeService, _craftingService, CraftingMenuEvents, _loggerFactory) =
                 (menuUIService, recipeDisplayService, customRecipeService, craftingService, craftingMenuEvents, loggerFactory);
             CharacterUIPatches.AwakeBefore += CharacterUIPatches_AwakeBefore;
             CharacterUIPatches.RegisterMenuAfter += CharacterUIPatches_RegisterMenuAfter;
@@ -97,9 +94,9 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             var menuType = craftingMenu.GetType();
             var playerID = characterUI.RewiredID;
             _craftingMenus.TryGetValue(menuType, out var metaParent);
-            
+
             var menuTabs = characterUI.GetPrivateField<CharacterUI, MenuTab[]>("m_menuTabs");
-            
+
             var meta = metaParent.Clone();
             meta.MenuType = menuType;
             meta.MenuPanel = craftingMenu;
@@ -123,7 +120,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             if (_craftingMenus.ContainsKey(typeof(T)))
                 throw new ArgumentException($"{nameof(CustomCraftingMenu)} of type {typeof(T)} already exists. " +
                     $"Only one instance of a type derived from {nameof(CustomCraftingMenu)} can be added.", nameof(T));
-            
+
             if (menuIcons != null)
                 menuIcons.TrySetIconNames(menuDisplayName);
 
@@ -139,11 +136,11 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                     MenuIcons = menuIcons,
                     FooterName = typeof(T).Name + "Footer",
                     //TabOrderNo = orderNo
-                }) ;
+                });
 
             _registeredMenus.Add(_craftingMenus[typeof(T)]);
 
-            _craftingStationTypes.TryAdd(typeof(T), 
+            _craftingStationTypes.TryAdd(typeof(T),
                 (Recipe.CraftingType)_menuUiService.AddIngredientTag());
 
             TryAddRecipes();
@@ -161,7 +158,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
         public void RegisterRecipe<T>(Recipe recipe) where T : CustomCraftingMenu
         {
             ValidateRecipe(recipe);
-
+            Logger.LogTrace($"{nameof(CustomCraftingModule)}:{nameof(RegisterRecipe)}:: Recipe {recipe.name} is valid.  Registering recipe.");
             var recipes = _customRecipes.GetOrAdd(typeof(T), new Dictionary<string, RecipeMetadata>());
 
             if (recipes.ContainsKey(recipe.UID.ToString()))
@@ -171,13 +168,13 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             recipes.Add(recipe.UID.ToString(),
                 new RecipeMetadata()
                 {
-                   CraftingStationType = typeof(T),
-                   Recipe = recipe
+                    CraftingStationType = typeof(T),
+                    Recipe = recipe
                 });
             TryAddRecipes();
         }
         public List<Recipe> GetRegisteredRecipes<T>() => _customRecipes.TryGetValue(typeof(T), out var recipes) ? recipes.Values.Select(r => r.Recipe).ToList() : new List<Recipe>();
-        public void RegisterCustomCrafter<T>(ICustomCrafter crafter)  where T : CustomCraftingMenu => _craftingService.AddOrUpdateCrafter<T>(crafter);
+        public void RegisterCustomCrafter<T>(ICustomCrafter crafter) where T : CustomCraftingMenu => _craftingService.AddOrUpdateCrafter<T>(crafter);
         public void RegisterMenuIngredientFilters<T>(MenuIngredientFilters filter) where T : CustomCraftingMenu
             => _craftingService.AddOrUpdateIngredientFilter<T>(filter);
         public void UnregisterMenuIngredientFilters<T>() where T : CustomCraftingMenu
@@ -188,7 +185,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             => _recipeDisplayService.AddOrUpdateRecipeVisibiltyController<T>(visibiltyController);
         public void UnregisterRecipeVisibiltyController<T>() where T : CustomCraftingMenu
             => _recipeDisplayService.TryRemoveRecipeVisibiltyController<T>();
-        public void RegisterCompatibleIngredientMatcher<T>(ICompatibleIngredientMatcher matcher) where T : CustomCraftingMenu 
+        public void RegisterCompatibleIngredientMatcher<T>(ICompatibleIngredientMatcher matcher) where T : CustomCraftingMenu
             => _craftingService.AddOrUpdateCompatibleIngredientMatcher<T>(matcher);
         public void RegisterConsumedItemSelector<T>(IConsumedItemSelector itemSelector) where T : CustomCraftingMenu
             => _craftingService.AddOrUpdateConsumedItemSelector<T>(itemSelector);
@@ -289,7 +286,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
                         //set the actual recipe value as well.
                         kvp.Value.Recipe.SetCraftingType(_craftingStationTypes[stationRecipes.Key]);
                         return kvp.Value.Recipe;
-                    });
+                    }).ToList();
+                Logger.LogDebug($"{nameof(CustomCraftingModule)}:{nameof(TryAddRecipes)}:: Registering {recipes?.Count()} recipes for crafting station type {stationRecipes.Key}.");
                 _customRecipeService.AddRecipes(recipes);
             }
         }
@@ -305,7 +303,7 @@ namespace ModifAmorphic.Outward.Modules.Crafting
             for (int i = _registeredMenus.Count - 1; i >= 0; i--)
             {
                 var menu = _registeredMenus[i];
-                
+
                 menu.MenuScreenNo = screenNo++;
 
                 menuTypes[menu.MenuScreenNo] = menu.MenuType;

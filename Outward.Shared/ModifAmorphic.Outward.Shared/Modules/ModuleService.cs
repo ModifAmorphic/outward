@@ -5,8 +5,6 @@ using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Patches;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Modules
 {
@@ -85,6 +83,6 @@ namespace ModifAmorphic.Outward.Modules
         {
             return _patcher ?? (_patcher = new Harmony("modifamorphic.outward")); //_modPatchers.GetOrAdd(modId, (x) => new Harmony("modifamorphic.outward"));
         }
-        
+
     }
 }

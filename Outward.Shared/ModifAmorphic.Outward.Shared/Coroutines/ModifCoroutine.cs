@@ -2,9 +2,7 @@
 using ModifAmorphic.Outward.Logging;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.Coroutines
@@ -16,7 +14,7 @@ namespace ModifAmorphic.Outward.Coroutines
         protected const float DefaultTicSeconds = .25f;
         protected readonly BaseUnityPlugin _unityPlugin;
 
-        public ModifCoroutine(BaseUnityPlugin unityPlugin, Func<IModifLogger> getLogger) => 
+        public ModifCoroutine(BaseUnityPlugin unityPlugin, Func<IModifLogger> getLogger) =>
             (_unityPlugin, _getLogger) = (unityPlugin, getLogger);
 
         public IEnumerator InvokeAfter(Func<bool> condition, Action action, int timeoutSecs, float waitTicSecs = 0f, Func<bool> cancelCondition = null)
@@ -36,7 +34,7 @@ namespace ModifAmorphic.Outward.Coroutines
             int waits = 0;
             var isCanceled = cancelCondition?.Invoke() ?? false;
             while (!condition.Invoke() && !isCanceled &&
-                (waits++ < maxWaits || (useStopwatch && stopwatch.Elapsed.TotalSeconds < timeoutSecs)) )
+                (waits++ < maxWaits || (useStopwatch && stopwatch.Elapsed.TotalSeconds < timeoutSecs)))
             {
                 isCanceled = cancelCondition?.Invoke() ?? false;
                 if (waitTicSecs > 0f)
@@ -71,12 +69,12 @@ namespace ModifAmorphic.Outward.Coroutines
                 Logger.LogError($"{this.GetType().Name}::{nameof(InvokeAfter)}: Timed out after waiting {timeoutSecs} seconds for condition {condition.Method.Name} to be met." +
                     $" Action not invoked: {action.Method.Name}.");
             }
-            
+
         }
         public IEnumerator InvokeAfter<T>(Func<bool> condition, Action<T> action, Func<T> valueFactory, int timeoutSecs, float waitTicSecs = 0f, Func<bool> cancelCondition = null)
         {
             var maxWaits = (int)(timeoutSecs / waitTicSecs);
-            
+
             bool useStopwatch = false;
             var stopwatch = new Stopwatch();
 
@@ -149,9 +147,26 @@ namespace ModifAmorphic.Outward.Coroutines
                     $" Exiting Coroutine.");
         }
 
-        public void StartRoutine(IEnumerator routine)
+        public Coroutine StartRoutine(IEnumerator routine) => _unityPlugin.StartCoroutine(routine);
+        public void StopRoutine(IEnumerator routine) => _unityPlugin.StopCoroutine(routine);
+
+        public Coroutine DoNextFrame(Action action) => _unityPlugin.StartCoroutine(NextFrameCoroutine(action));
+
+        public Coroutine DoWhen(Func<bool> condition, Action action, int timeoutSecs, float waitTicSecs = 0f, Func<bool> cancelCondition = null) =>
+            _unityPlugin.StartCoroutine(InvokeAfter(condition, action, timeoutSecs, waitTicSecs, cancelCondition));
+
+        public Coroutine DoWhen<T>(Func<bool> condition, Action<T> action, Func<T> valueFactory, int timeoutSecs, float waitTicSecs = 0f, Func<bool> cancelCondition = null) =>
+            _unityPlugin.StartCoroutine(InvokeAfter(condition, action, valueFactory, timeoutSecs, waitTicSecs, cancelCondition));
+
+        public Coroutine DoWhile(Func<bool> whileCondition, Action action, float waitTicSecs = 0f) =>
+            _unityPlugin.StartCoroutine(InvokeUntil(() => !whileCondition(), action, waitTicSecs));
+
+        private IEnumerator NextFrameCoroutine(Action action)
         {
-            _unityPlugin.StartCoroutine(routine);
+            yield return null;
+            Logger.LogDebug($"{this.GetType().Name}::{nameof(NextFrameCoroutine)}:" +
+                    $" Invoking action {action.Method.Name}.");
+            action.Invoke();
         }
     }
 }

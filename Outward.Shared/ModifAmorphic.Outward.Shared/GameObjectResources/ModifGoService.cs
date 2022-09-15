@@ -1,35 +1,34 @@
 ﻿using ModifAmorphic.Outward.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace ModifAmorphic.Outward.GameObjectResources
 {
     public class ModifGoService
     {
         private readonly Func<IModifLogger> _loggerFactory;
+#pragma warning disable IDE0051 // Remove unused private members
         private IModifLogger Logger => _loggerFactory.Invoke();
+#pragma warning restore IDE0051 // Remove unused private members
 
         const string RootPath = "ModifShared";
         const string ActivablePath = "Activable";
         const string InactivablePath = "Inactivable";
 
-        private GameObject _modifRoot;
+        private readonly GameObject _modifRoot;
         public GameObject ModifRoot => _modifRoot;
 
-        private GameObject _activable;
+        private readonly GameObject _activable;
         public GameObject Activable => _activable;
 
-        private GameObject _inactivable;
+        private readonly GameObject _inactivable;
         public GameObject Inactivable => _inactivable;
 
         public ModifGoService(Func<IModifLogger> loggerFactory)
         {
             _loggerFactory = loggerFactory;
             _modifRoot = GetOrAddModifRoot();
-            _activable = GetOrAddActivatable();
+            _activable = GetOrAddActivable();
             _inactivable = GetOrAddInactivable();
         }
 
@@ -37,6 +36,13 @@ namespace ModifAmorphic.Outward.GameObjectResources
         {
             var modName = modId.Replace(".", "_");
             return activable ? GetOrAddActivableModGo(modName) : GetOrAddInactivableModGo(modName);
+        }
+
+        public ModifItemPrefabs GetItemPrefabs(string modId)
+        {
+            var modGo = GetModResources(modId, true);
+
+            return modGo.GetOrAddComponent<ModifItemPrefabs>();
         }
 
         private GameObject GetOrAddModifRoot()
@@ -51,7 +57,7 @@ namespace ModifAmorphic.Outward.GameObjectResources
             }
             return root;
         }
-        private GameObject GetOrAddActivatable()
+        private GameObject GetOrAddActivable()
         {
             var activable = ModifRoot.transform.Find("Activable")?.gameObject;
             if (!activable)

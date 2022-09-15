@@ -15,6 +15,15 @@ namespace ModifAmorphic.Outward.Transmorphic.Alchemy
 
         public bool TryGetConsumedItems(CompatibleIngredient compatibleIngredient, bool useMultipler, ref int resultMultiplier, out IList<KeyValuePair<string, int>> consumedItems, out List<Item> preservedItems)
         {
+            //Necessary to prevent alchemy kit from being consumed when learning new recipes
+            if (AlchemySettings.AlchemyKitItemIDs.Contains(compatibleIngredient.ItemID))
+            {
+                //Don't consume the alchemy kit
+                consumedItems = new List<KeyValuePair<string, int>>();
+                preservedItems = compatibleIngredient.GetPrivateField<CompatibleIngredient, List<Item>>("m_ownedItems").ToList();
+                return true;
+            }
+
             consumedItems = default;
             preservedItems = default;
             //Let the base code figure out the consumed items list

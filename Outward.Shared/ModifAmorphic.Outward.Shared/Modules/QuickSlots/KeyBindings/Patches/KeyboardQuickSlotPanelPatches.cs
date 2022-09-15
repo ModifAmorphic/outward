@@ -1,8 +1,6 @@
 ﻿using HarmonyLib;
-using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Logging;
 using System;
-using System.Linq;
 
 namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
 {
@@ -10,17 +8,21 @@ namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
     internal static class KeyboardQuickSlotPanelPatches
     {
         private static int _quickslotsToAdd;
-        private static int _exQuickslotStartId;
+        private static int _quickslotStartId;
+
+        private static bool _isInitialized = false;
+
+        public static void Configure(int qsToAdd, int qsStartId)
+        {
+            if (_isInitialized)
+                throw new InvalidOperationException($"{nameof(KeyboardQuickSlotPanelPatches)}.{nameof(Configure)} cannot be called after the {nameof(KeyboardQuickSlotPanel)}'s InitializeQuickSlotDisplays method has been called.");
+
+            _quickslotsToAdd = qsToAdd;
+            _quickslotStartId = qsStartId;
+        }
 
         [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
-        private static void QuickSlotExtenderEvents_SlotsChanged(object sender, QuickSlotExtendedArgs e) => (_quickslotsToAdd, _exQuickslotStartId) = (e.ExtendedQuickSlots.Count(), e.StartId);
-
-        [EventSubscription]
-        public static void SubscribeToEvents()
-        {
-            QuickSlotExtenderEvents.SlotsChanged += QuickSlotExtenderEvents_SlotsChanged;
-        }
 
         /// <summary>
         /// Adds extra slots to the displayed keyboard quick slot panel.
@@ -29,6 +31,7 @@ namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
         [HarmonyPrefix]
         public static void OnInitializeQuickSlotDisplays_AddExtraSlots(KeyboardQuickSlotPanel __instance)
         {
+            _isInitialized = true;
             if (_quickslotsToAdd < 1)
                 return;
 
@@ -36,7 +39,7 @@ namespace ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings
             {
                 int exStartIndex = __instance.DisplayOrder.Length;
                 int exEndIndex = __instance.DisplayOrder.Length + _quickslotsToAdd;
-                int exSlotId = _exQuickslotStartId;
+                int exSlotId = _quickslotStartId;
                 Array.Resize(ref __instance.DisplayOrder, exEndIndex);
                 Logger.LogTrace($"{nameof(OnInitializeQuickSlotDisplays_AddExtraSlots)}(): exStartIndex={exStartIndex}; exEndIndex={exEndIndex}; Starting Quickslot Id={exSlotId})");
                 for (int n = exStartIndex; n < exEndIndex; n++)

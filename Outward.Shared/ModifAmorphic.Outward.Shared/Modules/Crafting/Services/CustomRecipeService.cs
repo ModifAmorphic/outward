@@ -1,10 +1,8 @@
 ﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Modules.Crafting.CompatibleIngredients;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace ModifAmorphic.Outward.Modules.Crafting.Services
 {
@@ -22,14 +20,15 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
         public void AddRecipe(Recipe recipe)
         {
             var m_recipes = _recipeManager.GetPrivateField<RecipeManager, Dictionary<string, Recipe>>("m_recipes");
-            var m_recipeUIDsPerUstensils = _recipeManager.GetPrivateField<RecipeManager, Dictionary<Recipe.CraftingType, List<UID>>>("m_recipeUIDsPerUstensils");
 
             m_recipes.Add(recipe.UID, recipe);
             var stationRecipes = AddOrGetCraftingStationRecipes(recipe.CraftingStationType);
             stationRecipes.Add(recipe.UID);
+            Logger.LogDebug($"{nameof(CustomRecipeService)}:{nameof(AddRecipe)}:: Added recipe '{recipe.UID} - {recipe.Name}' to RecipeManager for CraftingStationType {recipe.CraftingStationType}.");
         }
         public void AddRecipes(IEnumerable<Recipe> recipes)
         {
+            Logger.LogDebug($"{nameof(CustomRecipeService)}:{nameof(AddRecipe)}:: Adding {recipes.Count()} recipes to RecipeManager.");
             foreach (var r in recipes)
                 AddRecipe(r);
         }

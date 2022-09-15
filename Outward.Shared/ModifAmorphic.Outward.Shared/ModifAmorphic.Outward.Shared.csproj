@@ -2,15 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>ModifAmorphic.Outward.Shared.v0_0_0_8</AssemblyName>
+    <AssemblyName>ModifAmorphic.Outward.Shared.v0_0_0_9</AssemblyName>
     <RootNamespace>ModifAmorphic.Outward</RootNamespace>
     <Authors>ModifAmorphic.Outward</Authors>
     <Product>ModifAmorphic.Outward</Product>
     <PackageId>ModifAmorphic.Outward</PackageId>
+    <DebugType>portable</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>full</DebugType>
+    <DebugType>portable</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
@@ -18,46 +19,57 @@
     <Reference Include="0Harmony">
       <HintPath>..\..\outward-shared-assemblies\0Harmony.dll</HintPath>
       <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\outward-shared-assemblies\Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\..\outward-shared-assemblies\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
     </Reference>
     <Reference Include="BepInEx">
       <HintPath>..\..\outward-shared-assemblies\BepInEx.dll</HintPath>
       <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
     </Reference>
     <Reference Include="Rewired_Core">
       <HintPath>..\..\outward-shared-assemblies\Rewired_Core.dll</HintPath>
       <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
     </Reference>
     <Reference Include="SideLoader">
       <HintPath>..\..\outward-shared-assemblies\SideLoader.dll</HintPath>
       <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.dll</HintPath>
       <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
     </Reference>
     <Reference Include="UnityEngine.ImageConversionModule">
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.ImageConversionModule.dll</HintPath>
       <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.UI.dll</HintPath>
       <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
     </Reference>
     <Reference Include="UnityEngine.UIModule">
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.UIModule.dll</HintPath>
       <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
     </Reference>
   </ItemGroup>
 
