@@ -29,12 +29,6 @@
 - - - -
 &nbsp;
 
-### Set Hotkeys with a Click
-  ![Hotkey Capture](https://github.com/ModifAmorphic/outward/blob/mods/actionui/ActionUI/Assets/ReadmeAssets/HotbarCapture.png?raw=true)
-&nbsp;
-- - - -
-&nbsp;
-
 ## Drag Skills, Items from right from Inventory 
 ![Drag and Drop to Action Slots](https://github.com/ModifAmorphic/outward/blob/mods/actionui/ActionUI/Assets/ReadmeAssets/ActionSlotsDragging.png?raw=true)
 
