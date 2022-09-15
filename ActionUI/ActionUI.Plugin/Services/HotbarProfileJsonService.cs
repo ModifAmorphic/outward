@@ -1,7 +1,7 @@
-﻿using ModifAmorphic.Outward.ActionMenus.DataModels;
-using ModifAmorphic.Outward.ActionMenus.Extensions;
-using ModifAmorphic.Outward.ActionMenus.Models;
-using ModifAmorphic.Outward.ActionMenus.Settings;
+﻿using ModifAmorphic.Outward.UI.DataModels;
+using ModifAmorphic.Outward.UI.Extensions;
+using ModifAmorphic.Outward.UI.Models;
+using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
@@ -14,7 +14,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine.Events;
 
-namespace ModifAmorphic.Outward.ActionMenus.Services
+namespace ModifAmorphic.Outward.UI.Services
 {
     
     public class HotbarProfileJsonService : IHotbarProfileService
@@ -37,7 +37,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             profileService.OnActiveProfileChanged.AddListener(RefreshCachedProfile);
         }
 
-        private void RefreshCachedProfile(IActionMenusProfile obj)
+        private void RefreshCachedProfile(IActionUIProfile obj)
         {
             _hotbarProfile = GetProfileData();
             OnProfileChanged.TryInvoke(_hotbarProfile);
@@ -63,7 +63,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private void Save(IHotbarProfile hotbarProfile)
         {
             var json = JsonConvert.SerializeObject(hotbarProfile, Formatting.Indented);
-            var profileFile = Path.Combine(_profileService.GetActiveActionMenusProfile().Path, HotbarsConfigFile);
+            var profileFile = Path.Combine(_profileService.GetActiveActionUIProfile().Path, HotbarsConfigFile);
 
             File.WriteAllText(profileFile, json);
         }
@@ -314,7 +314,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
         private HotbarProfileData GetProfileData()
         {
-            string profileFile = Path.Combine(_profileService.GetActiveActionMenusProfile().Path, HotbarsConfigFile);
+            string profileFile = Path.Combine(_profileService.GetActiveActionUIProfile().Path, HotbarsConfigFile);
 
             if (!File.Exists(profileFile))
             {

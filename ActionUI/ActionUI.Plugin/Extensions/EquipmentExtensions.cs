@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using static EquipmentSlot;
 
-namespace ModifAmorphic.Outward.ActionMenus.Extensions
+namespace ModifAmorphic.Outward.UI.Extensions
 {
     internal static class EquipmentExtensions
     {

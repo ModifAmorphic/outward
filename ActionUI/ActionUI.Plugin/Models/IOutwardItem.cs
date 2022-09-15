@@ -1,4 +1,4 @@
-﻿namespace ModifAmorphic.Outward.ActionMenus.Models
+﻿namespace ModifAmorphic.Outward.UI.Models
 {
     internal interface IOutwardItem
     {

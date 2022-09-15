@@ -1,5 +1,5 @@
-﻿using ModifAmorphic.Outward.ActionMenus.Patches;
-using ModifAmorphic.Outward.ActionMenus.Settings;
+﻿using ModifAmorphic.Outward.UI.Patches;
+using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.Services
+namespace ModifAmorphic.Outward.UI.Services
 {
     internal class SharedServicesInjector
     {
@@ -29,10 +29,10 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private void AddSharedServices(SplitPlayer splitPlayer, Character character)
         {
             var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
-            var profileService = new ProfileService(Path.Combine(ActionMenuSettings.ProfilesPath, character.UID), _getLogger);
+            var profileService = new ProfileService(Path.Combine(ActionUISettings.ProfilesPath, character.UID), _getLogger);
 
             psp
-                .AddSingleton<IActionMenusProfileService>(profileService);
+                .AddSingleton<IActionUIProfileService>(profileService);
         }
     }
 }

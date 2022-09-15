@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.Patches
+namespace ModifAmorphic.Outward.UI.Patches
 {
     [HarmonyPatch(typeof(CharacterUI))]
     internal static class CharacterUIPatches

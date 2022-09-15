@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
-using ModifAmorphic.Outward.ActionMenus.Patches;
-using ModifAmorphic.Outward.ActionMenus.Services;
-using ModifAmorphic.Outward.ActionMenus.Settings;
+using ModifAmorphic.Outward.UI.Patches;
+using ModifAmorphic.Outward.UI.Services;
+using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus
+namespace ModifAmorphic.Outward.UI
 {
     internal class HotbarsStartup : IStartable
     {

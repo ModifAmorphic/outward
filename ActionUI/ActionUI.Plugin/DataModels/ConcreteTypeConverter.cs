@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.DataModels
+namespace ModifAmorphic.Outward.UI.DataModels
 {
     public class ConcreteTypeConverter<TConcrete> : JsonConverter
     {

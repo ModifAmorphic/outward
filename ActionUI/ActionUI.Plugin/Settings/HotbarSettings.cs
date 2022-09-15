@@ -1,5 +1,5 @@
-﻿using ModifAmorphic.Outward.ActionMenus.DataModels;
-using ModifAmorphic.Outward.ActionMenus.Models;
+﻿using ModifAmorphic.Outward.UI.DataModels;
+using ModifAmorphic.Outward.UI.Models;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using System;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.Settings
+namespace ModifAmorphic.Outward.UI.Settings
 {
     public class HotbarSettings
     {

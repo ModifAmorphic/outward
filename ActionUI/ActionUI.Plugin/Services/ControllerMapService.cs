@@ -1,8 +1,8 @@
 ﻿using BepInEx;
-using ModifAmorphic.Outward.ActionMenus.DataModels;
-using ModifAmorphic.Outward.ActionMenus.Models;
-using ModifAmorphic.Outward.ActionMenus.Patches;
-using ModifAmorphic.Outward.ActionMenus.Settings;
+using ModifAmorphic.Outward.UI.DataModels;
+using ModifAmorphic.Outward.UI.Models;
+using ModifAmorphic.Outward.UI.Patches;
+using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
@@ -16,7 +16,7 @@ using System.Text;
 using System.Xml;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.ActionMenus.Services
+namespace ModifAmorphic.Outward.UI.Services
 {
     internal class ControllerMapService
     {
@@ -30,7 +30,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private readonly Player _player;
         private readonly ModifCoroutine _coroutine;
 
-        private readonly static HashSet<string> ActionMenusMapKeys = new HashSet<string>()
+        private readonly static HashSet<string> ActionUIMapKeys = new HashSet<string>()
         {
             "RewiredData&playerName=Player0&dataType=ControllerMap&controllerMapType=KeyboardMap&categoryId=131000&layoutId=0&hardwareIdentifier=Keyboard",
             "RewiredData&playerName=Player0&dataType=ControllerMap&controllerMapType=MouseMap&categoryId=131000&layoutId=0&hardwareIdentifier=Mouse",
@@ -95,7 +95,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             _profileService = (ProfileService)profileManager.ProfileService;
             _hotbarData = (HotbarProfileJsonService)profileManager.HotbarProfileService;
 
-            RewiredInputsPatches.BeforeExportXmlData += RemoveActionMenusMaps;
+            RewiredInputsPatches.BeforeExportXmlData += RemoveActionUIMaps;
             RewiredInputsPatches.AfterExportXmlData += RewiredInputsPatches_AfterExportXmlData;
 
             _captureDialog.OnKeysSelected += CaptureDialog_OnKeysSelected;
@@ -110,12 +110,12 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             }
         }
 
-        private void RemoveActionMenusMaps(int playerId, ref Dictionary<string, string> mappingData)
+        private void RemoveActionUIMaps(int playerId, ref Dictionary<string, string> mappingData)
         {
             if (playerId != _player.id)
                 return;
 
-            foreach(string mapKey in ActionMenusMapKeys)
+            foreach(string mapKey in ActionUIMapKeys)
             {
                 try
                 {
@@ -430,7 +430,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
         private string GetProfileFolder()
         {
-            var activeProfile = (ActionMenusProfile)_profileService.GetActiveProfile();
+            var activeProfile = (ActionUIProfile)_profileService.GetActiveProfile();
             return activeProfile.Path;
         }
 

@@ -1,4 +1,4 @@
-﻿using ModifAmorphic.Outward.ActionMenus.Settings;
+﻿using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Extensions;
 using Rewired;
 using System;
@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.Settings
+namespace ModifAmorphic.Outward.UI.Settings
 {
     internal static class RewiredConstants
     {
@@ -49,8 +49,8 @@ namespace ModifAmorphic.Outward.ActionMenus.Settings
 
             public const string SelectHotbarNameFormat = "SelectHotbar_00";
 
-            public static readonly string DefaultKeyboardMapFile = Path.Combine(ActionMenuSettings.PluginPath, "Profiles", "Default", "Default-Keyboard-Map_ActionSlots.xml");
-            public static readonly string DefaultMouseMapFile = Path.Combine(ActionMenuSettings.PluginPath, "Profiles", "Default", "Default-Mouse-Map_ActionSlots.xml");
+            public static readonly string DefaultKeyboardMapFile = Path.Combine(ActionUISettings.PluginPath, "Profiles", "Default", "Default-Keyboard-Map_ActionSlots.xml");
+            public static readonly string DefaultMouseMapFile = Path.Combine(ActionUISettings.PluginPath, "Profiles", "Default", "Default-Mouse-Map_ActionSlots.xml");
             public static readonly string DefaultJoystickMapFile = string.Empty;
 
             static ActionSlots()

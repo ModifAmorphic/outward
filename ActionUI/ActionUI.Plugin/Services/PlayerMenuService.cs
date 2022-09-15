@@ -1,8 +1,8 @@
 ﻿using BepInEx;
-using ModifAmorphic.Outward.ActionMenus.DataModels;
-using ModifAmorphic.Outward.ActionMenus.Monobehaviours;
-using ModifAmorphic.Outward.ActionMenus.Patches;
-using ModifAmorphic.Outward.ActionMenus.Settings;
+using ModifAmorphic.Outward.UI.DataModels;
+using ModifAmorphic.Outward.UI.Monobehaviours;
+using ModifAmorphic.Outward.UI.Patches;
+using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.GameObjectResources;
@@ -19,7 +19,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ModifAmorphic.Outward.ActionMenus.Services
+namespace ModifAmorphic.Outward.UI.Services
 {
     internal class PlayerMenuService
     {
@@ -130,7 +130,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             }
         }
 
-        private ActionMenusProfile GetOrCreateActiveProfile(ProfileManager profileManager)
+        private ActionUIProfile GetOrCreateActiveProfile(ProfileManager profileManager)
         {
             var activeProfile = profileManager.ProfileService.GetActiveProfile();
 
@@ -140,15 +140,15 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 var names = profileManager.ProfileService.GetProfileNames();
                 if (names == null || !names.Any())
                 {
-                    Logger.LogDebug($"No profiles found. Creating default profile '{ActionMenuSettings.DefaultProfile.Name}'");
-                    profileManager.ProfileService.SaveNew(ActionMenuSettings.DefaultProfile);
+                    Logger.LogDebug($"No profiles found. Creating default profile '{ActionUISettings.DefaultProfile.Name}'");
+                    profileManager.ProfileService.SaveNew(ActionUISettings.DefaultProfile);
                     names = profileManager.ProfileService.GetProfileNames();
                 }
                 else
                     profileManager.ProfileService.SetActiveProfile(names.First());
             }
 
-            return (ActionMenusProfile)profileManager.ProfileService.GetActiveProfile();
+            return (ActionUIProfile)profileManager.ProfileService.GetActiveProfile();
         }
 
         private void AddSplitScreenScaler(PlayerActionMenus actionMenus, CharacterUI characterUI)

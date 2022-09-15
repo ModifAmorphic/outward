@@ -1,11 +1,11 @@
-﻿using ModifAmorphic.Outward.ActionMenus.Settings;
+﻿using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using Rewired;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.Services
+namespace ModifAmorphic.Outward.UI.Services
 {
     internal class HotbarKeyListener : IHotbarNavActions
     {

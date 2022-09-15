@@ -1,7 +1,7 @@
 ﻿
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.ActionMenus.Settings;
+using ModifAmorphic.Outward.UI.Settings;
 using BepInEx;
 using System;
 using System.IO;
@@ -11,14 +11,14 @@ using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using System.Linq;
 using ModifAmorphic.Outward.GameObjectResources;
-using ModifAmorphic.Outward.ActionMenus.Services;
-using ModifAmorphic.Outward.ActionMenus.Plugin.Services;
+using ModifAmorphic.Outward.UI.Services;
+using ModifAmorphic.Outward.UI.Plugin.Services;
 using Rewired;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using HarmonyLib;
-using ModifAmorphic.Outward.ActionMenus.Patches;
+using ModifAmorphic.Outward.UI.Patches;
 
-namespace ModifAmorphic.Outward.ActionMenus
+namespace ModifAmorphic.Outward.UI
 {
     internal class Startup
     {
@@ -49,7 +49,7 @@ namespace ModifAmorphic.Outward.ActionMenus
 
             _loggerFactory = services.GetServiceFactory<IModifLogger>();
 
-            var actionMenusPrefab = ConfigureAssetBundle();
+            var actionUIPrefab = ConfigureAssetBundle();
 
             services
                 .AddSingleton(new SharedServicesInjector(
@@ -59,7 +59,7 @@ namespace ModifAmorphic.Outward.ActionMenus
                         services.GetService<ModifGoService>(),
                         services.GetService<IModifLogger>))
                 .AddSingleton(new PlayerMenuService(services.GetService<BaseUnityPlugin>(),
-                                                  actionMenusPrefab.GetComponentInChildren<PlayerActionMenus>(true).gameObject,
+                                                  actionUIPrefab.GetComponentInChildren<PlayerActionMenus>(true).gameObject,
                                                   services.GetService<PositionsService>(),
                                                   services.GetService<LevelCoroutines>(),
                                                   services.GetService<ModifGoService>(),
@@ -91,8 +91,8 @@ namespace ModifAmorphic.Outward.ActionMenus
         public GameObject ConfigureAssetBundle()
         {
             var scriptsGo = AttachScripts(typeof(PlayerActionMenus).Assembly);
-            Logger.LogDebug($"Loading asset bundle action-menus.");
-            var menuBundle = LoadAssetBundle(_services.GetService<BaseUnityPlugin>().GetPluginDirectory(), "asset-bundles", "action-menus");
+            Logger.LogDebug($"Loading asset bundle action-ui.");
+            var menuBundle = LoadAssetBundle(_services.GetService<BaseUnityPlugin>().GetPluginDirectory(), "asset-bundles", "action-ui");
             var allAssetNames = menuBundle.GetAllAssetNames();
             var logAssets = "";
             foreach (string name in allAssetNames)
@@ -100,10 +100,10 @@ namespace ModifAmorphic.Outward.ActionMenus
                 logAssets += name + ", ";
             }
             Logger.LogDebug($"Assets in Bundle: " + logAssets);
-            var actionMenusPrefab = menuBundle.LoadAsset<GameObject>("assets/prefabs/actionmenus.prefab");
-            actionMenusPrefab.SetActive(false);
-            Logger.LogDebug($"Loaded asset assets/prefabs/actionmenus.prefab.");
-            UnityEngine.Object.DontDestroyOnLoad(actionMenusPrefab);
+            var actionUiPrefab = menuBundle.LoadAsset<GameObject>("assets/prefabs/actionui.prefab");
+            actionUiPrefab.SetActive(false);
+            Logger.LogDebug($"Loaded asset assets/prefabs/actionui.prefab.");
+            UnityEngine.Object.DontDestroyOnLoad(actionUiPrefab);
 
             //var positionBgPrefab = menuBundle.LoadAsset<GameObject>("assets/prefabs/positionablebg.prefab");
             //positionBgPrefab.SetActive(false);
@@ -115,9 +115,9 @@ namespace ModifAmorphic.Outward.ActionMenus
             var modGo = _services.GetService<ModifGoService>()
                                  .GetModResources(ModInfo.ModId, false);
 
-            actionMenusPrefab.transform.SetParent(modGo.transform);
+            actionUiPrefab.transform.SetParent(modGo.transform);
 
-            var pspPrefab = actionMenusPrefab.transform.Find("PlayersServicesProvider").gameObject;
+            var pspPrefab = actionUiPrefab.transform.Find("PlayersServicesProvider").gameObject;
             var modActiveGo = _services.GetService<ModifGoService>()
                                  .GetModResources(ModInfo.ModId, true);
             var psp = UnityEngine.Object.Instantiate(pspPrefab);
@@ -125,11 +125,11 @@ namespace ModifAmorphic.Outward.ActionMenus
             psp.transform.SetParent(modActiveGo.transform);
             psp.name = "PlayersServicesProvider";
 
-            var positionBgPrefab = actionMenusPrefab.transform.Find("PositionableBg").gameObject;
+            var positionBgPrefab = actionUiPrefab.transform.Find("PositionableBg").gameObject;
             var positionBg = UnityEngine.Object.Instantiate(positionBgPrefab, modGo.transform);
             positionBg.name = "PositionableBg";
 
-            var actionSpritesPrefab = actionMenusPrefab.transform.Find("ActionSprites").gameObject;
+            var actionSpritesPrefab = actionUiPrefab.transform.Find("ActionSprites").gameObject;
             var actionSprites = UnityEngine.Object.Instantiate(actionSpritesPrefab);
 
             actionSprites.transform.SetParent(modActiveGo.transform);
@@ -140,7 +140,7 @@ namespace ModifAmorphic.Outward.ActionMenus
             UnityEngine.Object.Destroy(actionSpritesPrefab);
             UnityEngine.Object.Destroy(scriptsGo);
 
-            return actionMenusPrefab;
+            return actionUiPrefab;
 
         }
         public GameObject AttachScripts(Assembly sourceAssembly)

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
 {
-    public interface IActionMenusProfile
+    public interface IActionUIProfile
     {
         string Name { get; set; }
         bool ActionSlotsEnabled { get; set;  }

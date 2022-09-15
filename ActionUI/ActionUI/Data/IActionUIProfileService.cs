@@ -5,15 +5,15 @@ using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
 {
-    public interface IActionMenusProfileService
+    public interface IActionUIProfileService
     {
         IEnumerable<string> GetProfileNames();
-        IActionMenusProfile GetActiveProfile();
-        UnityEvent<IActionMenusProfile> OnNewProfile { get; }
-        UnityEvent<IActionMenusProfile> OnActiveProfileChanged { get; }
+        IActionUIProfile GetActiveProfile();
+        UnityEvent<IActionUIProfile> OnNewProfile { get; }
+        UnityEvent<IActionUIProfile> OnActiveProfileChanged { get; }
         void SetActiveProfile(string name);
         void Save();
-        void SaveNew(IActionMenusProfile profile);
+        void SaveNew(IActionUIProfile profile);
         void Rename(string newName);
     }
 }

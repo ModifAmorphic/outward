@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.Patches
+namespace ModifAmorphic.Outward.UI.Patches
 {
     [HarmonyPatch(typeof(NetworkLevelLoader))]
     internal class NetworkLevelLoaderPatches

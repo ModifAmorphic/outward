@@ -1,5 +1,5 @@
-﻿using ModifAmorphic.Outward.ActionMenus.DataModels;
-using ModifAmorphic.Outward.ActionMenus.Patches;
+﻿using ModifAmorphic.Outward.UI.DataModels;
+using ModifAmorphic.Outward.UI.Patches;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.GameObjectResources;
@@ -14,7 +14,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ModifAmorphic.Outward.ActionMenus.Services
+namespace ModifAmorphic.Outward.UI.Services
 {
     internal class PositionsService
     {
@@ -80,7 +80,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             bg.GetComponentInChildren<Text>().text = transform.name;
         }
 
-        public void ToggleQuickslotsPositonable(ActionMenusProfile profile, PlayerActionMenus actionMenus, CharacterUI characterUI)
+        public void ToggleQuickslotsPositonable(ActionUIProfile profile, PlayerActionMenus actionMenus, CharacterUI characterUI)
         {
             if (!profile.ActionSlotsEnabled)
             {

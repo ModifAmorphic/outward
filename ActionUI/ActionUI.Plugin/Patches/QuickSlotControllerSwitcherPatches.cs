@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.ActionMenus.Patches
+namespace ModifAmorphic.Outward.UI.Patches
 {
     [HarmonyPatch(typeof(QuickSlotControllerSwitcher))]
     internal class QuickSlotControllerSwitcherPatches

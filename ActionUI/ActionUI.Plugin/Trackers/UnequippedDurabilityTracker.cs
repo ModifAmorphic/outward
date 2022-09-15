@@ -1,12 +1,12 @@
-﻿using ModifAmorphic.Outward.ActionMenus.Models;
+﻿using ModifAmorphic.Outward.UI.Models;
 using ModifAmorphic.Outward.Unity.ActionMenus;
-using ModifAmorphic.Outward.ActionMenus.Extensions;
+using ModifAmorphic.Outward.UI.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.ActionMenus.Services
+namespace ModifAmorphic.Outward.UI.Services
 {
     internal class UnequippedDurabilityTracker : IDurability
     {

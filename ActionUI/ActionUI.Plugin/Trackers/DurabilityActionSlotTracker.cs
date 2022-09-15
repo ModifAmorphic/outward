@@ -1,11 +1,11 @@
-﻿using ModifAmorphic.Outward.ActionMenus.Models;
+﻿using ModifAmorphic.Outward.UI.Models;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.ActionMenus.Services
+namespace ModifAmorphic.Outward.UI.Services
 {
     internal class DurabilityActionSlotTracker : IBarProgress
     {

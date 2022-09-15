@@ -1,5 +1,5 @@
-﻿using ModifAmorphic.Outward.ActionMenus.Services;
-using ModifAmorphic.Outward.ActionMenus.Settings;
+﻿using ModifAmorphic.Outward.UI.Services;
+using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
@@ -12,7 +12,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ModifAmorphic.Outward.ActionMenus.Models
+namespace ModifAmorphic.Outward.UI.Models
 {
     internal class EquipmentSlotAction : ISlotAction, IOutwardItem
     {

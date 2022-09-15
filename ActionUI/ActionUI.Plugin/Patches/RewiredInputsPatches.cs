@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
-using ModifAmorphic.Outward.ActionMenus.Services;
-using ModifAmorphic.Outward.ActionMenus.Settings;
+using ModifAmorphic.Outward.UI.Services;
+using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Controllers;
@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.Patches
+namespace ModifAmorphic.Outward.UI.Patches
 {
     [HarmonyPatch(typeof(RewiredInputs))]
     internal static class RewiredInputsPatches

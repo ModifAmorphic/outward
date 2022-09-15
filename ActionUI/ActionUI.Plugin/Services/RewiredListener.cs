@@ -1,6 +1,6 @@
 ﻿using BepInEx;
-using ModifAmorphic.Outward.ActionMenus.Patches;
-using ModifAmorphic.Outward.ActionMenus.Settings;
+using ModifAmorphic.Outward.UI.Patches;
+using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
@@ -13,7 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.Plugin.Services
+namespace ModifAmorphic.Outward.UI.Plugin.Services
 {
     internal class RewiredListener
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.Models.EquipmentSets
+namespace ModifAmorphic.Outward.UI.Models.EquipmentSets
 {
     internal class WeaponSet
     {

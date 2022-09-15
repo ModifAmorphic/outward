@@ -9,11 +9,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
     {
         private readonly int _playerId = -1;
 
-        public IActionMenusProfileService ProfileService
+        public IActionUIProfileService ProfileService
         {
             get
             {
-                if (Psp.Instance.GetServicesProvider(_playerId).TryGetService<IActionMenusProfileService>(out var service))
+                if (Psp.Instance.GetServicesProvider(_playerId).TryGetService<IActionUIProfileService>(out var service))
                     return service;
 
                 return null;

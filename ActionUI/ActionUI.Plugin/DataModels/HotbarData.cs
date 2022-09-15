@@ -1,11 +1,10 @@
-﻿using ModifAmorphic.Outward.Unity.ActionMenus;
-using ModifAmorphic.Outward.Unity.ActionMenus.Data;
+﻿using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.DataModels
+namespace ModifAmorphic.Outward.UI.DataModels
 {
     internal class HotbarData : IHotbarSlotData
     {

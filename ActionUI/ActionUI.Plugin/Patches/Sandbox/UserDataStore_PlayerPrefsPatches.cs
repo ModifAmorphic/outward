@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.Patches
+namespace ModifAmorphic.Outward.UI.Patches
 {
     [HarmonyPatch(typeof(UserDataStore_PlayerPrefs))]
     public class UserDataStore_PlayerPrefsPatches

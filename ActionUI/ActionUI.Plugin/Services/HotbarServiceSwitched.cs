@@ -1,8 +1,8 @@
-﻿using ModifAmorphic.Outward.ActionMenus.DataModels;
-using ModifAmorphic.Outward.ActionMenus.Extensions;
-using ModifAmorphic.Outward.ActionMenus.Models;
-using ModifAmorphic.Outward.ActionMenus.Patches;
-using ModifAmorphic.Outward.ActionMenus.Settings;
+﻿using ModifAmorphic.Outward.UI.DataModels;
+using ModifAmorphic.Outward.UI.Extensions;
+using ModifAmorphic.Outward.UI.Models;
+using ModifAmorphic.Outward.UI.Patches;
+using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
@@ -18,7 +18,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ModifAmorphic.Outward.ActionMenus.Services
+namespace ModifAmorphic.Outward.UI.Services
 {
     internal class HotbarServiceSwitched
     {
@@ -263,8 +263,8 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 var names = _profileManager.ProfileService.GetProfileNames();
                 if (names == null || !names.Any())
                 {
-                    Logger.LogDebug($"No profiles found. Creating default profile '{ActionMenuSettings.DefaultProfile.Name}'");
-                    _profileManager.ProfileService.SaveNew(ActionMenuSettings.DefaultProfile);
+                    Logger.LogDebug($"No profiles found. Creating default profile '{ActionUISettings.DefaultProfile.Name}'");
+                    _profileManager.ProfileService.SaveNew(ActionUISettings.DefaultProfile);
                     names = _profileManager.ProfileService.GetProfileNames();
                 }
                 else

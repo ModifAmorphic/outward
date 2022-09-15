@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.ActionMenus.Models
+namespace ModifAmorphic.Outward.UI.Models
 {
     internal class ItemCooldownTracker : ICooldown
     {

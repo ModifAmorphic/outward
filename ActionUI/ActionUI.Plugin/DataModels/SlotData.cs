@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
-using ModifAmorphic.Outward.ActionMenus.Models;
+using ModifAmorphic.Outward.UI.Models;
 
-namespace ModifAmorphic.Outward.ActionMenus.DataModels
+namespace ModifAmorphic.Outward.UI.DataModels
 {
     internal class SlotData : ISlotData
     {

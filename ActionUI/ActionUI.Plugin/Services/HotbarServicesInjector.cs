@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
-using ModifAmorphic.Outward.ActionMenus.Patches;
-using ModifAmorphic.Outward.ActionMenus.Settings;
+using ModifAmorphic.Outward.UI.Patches;
+using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.GameObjectResources;
@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.Services
+namespace ModifAmorphic.Outward.UI.Services
 {
     internal class HotbarServicesInjector
     {
@@ -34,9 +34,9 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         private void AddHotbarServices(SplitPlayer splitPlayer, Character character)
         {
             var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
-            var profileService = psp.GetService<IActionMenusProfileService>() as ProfileService;
+            var profileService = psp.GetService<IActionUIProfileService>() as ProfileService;
 
-            if (!profileService.GetActiveActionMenusProfile().ActionSlotsEnabled)
+            if (!profileService.GetActiveActionUIProfile().ActionSlotsEnabled)
             {
                 return;
             }

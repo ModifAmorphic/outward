@@ -3,10 +3,10 @@ schemaVersion = "0.0.1"
 
 [package]
 namespace = "ModifAmorphic"
-name = "ActionMenus"
+name = "ActionUI"
 versionNumber = "${PACKAGE_VERSION}"
-description = "Action Menus"
-websiteUrl = "https://github.com/ModifAmorphic/outward/tree/master/ActionMenus"
+description = "Action UI"
+websiteUrl = "https://github.com/ModifAmorphic/outward/tree/master/ActionUI"
 containsNsfwContent = false
 
 [package.dependencies]

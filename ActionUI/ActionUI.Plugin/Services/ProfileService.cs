@@ -1,4 +1,4 @@
-﻿using ModifAmorphic.Outward.ActionMenus.DataModels;
+﻿using ModifAmorphic.Outward.UI.DataModels;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using ModifAmorphic.Outward.Unity.ActionMenus.Extensions;
@@ -11,27 +11,27 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace ModifAmorphic.Outward.ActionMenus.Services
+namespace ModifAmorphic.Outward.UI.Services
 {
-    public class ProfileService : IActionMenusProfileService
+    public class ProfileService : IActionUIProfileService
     {
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
 
-        ActionMenusProfile _activeProfile;
+        ActionUIProfile _activeProfile;
 
 
         public string ProfilesPath { get; private set; }
         public string ProfilesFile => Path.Combine(ProfilesPath, "profile.json");
 
-        public UnityEvent<IActionMenusProfile> OnNewProfile { get; } = new UnityEvent<IActionMenusProfile>();
-        public UnityEvent<IActionMenusProfile> OnActiveProfileChanged { get; } = new UnityEvent<IActionMenusProfile>();
+        public UnityEvent<IActionUIProfile> OnNewProfile { get; } = new UnityEvent<IActionUIProfile>();
+        public UnityEvent<IActionUIProfile> OnActiveProfileChanged { get; } = new UnityEvent<IActionUIProfile>();
 
         public ProfileService(string profilesRootPath, Func<IModifLogger> getLogger) => (ProfilesPath, _getLogger) = (profilesRootPath, getLogger);
 
-        public IActionMenusProfile GetActiveProfile() => GetActiveActionMenusProfile();
+        public IActionUIProfile GetActiveProfile() => GetActiveActionUIProfile();
 
-        public ActionMenusProfile GetActiveActionMenusProfile()
+        public ActionUIProfile GetActiveActionUIProfile()
         {
             if (_activeProfile != null)
                 return _activeProfile;
@@ -72,7 +72,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 profile.Name = name;
             else
             {
-                profile = new ActionMenusProfile()
+                profile = new ActionUIProfile()
                 {
                     Name = name,
                     ActionSlotsEnabled = true,
@@ -86,7 +86,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             
             SaveProfiles(profiles);
 
-            OnActiveProfileChanged.TryInvoke(GetActiveActionMenusProfile());
+            OnActiveProfileChanged.TryInvoke(GetActiveActionUIProfile());
         }
 
         public string GetOrAddProfileDir(string profileName)
@@ -101,26 +101,26 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             return profileDir;
         }
 
-        public void Save() => SaveProfile(GetActiveActionMenusProfile());
+        public void Save() => SaveProfile(GetActiveActionUIProfile());
 
-        public void SaveNew(IActionMenusProfile profile)
+        public void SaveNew(IActionUIProfile profile)
         {
             SaveProfile(profile, false);
             OnNewProfile.TryInvoke(profile);
         }
 
-        public void SaveProfile(IActionMenusProfile profile, bool raiseEvent = true)
+        public void SaveProfile(IActionUIProfile profile, bool raiseEvent = true)
         {
             var profiles = GetOrCreateProfiles();
             _ = GetOrAddProfileDir(profile.Name);
             var profileIndex = profiles.Profiles.FindIndex(p => p.Name.Equals(profile.Name, StringComparison.InvariantCultureIgnoreCase));
             if (profileIndex == -1)
             {
-                profiles.Profiles.Add((ActionMenusProfile)profile);
+                profiles.Profiles.Add((ActionUIProfile)profile);
             }
             else
             {
-                profiles.Profiles[profileIndex] = (ActionMenusProfile)profile;
+                profiles.Profiles[profileIndex] = (ActionUIProfile)profile;
             }
             profiles.ActiveProfile = profile.Name;
             SaveProfiles(profiles);
@@ -128,7 +128,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             _activeProfile = null;
 
             if (raiseEvent)
-                OnActiveProfileChanged.TryInvoke(GetActiveActionMenusProfile());
+                OnActiveProfileChanged.TryInvoke(GetActiveActionUIProfile());
         }
 
         public void Rename(string newName)
@@ -137,7 +137,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                 throw new ArgumentNullException(nameof(newName));
 
 
-            var profile = GetActiveActionMenusProfile();
+            var profile = GetActiveActionUIProfile();
 
             Logger.LogInfo($"Renaming profile from {profile.Name} to {newName}");
             profile.Name = newName;
@@ -171,16 +171,16 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             return names;
         }
 
-        private ActionMenuProfiles GetOrCreateProfiles()
+        private ActionUIProfiles GetOrCreateProfiles()
         {
             var profileNames = GetProfileDirectories();
             bool saveNeeded = false;
 
-            ActionMenuProfiles profiles;
+            ActionUIProfiles profiles;
             if (File.Exists(ProfilesFile))
             {
                 var json = File.ReadAllText(ProfilesFile);
-                profiles = JsonConvert.DeserializeObject<ActionMenuProfiles>(json);
+                profiles = JsonConvert.DeserializeObject<ActionUIProfiles>(json);
                 var removeProfiles = new List<int>();
                 for (int i = 0; i < profiles.Profiles.Count; i++)
                 {
@@ -194,13 +194,13 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
                     profiles.Profiles.RemoveAt(i);
             }
             else
-                profiles = new ActionMenuProfiles();
+                profiles = new ActionUIProfiles();
 
             foreach (var name in profileNames)
             {
                 if (!profiles.Profiles.Any(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    profiles.Profiles.Add(new ActionMenusProfile()
+                    profiles.Profiles.Add(new ActionUIProfile()
                     {
                         ActionSlotsEnabled = true,
                         DurabilityDisplayEnabled = true,
@@ -219,7 +219,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             return profiles;
         }
 
-        private void SaveProfiles(ActionMenuProfiles profiles)
+        private void SaveProfiles(ActionUIProfiles profiles)
         {
             if (!Directory.Exists(ProfilesPath))
                 Directory.CreateDirectory(ProfilesPath);

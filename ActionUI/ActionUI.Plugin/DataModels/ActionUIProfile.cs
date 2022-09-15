@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.DataModels
+namespace ModifAmorphic.Outward.UI.DataModels
 {
-    public class ActionMenusProfile : IActionMenusProfile
+    public class ActionUIProfile : IActionUIProfile
     {
         public string Name { get; set; }
 

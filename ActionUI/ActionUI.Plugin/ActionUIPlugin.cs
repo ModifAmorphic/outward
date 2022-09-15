@@ -1,18 +1,18 @@
 ﻿using BepInEx;
 using HarmonyLib;
-using ModifAmorphic.Outward.ActionMenus.Patches;
+using ModifAmorphic.Outward.UI.Patches;
 using ModifAmorphic.Outward.Logging;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus
+namespace ModifAmorphic.Outward.UI
 {
     [BepInDependency("com.bepis.bepinex.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("io.mefino.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInPlugin(ModInfo.ModId, ModInfo.ModName, ModInfo.ModVersion)]
-    public class ActionMenusPlugin : BaseUnityPlugin
+    public class ActionUIPlugin : BaseUnityPlugin
     {
         internal static ServicesProvider Services => _servicesProvider;
         private static ServicesProvider _servicesProvider;

@@ -1,16 +1,16 @@
-﻿using ModifAmorphic.Outward.ActionMenus.DataModels;
-using ModifAmorphic.Outward.ActionMenus.Models;
+﻿using ModifAmorphic.Outward.UI.DataModels;
+using ModifAmorphic.Outward.UI.Models;
 using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using Rewired;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.ActionMenus.Extensions;
+using ModifAmorphic.Outward.UI.Extensions;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Coroutines;
 
-namespace ModifAmorphic.Outward.ActionMenus.Services
+namespace ModifAmorphic.Outward.UI.Services
 {
     internal class SlotDataService
     {

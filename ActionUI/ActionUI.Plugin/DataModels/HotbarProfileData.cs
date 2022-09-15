@@ -1,11 +1,11 @@
-﻿using ModifAmorphic.Outward.ActionMenus.Settings;
+﻿using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.DataModels
+namespace ModifAmorphic.Outward.UI.DataModels
 {
     internal class HotbarProfileData : IHotbarProfile
     {

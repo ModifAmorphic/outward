@@ -8,7 +8,7 @@ using ModifAmorphic.Outward.Extensions;
 using Rewired.Data;
 using Rewired.Data.Mapping;
 
-namespace ModifAmorphic.Outward.ActionMenus.Patches
+namespace ModifAmorphic.Outward.UI.Patches
 {
     [HarmonyPatch(typeof(InputManager_Base))]
     public class InputManager_BasePatches

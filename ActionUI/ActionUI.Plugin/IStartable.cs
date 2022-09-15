@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus
+namespace ModifAmorphic.Outward.UI
 {
     interface IStartable
     {

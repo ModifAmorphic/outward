@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace ModifAmorphic.Outward.ActionMenus.Monobehaviours
+namespace ModifAmorphic.Outward.UI.Monobehaviours
 {
     public class SplitScreenScaler : MonoBehaviour
     {

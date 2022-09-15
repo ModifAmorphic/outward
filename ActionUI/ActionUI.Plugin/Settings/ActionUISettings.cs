@@ -1,17 +1,17 @@
-﻿using ModifAmorphic.Outward.ActionMenus.DataModels;
+﻿using ModifAmorphic.Outward.UI.DataModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.Settings
+namespace ModifAmorphic.Outward.UI.Settings
 {
-    internal class ActionMenuSettings
+    internal class ActionUISettings
     {
         public const string GameObjectName = "MenuOverhaul";
 
-        public static readonly string PluginPath = Path.GetDirectoryName(ActionMenusPlugin.Instance.Info.Location);
-        public static readonly string ConfigPath = Path.GetDirectoryName(ActionMenusPlugin.Instance.Config.ConfigFilePath);
+        public static readonly string PluginPath = Path.GetDirectoryName(ActionUIPlugin.Instance.Info.Location);
+        public static readonly string ConfigPath = Path.GetDirectoryName(ActionUIPlugin.Instance.Config.ConfigFilePath);
         public static readonly string ProfilesPath = Path.Combine(ConfigPath, ModInfo.ModId, "profiles");
 
         public static class ActionViewer
@@ -24,7 +24,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Settings
             public const string WeaponsTab = "Weapons";
         }
 
-        public static ActionMenusProfile DefaultProfile = new ActionMenusProfile()
+        public static ActionUIProfile DefaultProfile = new ActionUIProfile()
         {
             Name = "Profile 1",
             ActionSlotsEnabled = true,

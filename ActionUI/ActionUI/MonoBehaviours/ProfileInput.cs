@@ -19,7 +19,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public MainSettingsMenu MainSettingsMenu;
 
-        private IActionMenusProfileService _profileService => MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService;
+        private IActionUIProfileService _profileService => MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService;
 
         public bool IsShowing => gameObject.activeSelf && _isInit;
 

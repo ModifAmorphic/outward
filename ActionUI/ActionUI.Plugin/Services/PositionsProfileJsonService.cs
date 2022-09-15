@@ -1,7 +1,7 @@
-﻿using ModifAmorphic.Outward.ActionMenus.DataModels;
-using ModifAmorphic.Outward.ActionMenus.Extensions;
-using ModifAmorphic.Outward.ActionMenus.Models;
-using ModifAmorphic.Outward.ActionMenus.Settings;
+﻿using ModifAmorphic.Outward.UI.DataModels;
+using ModifAmorphic.Outward.UI.Extensions;
+using ModifAmorphic.Outward.UI.Models;
+using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
@@ -14,7 +14,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine.Events;
 
-namespace ModifAmorphic.Outward.ActionMenus.Services
+namespace ModifAmorphic.Outward.UI.Services
 {
     
     public class PositionsProfileJsonService : IPositionsProfileService
@@ -70,7 +70,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
 
         private PositionsProfile LoadProfile()
         {
-            string profileFile = Path.Combine(_profileService.GetActiveActionMenusProfile().Path, PositionsFile);
+            string profileFile = Path.Combine(_profileService.GetActiveActionUIProfile().Path, PositionsFile);
 
             if (!File.Exists(profileFile))
             {
@@ -82,7 +82,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             return JsonConvert.DeserializeObject<PositionsProfile>(json);
         }
 
-        private void RefreshCachedProfile(IActionMenusProfile actionMenusProfile)
+        private void RefreshCachedProfile(IActionUIProfile actionMenusProfile)
         {
             Logger.LogDebug($"PositionsProfileJsonService::RefreshCachedProfile Called for action menu profile {actionMenusProfile.Name}.");
             _positionsProfile = null;
@@ -93,7 +93,7 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
         {
             RemoveOriginPositions(positonsProfile);
             var json = JsonConvert.SerializeObject(positonsProfile, Formatting.Indented);
-            var activeProfile = _profileService.GetActiveActionMenusProfile();
+            var activeProfile = _profileService.GetActiveActionUIProfile();
             var profileFile = Path.Combine(activeProfile.Path, PositionsFile);
             Logger.LogDebug($"Saving positions for profile {activeProfile.Name}");
             File.WriteAllText(profileFile, json);

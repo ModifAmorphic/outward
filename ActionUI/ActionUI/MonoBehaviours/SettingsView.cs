@@ -29,9 +29,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public UnityEvent OnHide { get; } = new UnityEvent();
 
-        private IActionMenusProfile _profile => MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService.GetActiveProfile();
+        private IActionUIProfile _profile => MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService.GetActiveProfile();
 
-        private IActionMenusProfileService _profileService => MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService;
+        private IActionUIProfileService _profileService => MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService;
 
         private bool _settingProfiles;
 

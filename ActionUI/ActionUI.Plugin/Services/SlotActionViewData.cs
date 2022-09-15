@@ -1,7 +1,7 @@
-﻿using ModifAmorphic.Outward.ActionMenus.DataModels;
-using ModifAmorphic.Outward.ActionMenus.Extensions;
-using ModifAmorphic.Outward.ActionMenus.Models;
-using ModifAmorphic.Outward.ActionMenus.Settings;
+﻿using ModifAmorphic.Outward.UI.DataModels;
+using ModifAmorphic.Outward.UI.Extensions;
+using ModifAmorphic.Outward.UI.Models;
+using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using Rewired;
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.Services
+namespace ModifAmorphic.Outward.UI.Services
 {
     internal class SlotActionViewData : IActionViewData
     {
@@ -44,42 +44,42 @@ namespace ModifAmorphic.Outward.ActionMenus.Services
             int tabOrder = 0;
             displays.Add(new ActionsDisplayTab()
             {
-                DisplayName = ActionMenuSettings.ActionViewer.SkillsTab,
+                DisplayName = ActionUISettings.ActionViewer.SkillsTab,
                 TabOrder = tabOrder++,
                 GetSlotActionsQuery = () => GetSkills()
             });
 
             displays.Add(new ActionsDisplayTab()
             {
-                DisplayName = ActionMenuSettings.ActionViewer.ConsumablesTab,
+                DisplayName = ActionUISettings.ActionViewer.ConsumablesTab,
                 TabOrder = tabOrder++,
                 GetSlotActionsQuery = () => GetConsumables()
             });
 
             displays.Add(new ActionsDisplayTab()
             {
-                DisplayName = ActionMenuSettings.ActionViewer.DeployablesTab,
+                DisplayName = ActionUISettings.ActionViewer.DeployablesTab,
                 TabOrder = tabOrder++,
                 GetSlotActionsQuery = () => GetDeployables()
             });
 
             displays.Add(new ActionsDisplayTab()
             {
-                DisplayName = ActionMenuSettings.ActionViewer.EquippedTab,
+                DisplayName = ActionUISettings.ActionViewer.EquippedTab,
                 TabOrder = tabOrder++,
                 GetSlotActionsQuery = () => GetEquipped()
             });
 
             displays.Add(new ActionsDisplayTab()
             {
-                DisplayName = ActionMenuSettings.ActionViewer.WeaponsTab,
+                DisplayName = ActionUISettings.ActionViewer.WeaponsTab,
                 TabOrder = tabOrder++,
                 GetSlotActionsQuery = () => GetWeapons()
             });
 
             displays.Add(new ActionsDisplayTab()
             {
-                DisplayName = ActionMenuSettings.ActionViewer.ArmorTab,
+                DisplayName = ActionUISettings.ActionViewer.ArmorTab,
                 TabOrder = tabOrder++,
                 GetSlotActionsQuery = () => GetArmor()
             });

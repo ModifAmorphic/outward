@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ModifAmorphic.Outward.ActionMenus.Models
+namespace ModifAmorphic.Outward.UI.Models
 {
     internal class ActionsDisplayTab : IActionsDisplayTab
     {

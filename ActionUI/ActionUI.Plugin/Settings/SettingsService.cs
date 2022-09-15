@@ -4,7 +4,7 @@ using ModifAmorphic.Outward.Config.Models;
 using ModifAmorphic.Outward.Logging;
 using System;
 
-namespace ModifAmorphic.Outward.ActionMenus.Settings
+namespace ModifAmorphic.Outward.UI.Settings
 {
     internal class SettingsService
     {

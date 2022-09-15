@@ -1,5 +1,5 @@
-﻿using ModifAmorphic.Outward.ActionMenus.Extensions;
-using ModifAmorphic.Outward.ActionMenus.Patches;
+﻿using ModifAmorphic.Outward.UI.Extensions;
+using ModifAmorphic.Outward.UI.Patches;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ModifAmorphic.Outward.ActionMenus.Services
+namespace ModifAmorphic.Outward.UI.Services
 {
     internal class DurabilityDisplayService
     {
