@@ -49,16 +49,12 @@ namespace ModifAmorphic.Outward.UI.Settings
 
             return settings;
         }
-        public HotbarSettings ConfigureHotbarSettings(ConfigSettings settings)
-        {
-            var hotbarSettings = new HotbarSettings();
-            _configService.BindConfigSetting(settings.Hotbars,
-                (SettingValueChangedArgs<int> args) => hotbarSettings.Hotbars = args.NewValue, true);
-            _configService.BindConfigSetting(settings.ActionSlots,
-                (SettingValueChangedArgs<int> args) => hotbarSettings.ActionSlots = args.NewValue, true);
+        //public HotbarSettings ConfigureHotbarSettings(ConfigSettings settings)
+        //{
+        //    var hotbarSettings = new HotbarSettings();
 
-            return hotbarSettings;
-        }
+        //    return hotbarSettings;
+        //}
 
         private bool MeetsMinimumVersion(string minimumVersion)
         {

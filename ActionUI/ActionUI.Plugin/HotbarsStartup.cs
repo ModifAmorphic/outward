@@ -16,14 +16,13 @@ namespace ModifAmorphic.Outward.UI
         private readonly Func<IModifLogger> _loggerFactory;
         private readonly ModifGoService _modifGoService;
         private readonly LevelCoroutines _coroutines;
-        private readonly HotbarSettings _settings;
         private readonly string HotbarsModId = ModInfo.ModId + ".Hotbars";
 
         private IModifLogger Logger => _loggerFactory.Invoke();
 
-        public HotbarsStartup(ServicesProvider services, ModifGoService modifGoService, LevelCoroutines coroutines, HotbarSettings settings, Func<IModifLogger> loggerFactory)
+        public HotbarsStartup(ServicesProvider services, ModifGoService modifGoService, LevelCoroutines coroutines, Func<IModifLogger> loggerFactory)
         {
-            (_services, _modifGoService, _coroutines, _settings, _loggerFactory) = (services, modifGoService, coroutines, settings, loggerFactory);
+            (_services, _modifGoService, _coroutines, _loggerFactory) = (services, modifGoService, coroutines, loggerFactory);
             _harmony = new Harmony(HotbarsModId);
         }
 

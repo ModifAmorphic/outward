@@ -49,7 +49,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             if (ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Transparent)
             {
                 var color = Color.grey;
-                color.a = .05f;
+                color.a = .18f;
                 ActionSlot.EmptyImage.gameObject.SetActive(false);
                 var emptyImage = ActionSlot.ActionImages.AddOrUpdateImage(new ActionSlotIcon() { Name = "emptyTransparentAction", Icon = null });
                 emptyImage.color = color;
@@ -227,6 +227,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 ActionSlot.CanvasGroup.alpha = 1;
             else if (!toggle && ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Hidden && ActionSlot.SlotAction == null)
                 ActionSlot.CanvasGroup.alpha = 0;
+
+            ActionSlot.ActionButton.enabled = !toggle;
         }
 
         private void OnActionRequested()

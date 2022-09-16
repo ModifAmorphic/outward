@@ -61,6 +61,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
         private void InjectMenus(SplitPlayer splitPlayer)
         {
+            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(InjectMenus)}(): Injecting PlayerActionMenus for player rewiredId {splitPlayer.RewiredID}.");
             var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
 
             if (psp.TryGetService<PlayerActionMenus>(out var _))
@@ -68,6 +69,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
             var playerMenuPrefab = _playerMenuPrefab.gameObject;
             var gamePanels = splitPlayer.CharUI.transform.Find("Canvas/GameplayPanels");
+            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(InjectMenus)}(): Creating PlayerActionMenus instance for player rewiredId {splitPlayer.RewiredID}.");
             var playerMenuGo = UnityEngine.Object.Instantiate(playerMenuPrefab, gamePanels);
 
             psp.AddSingleton(playerMenuGo.GetComponentInChildren<HotkeyCaptureMenu>(true));
@@ -75,6 +77,7 @@ namespace ModifAmorphic.Outward.UI.Services
             var playerMenu = playerMenuGo.GetComponent<PlayerActionMenus>();
             psp.AddSingleton(playerMenu);
 
+            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(InjectMenus)}(): Injecting Positionable UI component.");
             _positionsService.InjectPositionableUIs(splitPlayer.CharUI);
 
             playerMenu.SetIDs(splitPlayer.RewiredID);
@@ -82,7 +85,7 @@ namespace ModifAmorphic.Outward.UI.Services
             if (!CharacterUIPatches.GetIsMenuFocused.ContainsKey(splitPlayer.RewiredID))
                 CharacterUIPatches.GetIsMenuFocused.Add(splitPlayer.RewiredID, (playerId) => GetAnyMenuShowing(playerMenu, playerId));
 
-            UnityEngine.Object.DontDestroyOnLoad(playerMenuGo);
+            //UnityEngine.Object.DontDestroyOnLoad(playerMenuGo);
 
             InjectPauseMenu(splitPlayer, playerMenu);
 
@@ -103,6 +106,7 @@ namespace ModifAmorphic.Outward.UI.Services
             var playerMenu = psp.GetService<PlayerActionMenus>();
             var playerMenuGo = playerMenu.gameObject;
             playerMenuGo.name = "PlayerActionMenus_" + character.UID;
+            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(SetPlayerMenuCharacter)}(): Activating {playerMenuGo.name} for rewired ID {splitPlayer.RewiredID}.");
             playerMenuGo.SetActive(true);
 
             var profile = GetOrCreateActiveProfile(playerMenu.ProfileManager);
@@ -113,6 +117,7 @@ namespace ModifAmorphic.Outward.UI.Services
             var hud = splitPlayer.CharUI.transform.Find("Canvas/GameplayPanels/HUD");
             playerMenu.ConfigureExit(() => player.GetButtonDown(ControlsInput.GetMenuActionName(ControlsInput.MenuActions.Cancel)));
 
+            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(SetPlayerMenuCharacter)}(): Adding SplitScreenScaler component to Action UIs.");
             AddSplitScreenScaler(playerMenu, character.CharacterUI);
 
             _positionsService.StartKeepPostionablesVisible(playerMenu, character.CharacterUI);
@@ -182,6 +187,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
         private void InjectPauseMenu(SplitPlayer splitPlayer, PlayerActionMenus actionMenus)
         {
+            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(InjectPauseMenu)}(): Adding 'Action UI' button to pause menu.");
             //Get the main
             var hideOnPauseGo = splitPlayer.CharUI.transform.Find("Canvas/PauseMenu/Buttons/Content/HideOnPause/").gameObject;
             var settingsBtn = hideOnPauseGo.GetComponentsInChildren<Button>().First(b => b.name.Equals("btnOptions", StringComparison.InvariantCultureIgnoreCase));

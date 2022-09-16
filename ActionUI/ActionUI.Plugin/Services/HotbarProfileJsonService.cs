@@ -65,6 +65,8 @@ namespace ModifAmorphic.Outward.UI.Services
             var json = JsonConvert.SerializeObject(hotbarProfile, Formatting.Indented);
             var profileFile = Path.Combine(_profileService.GetActiveActionUIProfile().Path, HotbarsConfigFile);
 
+            Logger.LogDebug($"Saving Hotbar profile to file '{profileFile}'.");
+
             File.WriteAllText(profileFile, json);
         }
 
