@@ -227,6 +227,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 ActionSlot.CanvasGroup.alpha = 1;
             else if (!toggle && ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Hidden && ActionSlot.SlotAction == null)
                 ActionSlot.CanvasGroup.alpha = 0;
+
+            ActionSlot.ActionButton.enabled = !toggle;
         }
 
         private void OnActionRequested()
