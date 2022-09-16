@@ -33,7 +33,6 @@ namespace ModifAmorphic.Outward.UI
 
             services
                 .AddSingleton(confSettings)
-                .AddSingleton(settingsService.ConfigureHotbarSettings(confSettings))
                 .AddFactory(() => LoggerFactory.GetLogger(ModInfo.ModId))
                 .AddSingleton(new ModifCoroutine(services.GetService<BaseUnityPlugin>(),
                                                   services.GetService<IModifLogger>))
@@ -76,7 +75,6 @@ namespace ModifAmorphic.Outward.UI
                     services
                     , services.GetService<ModifGoService>()
                     , services.GetService<LevelCoroutines>()
-                    , services.GetService<HotbarSettings>()
                     , _loggerFactory))
                 .AddSingleton(new DurabilityDisplayStartup(
                     services
