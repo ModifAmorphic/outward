@@ -197,36 +197,7 @@ namespace ModifAmorphic.Outward.UI.Services
             var profile = _hotbarData.GetProfile();
             var hotbar = (HotbarData)profile.Hotbars[id];
 
-            ConfigureButtonMapping(hotbar.RewiredActionId, keyGroup, maps, out var hotKey);
-
-            //var eleMap = new ElementAssignment(keyGroup.KeyCode, GetModifierKeyFlags(keyGroup.Modifiers), hotbar.RewiredActionId, Pole.Positive);
-
-            //var existingMaps = map.ElementMapsWithAction(hotbar.RewiredActionId).ToArray();
-
-            //if (existingMaps.Any() && existingMaps.Length > 1)
-            //{
-            //    for (int i = 1; i < existingMaps.Length; i++)
-            //    {
-            //        map.DeleteElementMap(existingMaps[i].id);
-            //    }
-            //}
-
-            //if (existingMaps.Any())
-            //{
-            //    eleMap.elementMapId = existingMaps.First().id;
-            //    eleMap.elementIdentifierId = existingMaps.First().elementIdentifierId;
-            //    Logger.LogDebug($"Setting existing element map {eleMap.elementMapId} to use KeyCode {keyGroup.KeyCode} - {existingMaps.First().elementIdentifierId}.");
-            //}
-
-            //if (keyGroup.KeyCode != KeyCode.None)
-            //{
-            //    var result = map.ReplaceOrCreateElementMap(eleMap);
-            //    Logger.LogDebug($"Attempted replace or create element map {eleMap.elementMapId} to use KeyCode {keyGroup.KeyCode} - {existingMaps.First().elementIdentifierId}.  Result was {result}");
-            //}
-            //else if (existingMaps.Any())
-            //{
-            //    map.DeleteElementMap(existingMaps.First().id);
-            //}
+            ConfigureButtonMapping(hotbar.RewiredActionId, keyGroup, controllerType, maps, out var hotKey);
 
             hotbar.HotbarHotkey = hotKey;
 
@@ -240,36 +211,7 @@ namespace ModifAmorphic.Outward.UI.Services
             var profile = (HotbarProfileData)_hotbarData.GetProfile();
             var rewiredId = category == HotkeyCategories.NextHotbar ? profile.NextRewiredActionId : profile.PrevRewiredActionId;
 
-            ConfigureButtonMapping(rewiredId, keyGroup, maps, out var hotKey);
-
-            ////var config = (ActionConfig)hotbars[0].Slots[id].Config;
-            //var eleMap = new ElementAssignment(keyGroup.KeyCode, GetModifierKeyFlags(keyGroup.Modifiers), rewiredId, Pole.Positive);
-
-            //Logger.LogDebug($"Got RewiredActionId {rewiredId} for {category.ToString()} navagation.");
-            //var existingMaps = map.ElementMapsWithAction(rewiredId).ToArray();
-
-            //if (existingMaps.Length > 1)
-            //{
-            //    for (int i = 1; i < existingMaps.Length; i++)
-            //    {
-            //        map.DeleteElementMap(existingMaps[i].id);
-            //    }
-            //}
-            //if (existingMaps.Any())
-            //{
-            //    eleMap.elementMapId = existingMaps.First().id;
-            //    eleMap.elementIdentifierId = existingMaps.First().elementIdentifierId;
-            //    Logger.LogDebug($"Setting existing element map {eleMap.elementMapId} to use KeyCode {keyGroup.KeyCode} - {existingMaps.First().elementIdentifierId}.");
-            //}
-
-            //if (keyGroup.KeyCode != KeyCode.None)
-            //{
-            //    map.ReplaceOrCreateElementMap(eleMap);
-            //}
-            //else if (existingMaps.Any())
-            //{
-            //    map.DeleteElementMap(existingMaps.First().id);
-            //}
+            ConfigureButtonMapping(rewiredId, keyGroup, controllerType, maps, out var hotKey);
 
             if (category == HotkeyCategories.NextHotbar)
             {
@@ -284,7 +226,6 @@ namespace ModifAmorphic.Outward.UI.Services
 
             _hotbarData.Save();
             _hotbarService.ConfigureHotbars(profile);
-            //SaveControllerMap(map);
         }
 
         private void ConfigureButtonMapping(int rewiredActionId, KeyGroup keyGroup, ControllerType controllerType, IEnumerable<ControllerMap> maps, out string hotkeyText)
@@ -458,22 +399,5 @@ namespace ModifAmorphic.Outward.UI.Services
             return modifierKeyFlags;
         }
 
-        //private bool CreateConflictCheck(ElementAssignment assignment, out ElementAssignmentConflictCheck conflictCheck)
-        //{
-        //    if (mapping == null || _player == null)
-        //    {
-        //        conflictCheck = new ElementAssignmentConflictCheck();
-        //        return false;
-        //    }
-
-        //    conflictCheck = assignment.ToElementAssignmentConflictCheck();
-        //    conflictCheck.playerId = _player.id;
-        //    conflictCheck.controllerType = ControllerType.Keyboard;
-        //    conflictCheck.controllerId = 0;
-        //    conflictCheck.controllerMapId = ;
-        //    conflictCheck.controllerMapCategoryId = RewiredConstants.ActionSlots.CategoryMapId;
-
-        //    return true;
-        //}
     }
 }
