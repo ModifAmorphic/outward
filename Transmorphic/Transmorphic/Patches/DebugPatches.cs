@@ -9,9 +9,45 @@ using System.Text;
 namespace ModifAmorphic.Outward.Transmorphic.Patches
 {
 	[HarmonyPatch(typeof(ItemManager))]
-	internal static class EnchantItemManagerPatches
+	internal static class ItemManagerPatches
 	{
 		private static IModifLogger Logger => LoggerFactory.GetLogger(ModInfo.ModId);
+
+		public static event Action BeforeResourcesDoneLoading;
+
+#pragma warning disable IDE0051 // Remove unused private members
+		[HarmonyPatch(nameof(ItemManager.ResourcesDoneLoading))]
+		[HarmonyPrefix]
+		private static void ResourcesDoneLoadingPrefix()
+		{
+			try
+			{
+
+				Logger.LogDebug($"{nameof(ItemManagerPatches)}::{nameof(ResourcesDoneLoadingPrefix)}:.");
+				BeforeResourcesDoneLoading?.Invoke();
+			}
+			catch (Exception ex)
+			{
+				Logger.LogException($"{nameof(ItemManagerPatches)}::{nameof(ResourcesDoneLoadingPrefix)}(): Exception.", ex);
+			}
+		}
+
+        public static event Action<Item> AfterRequestItemInitialization;
+
+        [HarmonyPatch(nameof(ItemManager.RequestItemInitialization))]
+        [HarmonyPostfix]
+        private static void RequestItemInitializationPostfix(Item _item)
+        {
+            try
+            {
+                Logger.LogTrace($"{nameof(ItemManagerPatches)}::{nameof(RequestItemInitializationPostfix)}: Invoking {nameof(AfterRequestItemInitialization)}.");
+                AfterRequestItemInitialization?.Invoke(_item);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(ItemManagerPatches)}::{nameof(RequestItemInitializationPostfix)}(): Exception invoking {nameof(AfterRequestItemInitialization)}.", ex);
+            }
+        }
 
 		public static event Action<ItemManager, bool> AfterIsAllItemSynced;
 
@@ -35,21 +71,66 @@ namespace ModifAmorphic.Outward.Transmorphic.Patches
 		}
 	}
 
+	[HarmonyPatch(typeof(Item))]
+	internal static class ItemPatches
+	{
+		private static IModifLogger Logger => LoggerFactory.GetLogger(ModInfo.ModId);
+
+		//public static event Action<ItemManager, bool> AfterIsAllItemSynced;
+
+#pragma warning disable IDE0051 // Remove unused private members
+		[HarmonyPatch("OnAwake")]
+		[HarmonyPrefix]
+		private static void OnAwakePrefix(Item __instance)
+		{
+			try
+			{
+
+				Logger.LogDebug($"{nameof(ItemPatches)}::{nameof(OnAwakePrefix)}: {__instance.name} ({__instance.UID}) Awaking.");
+				//AfterIsAllItemSynced?.Invoke(__instance, __result);
+			}
+			catch (Exception ex)
+			{
+				Logger.LogException($"{nameof(ItemPatches)}::{nameof(OnAwakePrefix)}(): Exception.", ex);
+			}
+		}
+	}
+
 	[HarmonyPatch(typeof(ResourcesPrefabManager))]
 	static class ResourcesPrefabManagerPatches
 	{
 		private static IModifLogger Logger => LoggerFactory.GetLogger(ModInfo.ModId);
-		[HarmonyPatch("GenerateItem", MethodType.Normal)]
-		[HarmonyPrefix]
-		static void GenerateItemPrefix(string _itemIDString)
+
+		
+
+		//[HarmonyPatch("GenerateItem", MethodType.Normal)]
+		//[HarmonyPrefix]
+		//static void GenerateItemPrefix(string _itemIDString)
+		//{
+		//	try
+		//	{
+		//		Logger.LogDebug($"{nameof(ResourcesPrefabManagerPatches)}:{nameof(GenerateItemPrefix)}:: _itemIDString == {_itemIDString}");
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		Logger.LogException($"{nameof(ResourcesPrefabManagerPatches)}:{nameof(GenerateItemPrefix)}:: Exception _itemIDString == {_itemIDString}.", ex);
+		//	}
+		//}
+
+		public static event Action AfterLoad;
+
+		[HarmonyPatch("Load", MethodType.Normal)]
+		[HarmonyPostfix]
+		static void LoadPostfix()
 		{
 			try
 			{
-				Logger.LogDebug($"{nameof(ResourcesPrefabManagerPatches)}:{nameof(GenerateItemPrefix)}:: _itemIDString == {_itemIDString}");
+				Logger.LogDebug($"{nameof(ResourcesPrefabManagerPatches)}::{nameof(LoadPostfix)}: Invoking {nameof(AfterLoad)}");
+				AfterLoad?.Invoke();
 			}
 			catch (Exception ex)
 			{
-				Logger.LogException($"{nameof(ResourcesPrefabManagerPatches)}:{nameof(GenerateItemPrefix)}:: Exception _itemIDString == {_itemIDString}.", ex);
+				Logger.LogException($"{nameof(ResourcesPrefabManagerPatches)}::{nameof(LoadPostfix)}: Exception Invoking {nameof(AfterLoad)}.", ex);
 			}
 		}
 	}

@@ -2,7 +2,9 @@
 using ModifAmorphic.Outward.Config;
 using ModifAmorphic.Outward.Config.Models;
 using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.Modules.Crafting;
 using System;
+using System.Collections.Generic;
 
 namespace ModifAmorphic.Outward.Transmorphic.Settings
 {
@@ -110,7 +112,21 @@ namespace ModifAmorphic.Outward.Transmorphic.Settings
             _configService.BindConfigSetting(settings.SecondaryTransmogIngredient,
                 (SettingValueChangedArgs<int> args) => tmogSettings.TransmogRecipeSecondaryItemID = args.NewValue, true);
 
-            return tmogSettings;
+            TransmogSettings.MenuFilters.AdditionalInventoryIngredientFilter = new AvailableIngredientFilter()
+            {
+                SpecificItemIDs = new HashSet<int>() { tmogSettings.TransmogRecipeSecondaryItemID },
+                SpecificItemFilter = AvailableIngredientFilter.FilterLogic.IncludeItems
+            };
+
+            _configService.BindConfigSetting(settings.SecondaryTransmogRemoverIngredient,
+                (SettingValueChangedArgs<int> args) => tmogSettings.RemoverRecipeSecondaryItemID = args.NewValue, true);
+
+            TransmogSettings.RemoveRecipe.SecondIngredientID = tmogSettings.RemoverRecipeSecondaryItemID;
+
+            if (!TransmogSettings.MenuFilters.AdditionalInventoryIngredientFilter.SpecificItemIDs.Contains(tmogSettings.RemoverRecipeSecondaryItemID))
+                TransmogSettings.MenuFilters.AdditionalInventoryIngredientFilter.SpecificItemIDs.Add(tmogSettings.RemoverRecipeSecondaryItemID);
+
+                return tmogSettings;
         }
 
         public CookingSettings ConfigureCookingSettings(ConfigSettings settings)

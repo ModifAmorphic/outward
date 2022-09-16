@@ -31,6 +31,8 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
         private readonly LevelCoroutines _coroutine;
         private readonly EnchantRecipeData _saveData;
 
+        private static Dictionary<string, Recipe> _loadedRecipesRef;
+
         public EnchantRecipeService(BaseUnityPlugin baseUnityPlugin,
                                 EnchantRecipeGenerator recipeGenerator,
                                 EnchantPrefabs enchantPrefabs,
@@ -43,44 +45,50 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
                 (baseUnityPlugin, recipeGenerator, enchantPrefabs, craftingModule, coroutine, saveData, settings, getLogger);
             if (!SideLoaderEx.TryHookOnPacksLoaded(this, RegisterEnchantRecipes))
                 EnchantRecipeManagerPatches.LoadEnchantingRecipeAfter += (r) => RegisterEnchantRecipes();
+            EnchantItemManagerPatches.AfterRequestItemInitialization += RemoveEnchantPrefabs;
 
             TransmorphNetworkLevelLoaderPatches.MidLoadLevelAfter += (n) => _coroutine.InvokeAfterLevelAndPlayersLoaded(n, LearnEnchantRecipes, 300, 1);
             EnchantCharacterRecipeKnowledgePatches.LearnRecipeBefore += TryLearnRecipeWithoutAchievements;
             craftingModule.CraftingMenuEvents.MenuHiding += RemoveTemporaryItems;
-            //EnchantItemManagerPatches.AfterIsAllItemSynced += (im, r) => RequestItemInit();
         }
 
-        //private void RequestItemInit()
-        //{
-        //    var recipes = _craftingModule.GetRegisteredRecipes<EnchantingMenu>();
-        //    Logger.LogDebug($"Init {recipes.Count} enchant recipes.");
-        //    for (int i = 0; i < recipes.Count; i++)
-        //    {
-        //        var resultItem = recipes[i].Results[0]?.RefItem;
-        //        if (resultItem != null && !resultItem.gameObject.activeSelf && !resultItem.GetPrivateField<Item, bool>("m_initialized"))
-        //        {
-        //            //resultItem.gameObject.SetActive(true);
-        //            var loadedVisual = resultItem.LoadedVisual;
-        //            if (loadedVisual != null)
-        //                resultItem.ProcessInit();
-        //            else if (resultItem.LoadedVisual != null)
-        //            {
-        //                Logger.LogDebug($"Second Attempt for item {resultItem.name}.");
-        //                resultItem.ProcessInit();
-        //            }
+        private Dictionary<int, EnchantRecipe> _itemEnchantRecipes = new Dictionary<int, EnchantRecipe>();
+        private void RemoveEnchantPrefabs(Item item)
+        {
+            if (item == null || item.ItemID > EnchantingSettings.RecipeResultStartID || item.ItemID < _enchantPrefabs.LastResultID)
+                return;
 
-        //            //ItemManager.Instance.RequestItemInitialization(resultItem);
-        //        }
-        //    }
-            
-        //}
+            if (!(item is Equipment equipment))
+                return;
 
-        private static Dictionary<string, Recipe> _loadedRecipesRef;
+            List<Item> itemsToInitialize = ItemManager.Instance.GetPrivateField<ItemManager, List<Item>>("m_itemsToInitialize");
+            bool removedInit = false;
+            if (itemsToInitialize.Contains(item))
+            {
+                itemsToInitialize.Remove(item);
+                removedInit = true;
+            }
+
+            bool removeWorldItem = false;
+            if (ItemManager.Instance.WorldItems.ContainsKey(item.UID))
+            {
+                ItemManager.Instance.WorldItems.Remove(item.UID);
+                removeWorldItem = true;
+                
+            }
+            if (removedInit || removeWorldItem)
+            {
+                var removeMessage = removedInit ? $"Removed equipment {equipment.name} from initialization. " : string.Empty;
+                removeMessage += removeWorldItem ? $"Removed equipment {equipment.name} from WorldItems." : string.Empty;
+                Logger.LogDebug(removeMessage);
+            }
+        }
+
         private void RegisterEnchantRecipes()
         {
             var recipes = RecipeManager.Instance.GetEnchantmentRecipes();
             var savedUids = _saveData.GetAllRecipes();
-            Logger.LogDebug($"Registering {recipes.Count} enchant recipes.");
+            int recipesRegistered = 0;
             foreach (var r in recipes)
             {
                 var recipeId = EnchantRecipeGenerator.GetRecipeID(r.RecipeID);
@@ -98,9 +106,34 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
                         enchantRecipe.SetUID(recipeUID);
                     }
                     _craftingModule.RegisterRecipe<EnchantingMenu>(enchantRecipe);
+                    recipesRegistered++;
+                    _itemEnchantRecipes.Add(enchantRecipe.Results[0].RefItem.ItemID, enchantRecipe);
                 }
             }
+            ApplyPrefabEnchants();
+            
         }
+        private void ApplyPrefabEnchants()
+        {
+            _coroutine.DoNextFrame(() =>
+                {
+                    foreach (var recipe in _itemEnchantRecipes.Values)
+                    {
+                        var equipment = (Equipment)recipe.Results[0].RefItem;
+
+                        //Logger.LogDebug($"Calling ProcessInit() on equipment {equipment.name}.");
+                        equipment.ProcessInit();
+                        
+                        if (!equipment.ActiveEnchantmentIDs.Contains(recipe.BaseEnchantmentRecipe.ResultID))
+                        {
+                            equipment.AddEnchantment(recipe.BaseEnchantmentRecipe.ResultID);
+                            Logger.LogDebug($"Added enchantment recipe {recipe.BaseEnchantmentRecipe.name} to equipment {equipment.name}.");
+                        }
+                        equipment.gameObject.SetActive(false);
+                    }
+                });
+        }
+
         public bool TryGetLoadedRecipe<T>(int recipeID, out T recipe) where T : Recipe
         {
             if (_loadedRecipesRef == null)
@@ -115,17 +148,13 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
         }
         private void LearnEnchantRecipes()
         {
-            //if (_settings.AllEnchantRecipesLearned)
-            //{
             var characters = SplitScreenManager.Instance.LocalPlayers.Select(p => p.AssignedCharacter);
             var allRecipes = _craftingModule.GetRegisteredRecipes<EnchantingMenu>();
-            //Logger.LogInfo($"Setting [AllEnchantRecipesLearned] is enabled. {characters?.Count() ?? 0} Characters will learn all {allRecipes.Count} enchantment recipes.");
             foreach (var c in characters)
             {
                 foreach(var r in allRecipes)
                     TryLearnRecipe(c.Inventory, r);
             }
-            //}
         }
         private bool TryLearnRecipe(CharacterInventory inventory, Recipe recipe)
         {
@@ -172,26 +201,6 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
                 var enchantRecipe = (EnchantRecipe)recipe;
                 enchantRecipe.SetResults(enchantRecipe.GetDefaultCraftingResults());
             }
-        }
-
-        private Dictionary<int, EnchantmentRecipeItem> GetEnchantmentRecipeItem()
-        {
-            var field = typeof(ResourcesPrefabManager).GetField("ITEM_PREFABS", BindingFlags.NonPublic | BindingFlags.Static);
-            var itemPrefabs = (Dictionary<string, Item>)field.GetValue(null);
-            var recipeItems = itemPrefabs.Values.Select(p => p as EnchantmentRecipeItem).Where(r => r != null && r.Recipes?.Length > 0);
-            var enchantsRecipes = new Dictionary<int, EnchantmentRecipeItem>();
-
-            foreach (var i in recipeItems)
-            {
-                foreach (var r in i.Recipes)
-                {
-                    if (!enchantsRecipes.ContainsKey(r.RecipeID))
-                        enchantsRecipes.Add(r.RecipeID, i);
-                }
-            }
-
-            PatchRecipeItems(ref enchantsRecipes);
-            return enchantsRecipes;
         }
         private void PatchRecipeItems(ref Dictionary<int, EnchantmentRecipeItem> recipesItems)
         {
