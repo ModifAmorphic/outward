@@ -5,7 +5,7 @@ schemaVersion = "0.0.1"
 namespace = "ModifAmorphic"
 name = "Transmorphic"
 versionNumber = "${PACKAGE_VERSION}"
-description = "*Definitive Edition* Transmogrify your equipment with a new crafting system. Plus Enchanting."
+description = "Transmogrify and enchant your equipment with built in crafting menus. Transmog Weapons, Armor, Backpacks, Lanterns and Lexicons. Enchant gear through a crafting menu. No more fiddling around with pillar placements."
 websiteUrl = "https://github.com/ModifAmorphic/outward/tree/master/Transmorphic"
 containsNsfwContent = false
 
