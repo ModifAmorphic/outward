@@ -49,7 +49,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             if (ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Transparent)
             {
                 var color = Color.grey;
-                color.a = .05f;
+                color.a = .18f;
                 ActionSlot.EmptyImage.gameObject.SetActive(false);
                 var emptyImage = ActionSlot.ActionImages.AddOrUpdateImage(new ActionSlotIcon() { Name = "emptyTransparentAction", Icon = null });
                 emptyImage.color = color;

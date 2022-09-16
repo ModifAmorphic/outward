@@ -48,7 +48,6 @@ namespace ModifAmorphic.Outward.UI.Services
                 throw new ArgumentNullException(nameof(slotData));
 
             _hotbars = hotbarsContainer;
-            //_hotbars = _hotbarsContainer.Controller;
 
             _player = player;
             _character = character;
@@ -67,8 +66,6 @@ namespace ModifAmorphic.Outward.UI.Services
                 _isProfileInit = true;
             };
             SkillMenuPatches.AfterOnSectionSelected += SetSkillsMovable;
-
-
 
         }
 
@@ -89,7 +86,7 @@ namespace ModifAmorphic.Outward.UI.Services
             ConfigureHotbars(profile);
             _hotbars.ClearChanges();
             _profileManager.HotbarProfileService.OnProfileChanged.AddListener(ConfigureHotbars);
-            _levelCoroutines.StartRoutine(CheckProfileForSave());
+            _hotbars.OnHasChanges.AddListener(Save);
 
         }
 
@@ -108,18 +105,14 @@ namespace ModifAmorphic.Outward.UI.Services
             }
         }
 
-        private IEnumerator CheckProfileForSave()
+        private void Save()
         {
-            while (true)
+            if (_hotbars.HasChanges && !_saveDisabled)
             {
-                yield return new WaitForSecondsRealtime(35);
-                if (_hotbars.HasChanges && !_saveDisabled)
-                {
-                    var profile = GetOrCreateActiveProfile();
-                    Logger.LogDebug($"Hotbar changes found. Saving.");
-                    _profileManager.HotbarProfileService.Update(_hotbars);
-                    _hotbars.ClearChanges();
-                }
+                var profile = GetOrCreateActiveProfile();
+                Logger.LogDebug($"Hotbar changes detected. Saving.");
+                _profileManager.HotbarProfileService.Update(_hotbars);
+                _hotbars.ClearChanges();
             }
         }
 
@@ -209,8 +202,8 @@ namespace ModifAmorphic.Outward.UI.Services
             if (!_isProfileInit)
             {
                 _isProfileInit = true;
-                _hotbars.ClearChanges();
             }
+            _hotbars.ClearChanges();
             _saveDisabled = false;
         }
         private void SetProfileHotkeys(IHotbarProfile profile)

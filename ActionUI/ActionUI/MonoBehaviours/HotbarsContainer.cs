@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
@@ -70,10 +71,24 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public bool IsInHotkeyEditMode { get; internal set; }
         public bool IsInActionSlotEditMode { get; internal set; }
 
-        public bool HasChanges { get; internal set; }
-        public void ClearChanges() => HasChanges = false;
+        private bool _hasChanges = false;
+        public bool HasChanges
+        {
+            get => _hasChanges;
+            internal set
+            {
+                var oldValue = _hasChanges;
+                _hasChanges = value;
+                if (value && !oldValue)
+                {
+                    OnHasChanges.Invoke();
+                }
+            }
+        }
+        public void ClearChanges() => _hasChanges = false;
 
         public event Action OnAwake;
+        public UnityEvent OnHasChanges { get; } = new UnityEvent();
         public bool IsAwake { get; private set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]

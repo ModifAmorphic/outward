@@ -127,11 +127,6 @@ namespace ModifAmorphic.Outward.UI.Services
                 }
             }
 
-            //if (playerId == 0 && mappingData.ContainsKey(ActionSlotsPlayer0Key))
-            //    mappingData.Remove(ActionSlotsPlayer0Key);
-
-            //if (playerId == 1 && mappingData.ContainsKey(ActionSlotsPlayer1Key))
-            //    mappingData.Remove(ActionSlotsPlayer1Key);
         }
 
         public void LoadConfigMaps()
@@ -152,28 +147,29 @@ namespace ModifAmorphic.Outward.UI.Services
 
             Logger.LogDebug($"KeyCode {keyGroup.KeyCode} has Keyboard KeyName {keyboardKeyName}.");
 
+            ControllerType controllerType;
 
-            if (!string.IsNullOrWhiteSpace(keyboardKeyName) && keyGroup.KeyCode != KeyCode.None && !MouseKeyCodes.Contains(keyGroup.KeyCode))
-                maps.Add(keyboardMap);
-            else if (MouseKeyCodes.Contains(keyGroup.KeyCode) && keyGroup.KeyCode != KeyCode.None)
-                maps.Add(mouseMap);
-            else if (keyGroup.KeyCode == KeyCode.None)
+            if (!string.IsNullOrWhiteSpace(keyboardKeyName) && !MouseKeyCodes.Contains(keyGroup.KeyCode))
+                controllerType = ControllerType.Keyboard;
+            else if (MouseKeyCodes.Contains(keyGroup.KeyCode))
             {
-                maps.Add(keyboardMap);
-                maps.Add(mouseMap);
+                controllerType = ControllerType.Mouse;
             }
             else
                 return;
 
+            maps.Add(keyboardMap);
+            maps.Add(mouseMap);
+
             if (category == HotkeyCategories.ActionSlot)
-                SetActionSlotHotkey(id, keyGroup, maps);
+                SetActionSlotHotkey(id, keyGroup, controllerType, maps);
             else if (category == HotkeyCategories.Hotbar)
-                SetHotbarHotkey(id, keyGroup, maps);
+                SetHotbarHotkey(id, keyGroup, controllerType, maps);
             else if (category == HotkeyCategories.NextHotbar || category == HotkeyCategories.PreviousHotbar)
-                SetHotbarNavHotkey(category, keyGroup, maps);
+                SetHotbarNavHotkey(category, keyGroup, controllerType, maps);
         }
 
-        private void SetActionSlotHotkey(int id, KeyGroup keyGroup, List<ControllerMap> maps)
+        private void SetActionSlotHotkey(int id, KeyGroup keyGroup, ControllerType controllerType, List<ControllerMap> maps)
         {
 
             Logger.LogDebug($"Setting ActionSlot Hotkey for Slot Index {id} to KeyCode {keyGroup.KeyCode}.");
@@ -182,7 +178,7 @@ namespace ModifAmorphic.Outward.UI.Services
             var hotbars = profile.Hotbars;
             var config = (ActionConfig)hotbars[0].Slots[id].Config;
 
-            ConfigureButtonMapping(config.RewiredActionId, keyGroup, maps, out var hotKey);
+            ConfigureButtonMapping(config.RewiredActionId, keyGroup, controllerType, maps, out var hotKey);
 
             for (int b = 0; b < hotbars.Count; b++)
             {
@@ -194,43 +190,14 @@ namespace ModifAmorphic.Outward.UI.Services
             _hotbarService.ConfigureHotbars(profile);
         }
 
-        private void SetHotbarHotkey(int id, KeyGroup keyGroup, IEnumerable<ControllerMap> maps)
+        private void SetHotbarHotkey(int id, KeyGroup keyGroup, ControllerType controllerType, IEnumerable<ControllerMap> maps)
         {
             Logger.LogDebug($"Setting Hotbar Hotkey for Bar Index {id}.");
 
             var profile = _hotbarData.GetProfile();
             var hotbar = (HotbarData)profile.Hotbars[id];
 
-            ConfigureButtonMapping(hotbar.RewiredActionId, keyGroup, maps, out var hotKey);
-
-            //var eleMap = new ElementAssignment(keyGroup.KeyCode, GetModifierKeyFlags(keyGroup.Modifiers), hotbar.RewiredActionId, Pole.Positive);
-
-            //var existingMaps = map.ElementMapsWithAction(hotbar.RewiredActionId).ToArray();
-
-            //if (existingMaps.Any() && existingMaps.Length > 1)
-            //{
-            //    for (int i = 1; i < existingMaps.Length; i++)
-            //    {
-            //        map.DeleteElementMap(existingMaps[i].id);
-            //    }
-            //}
-
-            //if (existingMaps.Any())
-            //{
-            //    eleMap.elementMapId = existingMaps.First().id;
-            //    eleMap.elementIdentifierId = existingMaps.First().elementIdentifierId;
-            //    Logger.LogDebug($"Setting existing element map {eleMap.elementMapId} to use KeyCode {keyGroup.KeyCode} - {existingMaps.First().elementIdentifierId}.");
-            //}
-
-            //if (keyGroup.KeyCode != KeyCode.None)
-            //{
-            //    var result = map.ReplaceOrCreateElementMap(eleMap);
-            //    Logger.LogDebug($"Attempted replace or create element map {eleMap.elementMapId} to use KeyCode {keyGroup.KeyCode} - {existingMaps.First().elementIdentifierId}.  Result was {result}");
-            //}
-            //else if (existingMaps.Any())
-            //{
-            //    map.DeleteElementMap(existingMaps.First().id);
-            //}
+            ConfigureButtonMapping(hotbar.RewiredActionId, keyGroup, controllerType, maps, out var hotKey);
 
             hotbar.HotbarHotkey = hotKey;
 
@@ -238,44 +205,13 @@ namespace ModifAmorphic.Outward.UI.Services
             _hotbarService.ConfigureHotbars(profile);
         }
 
-        private void SetHotbarNavHotkey(HotkeyCategories category, KeyGroup keyGroup, IEnumerable<ControllerMap> maps)
+        private void SetHotbarNavHotkey(HotkeyCategories category, KeyGroup keyGroup, ControllerType controllerType, IEnumerable<ControllerMap> maps)
         {
             //Logger.LogDebug($"Setting Hotbar Hotkey for Bar Index {id}.");
             var profile = (HotbarProfileData)_hotbarData.GetProfile();
             var rewiredId = category == HotkeyCategories.NextHotbar ? profile.NextRewiredActionId : profile.PrevRewiredActionId;
 
-            ConfigureButtonMapping(rewiredId, keyGroup, maps, out var hotKey);
-
-            ////var config = (ActionConfig)hotbars[0].Slots[id].Config;
-            //var eleMap = new ElementAssignment(keyGroup.KeyCode, GetModifierKeyFlags(keyGroup.Modifiers), rewiredId, Pole.Positive);
-
-            //Logger.LogDebug($"Got RewiredActionId {rewiredId} for {category.ToString()} navagation.");
-            //var existingMaps = map.ElementMapsWithAction(rewiredId).ToArray();
-
-            //if (existingMaps.Length > 1)
-            //{
-            //    for (int i = 1; i < existingMaps.Length; i++)
-            //    {
-            //        map.DeleteElementMap(existingMaps[i].id);
-            //    }
-            //}
-            //if (existingMaps.Any())
-            //{
-            //    eleMap.elementMapId = existingMaps.First().id;
-            //    eleMap.elementIdentifierId = existingMaps.First().elementIdentifierId;
-            //    Logger.LogDebug($"Setting existing element map {eleMap.elementMapId} to use KeyCode {keyGroup.KeyCode} - {existingMaps.First().elementIdentifierId}.");
-            //}
-
-            //if (keyGroup.KeyCode != KeyCode.None)
-            //{
-            //    map.ReplaceOrCreateElementMap(eleMap);
-            //}
-            //else if (existingMaps.Any())
-            //{
-            //    map.DeleteElementMap(existingMaps.First().id);
-            //}
-
-            //var hotKey = map.ButtonMaps.FirstOrDefault(m => m.actionId == rewiredId)?.elementIdentifierName;
+            ConfigureButtonMapping(rewiredId, keyGroup, controllerType, maps, out var hotKey);
 
             if (category == HotkeyCategories.NextHotbar)
             {
@@ -293,36 +229,50 @@ namespace ModifAmorphic.Outward.UI.Services
             //SaveControllerMap(map);
         }
 
-        private void ConfigureButtonMapping(int rewiredActionId, KeyGroup keyGroup, IEnumerable<ControllerMap> maps, out string hotkeyText)
+        private void ConfigureButtonMapping(int rewiredActionId, KeyGroup keyGroup, ControllerType controllerType, IEnumerable<ControllerMap> maps, out string hotkeyText)
         {
             hotkeyText = string.Empty;
             foreach (var map in maps)
             {
-                int elementIdentifierId = map.controllerType == ControllerType.Mouse ? MouseButtons[keyGroup.KeyCode].elementIdentifierId : -1;
-                Logger.LogDebug($"Configuring Button Mapping for ControllerType {map.controllerType}. Setting elementIdentifierId to {elementIdentifierId}.  Keycode is {keyGroup.KeyCode}");
-                var eleMap = new ElementAssignment(map.controllerType, ControllerElementType.Button, elementIdentifierId, AxisRange.Positive, keyGroup.KeyCode, GetModifierKeyFlags(keyGroup.Modifiers), rewiredActionId, Pole.Positive, false);
+                int elementIdentifierId = -1;
+                ElementAssignment eleMap;
+                if (map.controllerType == controllerType)
+                {
+                    if (controllerType == ControllerType.Mouse)
+                        elementIdentifierId = MouseButtons[keyGroup.KeyCode].elementIdentifierId;
+
+                    Logger.LogDebug($"Configuring Button Mapping for ControllerType {map.controllerType} and actionId {rewiredActionId}. Setting elementIdentifierId to {elementIdentifierId}.  Keycode is {keyGroup.KeyCode}");
+                    eleMap = new ElementAssignment(map.controllerType, ControllerElementType.Button, elementIdentifierId, AxisRange.Positive, keyGroup.KeyCode, GetModifierKeyFlags(keyGroup.Modifiers), rewiredActionId, Pole.Positive, false);
+                }
+                else
+                {
+                    Logger.LogDebug($"Configuring Removal Button Mapping for ControllerType {map.controllerType} and actionId {rewiredActionId}.");
+                    eleMap = new ElementAssignment(map.controllerType, ControllerElementType.Button, elementIdentifierId, AxisRange.Positive, KeyCode.None, ModifierKeyFlags.None, rewiredActionId, Pole.Positive, false);
+                }
                 var existingMaps = map.ButtonMaps.Where(m => m.actionId == rewiredActionId).ToArray();
 
                 if (existingMaps.Any())
                 {
                     for (int i = 0; i < existingMaps.Length; i++)
                     {
-                        map.DeleteElementMap(existingMaps[i].id);
-                        Logger.LogDebug($"Deleted existing map {existingMaps[i].id} for rewiredId {rewiredActionId}.");
+                        if (map.DeleteElementMap(existingMaps[i].id))
+                            Logger.LogDebug($"Deleted existing map {existingMaps[i].id} for rewiredId {rewiredActionId}.");
                     }
                 }
 
                 RemoveExistingAssignments(eleMap, map);
 
-                if (keyGroup.KeyCode != KeyCode.None)
+                if (map.controllerType == controllerType)
                 {
-                    var result = map.ReplaceOrCreateElementMap(eleMap);
-                    Logger.LogDebug($"Attempted replace or create element map {eleMap.elementMapId} to use KeyCode {keyGroup.KeyCode} in {map.controllerType} ControllerMap {map.id}.  Result was {result}");
+                    if (keyGroup.KeyCode != KeyCode.None)
+                    {
+                        var result = map.ReplaceOrCreateElementMap(eleMap);
+                        Logger.LogDebug($"Attempted replace or create element map {eleMap.elementMapId} to use KeyCode {keyGroup.KeyCode} in {map.controllerType} ControllerMap {map.id}.  Result was {result}");
+                    }
+                    hotkeyText = map.ButtonMaps.FirstOrDefault(m => m.actionId == rewiredActionId)?.elementIdentifierName;
+                    if (map.controllerType == ControllerType.Mouse)
+                        hotkeyText = MouseButtons[keyGroup.KeyCode].DisplayName;
                 }
-
-                hotkeyText = map.ButtonMaps.FirstOrDefault(m => m.actionId == rewiredActionId)?.elementIdentifierName;
-                if (map.controllerType == ControllerType.Mouse)
-                    hotkeyText = MouseButtons[keyGroup.KeyCode].DisplayName;
 
                 SaveControllerMap(map);
             }
@@ -334,6 +284,7 @@ namespace ModifAmorphic.Outward.UI.Services
             var removed = map.RemoveElementAssignmentConflicts(conflict);
             Logger.LogDebug($"Removed {removed} conflicts for key {assignment.keyboardKey} and modifiers {assignment.modifierKeyFlags}.");
         }
+
         private ElementAssignmentConflictCheck CreateConflictCheck(ControllerMap map, ElementAssignment assignment)
         {
             var conflictCheck = assignment.ToElementAssignmentConflictCheck();
