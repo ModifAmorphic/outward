@@ -67,9 +67,6 @@ namespace ModifAmorphic.Outward.UI
                                 services.GetService<LevelCoroutines>(),
                                 services.GetService<IModifLogger>));
 
-
-            SplitPlayerPatches.SetCharacterAfter += AddSharedServices;
-
             services
                 .AddSingleton(new HotbarsStartup(
                     services
@@ -101,11 +98,6 @@ namespace ModifAmorphic.Outward.UI
             actionUiPrefab.SetActive(false);
             Logger.LogDebug($"Loaded asset assets/prefabs/actionui.prefab.");
             UnityEngine.Object.DontDestroyOnLoad(actionUiPrefab);
-
-            //var positionBgPrefab = menuBundle.LoadAsset<GameObject>("assets/prefabs/positionablebg.prefab");
-            //positionBgPrefab.SetActive(false);
-            //Logger.LogDebug($"Loaded asset assets/prefabs/positionablebg.prefab.");
-            //UnityEngine.Object.DontDestroyOnLoad(positionBgPrefab);
 
             menuBundle.Unload(false);
 
@@ -169,12 +161,6 @@ namespace ModifAmorphic.Outward.UI
             {
                 return AssetBundle.LoadFromStream(assetStream);
             }
-        }
-
-        private void AddSharedServices(SplitPlayer splitPlayer, Character character)
-        {
-            var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
-            psp.AddSingleton(new ProfileManager(splitPlayer.RewiredID));
         }
     }
 }

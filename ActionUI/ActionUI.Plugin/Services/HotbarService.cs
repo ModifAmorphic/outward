@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace ModifAmorphic.Outward.UI.Services
 {
-    internal class HotbarService
+    internal class HotbarService : IDisposable
     {
 
         private IModifLogger Logger => _getLogger.Invoke();
@@ -34,6 +34,8 @@ namespace ModifAmorphic.Outward.UI.Services
         private bool _isProfileInit;
 
         private ControllerType _activeController;
+        private bool disposedValue;
+
         public ControllerType ActiveController => _activeController;
 
         public HotbarService(HotbarsContainer hotbarsContainer, Player player, Character character, ProfileManager profileManager, SlotDataService slotData, LevelCoroutines levelCoroutines, Func<IModifLogger> getLogger)
@@ -59,13 +61,11 @@ namespace ModifAmorphic.Outward.UI.Services
 
             QuickSlotPanelPatches.StartInitAfter += DisableKeyboardQuickslots;
             QuickSlotControllerSwitcherPatches.StartInitAfter += SwapCanvasGroup;
-            NetworkLevelLoader.Instance.onOverallLoadingDone += () =>
-            {
-                if (_profileManager.ProfileService.GetActiveProfile().ActionSlotsEnabled)
-                    AssignSlotActions(GetOrCreateActiveProfile());
-                _isProfileInit = true;
-            };
+            NetworkLevelLoader.Instance.onOverallLoadingDone += AssignSlotActions;
             SkillMenuPatches.AfterOnSectionSelected += SetSkillsMovable;
+            _hotbars.OnAwake += StartNextFrame;
+            if (_hotbars.IsAwake)
+                StartNextFrame();
 
         }
 
@@ -78,16 +78,17 @@ namespace ModifAmorphic.Outward.UI.Services
             }
         }
 
+        private void StartNextFrame() => _levelCoroutines.DoNextFrame(() => Start());
+
         public void Start()
         {
             _saveDisabled = true;
 
             var profile = GetOrCreateActiveProfile();
-            ConfigureHotbars(profile);
+            ConfigureHotbars(profile, HotbarProfileChangeTypes.ProfileRefreshed);
             _hotbars.ClearChanges();
             _profileManager.HotbarProfileService.OnProfileChanged.AddListener(ConfigureHotbars);
             _hotbars.OnHasChanges.AddListener(Save);
-
         }
 
         public void ConfigureHotbars(IHotbarProfile profile)
@@ -104,13 +105,15 @@ namespace ModifAmorphic.Outward.UI.Services
                 _saveDisabled = false;
             }
         }
+        private void ConfigureHotbars(IHotbarProfile profile, HotbarProfileChangeTypes changeType) => ConfigureHotbars(profile);
 
+        public Guid InstanceID { get; } = Guid.NewGuid();
         private void Save()
         {
             if (_hotbars.HasChanges && !_saveDisabled)
             {
                 var profile = GetOrCreateActiveProfile();
-                Logger.LogDebug($"Hotbar changes detected. Saving.");
+                Logger.LogDebug($"{nameof(HotbarService)}_{InstanceID}: Hotbar changes detected. Saving.");
                 _profileManager.HotbarProfileService.Update(_hotbars);
                 _hotbars.ClearChanges();
             }
@@ -173,8 +176,11 @@ namespace ModifAmorphic.Outward.UI.Services
             return _profileManager.HotbarProfileService.GetProfile();
         }
 
+        public void AssignSlotActions() => AssignSlotActions(GetOrCreateActiveProfile());
+
         public void AssignSlotActions(IHotbarProfile profile)
         {
+            Logger.LogDebug($"{nameof(HotbarService)}_{InstanceID}: Assigning Slot Actions.");
             //refresh item displays
             _characterUI.ShowMenu(CharacterUI.MenuScreens.Inventory);
             _characterUI.HideMenu(CharacterUI.MenuScreens.Inventory);
@@ -203,6 +209,7 @@ namespace ModifAmorphic.Outward.UI.Services
             {
                 _isProfileInit = true;
             }
+            Logger.LogDebug($"Clearing Hotbar Change Flag.");
             _hotbars.ClearChanges();
             _saveDisabled = false;
         }
@@ -225,7 +232,7 @@ namespace ModifAmorphic.Outward.UI.Services
                     if (eleMap != null)
                         slot.Config.HotkeyText = eleMap.elementIdentifierName;
                     else
-                        slot.Config.HotkeyText = String.Empty;
+                        slot.Config.HotkeyText = string.Empty;
                 }
             }
 
@@ -245,6 +252,42 @@ namespace ModifAmorphic.Outward.UI.Services
                     }
                 }
             }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    Logger.LogDebug($"Disposing of {nameof(HotbarService)} instance '{InstanceID}'. Unsubscribing to events.");
+                    QuickSlotPanelPatches.StartInitAfter -= DisableKeyboardQuickslots;
+                    QuickSlotControllerSwitcherPatches.StartInitAfter -= SwapCanvasGroup;
+                    NetworkLevelLoader.Instance.onOverallLoadingDone -= AssignSlotActions;
+                    SkillMenuPatches.AfterOnSectionSelected -= SetSkillsMovable;
+                    _hotbars.OnAwake -= StartNextFrame;
+                    _profileManager.HotbarProfileService.OnProfileChanged.RemoveListener(ConfigureHotbars);
+                    _hotbars.OnHasChanges.RemoveListener(Save);
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~HotbarService()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

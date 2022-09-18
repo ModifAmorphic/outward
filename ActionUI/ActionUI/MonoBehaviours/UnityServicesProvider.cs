@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModifAmorphic.Outward.Unity.ActionUI;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,17 +18,36 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public UnityServicesProvider AddSingleton<T>(T serviceInstance)
         {
+            DebugLogger.Log($"Adding {typeof(T)} singleton with UnityServicesProvider.");
             _serviceFactories.TryAdd(typeof(T), (Func<T>)(() => serviceInstance));
             return this;
         }
 
         public UnityServicesProvider AddFactory<T>(Func<T> serviceFactory)
         {
+            DebugLogger.Log($"Adding {typeof(T)} factory to UnityServicesProvider.");
             _serviceFactories.TryAdd(typeof(T), serviceFactory);
             return this;
         }
 
         public bool TryRemove<T>() => _serviceFactories.TryRemove(typeof(T), out var _);
+
+        public bool TryDispose<T>()
+        {
+            bool isDisposed = false;
+            if (_serviceFactories.TryGetValue(typeof(T), out var factory))
+            {
+                var service = factory.DynamicInvoke();
+
+                if (service is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                    isDisposed = true;
+                }
+            }
+
+            return _serviceFactories.TryRemove(typeof(T), out var _) && isDisposed;
+        }
 
         public Func<T> GetServiceFactory<T>()
         {
@@ -84,5 +104,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             service = (T)serviceDelegate.DynamicInvoke();
             return !EqualityComparer<T>.Default.Equals(service, default);
         }
+
+        public bool ContainsService<T>() => _serviceFactories.ContainsKey(typeof(T));
     }
 }

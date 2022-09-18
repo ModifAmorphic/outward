@@ -100,6 +100,8 @@ namespace ModifAmorphic.Outward.UI.Services
             return isShowing;
         }
 
+        private bool ShouldQuickslotItemBeDestroyed(bool actionSlotsActive, int playerID, int requestingPlayerID) => !actionSlotsActive || playerID != requestingPlayerID;
+
         private void SetPlayerMenuCharacter(SplitPlayer splitPlayer, Character character)
         {
             var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
@@ -130,6 +132,14 @@ namespace ModifAmorphic.Outward.UI.Services
                 dropCanvas.overrideSorting = true;
                 dropCanvas.sortingOrder = 0;
             }
+
+            if (!CharacterQuickSlotManagerPatches.AllowItemDestroyed.ContainsKey(splitPlayer.RewiredID))
+                CharacterQuickSlotManagerPatches.AllowItemDestroyed.Add(splitPlayer.RewiredID,
+                    (requestingPlayerId) => ShouldQuickslotItemBeDestroyed(
+                        playerMenu.ProfileManager.ProfileService.GetActiveProfile().ActionSlotsEnabled,
+                        splitPlayer.RewiredID,
+                        requestingPlayerId)
+                    );
         }
 
         private ActionUIProfile GetOrCreateActiveProfile(ProfileManager profileManager)

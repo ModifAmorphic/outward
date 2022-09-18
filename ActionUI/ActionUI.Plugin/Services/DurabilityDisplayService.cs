@@ -17,6 +17,8 @@ namespace ModifAmorphic.Outward.UI.Services
 
         private bool _equipTracked = false;
 
+        private bool _configured = false;
+
         private readonly static UnequippedDurabilityTracker UnequippedHelm = new UnequippedDurabilityTracker(DurableEquipmentSlot.Head, DurableEquipmentType.Helm, 1f);
         private readonly static UnequippedDurabilityTracker UnequippedChest = new UnequippedDurabilityTracker(DurableEquipmentSlot.Chest, DurableEquipmentType.Chest, 1f);
         private readonly static UnequippedDurabilityTracker UnequippedBoots = new UnequippedDurabilityTracker(DurableEquipmentSlot.Feet, DurableEquipmentType.Boots, 1f);
@@ -44,13 +46,30 @@ namespace ModifAmorphic.Outward.UI.Services
             var actionMenus = psp.GetService<PlayerActionMenus>();
             var profileService = actionMenus.ProfileManager.ProfileService;
 
-            profileService.OnActiveProfileChanged.AddListener((profile) => ShowHide(splitPlayer.RewiredID, profile.DurabilityDisplayEnabled));
-            var display = GetDurabilityDisplay(splitPlayer.RewiredID);
+            Reset(actionMenus);
 
-            if (display.IsAwake)
+            if (_configured)
+                return;
+
+            profileService.OnActiveProfileChanged.AddListener((profile) => ShowHide(splitPlayer.RewiredID, profile.DurabilityDisplayEnabled));
+            profileService.OnActiveProfileSwitched.AddListener((profile) => ShowHide(splitPlayer.RewiredID, profile.DurabilityDisplayEnabled));
+
+            if (actionMenus.DurabilityDisplay.IsAwake)
                 ShowHide(splitPlayer.RewiredID, profileService.GetActiveProfile().DurabilityDisplayEnabled);
             else
-                display.OnAwake.AddListener(() => ShowHide(splitPlayer.RewiredID, profileService.GetActiveProfile().DurabilityDisplayEnabled));
+                actionMenus.DurabilityDisplay.OnAwake.AddListener(() => ShowHide(splitPlayer.RewiredID, profileService.GetActiveProfile().DurabilityDisplayEnabled));
+
+            _configured = true;
+        }
+
+        private void Reset(PlayerActionMenus actionMenus)
+        {
+            if (actionMenus.DurabilityDisplay.IsAwake)
+            {
+                Logger.LogDebug($"{nameof(DurabilityDisplayService)}::{nameof(Reset)}: Stopping Durability tracking for all slots for rewiredId={actionMenus.PlayerID}.");
+                foreach (var slot in Enum.GetValues(typeof(DurableEquipmentSlot)).Cast<DurableEquipmentSlot>())
+                    actionMenus.DurabilityDisplay.StopTracking(slot);                
+            }
         }
 
         private void ShowHide(int playerId, bool showDurabilityDisplay)
@@ -106,7 +125,10 @@ namespace ModifAmorphic.Outward.UI.Services
         private void TrackEquipmentSlot(Character character, EquipmentSlot.EquipmentSlotIDs slot)
         {
             if (!(character.Inventory.Equipment.IsEquipmentSlotEmpty(slot)))
+            {
+                Logger.LogDebug($"{nameof(DurabilityDisplayService)}::{nameof(TrackEquipmentSlot)}: Tracking Equipment Slot {slot} for Player RewiredID {character.CharacterUI.RewiredID}");
                 TrackEquippedItem(character, (Equipment)character.Inventory.Equipment.GetEquippedItem(slot));
+            }
         }
 
         private void SplitScreenManagerPatches_RemoveLocalPlayerAfter(SplitScreenManager splitScreenManager, SplitPlayer player, string playerUID) =>

@@ -112,7 +112,7 @@ namespace ModifAmorphic.Outward.UI.Models
 
         public bool GetIsActionRequested()
         {
-            return !IsEditable && player.GetButtonDown(actionConfig.RewiredActionId);
+            return !IsEditable && player.GetButtonDown(actionConfig.RewiredActionId) && GetEnabled();
         }
         public bool GetIsEditRequested()
         {
@@ -147,7 +147,7 @@ namespace ModifAmorphic.Outward.UI.Models
 
         public bool GetEnabled()
         {
-            if (IsCombatModeEnabled && character.InCombat && (hotbarIndex != 0 || slotIndex > 8))
+            if (IsCombatModeEnabled && character.InCombat && (hotbarIndex != 0 || slotIndex > 7))
                 return false;
 
             if (skill.IsChildToCharacter && skill.GetIsQuickSlotReq())
