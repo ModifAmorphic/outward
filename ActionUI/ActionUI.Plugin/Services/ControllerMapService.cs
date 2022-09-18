@@ -132,7 +132,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
         }
 
-        private void LoadConfigMaps(IActionUIProfile actionUIProfile) => LoadConfigMaps(true);
+        private void LoadConfigMaps(IActionUIProfile actionUIProfile) => _ = LoadConfigMaps(true);
         public (KeyboardMap keyboardMap, MouseMap mouseMap) LoadConfigMaps(bool forceRefresh = false)
         {
             var maps = (
@@ -252,7 +252,6 @@ namespace ModifAmorphic.Outward.UI.Services
             SaveControllerMap(mouseMap);
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
         private void ShiftActionSlotsBack(IHotbarProfile hotbarProfile)
         {
             (var keyboardMap, var mouseMap) = LoadConfigMaps();
