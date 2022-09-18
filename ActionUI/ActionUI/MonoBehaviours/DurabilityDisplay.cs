@@ -95,7 +95,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         {
             if (_coroutines.ContainsKey(slot))
             {
-                StopCoroutine(_coroutines[slot]);
+                if (_coroutines[slot] != null)
+                    StopCoroutine(_coroutines[slot]);
                 _coroutines.Remove(slot);
                 _durabilitySlots[slot].ResetColorRanges();
                 _durabilitySlots[slot].SetValue(0f);
@@ -107,7 +108,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public void StopAllTracking()
         {
             foreach (var slot in Enum.GetValues(typeof(DurableEquipmentSlot)).Cast<DurableEquipmentSlot>())
-                if (_coroutines.ContainsKey(slot))
+                if (_coroutines.ContainsKey(slot) && _coroutines[slot] != null)
                     StopCoroutine(_coroutines[slot]);
         }
 

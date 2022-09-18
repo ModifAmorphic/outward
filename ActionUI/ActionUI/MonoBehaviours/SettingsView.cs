@@ -1,5 +1,6 @@
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using ModifAmorphic.Outward.Unity.ActionUI;
+using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
 using System;
 using System.Linq;
 using UnityEngine;
@@ -31,8 +32,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private IActionUIProfile _profile => MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService.GetActiveProfile();
 
         private IActionUIProfileService _profileService => MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService;
-
-        private bool _settingProfiles;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
@@ -70,8 +69,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         {
             SetProfiles();
 
-            ActionSlotsToggle.isOn = _profile?.ActionSlotsEnabled ?? false;
-            DurabilityToggle.isOn = _profile?.DurabilityDisplayEnabled ?? false;
+            ActionSlotsToggle.SetIsOn(_profile?.ActionSlotsEnabled ?? false);
+            DurabilityToggle.SetIsOn(_profile?.DurabilityDisplayEnabled ?? false);
         }
         private void HookControls()
         {
@@ -91,6 +90,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             DurabilityToggle.onValueChanged.AddListener(isOn =>
             {
+                DebugLogger.Log($"DurabilityToggle changed from {!isOn} to {isOn}. Saving profile.");
                 _profile.DurabilityDisplayEnabled = isOn;
                 _profileService.Save();
             });
@@ -102,19 +102,15 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private void SetProfiles()
         {
-            _settingProfiles = true;
             ProfileDropdown.ClearOptions();
             var profiles = MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService.GetProfileNames();
             var profileOptions = profiles.OrderBy(p => p).Select(p => new Dropdown.OptionData(p)).ToList();
             profileOptions.Add(new Dropdown.OptionData("[New Profile]"));
-            ProfileDropdown.AddOptions(profileOptions);
-            ProfileDropdown.value = profileOptions.FindIndex(o => o.text.Equals(_profile.Name, StringComparison.InvariantCultureIgnoreCase));
-            _settingProfiles = false;
+            ProfileDropdown.AddOptionSilent(profileOptions);
+            ProfileDropdown.SetValue(profileOptions.FindIndex(o => o.text.Equals(_profile.Name, StringComparison.InvariantCultureIgnoreCase)));
         }
         private void SelectProfile(int profileIndex)
         {
-            if (_settingProfiles)
-                return;
 
             if (profileIndex < ProfileDropdown.options.Count - 1)
             {

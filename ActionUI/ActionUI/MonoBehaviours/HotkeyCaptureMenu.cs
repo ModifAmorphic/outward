@@ -34,7 +34,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public delegate void OnClearPressedDelegate(int id, HotkeyCategories category);
         public event OnClearPressedDelegate OnClearPressed;
 
-        private int _id;
+        private int _slotIndex;
         private HotkeyCategories _category;
         private KeyGroup _keyGroup = new KeyGroup();
         private bool _modifierUp = false;
@@ -101,7 +101,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             {
                 try
                 {
-                    OnKeysSelected?.Invoke(_id, _category, _keyGroup);
+                    OnKeysSelected?.Invoke(_slotIndex, _category, _keyGroup);
                     Hotbars.Controller.ToggleHotkeyEdits(true);
                 }
                 catch (Exception ex)
@@ -195,8 +195,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         }
         public void ClearPressed()
         {
-            OnClearPressed?.Invoke(_id, _category);
-            OnKeysSelected?.Invoke(_id, _category, new KeyGroup() { KeyCode = KeyCode.None });
+            OnClearPressed?.Invoke(_slotIndex, _category);
+            OnKeysSelected?.Invoke(_slotIndex, _category, new KeyGroup() { KeyCode = KeyCode.None });
             Hotbars.Controller.ToggleHotkeyEdits(true);
             HideDialog();
         }
@@ -213,10 +213,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public void Hide() => Hide(true);
 
-        public void ShowDialog(int id, HotkeyCategories category)
+        public void ShowDialog(int slotIndex, HotkeyCategories category)
         {
-            DebugLogger.Log($"Capturing Hotkey for id {id} in category {category}.");
-            _id = id;
+            DebugLogger.Log($"Capturing Hotkey for slot index {slotIndex} in category {category}.");
+            _slotIndex = slotIndex;
             _category = category;
             Dialog.SetActive(true);
             _monitorKeys = true;
@@ -224,7 +224,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public void HideDialog()
         {
-            _id = 0;
+            _slotIndex = 0;
             _modifierUp = false;
             _category = default;
             _text.text = string.Empty;

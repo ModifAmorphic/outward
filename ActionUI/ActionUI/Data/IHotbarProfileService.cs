@@ -4,7 +4,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
 {
     public interface IHotbarProfileService
     {
-        UnityEvent<IHotbarProfile> OnProfileChanged { get; }
+        UnityEvent<IHotbarProfile, HotbarProfileChangeTypes> OnProfileChanged { get; }
         IHotbarProfile GetProfile();
         void Save();
         void SaveNew(IHotbarProfile hotbarProfile);
@@ -18,5 +18,19 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
         IHotbarProfile SetCooldownTimer(bool showTimer, bool preciseTime);
         IHotbarProfile SetCombatMode(bool combatMode);
         IHotbarProfile SetEmptySlotView(EmptySlotOptions option);
+    }
+
+    public enum HotbarProfileChangeTypes
+    {
+        ProfileRefreshed,
+        HotbarAdded,
+        HotbarRemoved,
+        RowAdded,
+        RowRemoved,
+        SlotAdded,
+        SlotRemoved,
+        CooldownTimer,
+        CombatMode,
+        EmptySlotView
     }
 }

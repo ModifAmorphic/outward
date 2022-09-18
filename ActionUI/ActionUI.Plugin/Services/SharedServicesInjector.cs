@@ -11,6 +11,7 @@ namespace ModifAmorphic.Outward.UI.Services
     internal class SharedServicesInjector
     {
         private readonly ServicesProvider _provider;
+        private bool _isInjected;
 
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
@@ -23,11 +24,17 @@ namespace ModifAmorphic.Outward.UI.Services
 
         private void AddSharedServices(SplitPlayer splitPlayer, Character character)
         {
+            if (_isInjected)
+                return;
+
             var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
             var profileService = new ProfileService(Path.Combine(ActionUISettings.ProfilesPath, character.UID), _getLogger);
 
             psp
+                .AddSingleton(new ProfileManager(splitPlayer.RewiredID))
                 .AddSingleton<IActionUIProfileService>(profileService);
+
+            _isInjected = true;
         }
     }
 }

@@ -23,7 +23,7 @@ namespace ModifAmorphic.Outward.UI.Patches
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(CharacterManagerPatches)}::{nameof(ApplyQuickSlotsPostfix)}(): Exception disabling quickslots for character {_character?.name}.", ex);
+                Logger.LogException($"{nameof(CharacterManagerPatches)}::{nameof(ApplyQuickSlotsPostfix)}(): Exception Invoking {nameof(AfterApplyQuickSlots)} for character {_character?.name}.", ex);
             }
         }
     }
