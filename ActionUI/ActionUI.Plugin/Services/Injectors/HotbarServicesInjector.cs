@@ -7,7 +7,7 @@ using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using Rewired;
 using System;
 
-namespace ModifAmorphic.Outward.UI.Services
+namespace ModifAmorphic.Outward.UI.Services.Injectors
 {
     internal class HotbarServicesInjector
     {

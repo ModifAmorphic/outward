@@ -6,7 +6,7 @@ using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using System;
 using System.IO;
 
-namespace ModifAmorphic.Outward.UI.Services
+namespace ModifAmorphic.Outward.UI.Services.Injectors
 {
     internal class SharedServicesInjector
     {

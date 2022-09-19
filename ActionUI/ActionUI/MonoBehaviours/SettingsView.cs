@@ -19,6 +19,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public Toggle ActionSlotsToggle;
         public Toggle DurabilityToggle;
+        public Toggle StashCraftingToggle;
 
         public Button MoveUIButton;
         public Button ResetUIButton;
@@ -71,6 +72,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             ActionSlotsToggle.SetIsOn(_profile?.ActionSlotsEnabled ?? false);
             DurabilityToggle.SetIsOn(_profile?.DurabilityDisplayEnabled ?? false);
+            StashCraftingToggle.SetIsOn(_profile?.StashCraftingEnabled ?? false);
         }
         private void HookControls()
         {
@@ -95,6 +97,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 _profileService.Save();
             });
 
+            StashCraftingToggle.onValueChanged.AddListener(isOn =>
+            {
+                DebugLogger.Log($"StashCraftingToggle changed from {!isOn} to {isOn}. Saving profile.");
+                _profile.StashCraftingEnabled = isOn;
+                _profileService.Save();
+            });
 
             MoveUIButton.onClick.AddListener(ShowPositionScreen);
             ResetUIButton.onClick.AddListener(ResetUIPositions);

@@ -8,6 +8,7 @@ using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.UI.Patches;
 using ModifAmorphic.Outward.UI.Plugin.Services;
 using ModifAmorphic.Outward.UI.Services;
+using ModifAmorphic.Outward.UI.Services.Injectors;
 using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
@@ -77,10 +78,16 @@ namespace ModifAmorphic.Outward.UI
                     services
                     , services.GetService<ModifGoService>()
                     , services.GetService<LevelCoroutines>()
+                    , _loggerFactory))
+                .AddSingleton(new InventoryStartup(
+                    services
+                    , services.GetService<ModifGoService>()
+                    , services.GetService<LevelCoroutines>()
                     , _loggerFactory));
 
             services.GetService<HotbarsStartup>().Start();
             services.GetService<DurabilityDisplayStartup>().Start();
+            services.GetService<InventoryStartup>().Start();
         }
         public GameObject ConfigureAssetBundle()
         {
