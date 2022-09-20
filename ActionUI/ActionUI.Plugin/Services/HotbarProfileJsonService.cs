@@ -2,6 +2,7 @@
 using ModifAmorphic.Outward.UI.DataModels;
 using ModifAmorphic.Outward.UI.Extensions;
 using ModifAmorphic.Outward.UI.Models;
+using ModifAmorphic.Outward.UI.Services.Injectors;
 using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
@@ -16,17 +17,17 @@ using UnityEngine.Events;
 namespace ModifAmorphic.Outward.UI.Services
 {
 
-    public class HotbarProfileJsonService : IHotbarProfileService
+    public class HotbarProfileJsonService : IHotbarProfileService, IDisposable
     {
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
 
-        private const string KeyboardMapFileSuffix = "_KeyboardMap.xml";
         public string HotbarsConfigFile = "Hotbars.json";
 
-        ProfileService _profileService;
+        private ProfileService _profileService;
 
         private HotbarProfileData _hotbarProfile;
+        private bool disposedValue;
 
         public UnityEvent<IHotbarProfile, HotbarProfileChangeTypes> OnProfileChanged { get; } = new UnityEvent<IHotbarProfile, HotbarProfileChangeTypes>();
 
@@ -168,20 +169,6 @@ namespace ModifAmorphic.Outward.UI.Services
 
         public IHotbarProfile AddSlot()
         {
-
-            ////Add Last Slot first, then work our way backwards
-            //GetProfile().Hotbars[b].Slots.Add(
-            //        CreateSlotDataFrom(GetProfile().Hotbars[b].Slots.First(), 0));
-            //for (int r = GetProfile().Rows - 1; r > 0; r--)
-            //{
-            //    int s = r * GetProfile().SlotsPerRow;
-            //    //Insert a new slot at the end of the row.
-            //    GetProfile().Hotbars[b].Slots.Insert(s,
-            //        CreateSlotDataFrom(GetProfile().Hotbars[b].Slots.First(), s));
-            //}
-            ////Reindexing is needed after inserting
-            //ReindexSlots(GetProfile().Hotbars[b].Slots);
-
             for (int b = 0; b < GetProfile().Hotbars.Count; b++)
             {
                 int slotIndex = GetProfile().Hotbars[b].Slots.Count;
@@ -218,15 +205,6 @@ namespace ModifAmorphic.Outward.UI.Services
                 }
                 ReindexSlots(GetProfile().Hotbars[b].Slots);
             }
-            //for (int b = 0; b < GetProfile().Hotbars.Count; b++)
-            //{
-            //    var lastIndex = GetProfile().Hotbars[b].Slots.Count - 1;
-            //    for (int s = lastIndex; s > 0; s = s - GetProfile().SlotsPerRow)
-            //    {
-            //        GetProfile().Hotbars[b].Slots.RemoveAt(s);
-            //    }
-            //    ReindexSlots(GetProfile().Hotbars[b].Slots);
-            //}
 
             GetProfile().SlotsPerRow--;
             Save();
@@ -339,6 +317,37 @@ namespace ModifAmorphic.Outward.UI.Services
             Logger.LogDebug($"Loading profile file '{profileFile}'.");
             string json = File.ReadAllText(profileFile);
             return JsonConvert.DeserializeObject<HotbarProfileData>(json);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _profileService.OnActiveProfileChanged.RemoveListener((profile) => RefreshCachedProfile(profile));
+                    _profileService.OnActiveProfileSwitched.RemoveListener((profile) => RefreshCachedProfile(profile, true));
+                }
+                _hotbarProfile = null;
+                _profileService = null;
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~HotbarProfileJsonService()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

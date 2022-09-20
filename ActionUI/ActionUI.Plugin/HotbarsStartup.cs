@@ -4,6 +4,7 @@ using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.UI.Patches;
 using ModifAmorphic.Outward.UI.Services;
+using ModifAmorphic.Outward.UI.Services.Injectors;
 using ModifAmorphic.Outward.UI.Settings;
 using System;
 

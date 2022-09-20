@@ -1,9 +1,11 @@
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using ModifAmorphic.Outward.Unity.ActionUI;
 using System;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
@@ -45,10 +47,21 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private bool _eventsAdded;
 
+        private SelectableTransitions[] _selectables;
+        private Selectable _lastSelected;
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
         {
             SetHotkeys.onClick.AddListener(EnableHotkeyEdits);
+
+            _selectables = GetComponentsInChildren<SelectableTransitions>();
+            for (int i = 0; i < _selectables.Length; i++)
+            {
+                _selectables[i].OnSelected += SettingSelected;
+                _selectables[i].OnDeselected += SettingDeselected;
+            }
+
             Hide(false);
         }
 
@@ -68,6 +81,19 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             gameObject.SetActive(true);
 
             SetControls();
+
+            if (_selectables != null && _selectables.Any())
+            {
+                _selectables.First().Selectable.Select();
+                EventSystem.current.SetSelectedGameObject(_selectables.First().gameObject, MainSettingsMenu.PlayerMenu.PlayerID);
+            }
+            else
+            {
+                MainSettingsMenu.HotbarViewToggle.Select();
+                EventSystem.current.SetSelectedGameObject(MainSettingsMenu.HotbarViewToggle.gameObject, MainSettingsMenu.PlayerMenu.PlayerID);
+
+            }
+
             OnShow?.Invoke();
         }
 
@@ -144,6 +170,33 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             Hotbars.Controller.ToggleActionSlotEdits(true);
             HotkeyCaptureMenu.Show();
             MainSettingsMenu.gameObject.SetActive(false);
+        }
+
+        private void SettingSelected(SelectableTransitions transition)
+        {
+            DebugLogger.Log($"{transition.name} Selected.");
+            _lastSelected = transition.Selectable;
+        }
+
+        private void SettingDeselected(SelectableTransitions transition)
+        {
+            DebugLogger.Log($"{transition.name} Deselected.");
+            //if (_selectables.Any(s => s.Selected) || !gameObject.activeSelf)
+            //    return;
+
+            StartCoroutine(CheckSetSelectedSetting());
+        }
+
+        private IEnumerator CheckSetSelectedSetting()
+        {
+            yield return null;
+            yield return new WaitForEndOfFrame();
+
+            if (!_selectables.Any(s => s.Selected) && !MainSettingsMenu.MenuItemSelected && gameObject.activeSelf && _lastSelected != null)
+            {
+                _lastSelected.Select();
+            }
+
         }
     }
 }

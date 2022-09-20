@@ -28,7 +28,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private IActionMenu[] _actionMenus;
 
-        private Func<bool> _exitRequested;
+        //private Func<bool> _exitRequested;
+
+        private MenuNavigationActions _navActions;
+        public MenuNavigationActions NavACtions => _navActions;
 
         private bool _isAwake = false;
         private bool _isPlayerAssigned = false;
@@ -79,7 +82,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             //posText.text = $"Player Pos: {rectTransform.position.x}, {rectTransform.position.y}. Size {rectTransform.sizeDelta.x}, {rectTransform.sizeDelta.y}";
             //canvasPosText.text = $"ActionCanvas Pos: {canvasRectTransform.position.x}, {canvasRectTransform.position.y}. Size {canvasRectTransform.sizeDelta.x}, {canvasRectTransform.sizeDelta.y}";
 
-            if (_exitRequested != null && _exitRequested.Invoke())
+            if (_navActions != null && (_navActions.Cancel?.Invoke()??false))
             {
                 for (int i = 0; i < _actionMenus.Length; i++)
                 {
@@ -89,7 +92,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             }
         }
 
-        public void ConfigureExit(Func<bool> exitRequested) => _exitRequested = exitRequested;
+        public void ConfigureNavigation(MenuNavigationActions navActions) => _navActions = navActions;
 
         public bool AnyActionMenuShowing() => _isAwake && _actionMenus.Any(m => m.IsShowing);
 

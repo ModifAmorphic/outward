@@ -7,7 +7,7 @@ using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using Rewired;
 using System;
 
-namespace ModifAmorphic.Outward.UI.Services
+namespace ModifAmorphic.Outward.UI.Services.Injectors
 {
     internal class HotbarServicesInjector
     {
@@ -26,8 +26,8 @@ namespace ModifAmorphic.Outward.UI.Services
         private void AddHotbarServices(SplitPlayer splitPlayer, Character character)
         {
             Logger.LogDebug($"{nameof(HotbarServicesInjector)}::{nameof(AddHotbarServices)} Beginning Hotbar Services Injection.");
-            var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
-            var profileService = psp.GetService<IActionUIProfileService>() as ProfileService;
+            var usp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
+            var profileService = usp.GetService<IActionUIProfileService>() as ProfileService;
             var activeProfile = profileService.GetActiveActionUIProfile();
 
             if (!activeProfile.ActionSlotsEnabled)
@@ -35,56 +35,56 @@ namespace ModifAmorphic.Outward.UI.Services
                 return;
             }
 
-            var playerMenus = psp.GetService<PlayerActionMenus>();
+            var playerMenus = usp.GetService<PlayerActionMenus>();
             var hotbars = playerMenus.gameObject.GetComponentInChildren<HotbarsContainer>();
             var player = ReInput.players.GetPlayer(splitPlayer.RewiredID);
 
-            if (!psp.ContainsService<HotbarsContainer>())
-                psp.AddSingleton(hotbars);
+            if (!usp.ContainsService<HotbarsContainer>())
+                usp.TryRemove<HotbarsContainer>();
+            usp.AddSingleton(hotbars);
 
-            if (!psp.ContainsService<IHotbarProfileService>())
-                psp.AddSingleton<IHotbarProfileService>(new HotbarProfileJsonService(profileService
+            usp.TryDispose<IHotbarProfileService>();
+            usp.AddSingleton<IHotbarProfileService>(new HotbarProfileJsonService(profileService
                                               , _getLogger));
 
             //if (!psp.ContainsService<SlotDataService>())
-            psp.TryDispose<SlotDataService>();
-            psp.AddSingleton(new SlotDataService(player
+            usp.TryDispose<SlotDataService>();
+            usp.AddSingleton(new SlotDataService(player
                                         , splitPlayer.AssignedCharacter
-                                        , (HotbarProfileJsonService)psp.GetService<IHotbarProfileService>()
+                                        , (HotbarProfileJsonService)usp.GetService<IHotbarProfileService>()
                                         , _getLogger));
 
-            psp.TryDispose<HotbarService>();
-            psp.TryDispose<ControllerMapService>();
-
-            psp
+            usp.TryDispose<HotbarService>();
+            usp.TryDispose<ControllerMapService>();
+            usp
                 .AddSingleton(new HotbarService(hotbars
                                         , player
                                         , splitPlayer.AssignedCharacter
                                         , playerMenus.ProfileManager
-                                        , psp.GetService<SlotDataService>()
+                                        , usp.GetService<SlotDataService>()
                                         , _levelCoroutines
                                         , _getLogger))
-                .AddSingleton(new ControllerMapService(psp.GetService<HotkeyCaptureMenu>()
+                .AddSingleton(new ControllerMapService(usp.GetService<HotkeyCaptureMenu>()
                                         , playerMenus.ProfileManager
-                                        , psp.GetService<HotbarService>()
+                                        , usp.GetService<HotbarService>()
                                         , player
                                         , _levelCoroutines
                                         , _getLogger));
 
-            psp.TryDispose<IActionViewData>();
-            psp.AddSingleton<IActionViewData>(new SlotActionViewData(player
+            usp.TryDispose<IActionViewData>();
+            usp.AddSingleton<IActionViewData>(new SlotActionViewData(player
                                         , splitPlayer.AssignedCharacter
-                                        , psp.GetService<SlotDataService>()
-                                        , (HotbarProfileJsonService)psp.GetService<IHotbarProfileService>()
+                                        , usp.GetService<SlotDataService>()
+                                        , (HotbarProfileJsonService)usp.GetService<IHotbarProfileService>()
                                         , _getLogger));
 
-            psp.TryDispose<IHotbarNavActions>();
-            psp.AddSingleton<IHotbarNavActions>(new HotbarKeyListener(player));
+            usp.TryDispose<IHotbarNavActions>();
+            usp.AddSingleton<IHotbarNavActions>(new HotbarKeyListener(player));
 
-            psp.GetService<ControllerMapService>().LoadConfigMaps();
+            usp.GetService<ControllerMapService>().LoadConfigMaps();
 
             hotbars.OnAwake += () => _levelCoroutines.DoNextFrame(() =>
-                psp.GetService<HotbarService>().Start());
+                usp.GetService<HotbarService>().Start());
 
             //_isInjected = true;
             Logger.LogDebug($"{nameof(HotbarServicesInjector)}::{nameof(AddHotbarServices)} Completed Hotbar Services Injection.");
