@@ -37,6 +37,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private Dictionary<ActionSettingsMenus, ISettingsView> _menus;
 
+        private SelectableTransitions[] _selectables;
+        public bool MenuItemSelected => (_selectables != null && _selectables.Any(s => s.Selected) || ProfileInput.gameObject.activeSelf);
+
         private bool _isInit;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
@@ -52,6 +55,13 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             SettingsViewToggle.onValueChanged.AddListener(isOn => ShowMenu(ActionSettingsMenus.Settings));
             HotbarViewToggle.onValueChanged.AddListener(isOn => ShowMenu(ActionSettingsMenus.ActionSlots));
+
+            _selectables = GetComponentsInChildren<SelectableTransitions>();
+            //for (int i = 0; i < _selectables.Length; i++)
+            //{
+            //    _selectables[i].OnSelected += SettingSelected;
+            //    _selectables[i].OnDeselected += SettingDeselected;
+            //}
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]

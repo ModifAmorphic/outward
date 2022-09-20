@@ -30,5 +30,19 @@
 
 ![Durability Display](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/DurabilityDisplay.png?raw=true)
 
+## Other Miscellaneous changes
+  - Crafting from Stash
+  - *More coming soon*
+
+
 ## Latest Release ${PACKAGE_VERSION}
-  - Dev Release
+  - Fixes profile character switching bug. 
+    - Going back to the main menu and continuing a different character's was causing the wrong ActionUI profile to be loaded. The profile for the first character loaded after launching the game was always being used.
+  - Fixes for navigating settings menus with keyboard or controller.
+  - Added Craft from Stash option.
+
+## Initial Release 1.0.0
+  - Initial Release
+  - Keyboard Quickslots replaced with Custom Hotbar and Action Slots
+  - Durability Display UI
+  - Drag and Drop Positioning of UI

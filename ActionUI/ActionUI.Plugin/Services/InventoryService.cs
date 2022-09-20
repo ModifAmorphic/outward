@@ -10,13 +10,14 @@ using System.Text;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
-    internal class InventoryService
+    internal class InventoryService : IDisposable
     {
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
-        private readonly Character _character;
+        private Character _character;
         private readonly ProfileManager _profileManager;
+        private bool disposedValue;
 
         public InventoryService(Character character, ProfileManager profileManager, Func<IModifLogger> getLogger)
         {
@@ -44,6 +45,34 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             var sceneName = AreaManager.Instance.CurrentArea.SceneName;
             return (AreaManager.AreaEnum)AreaManager.Instance.GetAreaIndexFromSceneName(sceneName);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    CharacterInventoryPatches.AfterInventoryIngredients -= AddStashIngredients;
+                }
+                _character = null;
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~InventoryService()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

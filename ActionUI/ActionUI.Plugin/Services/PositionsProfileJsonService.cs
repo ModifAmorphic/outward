@@ -11,7 +11,7 @@ using UnityEngine.Events;
 namespace ModifAmorphic.Outward.UI.Services
 {
 
-    public class PositionsProfileJsonService : IPositionsProfileService
+    public class PositionsProfileJsonService : IPositionsProfileService, IDisposable
     {
 
         Func<IModifLogger> _getLogger;
@@ -19,9 +19,10 @@ namespace ModifAmorphic.Outward.UI.Services
 
         public string PositionsFile = "UIPositions.json";
 
-        ProfileService _profileService;
+        private ProfileService _profileService;
 
         private PositionsProfile _positionsProfile;
+        private bool disposedValue;
 
         public UnityEvent<PositionsProfile> OnProfileChanged { get; } = new UnityEvent<PositionsProfile>();
 
@@ -98,6 +99,35 @@ namespace ModifAmorphic.Outward.UI.Services
         {
             var removals = positonsProfile.Positions.Where(p => p.ModifiedPosition == p.OriginPosition).ToList();
             removals.ForEach(p => positonsProfile.RemovePosition(p));
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _profileService.OnActiveProfileChanged.RemoveListener((profile) => RefreshCachedProfile(profile));
+                    _profileService.OnActiveProfileSwitched.RemoveListener((profile) => RefreshCachedProfile(profile, true));
+                }
+                _positionsProfile = null;
+                _positionsProfile = null;
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~PositionsProfileJsonService()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

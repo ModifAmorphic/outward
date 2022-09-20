@@ -12,7 +12,6 @@ namespace ModifAmorphic.Outward.UI.Services.Injectors
     internal class InventoryServicesInjector
     {
         private readonly ServicesProvider _provider;
-        private bool _isInjected;
 
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
@@ -25,19 +24,17 @@ namespace ModifAmorphic.Outward.UI.Services.Injectors
 
         private void AddSharedServices(SplitPlayer splitPlayer, Character character)
         {
-            if (_isInjected)
-                return;
 
             var usp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
             var profileManager = usp.GetService<ProfileManager>();
 
+            usp.TryDispose<InventoryService>();
             usp
                 .AddSingleton(new InventoryService(
                                                     character,
                                                     profileManager,
                                                     _getLogger));
 
-            _isInjected = true;
         }
     }
 }
