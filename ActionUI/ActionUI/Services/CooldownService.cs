@@ -1,10 +1,10 @@
-﻿using ModifAmorphic.Outward.Unity.ActionMenus.Controllers;
+﻿using ModifAmorphic.Outward.Unity.ActionUI.Controllers;
 using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenus.Services
+namespace ModifAmorphic.Outward.Unity.ActionUI.Services
 {
     internal class CooldownService : IDisposable
     {

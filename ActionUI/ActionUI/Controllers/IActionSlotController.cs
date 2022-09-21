@@ -1,4 +1,6 @@
-﻿namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
+﻿using ModifAmorphic.Outward.Unity.ActionMenus;
+
+namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
 {
     public interface IActionSlotController
     {

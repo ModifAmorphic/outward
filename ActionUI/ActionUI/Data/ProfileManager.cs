@@ -1,4 +1,6 @@
-﻿namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
+﻿using ModifAmorphic.Outward.Unity.ActionMenus;
+
+namespace ModifAmorphic.Outward.Unity.ActionUI.Data
 {
     public class ProfileManager
     {

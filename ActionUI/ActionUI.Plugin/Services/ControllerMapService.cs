@@ -3,16 +3,15 @@ using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.UI.DataModels;
 using ModifAmorphic.Outward.UI.Models;
 using ModifAmorphic.Outward.UI.Patches;
-using ModifAmorphic.Outward.UI.Services.Injectors;
 using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
-using ModifAmorphic.Outward.Unity.ActionMenus.Data;
+using ModifAmorphic.Outward.Unity.ActionUI;
+using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using Rewired;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml;
 using UnityEngine;
@@ -233,7 +232,7 @@ namespace ModifAmorphic.Outward.UI.Services
                     slotConfig.HotkeyText = hotkeyText;
                 }
             }
-            
+
             //Clear out the last slot of the first row since it wouldn't be handled above.
             var lastConfig = hotbars[0].Slots[firstAddedSlot].Config as ActionConfig;
             ConfigureButtonMapping(new ElementAssignment(KeyCode.None, ModifierKeyFlags.None, lastConfig.RewiredActionId, Pole.Positive, -1), ControllerType.Keyboard, keyboardMap, out _);
@@ -267,7 +266,7 @@ namespace ModifAmorphic.Outward.UI.Services
                 for (int s = firstSlot; s <= lastSlot; s++)
                 {
                     var slotConfig = hotbars[0].Slots[s].Config as ActionConfig;
-                    
+
                     // + r because each row is offset +1 by the previous rows slot removal
                     int nextActionId = ((ActionConfig)hotbars[0].Slots[s].Config).RewiredActionId + r;
 
@@ -500,7 +499,7 @@ namespace ModifAmorphic.Outward.UI.Services
                 _player.controllers.maps.RemoveMap<T>(0, controllerMap.id);
             }
             _player.controllers.maps.AddMap<T>(0, controllerMap);
-            
+
             return controllerMap;
         }
 

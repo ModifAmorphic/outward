@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenus
+namespace ModifAmorphic.Outward.Unity.ActionUI
 {
     public class ActionSlotIcon
     {

@@ -1,5 +1,5 @@
 ﻿using ModifAmorphic.Outward.UI.Settings;
-using ModifAmorphic.Outward.Unity.ActionMenus;
+using ModifAmorphic.Outward.Unity.ActionUI;
 using Rewired;
 
 namespace ModifAmorphic.Outward.UI.Services

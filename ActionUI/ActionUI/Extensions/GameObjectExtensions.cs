@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace ModifAmorphic.Outward.ActionMenus.Extensions
+namespace ModifAmorphic.Outward.Unity.ActionUI.Extensions
 {
     internal static class GameObjectExtensions
     {

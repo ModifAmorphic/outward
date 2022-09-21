@@ -2,8 +2,6 @@
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.UI;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.ActionUI.Patches
 {

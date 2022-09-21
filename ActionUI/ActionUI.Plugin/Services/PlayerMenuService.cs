@@ -1,6 +1,5 @@
 ﻿using BepInEx;
 using ModifAmorphic.Outward.Coroutines;
-using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.UI.DataModels;
@@ -8,8 +7,8 @@ using ModifAmorphic.Outward.UI.Monobehaviours;
 using ModifAmorphic.Outward.UI.Patches;
 using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
-using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using ModifAmorphic.Outward.Unity.ActionUI;
+using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using Rewired;
 using System;
 using System.Collections;

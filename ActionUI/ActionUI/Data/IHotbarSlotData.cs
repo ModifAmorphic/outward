@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
+namespace ModifAmorphic.Outward.Unity.ActionUI.Data
 {
     public interface IHotbarSlotData
     {

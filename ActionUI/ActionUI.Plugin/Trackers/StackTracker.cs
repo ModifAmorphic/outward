@@ -1,4 +1,4 @@
-﻿using ModifAmorphic.Outward.Unity.ActionMenus;
+﻿using ModifAmorphic.Outward.Unity.ActionUI;
 using System;
 
 namespace ModifAmorphic.Outward.UI.Models

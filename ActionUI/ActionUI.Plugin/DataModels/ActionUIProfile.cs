@@ -1,4 +1,4 @@
-﻿using ModifAmorphic.Outward.Unity.ActionMenus.Data;
+﻿using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using Newtonsoft.Json;
 
 namespace ModifAmorphic.Outward.UI.DataModels

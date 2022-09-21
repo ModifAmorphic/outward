@@ -2,11 +2,11 @@
 using ModifAmorphic.Outward.UI.DataModels;
 using ModifAmorphic.Outward.UI.Extensions;
 using ModifAmorphic.Outward.UI.Models;
-using ModifAmorphic.Outward.UI.Services.Injectors;
 using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
-using ModifAmorphic.Outward.Unity.ActionMenus.Data;
-using ModifAmorphic.Outward.Unity.ActionMenus.Extensions;
+using ModifAmorphic.Outward.Unity.ActionUI;
+using ModifAmorphic.Outward.Unity.ActionUI.Data;
+using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -197,7 +197,7 @@ namespace ModifAmorphic.Outward.UI.Services
                 return GetProfile();
 
             for (int b = 0; b < GetProfile().Hotbars.Count; b++)
-            { 
+            {
                 for (int r = GetProfile().Rows; r > 0; r--)
                 {
                     int lastSlotInRow = r * GetProfile().SlotsPerRow - 1;

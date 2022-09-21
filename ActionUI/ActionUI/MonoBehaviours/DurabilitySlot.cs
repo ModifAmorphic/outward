@@ -1,3 +1,4 @@
+using ModifAmorphic.Outward.Unity.ActionUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,20 +6,12 @@ using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
-    public enum DurableEquipmentSlot
-    {
-        None, Head, Chest, RightHand, LeftHand, Feet
-    }
-    public enum DurableEquipmentType
-    {
-        None, Helm, Chest, RangedWeapon, MeleeWeapon, Shield, Boots
-    }
     [UnityScriptComponent]
     public class DurabilitySlot : DynamicColorImage
     {
         private Dictionary<DurableEquipmentType, Image> _equipmentImages;
 
-        public DurableEquipmentSlot EquipmentSlot;
+        public EquipmentSlots EquipmentSlot;
         public DurableEquipmentType EquipmentType;
 
         protected override void OnAwake()

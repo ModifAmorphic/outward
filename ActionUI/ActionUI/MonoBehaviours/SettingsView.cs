@@ -1,5 +1,5 @@
-using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using ModifAmorphic.Outward.Unity.ActionUI;
+using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
 using System;
 using System.Collections;
@@ -43,8 +43,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private void Awake()
         {
             _selectables = GetComponentsInChildren<SelectableTransitions>();
-            
-            for(int i = 0; i < _selectables.Length; i++)
+
+            for (int i = 0; i < _selectables.Length; i++)
             {
                 _selectables[i].OnSelected += SettingSelected;
                 _selectables[i].OnDeselected += SettingDeselected;
@@ -103,10 +103,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         {
             ProfileDropdown.onValueChanged.AddListener(SelectProfile);
             ProfileRenameButton.onClick.AddListener(RenameProfile);
-            MainSettingsMenu.ProfileInput.OnHide.AddListener(() => {
+            MainSettingsMenu.ProfileInput.OnHide.AddListener(() =>
+            {
                 ProfileDropdown.Select();
                 SetProfiles();
-                });
+            });
 
             ActionSlotsToggle.onValueChanged.AddListener(isOn =>
             {
@@ -210,12 +211,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             StartCoroutine(CheckSetSelectedSetting());
         }
-        
+
         private IEnumerator CheckSetSelectedSetting()
         {
             yield return null;
             yield return new WaitForEndOfFrame();
-            
+
             if (!_selectables.Any(s => s.Selected) && !MainSettingsMenu.MenuItemSelected && gameObject.activeSelf && _lastSelected != null)
             {
                 _lastSelected.Select();

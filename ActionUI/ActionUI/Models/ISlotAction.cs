@@ -1,7 +1,8 @@
-﻿using System;
+﻿using ModifAmorphic.Outward.Unity.ActionMenus;
+using System;
 using System.Collections.Generic;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenus
+namespace ModifAmorphic.Outward.Unity.ActionUI
 {
     public interface ISlotAction
     {

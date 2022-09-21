@@ -1,11 +1,11 @@
-﻿using ModifAmorphic.Outward.Unity.ActionMenus.Services;
-using ModifAmorphic.Outward.Unity.ActionUI;
+﻿using ModifAmorphic.Outward.Unity.ActionMenus;
+using ModifAmorphic.Outward.Unity.ActionUI.Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
+namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
 {
     internal class ActionSlotController : IActionSlotController, IDisposable
     {

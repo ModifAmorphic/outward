@@ -1,7 +1,7 @@
 ﻿using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.UI.DataModels;
-using ModifAmorphic.Outward.Unity.ActionMenus.Data;
-using ModifAmorphic.Outward.Unity.ActionMenus.Extensions;
+using ModifAmorphic.Outward.Unity.ActionUI.Data;
+using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

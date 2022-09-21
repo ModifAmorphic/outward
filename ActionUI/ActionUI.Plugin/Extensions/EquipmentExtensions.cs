@@ -1,4 +1,4 @@
-﻿using ModifAmorphic.Outward.Unity.ActionMenus;
+﻿using ModifAmorphic.Outward.Unity.ActionUI;
 using static EquipmentSlot;
 
 namespace ModifAmorphic.Outward.UI.Extensions

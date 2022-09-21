@@ -1,4 +1,4 @@
-﻿namespace ModifAmorphic.Outward.Unity.ActionMenus
+﻿namespace ModifAmorphic.Outward.Unity.ActionUI
 {
     public enum HotkeyCategories
     {

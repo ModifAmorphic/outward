@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using UnityEngine.UI;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenus.Extensions
+namespace ModifAmorphic.Outward.Unity.ActionUI.Extensions
 {
-    public static class ButtonExtensions
+    public static class SelectableExtensions
     {
         private static readonly PropertyInfo _selectionStatePropInfo = typeof(Selectable).GetProperty("currentSelectionState", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -35,6 +35,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Extensions
             Disabled,
         }
 
-        public static SelectionState GetSelectionState(this Button button) => (SelectionState)_selectionStatePropInfo.GetValue(button);
+        public static SelectionState GetSelectionState(this Selectable selectable) => (SelectionState)_selectionStatePropInfo.GetValue(selectable);
     }
 }

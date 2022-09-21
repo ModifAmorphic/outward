@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenus.Extensions
+namespace ModifAmorphic.Outward.Unity.ActionUI.Extensions
 {
     public static class UnityEventExtensions
     {

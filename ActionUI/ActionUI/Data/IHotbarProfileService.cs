@@ -1,6 +1,7 @@
-﻿using UnityEngine.Events;
+﻿using ModifAmorphic.Outward.Unity.ActionMenus;
+using UnityEngine.Events;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
+namespace ModifAmorphic.Outward.Unity.ActionUI.Data
 {
     public interface IHotbarProfileService
     {

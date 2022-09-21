@@ -1,5 +1,5 @@
 ﻿using ModifAmorphic.Outward.UI.Extensions;
-using ModifAmorphic.Outward.Unity.ActionMenus;
+using ModifAmorphic.Outward.Unity.ActionUI;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,7 +25,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
         public DurableEquipmentType DurableEquipmentType => _equipment.GetDurableEquipmentType();
 
-        public DurableEquipmentSlot DurableEquipmentSlot => _equipment.CurrentEquipmentSlot.SlotType.ToDurableEquipmentSlot();
+        public EquipmentSlots DurableEquipmentSlot => _equipment.CurrentEquipmentSlot.SlotType.ToDurableEquipmentSlot();
 
         public float MinimumDisplayValue => .499f;
 
