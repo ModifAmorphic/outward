@@ -1,6 +1,5 @@
 using ModifAmorphic.Outward.Unity.ActionUI;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
-using System;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
@@ -13,7 +12,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     [UnityScriptComponent]
     public class EquipmentSetsSettingsView : MonoBehaviour, ISettingsView
     {
-        
+
         public Toggle ArmorSetsCombat;
         public Toggle SkipWeaponAnimation;
         public Toggle EquipFromStash;

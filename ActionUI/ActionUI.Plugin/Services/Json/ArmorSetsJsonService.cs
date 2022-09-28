@@ -1,5 +1,4 @@
 ﻿using ModifAmorphic.Outward.ActionUI.Models;
-using ModifAmorphic.Outward.ActionUI.Services;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Unity.ActionUI;
@@ -7,13 +6,8 @@ using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets;
 using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
 using ModifAmorphic.Outward.Unity.ActionUI.Models.EquipmentSets;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using UnityEngine;
-using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
@@ -112,7 +106,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public bool IsContainedInSet(string itemUID) =>
             GetEquipmentSetsProfile().EquipmentSets.Any(set => set.GetEquipSlots().Any(slot => slot != null && slot.UID == itemUID));
-        
+
 
         public ArmorSet GetEquippedAsSet(string name)
         {

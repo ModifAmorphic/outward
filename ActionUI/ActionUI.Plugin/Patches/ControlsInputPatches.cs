@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
-using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.ActionUI.Settings;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using Rewired;
 using System;

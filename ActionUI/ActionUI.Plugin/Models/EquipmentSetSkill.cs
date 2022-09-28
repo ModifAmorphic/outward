@@ -1,14 +1,10 @@
 ﻿using ModifAmorphic.Outward.ActionUI.Extensions;
-using ModifAmorphic.Outward.ActionUI.Patches;
 using ModifAmorphic.Outward.ActionUI.Services;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
-using ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets;
 using ModifAmorphic.Outward.Unity.ActionUI.Models.EquipmentSets;
 using System.Linq;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.ActionUI.Models
 {

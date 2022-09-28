@@ -1,5 +1,5 @@
-﻿using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.ActionUI.Services;
+﻿using ModifAmorphic.Outward.ActionUI.Services;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using System;
 using UnityEngine;

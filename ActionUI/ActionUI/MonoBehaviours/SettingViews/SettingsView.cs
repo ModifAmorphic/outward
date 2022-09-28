@@ -6,7 +6,6 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus

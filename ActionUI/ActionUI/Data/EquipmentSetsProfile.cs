@@ -1,7 +1,5 @@
 ﻿using ModifAmorphic.Outward.Unity.ActionUI.Models.EquipmentSets;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.Unity.ActionUI.Data
 {

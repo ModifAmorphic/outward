@@ -1,24 +1,20 @@
 ﻿using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
-using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
 using Newtonsoft.Json;
 using System;
 using System.IO;
-using System.Linq;
-using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
 
-    public abstract class JsonProfileService<T>: IDisposable where T : new()
+    public abstract class JsonProfileService<T> : IDisposable where T : new()
     {
 
         Func<IModifLogger> _getLogger;
         protected IModifLogger Logger => _getLogger.Invoke();
 
         protected abstract string FileName { get; }
-        
+
         //public string PositionsFile = "UIPositions.json";
 
         protected ProfileService ProfileService { get; set; }
@@ -36,7 +32,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             profileService.OnActiveProfileSwitched.AddListener((profile) => RefreshCachedProfile(profile, true));
         }
 
-        
+
 
         public virtual T GetProfile()
         {

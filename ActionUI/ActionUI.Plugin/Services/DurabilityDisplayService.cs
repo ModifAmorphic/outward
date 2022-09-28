@@ -1,6 +1,6 @@
-﻿using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.ActionUI.Extensions;
+﻿using ModifAmorphic.Outward.ActionUI.Extensions;
 using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI;
 using System;

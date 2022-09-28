@@ -3,7 +3,6 @@ using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.ActionUI.Models
 {

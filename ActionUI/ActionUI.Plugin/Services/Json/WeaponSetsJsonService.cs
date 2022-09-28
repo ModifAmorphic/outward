@@ -1,5 +1,4 @@
 ﻿using ModifAmorphic.Outward.ActionUI.Models;
-using ModifAmorphic.Outward.ActionUI.Services;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Unity.ActionUI;
@@ -7,13 +6,8 @@ using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets;
 using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
 using ModifAmorphic.Outward.Unity.ActionUI.Models.EquipmentSets;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using UnityEngine;
-using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
@@ -25,7 +19,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private CraftingMenuEvents _craftingEvents;
 
         public WeaponSetsJsonService(ProfileService profileService, InventoryService inventoryService, CraftingMenuEvents craftingEvents, Func<IModifLogger> getLogger) : base(profileService, getLogger)
-        { 
+        {
             (_inventoryService, _craftingEvents) = (inventoryService, craftingEvents);
             _craftingEvents.DynamicCraftComplete += UpdateSetsCraftResults;
         }
@@ -145,7 +139,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 bool saveSet = false;
                 foreach (var equipSlot in set.GetEquipSlots())
                 {
-                    
+
                     if (equipSlot != null && equipSlot.ItemID != 0 && !string.IsNullOrEmpty(equipSlot.UID))
                     {
                         if (result.IngredientCraftData.ConsumedItems.TryGetValue(equipSlot.ItemID, out var itemResults)

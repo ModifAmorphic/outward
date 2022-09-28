@@ -57,6 +57,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 ActionImages.AddOrUpdateImage(_slotAction.ActionIcons[i]);
             }
         }
-        
+
     }
 }

@@ -1,9 +1,9 @@
 ﻿using HarmonyLib;
+using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.ActionUI.Services.Injectors;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.ActionUI.Patches;
-using ModifAmorphic.Outward.ActionUI.Services.Injectors;
 using System;
 
 namespace ModifAmorphic.Outward.ActionUI

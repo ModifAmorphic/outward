@@ -59,7 +59,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         {
             if (typeof(T).Equals(typeof(ArmorSet)))
                 return (IEquipmentSetService<T>)PlayerMenu.ProfileManager.ArmorSetService;
-            else if(typeof(T).Equals(typeof(WeaponSet)))
+            else if (typeof(T).Equals(typeof(WeaponSet)))
                 return (IEquipmentSetService<T>)PlayerMenu.ProfileManager.WeaponSetService;
 
             throw new ArgumentOutOfRangeException(nameof(T));
@@ -68,7 +68,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
         {
-            PlayerMenu.EquipmentSetMenus.OnHide.AddListener(() => {
+            PlayerMenu.EquipmentSetMenus.OnHide.AddListener(() =>
+            {
                 if (SetNamePanel.IsShowing)
                     SetNamePanel.Hide();
             });
@@ -149,7 +150,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             if (EquipmentSetType == EquipmentSetTypes.Armor)
             {
                 EquipmentIconDropdown.AddOptions(new List<OptionData>()
-                { 
+                {
                     new OptionData(_equipSlotsNames[EquipSlots.Head]),
                     new OptionData(_equipSlotsNames[EquipSlots.Chest]),
                     new OptionData(_equipSlotsNames[EquipSlots.Feet]),
@@ -177,7 +178,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 set = GetEquipmentService<T>().GetEquippedAsSet("Default");
 
             DebugLogger.Log($"Got equipment set {set?.Name}");
-            
+
             //stash the slot icon set it to the dropdown value
             var slotIcon = set.SlotIcon;
             DebugLogger.Log($"Setting SlotIcon to {EquipmentIconDropdown.GetSelectedOption().text}. _equipSlots.ContainsKey(\"{ EquipmentIconDropdown.GetSelectedOption().text}\") == {_equipSlots.ContainsKey(EquipmentIconDropdown.GetSelectedOption().text)}");
@@ -262,7 +263,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             if (!GetEquipmentService<T>().TryEquipSet(set))
             {
-               //TODO: Give better indicator that equippin failed
+                //TODO: Give better indicator that equippin failed
             }
             SaveSetButton.interactable = true;
             SelectSlotIcon<T>();
@@ -289,18 +290,18 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             GetEquipmentService<T>().SaveEquipmentSet(set);
         }
 
-        
-            //private void SelectEquipmentSet<T>(string name) where T : IEquipmentSet
-            //{
-            //    SetEquipmentSetOptions<T>();
-            //    int index;
-            //    for (index = 0; index < EquipmentSetDropdown.options.Count; index++)
-            //    {
-            //        if (EquipmentSetDropdown.options[index].text.Equals(name, StringComparison.InvariantCultureIgnoreCase))
-            //            break;
-            //    }
-            //    if (index < EquipmentSetDropdown.options.Count)
-            //        EquipmentSetDropdown.SetValueWithoutNotify(index);
-            //}
-        }
+
+        //private void SelectEquipmentSet<T>(string name) where T : IEquipmentSet
+        //{
+        //    SetEquipmentSetOptions<T>();
+        //    int index;
+        //    for (index = 0; index < EquipmentSetDropdown.options.Count; index++)
+        //    {
+        //        if (EquipmentSetDropdown.options[index].text.Equals(name, StringComparison.InvariantCultureIgnoreCase))
+        //            break;
+        //    }
+        //    if (index < EquipmentSetDropdown.options.Count)
+        //        EquipmentSetDropdown.SetValueWithoutNotify(index);
+        //}
+    }
 }

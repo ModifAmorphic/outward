@@ -17,6 +17,6 @@ namespace ModifAmorphic.Outward.ActionUI.DataModels
 
         [JsonIgnore]
         public string Path { get; set; }
-        
+
     }
 }

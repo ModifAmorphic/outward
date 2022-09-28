@@ -1,5 +1,5 @@
-﻿using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.ActionUI.DataModels;
+﻿using ModifAmorphic.Outward.ActionUI.DataModels;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
 using Newtonsoft.Json;

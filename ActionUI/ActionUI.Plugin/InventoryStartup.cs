@@ -1,10 +1,10 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.ActionUI.Services.Injectors;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Crafting;
-using ModifAmorphic.Outward.ActionUI.Services.Injectors;
 using System;
 
 namespace ModifAmorphic.Outward.ActionUI
@@ -34,7 +34,7 @@ namespace ModifAmorphic.Outward.ActionUI
             _harmony.PatchAll(typeof(EquipmentMenuPatches));
             _harmony.PatchAll(typeof(InventoryContentDisplayPatches));
             _harmony.PatchAll(typeof(ItemDisplayPatches));
-            
+
             _services
                      .AddSingleton(new InventoryServicesInjector(_services, _craftingEvents, _coroutines, _loggerFactory));
 

@@ -1,10 +1,10 @@
-﻿using ModifAmorphic.Outward.Coroutines;
-using ModifAmorphic.Outward.Extensions;
-using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.ActionUI.DataModels;
+﻿using ModifAmorphic.Outward.ActionUI.DataModels;
 using ModifAmorphic.Outward.ActionUI.Models;
 using ModifAmorphic.Outward.ActionUI.Patches;
 using ModifAmorphic.Outward.ActionUI.Settings;
+using ModifAmorphic.Outward.Coroutines;
+using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using Rewired;

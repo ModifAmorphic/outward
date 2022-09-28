@@ -1,9 +1,9 @@
 ﻿using BepInEx;
+using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.ActionUI.Patches;
-using ModifAmorphic.Outward.ActionUI.Settings;
 using Rewired;
 using Rewired.Data;
 using Rewired.Data.Mapping;

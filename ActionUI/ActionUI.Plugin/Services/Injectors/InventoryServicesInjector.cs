@@ -1,8 +1,7 @@
-﻿using ModifAmorphic.Outward.ActionUI.Services;
+﻿using ModifAmorphic.Outward.ActionUI.Patches;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Crafting;
-using ModifAmorphic.Outward.ActionUI.Patches;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets;
@@ -53,7 +52,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                     (ProfileService)profileManager.ProfileService,
                     usp.GetService<InventoryService>(),
                     _craftingEvents,
-                    _getLogger                    
+                    _getLogger
                     ))
                 .AddSingleton(new EquipmentMenuStashService(
                     character,

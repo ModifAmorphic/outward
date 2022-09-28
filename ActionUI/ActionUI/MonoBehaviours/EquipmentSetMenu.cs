@@ -10,7 +10,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     public class EquipmentSetMenu : MonoBehaviour, IActionMenu
     {
         private enum EquipmentSetViews
-        { 
+        {
             Weapons,
             Armor
         }

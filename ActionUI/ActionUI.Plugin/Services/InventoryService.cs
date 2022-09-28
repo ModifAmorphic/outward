@@ -119,13 +119,13 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _equipmentSetsMenus.Show();
             //_coroutines.DoNextFrame(() =>
             //{
-                var equipXform = _equipmentSetsMenus.transform as RectTransform;
-                var charMenus = _character.CharacterUI.transform.Find("Canvas/GameplayPanels/Menus/CharacterMenus/MainPanel") as RectTransform;
-                var menuBg = charMenus.Find("Background").GetComponent<Image>();
-                var xpos = charMenus.anchoredPosition.x - equipXform.rect.width + 30;
-                var ypos = charMenus.anchoredPosition.y + 10;
-                equipXform.anchoredPosition = new Vector2(xpos, ypos);
-                equipXform.GetComponent<Image>().material = menuBg.material;
+            var equipXform = _equipmentSetsMenus.transform as RectTransform;
+            var charMenus = _character.CharacterUI.transform.Find("Canvas/GameplayPanels/Menus/CharacterMenus/MainPanel") as RectTransform;
+            var menuBg = charMenus.Find("Background").GetComponent<Image>();
+            var xpos = charMenus.anchoredPosition.x - equipXform.rect.width + 30;
+            var ypos = charMenus.anchoredPosition.y + 10;
+            equipXform.anchoredPosition = new Vector2(xpos, ypos);
+            equipXform.GetComponent<Image>().material = menuBg.material;
             //});
         }
 
@@ -150,7 +150,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             var sceneName = AreaManager.Instance?.CurrentArea?.SceneName;
             if (string.IsNullOrEmpty(sceneName))
                 return false;
-            
+
             area = (AreaManager.AreaEnum)AreaManager.Instance.GetAreaIndexFromSceneName(sceneName);
             return true;
         }
@@ -189,7 +189,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 skill.Character = _character;
                 skill.ItemID = equipmentSet.SetID;
                 skillGo.SetActive(true);
-                _coroutines.DoNextFrame(() => { 
+                _coroutines.DoNextFrame(() =>
+                {
                     _characterInventory.SkillKnowledge.AddItem(skill);
                     Logger.LogDebug($"LearnEquipmentSetSkill: Added new Skill {skill.name}.");
                 });
@@ -292,7 +293,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             var equippedSlots = _characterEquipment.EquipmentSlots.Where(s => s != null && s.HasItemEquipped).ToList();
             if (armorSet == null)
             {
-                foreach(var slot in equippedSlots)
+                foreach (var slot in equippedSlots)
                 {
                     TryEquipSlot(null, OutwardSlotIDsXRef[slot.SlotType], equipFromStash, unequipToStash);
                 }
@@ -324,7 +325,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         public bool IsWeaponSetEquipped(WeaponSet weaponSet)
             => IsEquipSlotEquipped(weaponSet.RightHand, EquipmentSlot.EquipmentSlotIDs.RightHand) &&
                 IsEquipSlotEquipped(weaponSet.LeftHand, EquipmentSlot.EquipmentSlotIDs.LeftHand);
-        
+
 
         private bool IsEquipSlotEquipped(EquipSlot equipSlot, EquipmentSlot.EquipmentSlotIDs slotID)
         {

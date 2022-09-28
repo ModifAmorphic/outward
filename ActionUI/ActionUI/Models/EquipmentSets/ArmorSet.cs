@@ -16,7 +16,8 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets
         public int SetID { get; set; }
 
         private string _name;
-        public string Name {
+        public string Name
+        {
             get => _name;
             set
             {
@@ -25,7 +26,7 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets
             }
         }
         public EquipSlots SlotIcon { get; set; } = EquipSlots.Chest;
-        
+
         public EquipSlot Head
         {
             get => _equipSlots.TryGetValue(EquipSlots.Head, out var equip) ? equip : null;

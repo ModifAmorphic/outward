@@ -1,6 +1,5 @@
 ﻿using ModifAmorphic.Outward.Unity.ActionMenus;
 using System;
-using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.Unity.ActionUI.Data
 {

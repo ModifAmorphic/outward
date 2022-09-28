@@ -1,14 +1,10 @@
-﻿using ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets;
-using ModifAmorphic.Outward.Unity.ActionUI.Models.EquipmentSets;
+﻿using ModifAmorphic.Outward.Unity.ActionUI.Models.EquipmentSets;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
 
 namespace ModifAmorphic.Outward.Unity.ActionUI.Data
 {
     public delegate void OnRenamedSetDelegate<T>(T equipmentSet, string oldName, string newName) where T : IEquipmentSet;
-    public interface IEquipmentSetService <T> where T : IEquipmentSet
+    public interface IEquipmentSetService<T> where T : IEquipmentSet
     {
         event OnRenamedSetDelegate<T> OnRenamedSet;
         event Action<T> OnNewSet;

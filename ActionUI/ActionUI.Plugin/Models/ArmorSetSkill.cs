@@ -1,15 +1,4 @@
-﻿using ModifAmorphic.Outward.ActionUI.Services;
-using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Unity.ActionMenus;
-using ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets;
-using ModifAmorphic.Outward.ActionUI.Extensions;
-using ModifAmorphic.Outward.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine.Events;
-using System.Linq;
-using UnityEngine;
+﻿using ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets;
 
 namespace ModifAmorphic.Outward.ActionUI.Models
 {
@@ -19,7 +8,7 @@ namespace ModifAmorphic.Outward.ActionUI.Models
 
         protected override void OnAwake()
         {
-            
+
             base.OnAwake();
         }
 

@@ -52,7 +52,7 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Extensions
         }
         public static int SelectOptionSilent(this Dropdown dropdown, string optionText, bool caseSensitive = false)
         {
-            for (int i = 0; i <  dropdown.options.Count; i++)
+            for (int i = 0; i < dropdown.options.Count; i++)
             {
                 if (dropdown.options[i].text.Equals(optionText, StringComparison.InvariantCultureIgnoreCase))
                 {

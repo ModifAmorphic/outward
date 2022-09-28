@@ -1,6 +1,5 @@
 ﻿using ModifAmorphic.Outward.Unity.ActionUI.Models.EquipmentSets;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets

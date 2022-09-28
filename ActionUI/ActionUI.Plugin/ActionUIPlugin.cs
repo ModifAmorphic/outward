@@ -1,7 +1,7 @@
 ﻿using BepInEx;
 using HarmonyLib;
-using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.Logging;
 using System;
 
 namespace ModifAmorphic.Outward.ActionUI

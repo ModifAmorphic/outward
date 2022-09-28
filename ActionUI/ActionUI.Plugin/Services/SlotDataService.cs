@@ -1,7 +1,7 @@
-﻿using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.ActionUI.DataModels;
+﻿using ModifAmorphic.Outward.ActionUI.DataModels;
 using ModifAmorphic.Outward.ActionUI.Extensions;
 using ModifAmorphic.Outward.ActionUI.Models;
+using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionUI;
 using Rewired;
 using System;

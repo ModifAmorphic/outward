@@ -1,12 +1,9 @@
-﻿using ModifAmorphic.Outward.Coroutines;
+﻿using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.ActionUI.Patches;
-using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 

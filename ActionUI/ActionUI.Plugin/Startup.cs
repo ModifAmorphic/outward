@@ -1,16 +1,16 @@
 ﻿
 using BepInEx;
 using HarmonyLib;
+using ModifAmorphic.Outward.ActionUI.Plugin.Services;
+using ModifAmorphic.Outward.ActionUI.Services;
+using ModifAmorphic.Outward.ActionUI.Services.Injectors;
+using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules;
 using ModifAmorphic.Outward.Modules.Crafting;
-using ModifAmorphic.Outward.ActionUI.Plugin.Services;
-using ModifAmorphic.Outward.ActionUI.Services;
-using ModifAmorphic.Outward.ActionUI.Services.Injectors;
-using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI;
 using System;

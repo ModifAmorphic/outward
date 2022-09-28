@@ -101,7 +101,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             DebugLogger.Log("MainSettingsMenu::Hide");
 
             var hideMenus = _menus
-                .Where(kvp => kvp.Value.IsShowing && kvp.Key != ActionSettingsMenus.ActionSlots 
+                .Where(kvp => kvp.Value.IsShowing && kvp.Key != ActionSettingsMenus.ActionSlots
                         && kvp.Key != ActionSettingsMenus.Settings
                         && kvp.Key != ActionSettingsMenus.EquipmentSets)
                 .Select(kvp => kvp.Value);
