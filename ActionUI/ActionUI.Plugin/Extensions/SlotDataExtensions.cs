@@ -1,4 +1,4 @@
-﻿namespace ModifAmorphic.Outward.UI.Extensions
+﻿namespace ModifAmorphic.Outward.ActionUI.Extensions
 {
     internal static class SlotDataExtensions
     {

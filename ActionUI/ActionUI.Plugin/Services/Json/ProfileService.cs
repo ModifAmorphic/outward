@@ -1,5 +1,5 @@
 ﻿using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.DataModels;
+using ModifAmorphic.Outward.ActionUI.DataModels;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
 using Newtonsoft.Json;
@@ -9,7 +9,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine.Events;
 
-namespace ModifAmorphic.Outward.UI.Services
+namespace ModifAmorphic.Outward.ActionUI.Services
 {
     public class ProfileService : IActionUIProfileService, IDisposable
     {

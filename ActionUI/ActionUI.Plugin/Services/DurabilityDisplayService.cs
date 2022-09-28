@@ -1,13 +1,13 @@
 ﻿using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.Extensions;
-using ModifAmorphic.Outward.UI.Patches;
+using ModifAmorphic.Outward.ActionUI.Extensions;
+using ModifAmorphic.Outward.ActionUI.Patches;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ModifAmorphic.Outward.UI.Services
+namespace ModifAmorphic.Outward.ActionUI.Services
 {
     internal class DurabilityDisplayService
     {
@@ -20,11 +20,11 @@ namespace ModifAmorphic.Outward.UI.Services
 
         private bool _configured = false;
 
-        private readonly static UnequippedDurabilityTracker UnequippedHelm = new UnequippedDurabilityTracker(EquipmentSlots.Head, DurableEquipmentType.Helm, 1f);
-        private readonly static UnequippedDurabilityTracker UnequippedChest = new UnequippedDurabilityTracker(EquipmentSlots.Chest, DurableEquipmentType.Chest, 1f);
-        private readonly static UnequippedDurabilityTracker UnequippedBoots = new UnequippedDurabilityTracker(EquipmentSlots.Feet, DurableEquipmentType.Boots, 1f);
+        private readonly static UnequippedDurabilityTracker UnequippedHelm = new UnequippedDurabilityTracker(EquipSlots.Head, DurableEquipmentType.Helm, 1f);
+        private readonly static UnequippedDurabilityTracker UnequippedChest = new UnequippedDurabilityTracker(EquipSlots.Chest, DurableEquipmentType.Chest, 1f);
+        private readonly static UnequippedDurabilityTracker UnequippedBoots = new UnequippedDurabilityTracker(EquipSlots.Feet, DurableEquipmentType.Boots, 1f);
 
-        private readonly static Dictionary<EquipmentSlots, UnequippedDurabilityTracker> Unequipped = new Dictionary<EquipmentSlots, UnequippedDurabilityTracker>()
+        private readonly static Dictionary<EquipSlots, UnequippedDurabilityTracker> Unequipped = new Dictionary<EquipSlots, UnequippedDurabilityTracker>()
         {
             { UnequippedHelm.DurableEquipmentSlot, UnequippedHelm },
             { UnequippedChest.DurableEquipmentSlot, UnequippedChest },
@@ -68,7 +68,7 @@ namespace ModifAmorphic.Outward.UI.Services
             if (actionMenus.DurabilityDisplay.IsAwake)
             {
                 Logger.LogDebug($"{nameof(DurabilityDisplayService)}::{nameof(Reset)}: Stopping Durability tracking for all slots for rewiredId={actionMenus.PlayerID}.");
-                foreach (var slot in Enum.GetValues(typeof(EquipmentSlots)).Cast<EquipmentSlots>())
+                foreach (var slot in Enum.GetValues(typeof(EquipSlots)).Cast<EquipSlots>())
                     actionMenus.DurabilityDisplay.StopTracking(slot);
             }
         }
@@ -93,8 +93,8 @@ namespace ModifAmorphic.Outward.UI.Services
                 {
 
                     AddUnequippedTrackers(splitPlayer.RewiredID);
-                    display.StopTracking(EquipmentSlots.LeftHand);
-                    display.StopTracking(EquipmentSlots.RightHand);
+                    display.StopTracking(EquipSlots.LeftHand);
+                    display.StopTracking(EquipSlots.RightHand);
                     TrackAllEquipment(splitPlayer.AssignedCharacter);
                 }
                 //}
@@ -154,7 +154,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
             var durableSlot = equipment.CurrentEquipmentSlot.SlotType.ToDurableEquipmentSlot();
 
-            if (durableSlot == EquipmentSlots.None)
+            if (durableSlot == EquipSlots.None)
                 return;
 
             if (!_unequipedAdded)
@@ -184,7 +184,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
             var durableSlot = equipment.CurrentEquipmentSlot.SlotType.ToDurableEquipmentSlot();
 
-            if (durableSlot == EquipmentSlots.None)
+            if (durableSlot == EquipSlots.None)
                 return;
 
             if (!_unequipedAdded)

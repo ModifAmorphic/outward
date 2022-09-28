@@ -2,15 +2,15 @@
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.Patches;
-using ModifAmorphic.Outward.UI.Settings;
+using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.ActionUI.Settings;
 using Rewired;
 using Rewired.Data;
 using Rewired.Data.Mapping;
 using System;
 using System.Collections.Generic;
 
-namespace ModifAmorphic.Outward.UI.Plugin.Services
+namespace ModifAmorphic.Outward.ActionUI.Plugin.Services
 {
     internal class RewiredListener
     {

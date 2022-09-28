@@ -1,4 +1,5 @@
 ﻿using ModifAmorphic.Outward.Unity.ActionMenus;
+using ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets;
 
 namespace ModifAmorphic.Outward.Unity.ActionUI.Data
 {
@@ -33,6 +34,28 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Data
             get
             {
                 if (Psp.Instance.GetServicesProvider(_playerId).TryGetService<IPositionsProfileService>(out var service))
+                    return service;
+
+                return null;
+            }
+        }
+
+        public IEquipmentSetService<ArmorSet> ArmorSetService
+        {
+            get
+            {
+                if (Psp.Instance.GetServicesProvider(_playerId).TryGetService<IEquipmentSetService<ArmorSet>>(out var service))
+                    return service;
+
+                return null;
+            }
+        }
+
+        public IEquipmentSetService<WeaponSet> WeaponSetService
+        {
+            get
+            {
+                if (Psp.Instance.GetServicesProvider(_playerId).TryGetService<IEquipmentSetService<WeaponSet>>(out var service))
                     return service;
 
                 return null;

@@ -21,7 +21,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public Toggle ActionSlotsToggle;
         public Toggle DurabilityToggle;
+        public Toggle EquipmentSetsToggle;
         public Toggle StashCraftingToggle;
+        public Toggle CraftingOutsideTownsToggle;
 
         public Button MoveUIButton;
         public Button ResetUIButton;
@@ -65,18 +67,20 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             DebugLogger.Log("SettingsView::Show");
             gameObject.SetActive(true);
             SetControls();
+            StartCoroutine(SelectNextFrame(MainSettingsMenu.SettingsViewToggle));
 
-            if (_selectables != null && _selectables.Any())
-            {
-                _selectables.First().Selectable.Select();
-                EventSystem.current.SetSelectedGameObject(_selectables.First().gameObject, MainSettingsMenu.PlayerMenu.PlayerID);
-            }
-            else
-            {
-                MainSettingsMenu.SettingsViewToggle.Select();
-                EventSystem.current.SetSelectedGameObject(MainSettingsMenu.SettingsViewToggle.gameObject, MainSettingsMenu.PlayerMenu.PlayerID);
+            //if (_selectables != null && _selectables.Any())
+            //{
+            //    _selectables.First().Selectable.Select();
+            //    EventSystem.current.SetSelectedGameObject(_selectables.First().gameObject, MainSettingsMenu.PlayerMenu.PlayerID);
+            //}
+            //else
+            //{
 
-            }
+            //    MainSettingsMenu.SettingsViewToggle.Select();
+            //    EventSystem.current.SetSelectedGameObject(MainSettingsMenu.SettingsViewToggle.gameObject, MainSettingsMenu.PlayerMenu.PlayerID);
+
+            //}
 
             OnShow?.Invoke();
         }
@@ -97,7 +101,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             ActionSlotsToggle.SetIsOn(_profile?.ActionSlotsEnabled ?? false);
             DurabilityToggle.SetIsOn(_profile?.DurabilityDisplayEnabled ?? false);
+            EquipmentSetsToggle.SetIsOn(_profile?.EquipmentSetsEnabled ?? false);
             StashCraftingToggle.SetIsOn(_profile?.StashCraftingEnabled ?? false);
+            CraftingOutsideTownsToggle.SetIsOn(_profile?.CraftingOutsideTownEnabled ?? false);
         }
         private void HookControls()
         {
@@ -126,10 +132,24 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 _profileService.Save();
             });
 
+            EquipmentSetsToggle.onValueChanged.AddListener(isOn =>
+            {
+                DebugLogger.Log($"EquipmentSetsToggle changed from {!isOn} to {isOn}. Saving profile.");
+                _profile.EquipmentSetsEnabled = isOn;
+                _profileService.Save();
+            });
+
             StashCraftingToggle.onValueChanged.AddListener(isOn =>
             {
                 DebugLogger.Log($"StashCraftingToggle changed from {!isOn} to {isOn}. Saving profile.");
                 _profile.StashCraftingEnabled = isOn;
+                _profileService.Save();
+            });
+
+            CraftingOutsideTownsToggle.onValueChanged.AddListener(isOn =>
+            {
+                DebugLogger.Log($"CraftingOutsideTownsToggle changed from {!isOn} to {isOn}. Saving profile.");
+                _profile.CraftingOutsideTownEnabled = isOn;
                 _profileService.Save();
             });
 
@@ -223,9 +243,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             }
 
         }
-        private Selectable GetFirstSelectable()
+        private IEnumerator SelectNextFrame(Selectable selectable)
         {
-            return GetComponentsInChildren<Selectable>().FirstOrDefault();
+            yield return null;
+            yield return new WaitForEndOfFrame();
+
+            selectable.Select();
         }
     }
 }

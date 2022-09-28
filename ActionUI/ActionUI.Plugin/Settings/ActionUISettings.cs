@@ -1,7 +1,7 @@
-﻿using ModifAmorphic.Outward.UI.DataModels;
+﻿using ModifAmorphic.Outward.ActionUI.DataModels;
 using System.IO;
 
-namespace ModifAmorphic.Outward.UI.Settings
+namespace ModifAmorphic.Outward.ActionUI.Settings
 {
     internal class ActionUISettings
     {
@@ -27,6 +27,7 @@ namespace ModifAmorphic.Outward.UI.Settings
             ActionSlotsEnabled = true,
             DurabilityDisplayEnabled = true,
             StashCraftingEnabled = true,
+            CraftingOutsideTownEnabled = false
         };
 
     }

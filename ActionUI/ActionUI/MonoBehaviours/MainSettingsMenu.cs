@@ -12,6 +12,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     {
         Settings,
         ActionSlots,
+        EquipmentSets,
         ProfileName,
         HotkeyCapture,
         UIPosition
@@ -21,6 +22,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     {
         public PlayerActionMenus PlayerMenu;
         public SettingsView SettingsView;
+        public EquipmentSetsSettingsView EquipmentSetsSettingsView;
         public ProfileInput ProfileInput;
         public HotbarSettingsView HotbarSettingsView;
         public HotkeyCaptureMenu HotkeyCaptureMenu;
@@ -28,6 +30,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public Toggle SettingsViewToggle;
         public Toggle HotbarViewToggle;
+        public Toggle EquipmentSetViewToggle;
 
         public bool IsShowing => gameObject.activeSelf || HotkeyCaptureMenu.IsShowing || ProfileInput.IsShowing || UIPositionScreen.IsShowing;
 
@@ -49,14 +52,17 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _menus = new Dictionary<ActionSettingsMenus, ISettingsView>();
             _menus.Add(ActionSettingsMenus.Settings, SettingsView);
             _menus.Add(ActionSettingsMenus.ActionSlots, HotbarSettingsView);
+            _menus.Add(ActionSettingsMenus.EquipmentSets, EquipmentSetsSettingsView);
             _menus.Add(ActionSettingsMenus.ProfileName, ProfileInput);
             _menus.Add(ActionSettingsMenus.HotkeyCapture, HotkeyCaptureMenu);
             _menus.Add(ActionSettingsMenus.UIPosition, UIPositionScreen);
 
             SettingsViewToggle.onValueChanged.AddListener(isOn => ShowMenu(ActionSettingsMenus.Settings));
             HotbarViewToggle.onValueChanged.AddListener(isOn => ShowMenu(ActionSettingsMenus.ActionSlots));
+            EquipmentSetViewToggle.onValueChanged.AddListener(isOn => ShowMenu(ActionSettingsMenus.EquipmentSets));
 
             _selectables = GetComponentsInChildren<SelectableTransitions>();
+            //_selectables = transform.Find("MenuToggles").GetComponentsInChildren<SelectableTransitions>();
             //for (int i = 0; i < _selectables.Length; i++)
             //{
             //    _selectables[i].OnSelected += SettingSelected;
@@ -83,6 +89,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             if (HotbarViewToggle.isOn)
                 HotbarSettingsView.Show();
+            else if (EquipmentSetViewToggle.isOn)
+                EquipmentSetsSettingsView.Show();
             else
                 SettingsView.Show();
         }
@@ -93,7 +101,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             DebugLogger.Log("MainSettingsMenu::Hide");
 
             var hideMenus = _menus
-                .Where(kvp => kvp.Value.IsShowing && kvp.Key != ActionSettingsMenus.ActionSlots && kvp.Key != ActionSettingsMenus.Settings)
+                .Where(kvp => kvp.Value.IsShowing && kvp.Key != ActionSettingsMenus.ActionSlots 
+                        && kvp.Key != ActionSettingsMenus.Settings
+                        && kvp.Key != ActionSettingsMenus.EquipmentSets)
                 .Select(kvp => kvp.Value);
 
             bool showMe = false;

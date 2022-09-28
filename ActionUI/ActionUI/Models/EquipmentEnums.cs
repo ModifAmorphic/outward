@@ -1,6 +1,6 @@
 ﻿namespace ModifAmorphic.Outward.Unity.ActionUI
 {
-    public enum EquipmentSlots
+    public enum EquipSlots
     {
         None, Head, Chest, RightHand, LeftHand, Feet
     }

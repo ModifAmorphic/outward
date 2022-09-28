@@ -2,10 +2,10 @@
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.DataModels;
-using ModifAmorphic.Outward.UI.Monobehaviours;
-using ModifAmorphic.Outward.UI.Patches;
-using ModifAmorphic.Outward.UI.Settings;
+using ModifAmorphic.Outward.ActionUI.DataModels;
+using ModifAmorphic.Outward.ActionUI.Monobehaviours;
+using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
@@ -17,7 +17,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ModifAmorphic.Outward.UI.Services
+namespace ModifAmorphic.Outward.ActionUI.Services
 {
     internal class PlayerMenuService
     {

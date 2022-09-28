@@ -24,17 +24,17 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private Canvas _canvas;
         private PositionableUI _positionable;
 
-        private Dictionary<EquipmentSlots, DurabilitySlot> _durabilitySlots = new Dictionary<EquipmentSlots, DurabilitySlot>();
-        public Dictionary<EquipmentSlots, DurabilitySlot> DurabilitySlots => _durabilitySlots;
+        private Dictionary<EquipSlots, DurabilitySlot> _durabilitySlots = new Dictionary<EquipSlots, DurabilitySlot>();
+        public Dictionary<EquipSlots, DurabilitySlot> DurabilitySlots => _durabilitySlots;
 
         private bool isAwake = false;
         public bool IsAwake => isAwake;
 
         public UnityEvent OnAwake { get; } = new UnityEvent();
 
-        private Dictionary<EquipmentSlots, float> _displayMinimums = new Dictionary<EquipmentSlots, float>();
+        private Dictionary<EquipSlots, float> _displayMinimums = new Dictionary<EquipSlots, float>();
 
-        private Dictionary<EquipmentSlots, Coroutine> _coroutines = new Dictionary<EquipmentSlots, Coroutine>();
+        private Dictionary<EquipSlots, Coroutine> _coroutines = new Dictionary<EquipSlots, Coroutine>();
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         void Awake()
@@ -47,11 +47,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             if (_positionable != null)
                 _positionable.OnIsPositionableChanged.AddListener((isPositionable) => RefreshDisplay());
 
-            _durabilitySlots.Add(EquipmentSlots.Head, Head);
-            _durabilitySlots.Add(EquipmentSlots.Chest, Chest);
-            _durabilitySlots.Add(EquipmentSlots.RightHand, RightHand);
-            _durabilitySlots.Add(EquipmentSlots.LeftHand, LeftHand);
-            _durabilitySlots.Add(EquipmentSlots.Feet, Feet);
+            _durabilitySlots.Add(EquipSlots.Head, Head);
+            _durabilitySlots.Add(EquipSlots.Chest, Chest);
+            _durabilitySlots.Add(EquipSlots.RightHand, RightHand);
+            _durabilitySlots.Add(EquipSlots.LeftHand, LeftHand);
+            _durabilitySlots.Add(EquipSlots.Feet, Feet);
 
             foreach (var slot in _durabilitySlots.Values)
             {
@@ -92,7 +92,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             RefreshDisplay();
         }
 
-        public void StopTracking(EquipmentSlots slot)
+        public void StopTracking(EquipSlots slot)
         {
             if (_coroutines.ContainsKey(slot))
             {
@@ -108,12 +108,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public void StopAllTracking()
         {
-            foreach (var slot in Enum.GetValues(typeof(EquipmentSlots)).Cast<EquipmentSlots>())
+            foreach (var slot in Enum.GetValues(typeof(EquipSlots)).Cast<EquipSlots>())
                 if (_coroutines.ContainsKey(slot) && _coroutines[slot] != null)
                     StopCoroutine(_coroutines[slot]);
         }
 
-        private void SetMinimumDisplayValue(EquipmentSlots slot, float minimum)
+        private void SetMinimumDisplayValue(EquipSlots slot, float minimum)
         {
             if (_displayMinimums.ContainsKey(slot))
                 _displayMinimums[slot] = minimum;
@@ -150,8 +150,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             if (canvasEnabled)
             {
-                LeftHand.Image.enabled = _coroutines.ContainsKey(EquipmentSlots.LeftHand);
-                RightHand.Image.enabled = _coroutines.ContainsKey(EquipmentSlots.RightHand);
+                LeftHand.Image.enabled = _coroutines.ContainsKey(EquipSlots.LeftHand);
+                RightHand.Image.enabled = _coroutines.ContainsKey(EquipSlots.RightHand);
                 Head.Image.enabled = true;
                 Chest.Image.enabled = true;
                 Feet.Image.enabled = true;

@@ -8,7 +8,7 @@ using static ModifAmorphic.Outward.Unity.ActionUI.Extensions.SelectableExtension
 namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
     [UnityScriptComponent]
-    public class SelectableTransitions : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerDownHandler, IPointerUpHandler
+    public class SelectableTransitions : MonoBehaviour, ISelectHandler, IDeselectHandler
     {
         public Image SelectImage;
 
@@ -56,14 +56,5 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             OnDeselected?.Invoke(this);
         }
 
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnPointerUp(PointerEventData eventData)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

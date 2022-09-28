@@ -1,11 +1,11 @@
 ﻿using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.Services;
+using ModifAmorphic.Outward.ActionUI.Services;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace ModifAmorphic.Outward.UI.Monobehaviours
+namespace ModifAmorphic.Outward.ActionUI.Monobehaviours
 {
     internal class ActionSlotDropper : MonoBehaviour, IDropHandler, IEventSystemHandler, IPointerEnterHandler, IPointerExitHandler
     {

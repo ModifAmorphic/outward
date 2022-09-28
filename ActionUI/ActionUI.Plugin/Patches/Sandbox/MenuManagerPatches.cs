@@ -2,7 +2,7 @@
 using ModifAmorphic.Outward.Logging;
 using System;
 
-namespace ModifAmorphic.Outward.UI.Patches
+namespace ModifAmorphic.Outward.ActionUI.Patches
 {
     [HarmonyPatch(typeof(MenuManager))]
     internal static class MenuManagerPatches

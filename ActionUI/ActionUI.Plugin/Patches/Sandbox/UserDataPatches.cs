@@ -5,7 +5,7 @@ using Rewired.Data;
 using System;
 using System.Collections.Generic;
 
-namespace ModifAmorphic.Outward.UI.Patches
+namespace ModifAmorphic.Outward.ActionUI.Patches
 {
     [HarmonyPatch(typeof(UserData))]
     public class UserDataPatches

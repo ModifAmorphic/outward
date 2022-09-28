@@ -27,14 +27,36 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public void SetViewItem(ISlotAction action)
         {
+            if (_slotAction != null)
+            {
+                DebugLogger.Log($"SetViewItem: ClearImages()");
+                action.OnIconsChanged -= UpdateActionIcons;
+                ActionImages.ClearImages();
+            }
+
             _slotAction = action;
             //_button.image.sprite = action.ActionIcons[0];
             for (int i = 0; i < _slotAction.ActionIcons.Length; i++)
             {
+                DebugLogger.Log($"SetViewItem: AddOrUpdateImage({i})");
                 ActionImages.AddOrUpdateImage(_slotAction.ActionIcons[i]);
             }
+            DebugLogger.Log($"SetViewItem: Setting action text.");
             _text.text = action.DisplayName;
             _stackText.text = action.Stack != null && action.Stack.IsStackable && action.Stack.GetAmount() > 0 ? action.Stack.GetAmount().ToString() : string.Empty;
+            if (action.HasDynamicIcon)
+                action.OnIconsChanged += UpdateActionIcons;
         }
+
+        private void UpdateActionIcons(ActionSlotIcon[] icons)
+        {
+            ActionImages.ClearImages();
+
+            for (int i = 0; i < _slotAction.ActionIcons.Length; i++)
+            {
+                ActionImages.AddOrUpdateImage(_slotAction.ActionIcons[i]);
+            }
+        }
+        
     }
 }

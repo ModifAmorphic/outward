@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.UI.Services
+namespace ModifAmorphic.Outward.ActionUI.Services
 {
     internal class UnequippedDurabilityTracker : IDurability
     {
@@ -23,12 +23,12 @@ namespace ModifAmorphic.Outward.UI.Services
         private readonly DurableEquipmentType _equipmentType;
         public DurableEquipmentType DurableEquipmentType => _equipmentType;
 
-        private readonly EquipmentSlots _slot;
-        public EquipmentSlots DurableEquipmentSlot => _slot;
+        private readonly EquipSlots _slot;
+        public EquipSlots DurableEquipmentSlot => _slot;
 
         public float MinimumDisplayValue => .0f;
 
-        public UnequippedDurabilityTracker(EquipmentSlots slot, DurableEquipmentType equipmentType, float durabilityRatio) => (_slot, _equipmentType, _durabilityRatio) = (slot, equipmentType, durabilityRatio);
+        public UnequippedDurabilityTracker(EquipSlots slot, DurableEquipmentType equipmentType, float durabilityRatio) => (_slot, _equipmentType, _durabilityRatio) = (slot, equipmentType, durabilityRatio);
 
         private readonly float _durabilityRatio;
         public float GetDurabilityRatio() => _durabilityRatio;

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ModifAmorphic.Outward.UI.Models
+namespace ModifAmorphic.Outward.ActionUI.Models
 {
     internal class ActionsDisplayTab : IActionsDisplayTab
     {

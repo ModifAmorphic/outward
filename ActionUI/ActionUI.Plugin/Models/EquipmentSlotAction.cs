@@ -1,6 +1,6 @@
 ﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.Services;
+using ModifAmorphic.Outward.ActionUI.Services;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI;
 using Rewired;
@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ModifAmorphic.Outward.UI.Models
+namespace ModifAmorphic.Outward.ActionUI.Models
 {
     internal class EquipmentSlotAction : ISlotAction, IOutwardItem
     {
@@ -44,7 +44,7 @@ namespace ModifAmorphic.Outward.UI.Models
 
         public ICooldown Cooldown { get; internal set; }
 
-        public IStackable Stack => null;
+        public IStackable Stack { get; internal set; }
 
         private readonly Dictionary<BarPositions, IBarProgress> _activeBars = new Dictionary<BarPositions, IBarProgress>();
         public Dictionary<BarPositions, IBarProgress> ActiveBars => _activeBars;
@@ -134,14 +134,10 @@ namespace ModifAmorphic.Outward.UI.Models
 
             Logger.LogDebug($"SlotIndex: {slotIndex}. Durability changed done. isEquipBroken is {isEquipBroken}.");
         }
-        public bool GetIsActionRequested()
-        {
-            return !IsEditable && player.GetButtonDown(actionConfig.RewiredActionId);
-        }
-        public bool GetIsEditRequested()
-        {
-            return IsEditable && player.GetButtonDown(actionConfig.RewiredActionId);
-        }
+
+        public bool GetIsActionRequested() => !IsEditable && player.GetButtonDown(actionConfig.RewiredActionId);
+
+        public bool GetIsEditRequested() => IsEditable && player.GetButtonDown(actionConfig.RewiredActionId);
 
         private void TryActivateTarget()
         {
@@ -154,6 +150,7 @@ namespace ModifAmorphic.Outward.UI.Models
                 Logger.LogException($"Failed to activate {actionConfig.RewiredActionName} item/skill {equipment?.name} for character {character?.name}", ex);
             }
         }
+
         public void ActivateTarget()
         {
             if (equipment == null)

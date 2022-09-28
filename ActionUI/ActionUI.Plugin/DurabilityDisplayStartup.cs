@@ -2,11 +2,11 @@
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.Patches;
-using ModifAmorphic.Outward.UI.Services;
+using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.ActionUI.Services;
 using System;
 
-namespace ModifAmorphic.Outward.UI
+namespace ModifAmorphic.Outward.ActionUI
 {
     internal class DurabilityDisplayStartup : IStartable
     {

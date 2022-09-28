@@ -3,7 +3,7 @@ using Rewired;
 using System.Collections.Generic;
 using System.IO;
 
-namespace ModifAmorphic.Outward.UI.Settings
+namespace ModifAmorphic.Outward.ActionUI.Settings
 {
     internal static class RewiredConstants
     {

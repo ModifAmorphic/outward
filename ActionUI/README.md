@@ -30,12 +30,15 @@
 
 ![Durability Display](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/DurabilityDisplay.png?raw=true)
 
-## Other Miscellaneous changes
-  - Crafting from Stash
-  - *More coming soon*
-
 
 ## Latest Release ${PACKAGE_VERSION}
+  - Weapon and Equipment Sets functionality added.
+  - Craft from stash now limited to in town only by default with an option to enable it from any scene.
+  - Optimized settings menu so Action Slots were only reloaded for action slots changes. Should remove most of the lag from changing other menu options.
+  - Fixed bug with stack counts not showing for ammunition (arrows, bullets).
+  - Fixed bug where equipment showed the broken icon in an action slot if the scene was loaded without the item in the characters inventory.
+
+## Release 1.0.0
   - Fixes profile character switching bug. 
     - Going back to the main menu and continuing a different character's was causing the wrong ActionUI profile to be loaded. The profile for the first character loaded after launching the game was always being used.
   - Fixes for navigating settings menus with keyboard or controller.

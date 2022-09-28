@@ -1,10 +1,10 @@
 ﻿using BepInEx;
 using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.Patches;
+using ModifAmorphic.Outward.ActionUI.Patches;
 using System;
 
-namespace ModifAmorphic.Outward.UI
+namespace ModifAmorphic.Outward.ActionUI
 {
     [BepInDependency("com.bepis.bepinex.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("io.mefino.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]

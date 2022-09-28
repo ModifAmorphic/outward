@@ -11,7 +11,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     {
         private Dictionary<DurableEquipmentType, Image> _equipmentImages;
 
-        public EquipmentSlots EquipmentSlot;
+        public EquipSlots EquipmentSlot;
         public DurableEquipmentType EquipmentType;
 
         protected override void OnAwake()

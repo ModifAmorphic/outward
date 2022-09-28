@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
-namespace ModifAmorphic.Outward.UI.DataModels
+namespace ModifAmorphic.Outward.ActionUI.DataModels
 {
     internal class HotbarData : IHotbarSlotData
     {

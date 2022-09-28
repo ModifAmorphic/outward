@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ModifAmorphic.Outward.UI.DataModels
+namespace ModifAmorphic.Outward.ActionUI.DataModels
 {
     public class ActionUIProfiles
     {

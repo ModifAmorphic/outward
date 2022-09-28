@@ -1,6 +1,6 @@
 ﻿using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.Services;
+using ModifAmorphic.Outward.ActionUI.Services;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI;
 using Rewired;
@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-namespace ModifAmorphic.Outward.UI.Models
+namespace ModifAmorphic.Outward.ActionUI.Models
 {
     internal class ItemSlotAction : ISlotAction, IOutwardItem
     {

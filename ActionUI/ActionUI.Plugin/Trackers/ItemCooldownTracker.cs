@@ -1,7 +1,7 @@
 ﻿using ModifAmorphic.Outward.Unity.ActionUI;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.UI.Models
+namespace ModifAmorphic.Outward.ActionUI.Models
 {
     internal class ItemCooldownTracker : ICooldown
     {

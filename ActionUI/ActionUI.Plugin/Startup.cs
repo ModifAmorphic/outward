@@ -5,10 +5,12 @@ using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.Plugin.Services;
-using ModifAmorphic.Outward.UI.Services;
-using ModifAmorphic.Outward.UI.Services.Injectors;
-using ModifAmorphic.Outward.UI.Settings;
+using ModifAmorphic.Outward.Modules;
+using ModifAmorphic.Outward.Modules.Crafting;
+using ModifAmorphic.Outward.ActionUI.Plugin.Services;
+using ModifAmorphic.Outward.ActionUI.Services;
+using ModifAmorphic.Outward.ActionUI.Services.Injectors;
+using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI;
 using System;
@@ -17,7 +19,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.UI
+namespace ModifAmorphic.Outward.ActionUI
 {
     internal class Startup
     {
@@ -34,6 +36,7 @@ namespace ModifAmorphic.Outward.UI
             services
                 .AddSingleton(confSettings)
                 .AddFactory(() => LoggerFactory.GetLogger(ModInfo.ModId))
+                .AddSingleton(ModifModules.GetCustomCraftingModule(ModInfo.ModId))
                 .AddSingleton(new ModifCoroutine(services.GetService<BaseUnityPlugin>(),
                                                   services.GetService<IModifLogger>))
                 .AddSingleton(new LevelCoroutines(services.GetService<BaseUnityPlugin>(),
@@ -80,6 +83,7 @@ namespace ModifAmorphic.Outward.UI
                     , _loggerFactory))
                 .AddSingleton(new InventoryStartup(
                     services
+                    , services.GetService<CustomCraftingModule>().CraftingMenuEvents
                     , services.GetService<ModifGoService>()
                     , services.GetService<LevelCoroutines>()
                     , _loggerFactory));

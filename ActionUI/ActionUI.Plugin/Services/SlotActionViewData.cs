@@ -1,13 +1,13 @@
 ﻿using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.Models;
-using ModifAmorphic.Outward.UI.Settings;
+using ModifAmorphic.Outward.ActionUI.Models;
+using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Unity.ActionUI;
 using Rewired;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ModifAmorphic.Outward.UI.Services
+namespace ModifAmorphic.Outward.ActionUI.Services
 {
     internal class SlotActionViewData : IActionViewData
     {

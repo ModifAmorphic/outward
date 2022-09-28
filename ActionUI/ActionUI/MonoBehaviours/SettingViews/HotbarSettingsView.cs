@@ -81,18 +81,19 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             gameObject.SetActive(true);
 
             SetControls();
+            StartCoroutine(SelectNextFrame(MainSettingsMenu.HotbarViewToggle));
 
-            if (_selectables != null && _selectables.Any())
-            {
-                _selectables.First().Selectable.Select();
-                EventSystem.current.SetSelectedGameObject(_selectables.First().gameObject, MainSettingsMenu.PlayerMenu.PlayerID);
-            }
-            else
-            {
-                MainSettingsMenu.HotbarViewToggle.Select();
-                EventSystem.current.SetSelectedGameObject(MainSettingsMenu.HotbarViewToggle.gameObject, MainSettingsMenu.PlayerMenu.PlayerID);
+            //if (_selectables != null && _selectables.Any())
+            //{
+            //    _selectables.First().Selectable.Select();
+            //    EventSystem.current.SetSelectedGameObject(_selectables.First().gameObject, MainSettingsMenu.PlayerMenu.PlayerID);
+            //}
+            //else
+            //{
+            //    MainSettingsMenu.HotbarViewToggle.Select();
+            //    EventSystem.current.SetSelectedGameObject(MainSettingsMenu.HotbarViewToggle.gameObject, MainSettingsMenu.PlayerMenu.PlayerID);
 
-            }
+            //}
 
             OnShow?.Invoke();
         }
@@ -198,5 +199,14 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             }
 
         }
+
+        private IEnumerator SelectNextFrame(Selectable selectable)
+        {
+            yield return null;
+            yield return new WaitForEndOfFrame();
+
+            selectable.Select();
+        }
+
     }
 }

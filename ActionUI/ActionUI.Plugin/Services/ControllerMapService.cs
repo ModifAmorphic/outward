@@ -1,9 +1,9 @@
 ﻿using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.DataModels;
-using ModifAmorphic.Outward.UI.Models;
-using ModifAmorphic.Outward.UI.Patches;
-using ModifAmorphic.Outward.UI.Settings;
+using ModifAmorphic.Outward.ActionUI.DataModels;
+using ModifAmorphic.Outward.ActionUI.Models;
+using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
@@ -16,7 +16,7 @@ using System.Text;
 using System.Xml;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.UI.Services
+namespace ModifAmorphic.Outward.ActionUI.Services
 {
     internal class ControllerMapService : IDisposable
     {
@@ -98,7 +98,7 @@ namespace ModifAmorphic.Outward.UI.Services
             RewiredInputsPatches.BeforeExportXmlData += RemoveActionUIMaps;
             RewiredInputsPatches.AfterExportXmlData += RewiredInputsPatches_AfterExportXmlData;
             _profileService.OnActiveProfileSwitched.AddListener(LoadConfigMaps);
-            _hotbarProfileService.OnProfileChanged.AddListener(SlotAmountChanged);
+            _hotbarProfileService.OnProfileChanged += SlotAmountChanged;
 
             _captureDialog.OnKeysSelected += CaptureDialog_OnKeysSelected;
 
@@ -563,7 +563,7 @@ namespace ModifAmorphic.Outward.UI.Services
                     RewiredInputsPatches.BeforeExportXmlData -= RemoveActionUIMaps;
                     RewiredInputsPatches.AfterExportXmlData -= RewiredInputsPatches_AfterExportXmlData;
                     _profileService.OnActiveProfileSwitched.RemoveListener(LoadConfigMaps);
-                    _hotbarProfileService.OnProfileChanged.RemoveListener(SlotAmountChanged);
+                    _hotbarProfileService.OnProfileChanged -= SlotAmountChanged;
                     _captureDialog.OnKeysSelected -= CaptureDialog_OnKeysSelected;
                 }
 

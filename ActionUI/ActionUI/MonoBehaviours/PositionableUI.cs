@@ -79,7 +79,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             {
                 profileChangeEventNeeded = false;
                 DebugLogger.Log($"[Debug  :ActionMenus] PositionableUI{{{name}}}::Update: Adding OnProfileChanged listener.");
-                _profileManager.PositionsProfileService.OnProfileChanged.AddListener(OnProfileChanged);
+                _profileManager.PositionsProfileService.OnProfileChanged += OnProfileChanged;
             }
         }
 
@@ -90,7 +90,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             if (_profileManager.PositionsProfileService != null)
             {
                 DebugLogger.Log($"[Debug  :ActionMenus] PositionableUI{{{name}}}::SetProfileManager: Adding OnProfileChanged listener.");
-                _profileManager.PositionsProfileService.OnProfileChanged.AddListener(OnProfileChanged);
+                _profileManager.PositionsProfileService.OnProfileChanged += OnProfileChanged;
                 profileChangeEventNeeded = false;
                 SetPositionFromProfile(_profileManager.PositionsProfileService.GetProfile());
             }

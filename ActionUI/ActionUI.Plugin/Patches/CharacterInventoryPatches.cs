@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI;
 using System;
+using System.Collections.Generic;
 
 namespace ModifAmorphic.Outward.ActionUI.Patches
 {
@@ -27,6 +27,34 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
             catch (Exception ex)
             {
                 Logger.LogException($"{nameof(CharacterInventoryPatches)}::{nameof(InventoryIngredientsPostFix)}(): Exception invoking {nameof(AfterInventoryIngredients)}.", ex);
+            }
+        }
+
+        public delegate bool OwnsItemDelegate(string itemUID);
+        public static Dictionary<int, OwnsItemDelegate> OwnsItemDelegates = new Dictionary<int, OwnsItemDelegate>();
+
+        [HarmonyPatch(nameof(CharacterInventory.OwnsItem), MethodType.Normal)]
+        [HarmonyPatch(new Type[] { typeof(string) })]
+        [HarmonyPostfix]
+        private static void OwnsItemPostFix(CharacterInventory __instance, Character ___m_character, string _itemUID, ref bool __result)
+        {
+            try
+            {
+                if (__result == true || ___m_character?.OwnerPlayerSys == null)
+                    return;
+
+                var playerId = ___m_character.OwnerPlayerSys.PlayerID;
+
+                if (OwnsItemDelegates.TryGetValue(playerId, out var ownsItem))
+                {
+                    //Called on Update. Spams logs
+                    //Logger.LogTrace($"{nameof(CharacterInventoryPatches)}::{nameof(OwnsItemPostFix)}(): Invoked for PlayerID {playerId}. Invoking {nameof(OwnsItemDelegates)} delegate.");
+                    __result = ownsItem(_itemUID);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(CharacterInventoryPatches)}::{nameof(OwnsItemPostFix)}(): Exception invoking {nameof(OwnsItemDelegates)} delegate for PlayerID {___m_character?.OwnerPlayerSys?.PlayerID}.", ex);
             }
         }
     }

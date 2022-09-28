@@ -16,9 +16,20 @@ namespace Assets.Testing
             { TestDefaultProfile.DefaultProfile.Name, TestDefaultProfile.DefaultProfile }
         };
 
-        UnityEvent<IHotbarProfile, HotbarProfileChangeTypes> IHotbarProfileService.OnProfileChanged => throw new NotImplementedException();
-
         public event Action<IHotbarProfile> OnProfileChanged;
+
+        event Action<IHotbarProfile, HotbarProfileChangeTypes> IHotbarProfileService.OnProfileChanged
+        {
+            add
+            {
+                throw new NotImplementedException();
+            }
+
+            remove
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public IHotbarProfile AddHotbar()
         {

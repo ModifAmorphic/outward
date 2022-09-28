@@ -2,7 +2,7 @@
 using ModifAmorphic.Outward.Logging;
 using System;
 
-namespace ModifAmorphic.Outward.UI.Patches
+namespace ModifAmorphic.Outward.ActionUI.Patches
 {
     [HarmonyPatch(typeof(CharacterEquipment))]
     internal static class CharacterEquipmentPatches
@@ -27,7 +27,7 @@ namespace ModifAmorphic.Outward.UI.Patches
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(CharacterEquipmentPatches)}::{nameof(EquipPostfix)}(): Exception disabling quickslots for character {___m_character?.name}.", ex);
+                Logger.LogException($"{nameof(CharacterEquipmentPatches)}::{nameof(EquipPostfix)}(): Exception invoking {nameof(AfterEquip)} for character {___m_character?.name}.", ex);
             }
         }
     }

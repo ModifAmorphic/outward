@@ -14,6 +14,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public MainSettingsMenu MainSettingsMenu;
         public DurabilityDisplay DurabilityDisplay;
+        public EquipmentSetMenu EquipmentSetMenus;
         //public SettingsView SettingsView;
         //public HotkeyCaptureMenu HotkeyCaptureMenu;
         //public HotbarSettingsView HotbarSettingsViewer;
@@ -30,7 +31,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         //private Func<bool> _exitRequested;
 
         private MenuNavigationActions _navActions;
-        public MenuNavigationActions NavACtions => _navActions;
+        public MenuNavigationActions NavActions => _navActions;
 
         private bool _isAwake = false;
         private bool _isPlayerAssigned = false;

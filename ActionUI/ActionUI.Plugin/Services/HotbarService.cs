@@ -1,11 +1,11 @@
 ﻿using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.DataModels;
-using ModifAmorphic.Outward.UI.Models;
-using ModifAmorphic.Outward.UI.Monobehaviours;
-using ModifAmorphic.Outward.UI.Patches;
-using ModifAmorphic.Outward.UI.Settings;
+using ModifAmorphic.Outward.ActionUI.DataModels;
+using ModifAmorphic.Outward.ActionUI.Models;
+using ModifAmorphic.Outward.ActionUI.Monobehaviours;
+using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using Rewired;
@@ -13,7 +13,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.UI.Services
+namespace ModifAmorphic.Outward.ActionUI.Services
 {
     internal class HotbarService : IDisposable
     {
@@ -86,7 +86,7 @@ namespace ModifAmorphic.Outward.UI.Services
             var profile = GetOrCreateActiveProfile();
             ConfigureHotbars(profile, HotbarProfileChangeTypes.ProfileRefreshed);
             _hotbars.ClearChanges();
-            _profileManager.HotbarProfileService.OnProfileChanged.AddListener(ConfigureHotbars);
+            _profileManager.HotbarProfileService.OnProfileChanged += ConfigureHotbars;
             _hotbars.OnHasChanges.AddListener(Save);
         }
 
@@ -265,7 +265,7 @@ namespace ModifAmorphic.Outward.UI.Services
                     NetworkLevelLoader.Instance.onOverallLoadingDone -= AssignSlotActions;
                     SkillMenuPatches.AfterOnSectionSelected -= SetSkillsMovable;
                     _hotbars.OnAwake -= StartNextFrame;
-                    _profileManager.HotbarProfileService.OnProfileChanged.RemoveListener(ConfigureHotbars);
+                    _profileManager.HotbarProfileService.OnProfileChanged += ConfigureHotbars;
                     _hotbars.OnHasChanges.RemoveListener(Save);
                 }
 

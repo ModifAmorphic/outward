@@ -1,10 +1,10 @@
-﻿using ModifAmorphic.Outward.UI.DataModels;
-using ModifAmorphic.Outward.UI.Models;
+﻿using ModifAmorphic.Outward.ActionUI.DataModels;
+using ModifAmorphic.Outward.ActionUI.Models;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ModifAmorphic.Outward.UI.Settings
+namespace ModifAmorphic.Outward.ActionUI.Settings
 {
     public class HotbarSettings
     {

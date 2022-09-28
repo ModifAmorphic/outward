@@ -1,10 +1,10 @@
-﻿using ModifAmorphic.Outward.UI.DataModels;
-using ModifAmorphic.Outward.UI.Settings;
+﻿using ModifAmorphic.Outward.ActionUI.DataModels;
+using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using System.Collections.Generic;
 
-namespace ModifAmorphic.Outward.UI.Extensions
+namespace ModifAmorphic.Outward.ActionUI.Extensions
 {
     internal static class HotbarsContainerExtensions
     {

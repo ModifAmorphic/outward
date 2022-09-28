@@ -1,12 +1,12 @@
 ﻿using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.Patches;
+using ModifAmorphic.Outward.ActionUI.Patches;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using System;
 
-namespace ModifAmorphic.Outward.UI.Services.Injectors
+namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
 {
     internal class PositionsServicesInjector
     {

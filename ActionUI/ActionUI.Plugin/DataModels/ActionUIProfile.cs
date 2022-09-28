@@ -1,7 +1,7 @@
 ﻿using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using Newtonsoft.Json;
 
-namespace ModifAmorphic.Outward.UI.DataModels
+namespace ModifAmorphic.Outward.ActionUI.DataModels
 {
     public class ActionUIProfile : IActionUIProfile
     {
@@ -10,9 +10,13 @@ namespace ModifAmorphic.Outward.UI.DataModels
         public bool ActionSlotsEnabled { get; set; }
 
         public bool DurabilityDisplayEnabled { get; set; }
+        public bool EquipmentSetsEnabled { get; set; }
         public bool StashCraftingEnabled { get; set; }
+        public bool CraftingOutsideTownEnabled { get; set; }
+        public EquipmentSetsSettingsProfile EquipmentSetsSettingsProfile { get; set; }
 
         [JsonIgnore]
         public string Path { get; set; }
+        
     }
 }

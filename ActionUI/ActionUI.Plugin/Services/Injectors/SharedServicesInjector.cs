@@ -1,12 +1,12 @@
 ﻿using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.Patches;
-using ModifAmorphic.Outward.UI.Settings;
+using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using System;
 using System.IO;
 
-namespace ModifAmorphic.Outward.UI.Services.Injectors
+namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
 {
     internal class SharedServicesInjector
     {
