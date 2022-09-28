@@ -38,7 +38,7 @@
   - Fixed bug with stack counts not showing for ammunition (arrows, bullets).
   - Fixed bug where equipment showed the broken icon in an action slot if the scene was loaded without the item in the characters inventory.
 
-## Release 1.0.0
+## Release 1.0.1
   - Fixes profile character switching bug. 
     - Going back to the main menu and continuing a different character's was causing the wrong ActionUI profile to be loaded. The profile for the first character loaded after launching the game was always being used.
   - Fixes for navigating settings menus with keyboard or controller.
