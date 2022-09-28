@@ -76,6 +76,48 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Patches
             return true;
         }
 
+        public delegate void AfterGenerateResultDelegate(CustomCraftingMenu craftingMenu, ItemReferenceQuantity result, int resultMultiplier);
+        public static event AfterGenerateResultDelegate AfterGenerateResult;
+        [HarmonyPatch("GenerateResult", MethodType.Normal)]
+        [HarmonyPostfix]
+        private static void GenerateResultPostfix(CraftingMenu __instance, ItemReferenceQuantity _result, int resultMultiplier)
+        {
+            try
+            {
+                if (!(__instance is CustomCraftingMenu customCraftingMenu))
+                    return;
+
+                Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(GenerateResultPostfix)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Invoking {nameof(AfterGenerateResult)}()");
+                AfterGenerateResult?.Invoke(customCraftingMenu, _result, resultMultiplier);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(GenerateResultPostfix)}(): Exception Invoking {nameof(AfterGenerateResult)}().", ex);
+            }
+        }
+
+        public static event AfterGenerateResultDelegate FinalizeGenerateResult;
+        [HarmonyPatch("GenerateResult", MethodType.Normal)]
+        [HarmonyFinalizer]
+        private static void GenerateResultFinalizer(CraftingMenu __instance, ItemReferenceQuantity _result, int resultMultiplier)
+        {
+            try
+            {
+                if (!(__instance is CustomCraftingMenu customCraftingMenu))
+                    return;
+
+                Logger.LogTrace($"{nameof(CraftingMenuPatches)}::{nameof(GenerateResultFinalizer)}(): Invoked on CraftingMenu type {__instance?.GetType()}. Invoking {nameof(FinalizeGenerateResult)}()");
+                FinalizeGenerateResult?.Invoke(customCraftingMenu, _result, resultMultiplier);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(CraftingMenuPatches)}::{nameof(GenerateResultFinalizer)}(): Exception Invoking {nameof(FinalizeGenerateResult)}().", ex);
+            }
+
+        }
+
         [HarmonyPatch(nameof(CraftingMenu.OnRecipeSelected), MethodType.Normal)]
         [HarmonyPrefix]
         private static bool OnRecipeSelectedPrefix(CraftingMenu __instance, int _index, bool _forceRefresh = false)
