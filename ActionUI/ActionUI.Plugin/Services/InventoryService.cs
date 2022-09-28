@@ -117,8 +117,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 return;
 
             _equipmentSetsMenus.Show();
-            //_coroutines.DoNextFrame(() =>
-            //{
+
             var equipXform = _equipmentSetsMenus.transform as RectTransform;
             var charMenus = _character.CharacterUI.transform.Find("Canvas/GameplayPanels/Menus/CharacterMenus/MainPanel") as RectTransform;
             var menuBg = charMenus.Find("Background").GetComponent<Image>();
@@ -126,7 +125,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             var ypos = charMenus.anchoredPosition.y + 10;
             equipXform.anchoredPosition = new Vector2(xpos, ypos);
             equipXform.GetComponent<Image>().material = menuBg.material;
-            //});
+
         }
 
         private void AddStashIngredients(CharacterInventory characterInventory, Character character, Tag craftingStationTag, ref DictionaryExt<int, CompatibleIngredient> sortedIngredients)
@@ -155,7 +154,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return true;
         }
 
-        //private HashSet<string> _learnedSkills = new HashSet<string>();
         private bool LearnEquipmentSets<T>(IEnumerable<IEquipmentSet> sets) where T : EquipmentSetSkill
         {
             bool needsSave = false;
@@ -173,8 +171,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public T LearnEquipmentSetSkill<T>(IEquipmentSet equipmentSet) where T : EquipmentSetSkill
         {
-            //if (_learnedSkills.Contains(equipmentSet.Name))
-            //    return;
 
             Logger.LogDebug($"LearnEquipmentSetSkill: SetID=={equipmentSet.SetID}, IsItemLearned({equipmentSet.SetID})=={_characterInventory.SkillKnowledge.IsItemLearned(equipmentSet.SetID)}");
             if (equipmentSet.SetID == 0 || !_characterInventory.SkillKnowledge.IsItemLearned(equipmentSet.SetID))
@@ -366,17 +362,24 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 Action unequipAction;
                 if (unequipToStash && !disableStashUnequip)
                 {
-                    Logger.LogDebug($"Unequipping item UID {equipSlot.UID} from slot {slotID} to stash.");
-                    unequipAction = () => _characterInventory.UnequipItem(slot.EquippedItem, performAnimation, _character.Stash);
+
+                    unequipAction = () =>
+                    {
+                        Logger.LogDebug($"Unequipping item UID {equipSlot.UID} from slot {slotID} to stash.");
+                        _characterInventory.UnequipItem(slot.EquippedItem, performAnimation, _character.Stash);
+                    };
                 }
                 else
                 {
-                    Logger.LogDebug($"Unequipping item UID {equipSlot.UID} from slot {slotID}.");
-                    unequipAction = () => _characterInventory.UnequipItem(slot.EquippedItem, performAnimation);
+                    unequipAction = () =>
+                    {
+                        Logger.LogDebug($"Unequipping item UID {equipSlot.UID} from slot {slotID}.");
+                        _characterInventory.UnequipItem(slot.EquippedItem, performAnimation);
+                    };
                 }
 
                 if (performAnimation)
-                    PerformActionAfterCasting(unequipAction);
+                    QueueAfterCastingAction(unequipAction);
                 else
                     unequipAction.Invoke();
 
@@ -403,7 +406,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 var moveItem = slot.EquippedItem;
 
                 if (performAnimation)
-                    PerformActionAfterCasting(() => _characterInventory.EquipItem(equipSlot.UID, performAnimation));
+                    QueueAfterCastingAction(() => _characterInventory.EquipItem(equipSlot.UID, performAnimation));
                 else
                     _characterInventory.EquipItem(equipSlot.UID, performAnimation);
 
@@ -420,7 +423,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 };
 
                 if (performAnimation)
-                    PerformActionAfterCasting(equipAction);
+                    QueueAfterCastingAction(equipAction);
                 else
                     equipAction.Invoke();
 
@@ -429,130 +432,13 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return true;
         }
 
-        //private bool TryEquipSlot1(EquipSlot equipSlot, EquipSlots slotType, bool equipFromStash, bool unequipToStash)
-        //{
-        //    var slotID = ActionUiEquipSlotsXRef[slotType];
-        //    var slot = _characterEquipment.GetMatchingSlot(slotID);
-        //    var disableStashUnequip = !string.IsNullOrEmpty(slot.EquippedItemUID)
-        //        && !_profileManager.ArmorSetService.IsContainedInSet(slot.EquippedItemUID)
-        //        && !_profileManager.WeaponSetService.IsContainedInSet(slot.EquippedItemUID);
-
-        //    var performAnimation = !_equipSetsProfile.SkipWeaponAnimationsEnabled && (slotType == EquipSlots.LeftHand || slotType == EquipSlots.RightHand);
-
-        //    //Item is already equipped
-        //    if (equipSlot != null && _characterEquipment.GetMatchingSlot(slotID).EquippedItemUID == equipSlot.UID)
-        //        return true;
-
-        //    //If equipSlot is empty, unequip any equipped item from the slot
-        //    if (equipSlot == null)
-        //    {
-        //        //Nothing equipped, nothing to unequip
-        //        if (_characterEquipment.IsEquipmentSlotEmpty(slotID))
-        //            return true;
-
-        //        Action unequipAction;
-        //        if (unequipToStash && !disableStashUnequip)
-        //            unequipAction = () => _characterInventory.UnequipItem(slot.EquippedItem, performAnimation, _character.Stash);
-        //        else
-        //            unequipAction = () => _characterInventory.UnequipItem(slot.EquippedItem, performAnimation);
-
-        //        if (performAnimation)
-        //            PerformActionAfterCasting(unequipAction);
-        //        else
-        //            unequipAction.Invoke();
-
-        //        return true;
-        //    }
-
-
-        //    var stashEquipEnabled = equipFromStash && !_characterInventory.OwnsItem(equipSlot.UID) && !_characterEquipment.IsEquipmentSlotEmpty(slotID);
-        //    var stashUnequipEnabled = !disableStashUnequip && unequipToStash && !_characterEquipment.IsEquipmentSlotEmpty(slotID);
-
-        //    //If item being equipped is coming from the stash or equipment is being unequipped to the stash, do a stash equip
-        //    if (stashEquipEnabled || stashUnequipEnabled)
-        //    {
-        //        var charEquipSlot = _characterEquipment.GetMatchingSlot(slotID);
-
-        //        var equipFoundInStash = (_equipSetsProfile.StashEquipEnabled && GetIsAreaStashEnabled() && _character.Stash.GetContainedItemUIDs(equipSlot.ItemID).Any())
-        //                || (_equipSetsProfile.StashEquipEnabled && _equipSetsProfile.StashEquipAnywhereEnabled && _character.Stash.GetContainedItemUIDs(equipSlot.ItemID).Any());
-        //        var equipFoundInInventory = _characterInventory.OwnsItem(equipSlot.UID);
-
-        //        if (!equipFoundInStash && !equipFoundInInventory)
-        //            return false;
-
-        //        StashEquip(slot, equipSlot, performAnimation, stashUnequipEnabled);
-        //    }
-        //    //No stash involved. Perform standard equip.
-        //    else
-        //    {
-        //        Action equipAction = () =>
-        //        {
-        //            Logger.LogDebug($"Equipping item UID {equipSlot.UID} to slot {slotID}.");
-        //            _characterInventory.EquipItem(equipSlot.UID, performAnimation);
-        //        };
-
-        //        if (performAnimation)
-        //            PerformActionAfterCasting(equipAction);
-        //        else
-        //            equipAction.Invoke();
-
-        //    }
-
-        //    return true;
-        //}
-
-        //private void StashEquip(EquipmentSlot outwardSlot, EquipSlot equipSlot, bool performAnimation, bool unequipToStash)
-        //{
-        //    if (performAnimation)
-        //    {
-        //        PerformActionAfterCasting(() =>
-        //        {
-        //            Logger.LogDebug($"Unequipping item {outwardSlot.EquippedItem} from slot {outwardSlot.SlotType} to character's {(unequipToStash ? "stash" : "inventory")}.");
-        //            if (unequipToStash)
-        //                _characterInventory.UnequipItem(outwardSlot.EquippedItem, false, _character.Stash);
-        //            else
-        //                _characterInventory.UnequipItem(outwardSlot.EquippedItem, false);
-        //        });
-        //        PerformActionAfterCasting(() =>
-        //        {
-        //            Logger.LogDebug($"Equipping item UID {equipSlot.UID} to slot {outwardSlot.SlotType}.");
-        //            _characterInventory.EquipItem(equipSlot.UID, performAnimation);
-        //        });
-        //    }
-        //    else
-        //    {
-        //        _queuedUnequips.Enqueue(() =>
-        //        {
-        //            Logger.LogDebug($"Unequipping item {outwardSlot.EquippedItem} from slot {outwardSlot.SlotType} to character's {(unequipToStash ? "stash" : "inventory")}.");
-        //            if (unequipToStash)
-        //                _characterInventory.UnequipItem(outwardSlot.EquippedItem, false, _character.Stash);
-        //            else
-        //                _characterInventory.UnequipItem(outwardSlot.EquippedItem, false);
-        //        });
-        //        _queuedEquips.Enqueue(() =>
-        //        {
-        //            Logger.LogDebug($"Equipping item UID {equipSlot.UID} to slot {outwardSlot.SlotType}.");
-        //            _characterInventory.EquipItem(equipSlot.UID, performAnimation);
-        //        });
-        //    }
-        //}
-
-        private void PerformActionAfterCasting(Action action)
+        Queue<Action> _queuedCastActions = new Queue<Action>();
+        private void QueueAfterCastingAction(Action action)
         {
             Logger.LogDebug($"Queued cast action. {_queuedCastActions.Count} actions queued.");
             _queuedCastActions.Enqueue(action);
-
-            //if (!_character.IsCasting)
-            //    action.Invoke();
-            //else
-            //{
-            //    _queuedCastActions.Enqueue(action);
-            //    //if (!_castQueueProcessing)
-            //    //    _coroutines.StartRoutine(InvokeQueuedCastActions());
-            //}
         }
 
-        Queue<Action> _queuedCastActions = new Queue<Action>();
         bool _castQueueProcessing = false;
         private IEnumerator InvokeQueuedCastActions()
         {
@@ -574,35 +460,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             Logger.LogDebug($"Finished processing Cast Actions queue.");
             _castQueueProcessing = false;
         }
-
-        //private void ProcessEquipQueues()
-        //{
-        //    if (!_frameQueueProcessing)
-        //        _coroutines.StartRoutine(InvokeQueuedFrameActions());
-        //}
-
-        //Queue<Action> _queuedUnequips = new Queue<Action>();
-        //Queue<Action> _queuedEquips = new Queue<Action>();
-        //bool _frameQueueProcessing = false;
-        //private IEnumerator InvokeQueuedFrameActions()
-        //{
-        //    _frameQueueProcessing = true;
-        //    bool unequipHappened = false;
-        //    while (_queuedUnequips.Count > 0)
-        //    {
-        //        _queuedUnequips.Dequeue().Invoke();
-        //        unequipHappened = true;
-        //    }
-        //    if (unequipHappened)
-        //        yield return null;
-
-        //    while (_queuedEquips.Count > 0)
-        //    {
-        //        _queuedEquips.Dequeue().Invoke();
-        //    }
-        //    yield return null;
-        //    _frameQueueProcessing = false;
-        //}
 
         private void ProcessEquipQueues()
         {
@@ -686,7 +543,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 }
                 _character = null;
                 _equipmentSetsMenus = null;
-                // TODO: set large fields to null
                 disposedValue = true;
             }
         }

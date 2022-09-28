@@ -252,7 +252,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private void EquipmentSetChanged<T>(int index) where T : IEquipmentSet
         {
-            Debug.Log($"Setting Equipment Set to '{EquipmentSetDropdown.GetSelectedOption().text}'. Index={index}.");
 
             var set = GetEquipmentService<T>().GetEquipmentSet(EquipmentSetDropdown.GetSelectedOption().text);
             if (index == 0)
@@ -267,10 +266,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             }
             SaveSetButton.interactable = true;
             SelectSlotIcon<T>();
-            //else
-            //{
-            //    EquipmentSetDropdown.SetValueWithoutNotify(0);
-            //}
         }
 
         private void PromptRenameSet() => SetNamePanel.Show(EquipmentSetType, EquipmentSetDropdown.GetSelectedOption().text);
@@ -282,26 +277,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             if (EquipmentSetDropdown.value == 0)
                 return;
 
-            //LoadEquipmentSet<T>();
-
             var set = GetEquipmentService<T>().GetEquippedAsSet(EquipmentSetDropdown.GetSelectedOption().text);
             set.SlotIcon = _equipSlots[EquipmentIconDropdown.GetSelectedOption().text];
             GetEquipmentService<T>().LearnEquipmentSetSkill(set);
             GetEquipmentService<T>().SaveEquipmentSet(set);
         }
-
-
-        //private void SelectEquipmentSet<T>(string name) where T : IEquipmentSet
-        //{
-        //    SetEquipmentSetOptions<T>();
-        //    int index;
-        //    for (index = 0; index < EquipmentSetDropdown.options.Count; index++)
-        //    {
-        //        if (EquipmentSetDropdown.options[index].text.Equals(name, StringComparison.InvariantCultureIgnoreCase))
-        //            break;
-        //    }
-        //    if (index < EquipmentSetDropdown.options.Count)
-        //        EquipmentSetDropdown.SetValueWithoutNotify(index);
-        //}
     }
 }

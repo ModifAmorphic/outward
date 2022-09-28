@@ -107,7 +107,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void AddStashDisplay(InventoryContentDisplay inventoryContentDisplay)
         {
-            Logger.LogDebug($"Attempting to add stash display to {inventoryContentDisplay.transform.GetGameObjectPath()}. ShouldInvoke(inventoryContentDisplay) == {ShouldInvoke(inventoryContentDisplay)}.");
             if (!ShouldInvoke(inventoryContentDisplay))
                 return;
 
