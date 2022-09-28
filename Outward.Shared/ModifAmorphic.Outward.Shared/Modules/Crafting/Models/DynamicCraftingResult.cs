@@ -14,6 +14,9 @@ namespace ModifAmorphic.Outward.Modules.Crafting
         private Item _dynamicRefItem;
         public Item DynamicRefItem { get => _dynamicRefItem; private set => _dynamicRefItem = value; }
 
+        public Item ResultItem { get; private set; }
+        public int ResultQuantity { get; private set; }
+
         private IngredientCraftData _ingredientCraftData;
         public IngredientCraftData IngredientCraftData => _ingredientCraftData;
 
@@ -33,8 +36,13 @@ namespace ModifAmorphic.Outward.Modules.Crafting
         }
         public void ResetResult()
         {
-            (_dynamicItemID, _dynamicRefItem) = (-1, null);
+            (_dynamicItemID, _dynamicRefItem, ResultItem, ResultQuantity) = (-1, null, null, 0);
             _ingredientCraftData.Reset();
+        }
+        public void SetResultItems(Item result, int quantity)
+        {
+            ResultItem = result;
+            ResultQuantity = quantity;
         }
     }
 }

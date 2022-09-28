@@ -15,6 +15,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
     /// </summary>
     internal class CustomCraftingService
     {
+        private readonly CraftingMenuEvents _craftingMenuEvents;
+
         private readonly ConcurrentDictionary<Type, ICustomCrafter> _customCrafters =
            new ConcurrentDictionary<Type, ICustomCrafter>();
 
@@ -30,11 +32,36 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
         private readonly Func<IModifLogger> _loggerFactory;
         private IModifLogger Logger => _loggerFactory.Invoke();
 
-        public CustomCraftingService(Func<IModifLogger> loggerFactory)
+        public CustomCraftingService(CraftingMenuEvents craftingMenuEvents, Func<IModifLogger> loggerFactory)
         {
+            _craftingMenuEvents = craftingMenuEvents;
             _loggerFactory = loggerFactory;
             CraftingMenuPatches.GenerateResultOverride += TryGenerateResultOverride;
+            CraftingMenuPatches.AfterGenerateResult += RaiseOnCustomCraftComplete;
+            CraftingMenuPatches.FinalizeGenerateResult += ResetDynamicResult;
             CraftingMenuPatches.RefreshAvailableIngredientsAfter += TryRefreshAvailableIngredients;
+        }
+
+        private void ResetDynamicResult(CustomCraftingMenu craftingMenu, ItemReferenceQuantity result, int resultMultiplier)
+        {
+            if (result == null
+                || ResourcesPrefabManager.Instance.IsWaterItem(result.RefItem.ItemID)
+                || !_customCrafters.ContainsKey(craftingMenu.GetType()))
+                return;
+
+            var dynamicResult = result as DynamicCraftingResult;
+
+            dynamicResult?.ResetResult();
+            craftingMenu.IngredientCraftData.Reset();
+        }
+
+        private void RaiseOnCustomCraftComplete(CustomCraftingMenu craftingMenu, ItemReferenceQuantity result, int resultMultiplier)
+        {
+            if (!(result is DynamicCraftingResult dynamicResult)
+                || dynamicResult.DynamicItemID == -1)
+                return;
+
+            _craftingMenuEvents.InvokeDynamicCraftComplete(dynamicResult, resultMultiplier, craftingMenu);
         }
 
         private bool TryGenerateResultOverride((CustomCraftingMenu CraftingMenu, ItemReferenceQuantity Result, int ResultMultiplier) arg)
@@ -73,6 +100,10 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                 {
                     Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(GenerateResultOverride)}(): " +
                         $"New item '{craftedItem.Name}' crafted from recipe {craftingMenu.GetSelectedRecipe().Name} and result ItemID {result.ItemID};");
+                    if (dynamicResult != null)
+                    {
+                        dynamicResult.SetResultItems(craftedItem, result.Quantity);
+                    }
 
                     //Logger.LogDebug($"{nameof(CustomCraftingService)}::{nameof(GenerateResultOverride)}(): " +
                     //        $"tryEquipItem: {tryEquipItem}. Item '{craftedItem.Name}' crafted from recipe {craftingMenu.GetSelectedRecipe().Name}." +
@@ -96,9 +127,6 @@ namespace ModifAmorphic.Outward.Modules.Crafting.Services
                     characterInventory.NotifyItemTake(craftedItem, 1);
                 }
             }
-
-            dynamicResult?.ResetResult();
-            craftingMenu.IngredientCraftData.Reset();
 
             //TODO: handle when nothing is crafted. Failure isn't really an option currenly. Returning false
             //will cause the current result (not dynamic) to be generated.

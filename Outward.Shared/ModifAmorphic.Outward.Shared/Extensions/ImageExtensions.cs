@@ -32,6 +32,7 @@ namespace ModifAmorphic.Outward.Extensions
 
             return image;
         }
+
         public static Image ReplaceSpriteIcon(this Image image, string pngFilePath, string spriteName, string textureName)
         {
             if (!File.Exists(pngFilePath))
