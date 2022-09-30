@@ -1,9 +1,12 @@
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using ModifAmorphic.Outward.Unity.ActionUI;
+using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
 using System;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
@@ -18,6 +21,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public Toggle ActionSlotsToggle;
         public Toggle DurabilityToggle;
+        public Toggle StashCraftingToggle;
 
         public Button MoveUIButton;
         public Button ResetUIButton;
@@ -32,11 +36,20 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private IActionUIProfileService _profileService => MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService;
 
-        private bool _settingProfiles;
+        private SelectableTransitions[] _selectables;
+        private Selectable _lastSelected;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Awake()
         {
+            _selectables = GetComponentsInChildren<SelectableTransitions>();
+            
+            for(int i = 0; i < _selectables.Length; i++)
+            {
+                _selectables[i].OnSelected += SettingSelected;
+                _selectables[i].OnDeselected += SettingDeselected;
+            }
+
             Hide();
         }
 
@@ -52,6 +65,18 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             DebugLogger.Log("SettingsView::Show");
             gameObject.SetActive(true);
             SetControls();
+
+            if (_selectables != null && _selectables.Any())
+            {
+                _selectables.First().Selectable.Select();
+                EventSystem.current.SetSelectedGameObject(_selectables.First().gameObject, MainSettingsMenu.PlayerMenu.PlayerID);
+            }
+            else
+            {
+                MainSettingsMenu.SettingsViewToggle.Select();
+                EventSystem.current.SetSelectedGameObject(MainSettingsMenu.SettingsViewToggle.gameObject, MainSettingsMenu.PlayerMenu.PlayerID);
+
+            }
 
             OnShow?.Invoke();
         }
@@ -70,14 +95,18 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         {
             SetProfiles();
 
-            ActionSlotsToggle.isOn = _profile?.ActionSlotsEnabled ?? false;
-            DurabilityToggle.isOn = _profile?.DurabilityDisplayEnabled ?? false;
+            ActionSlotsToggle.SetIsOn(_profile?.ActionSlotsEnabled ?? false);
+            DurabilityToggle.SetIsOn(_profile?.DurabilityDisplayEnabled ?? false);
+            StashCraftingToggle.SetIsOn(_profile?.StashCraftingEnabled ?? false);
         }
         private void HookControls()
         {
             ProfileDropdown.onValueChanged.AddListener(SelectProfile);
             ProfileRenameButton.onClick.AddListener(RenameProfile);
-            MainSettingsMenu.ProfileInput.OnHide.AddListener(SetProfiles);
+            MainSettingsMenu.ProfileInput.OnHide.AddListener(() => {
+                ProfileDropdown.Select();
+                SetProfiles();
+                });
 
             ActionSlotsToggle.onValueChanged.AddListener(isOn =>
             {
@@ -91,10 +120,17 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             DurabilityToggle.onValueChanged.AddListener(isOn =>
             {
+                DebugLogger.Log($"DurabilityToggle changed from {!isOn} to {isOn}. Saving profile.");
                 _profile.DurabilityDisplayEnabled = isOn;
                 _profileService.Save();
             });
 
+            StashCraftingToggle.onValueChanged.AddListener(isOn =>
+            {
+                DebugLogger.Log($"StashCraftingToggle changed from {!isOn} to {isOn}. Saving profile.");
+                _profile.StashCraftingEnabled = isOn;
+                _profileService.Save();
+            });
 
             MoveUIButton.onClick.AddListener(ShowPositionScreen);
             ResetUIButton.onClick.AddListener(ResetUIPositions);
@@ -102,19 +138,15 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private void SetProfiles()
         {
-            _settingProfiles = true;
             ProfileDropdown.ClearOptions();
             var profiles = MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService.GetProfileNames();
             var profileOptions = profiles.OrderBy(p => p).Select(p => new Dropdown.OptionData(p)).ToList();
             profileOptions.Add(new Dropdown.OptionData("[New Profile]"));
-            ProfileDropdown.AddOptions(profileOptions);
-            ProfileDropdown.value = profileOptions.FindIndex(o => o.text.Equals(_profile.Name, StringComparison.InvariantCultureIgnoreCase));
-            _settingProfiles = false;
+            ProfileDropdown.AddOptionSilent(profileOptions);
+            ProfileDropdown.SetValue(profileOptions.FindIndex(o => o.text.Equals(_profile.Name, StringComparison.InvariantCultureIgnoreCase)));
         }
         private void SelectProfile(int profileIndex)
         {
-            if (_settingProfiles)
-                return;
 
             if (profileIndex < ProfileDropdown.options.Count - 1)
             {
@@ -162,6 +194,37 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             if (saveNeeded)
                 positonService.Save();
 
+        }
+
+        private void SettingSelected(SelectableTransitions transition)
+        {
+            DebugLogger.Log($"{transition.name} Selected.");
+            _lastSelected = transition.Selectable;
+        }
+
+        private void SettingDeselected(SelectableTransitions transition)
+        {
+            DebugLogger.Log($"{transition.name} Deselected.");
+            //if (_selectables.Any(s => s.Selected) || !gameObject.activeSelf)
+            //    return;
+
+            StartCoroutine(CheckSetSelectedSetting());
+        }
+        
+        private IEnumerator CheckSetSelectedSetting()
+        {
+            yield return null;
+            yield return new WaitForEndOfFrame();
+            
+            if (!_selectables.Any(s => s.Selected) && !MainSettingsMenu.MenuItemSelected && gameObject.activeSelf && _lastSelected != null)
+            {
+                _lastSelected.Select();
+            }
+
+        }
+        private Selectable GetFirstSelectable()
+        {
+            return GetComponentsInChildren<Selectable>().FirstOrDefault();
         }
     }
 }

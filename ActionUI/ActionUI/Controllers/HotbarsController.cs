@@ -167,7 +167,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                 ResizeLayoutGroup();
             }
         }
-        private void Reset()
+        public void Reset()
         {
             var allCanvases = _hbc.GetComponentsInChildren<Canvas>(true);
 
@@ -179,6 +179,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
                     var actionSlots = grid.GetComponentsInChildren<ActionSlot>(true);
                     for (int s = 0; s < actionSlots.Length; s++)
                     {
+                        if (actionSlots[s].Controller is IDisposable disposable)
+                            disposable?.Dispose();
                         actionSlots[s].gameObject.Destroy();
                     }
                     grid.gameObject.Destroy();

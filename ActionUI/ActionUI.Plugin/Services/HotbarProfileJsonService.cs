@@ -2,6 +2,7 @@
 using ModifAmorphic.Outward.UI.DataModels;
 using ModifAmorphic.Outward.UI.Extensions;
 using ModifAmorphic.Outward.UI.Models;
+using ModifAmorphic.Outward.UI.Services.Injectors;
 using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
@@ -16,19 +17,19 @@ using UnityEngine.Events;
 namespace ModifAmorphic.Outward.UI.Services
 {
 
-    public class HotbarProfileJsonService : IHotbarProfileService
+    public class HotbarProfileJsonService : IHotbarProfileService, IDisposable
     {
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
 
-        private const string KeyboardMapFileSuffix = "_KeyboardMap.xml";
         public string HotbarsConfigFile = "Hotbars.json";
 
-        ProfileService _profileService;
+        private ProfileService _profileService;
 
         private HotbarProfileData _hotbarProfile;
+        private bool disposedValue;
 
-        public UnityEvent<IHotbarProfile> OnProfileChanged { get; } = new UnityEvent<IHotbarProfile>();
+        public UnityEvent<IHotbarProfile, HotbarProfileChangeTypes> OnProfileChanged { get; } = new UnityEvent<IHotbarProfile, HotbarProfileChangeTypes>();
 
         public HotbarProfileJsonService(ProfileService profileService, Func<IModifLogger> getLogger)
         {
@@ -40,7 +41,8 @@ namespace ModifAmorphic.Outward.UI.Services
         private void RefreshCachedProfile(IActionUIProfile obj, bool suppressChangedEvent = false)
         {
             _hotbarProfile = GetProfileData();
-            OnProfileChanged.TryInvoke(_hotbarProfile);
+            if (!suppressChangedEvent)
+                OnProfileChanged.TryInvoke(_hotbarProfile, HotbarProfileChangeTypes.ProfileRefreshed);
         }
 
         public IHotbarProfile GetProfile()
@@ -107,7 +109,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
             GetProfile().Hotbars.Add(newBar);
             Save();
-            OnProfileChanged.TryInvoke(GetProfile());
+            OnProfileChanged.TryInvoke(GetProfile(), HotbarProfileChangeTypes.HotbarAdded);
             return GetProfile();
         }
 
@@ -117,7 +119,7 @@ namespace ModifAmorphic.Outward.UI.Services
             {
                 GetProfile().Hotbars.RemoveAt(GetProfile().Hotbars.Count - 1);
                 Save();
-                OnProfileChanged.TryInvoke(GetProfile());
+                OnProfileChanged.TryInvoke(GetProfile(), HotbarProfileChangeTypes.HotbarRemoved);
             }
             return GetProfile();
         }
@@ -138,7 +140,7 @@ namespace ModifAmorphic.Outward.UI.Services
             }
 
             Save();
-            OnProfileChanged.TryInvoke(GetProfile());
+            OnProfileChanged.TryInvoke(GetProfile(), HotbarProfileChangeTypes.RowAdded);
             return GetProfile();
         }
         public IHotbarProfile RemoveRow()
@@ -161,23 +163,12 @@ namespace ModifAmorphic.Outward.UI.Services
             }
 
             Save();
-            OnProfileChanged.TryInvoke(GetProfile());
+            OnProfileChanged.TryInvoke(GetProfile(), HotbarProfileChangeTypes.RowRemoved);
             return GetProfile();
         }
 
         public IHotbarProfile AddSlot()
         {
-
-            //for (int b = 0; b < profile.Hotbars.Count; b++)
-            //{
-            //    int slotIndex = profile.Hotbars[b].Slots.Count;
-            //    for (int r = 0; r < profile.Rows; r++)
-            //    {
-            //        profile.Hotbars[b].Slots.Add(
-            //            CreateFrom(profile.Hotbars[b].Slots.Last(), slotIndex + r));
-            //    }
-
-            //}
             for (int b = 0; b < GetProfile().Hotbars.Count; b++)
             {
                 int slotIndex = GetProfile().Hotbars[b].Slots.Count;
@@ -196,7 +187,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
             GetProfile().SlotsPerRow++;
             Save();
-            OnProfileChanged.TryInvoke(GetProfile());
+            OnProfileChanged.TryInvoke(GetProfile(), HotbarProfileChangeTypes.SlotAdded);
             return GetProfile();
         }
 
@@ -206,18 +197,18 @@ namespace ModifAmorphic.Outward.UI.Services
                 return GetProfile();
 
             for (int b = 0; b < GetProfile().Hotbars.Count; b++)
-            {
-                var lastIndex = GetProfile().Hotbars[b].Slots.Count - 1;
-                for (int s = lastIndex; s > 0; s = s - GetProfile().SlotsPerRow)
+            { 
+                for (int r = GetProfile().Rows; r > 0; r--)
                 {
-                    GetProfile().Hotbars[b].Slots.RemoveAt(s);
+                    int lastSlotInRow = r * GetProfile().SlotsPerRow - 1;
+                    GetProfile().Hotbars[b].Slots.RemoveAt(lastSlotInRow);
                 }
                 ReindexSlots(GetProfile().Hotbars[b].Slots);
             }
 
             GetProfile().SlotsPerRow--;
             Save();
-            OnProfileChanged.TryInvoke(GetProfile());
+            OnProfileChanged.TryInvoke(GetProfile(), HotbarProfileChangeTypes.SlotRemoved);
             return GetProfile();
         }
 
@@ -241,7 +232,7 @@ namespace ModifAmorphic.Outward.UI.Services
             if (profileChanged)
             {
                 Save();
-                OnProfileChanged.TryInvoke(GetProfile());
+                OnProfileChanged.TryInvoke(GetProfile(), HotbarProfileChangeTypes.CooldownTimer);
             }
 
             return GetProfile();
@@ -252,7 +243,7 @@ namespace ModifAmorphic.Outward.UI.Services
             {
                 GetProfile().CombatMode = combatMode;
                 Save();
-                OnProfileChanged.TryInvoke(GetProfile());
+                OnProfileChanged.TryInvoke(GetProfile(), HotbarProfileChangeTypes.CombatMode);
             }
 
             return GetProfile();
@@ -277,7 +268,7 @@ namespace ModifAmorphic.Outward.UI.Services
             if (profileChanged)
             {
                 Save();
-                OnProfileChanged.TryInvoke(GetProfile());
+                OnProfileChanged.TryInvoke(GetProfile(), HotbarProfileChangeTypes.EmptySlotView);
             }
             return GetProfile();
         }
@@ -326,6 +317,37 @@ namespace ModifAmorphic.Outward.UI.Services
             Logger.LogDebug($"Loading profile file '{profileFile}'.");
             string json = File.ReadAllText(profileFile);
             return JsonConvert.DeserializeObject<HotbarProfileData>(json);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _profileService.OnActiveProfileChanged.RemoveListener((profile) => RefreshCachedProfile(profile));
+                    _profileService.OnActiveProfileSwitched.RemoveListener((profile) => RefreshCachedProfile(profile, true));
+                }
+                _hotbarProfile = null;
+                _profileService = null;
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~HotbarProfileJsonService()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

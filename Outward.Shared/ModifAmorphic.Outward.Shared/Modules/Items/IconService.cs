@@ -107,7 +107,7 @@ namespace ModifAmorphic.Outward.Modules.Items
                 throw new FileNotFoundException($"Sprite for icon {baseIconName} could not be loaded.", iconPath);
 
             var enchantedGo = itemDisplay.transform.Find("imgEnchanted").gameObject;
-            Logger.LogDebug($"{nameof(IconService)}::{nameof(GetOrAddBaseIcon)}(): Cloned echanting icon gameobject {enchantedGo}.");
+            Logger.LogDebug($"{nameof(IconService)}::{nameof(GetOrAddBaseIcon)}(): Cloned enchanting icon gameobject {enchantedGo}.");
             baseIconGo = UnityEngine.Object.Instantiate(enchantedGo, Icons);
             var existingImage = baseIconGo.GetComponent<Image>();
 

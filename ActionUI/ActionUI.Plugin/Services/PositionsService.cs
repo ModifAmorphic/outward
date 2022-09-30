@@ -89,8 +89,18 @@ namespace ModifAmorphic.Outward.UI.Services
             {
                 var hud = characterUI.transform.Find("Canvas/GameplayPanels/HUD");
                 var quickSlot = hud.Find("QuickSlot/Keyboard").gameObject;
-                UnityEngine.Object.Destroy(quickSlot.GetComponent<PositionableUI>());
-                quickSlot.transform.Find("PositionableBg").gameObject.Destroy();
+                var quickSlotPositonable = quickSlot.GetComponent<PositionableUI>();
+                if (quickSlotPositonable != null)
+                {
+                    UnityEngine.Object.Destroy(quickSlotPositonable);
+                    quickSlot.transform.Find("PositionableBg").gameObject.Destroy();
+                }
+
+                var positonableGo = quickSlot.transform.Find("PositionableBg");
+                if (positonableGo != null)
+                {
+                    positonableGo.gameObject.Destroy();
+                }
             }
         }
 
@@ -119,12 +129,18 @@ namespace ModifAmorphic.Outward.UI.Services
             positionable.enabled = enabled;
         }
 
+        private bool _isKeepPositionablesListening = false;
         public void StartKeepPostionablesVisible(PlayerActionMenus actionMenus, CharacterUI characterUI)
         {
+            if (_isKeepPositionablesListening)
+                return;
+
             var uiPositionScreen = actionMenus.GetComponentInChildren<UIPositionScreen>();
             var hud = characterUI.transform.Find("Canvas/GameplayPanels/HUD");
             var positonables = hud.GetComponentsInChildren<PositionableUI>(true).Where(p => p != null);
             uiPositionScreen.OnShow.AddListener(() => _coroutine.StartRoutine(KeepPositionablesVisible(positonables.ToArray())));
+
+            _isKeepPositionablesListening = true;
         }
 
         private IEnumerator KeepPositionablesVisible(PositionableUI[] positionables)

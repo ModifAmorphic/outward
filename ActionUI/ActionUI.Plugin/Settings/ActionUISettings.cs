@@ -26,6 +26,7 @@ namespace ModifAmorphic.Outward.UI.Settings
             Name = "Profile 1",
             ActionSlotsEnabled = true,
             DurabilityDisplayEnabled = true,
+            StashCraftingEnabled = true,
         };
 
     }

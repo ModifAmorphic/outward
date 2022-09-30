@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
 {
-    internal class ActionSlotController : IActionSlotController
+    internal class ActionSlotController : IActionSlotController, IDisposable
     {
 
         public ActionSlot ActionSlot { get; private set; }
@@ -293,6 +293,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
         }
 
         private ActionSlotIcon[] dynamicSprites;
+        private bool disposedValue;
+
         private void AssignSlotIcons(ActionSlotIcon[] spriteIcons)
         {
             string logMsg = string.Empty;
@@ -445,5 +447,40 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
             }
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    _cooldownService?.Dispose();
+                    _stackService?.Dispose();
+                    _toggleService?.Dispose();
+                    foreach (var service in _progressBarServices.Values)
+                    {
+                        service.Dispose();
+                    }
+                    ActionSlot.StopAllCoroutines();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~ActionSlotController()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

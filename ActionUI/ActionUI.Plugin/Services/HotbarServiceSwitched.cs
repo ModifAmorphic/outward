@@ -102,7 +102,7 @@ namespace ModifAmorphic.Outward.UI.Services
             var profile = GetOrCreateActiveProfile();
             if (_profileManager.ProfileService.GetActiveProfile().ActionSlotsEnabled)
             {
-                ConfigureHotbars(profile);
+                ConfigureHotbars(profile, HotbarProfileChangeTypes.ProfileRefreshed);
                 _hotbars.ClearChanges();
                 _profileManager.HotbarProfileService.OnProfileChanged.AddListener(ConfigureHotbars);
                 _levelCoroutines.StartRoutine(CheckProfileForSave());
@@ -113,7 +113,7 @@ namespace ModifAmorphic.Outward.UI.Services
             }
         }
 
-        public void ConfigureHotbars(IHotbarProfile profile)
+        public void ConfigureHotbars(IHotbarProfile profile, HotbarProfileChangeTypes changeType)
         {
             _saveDisabled = true;
 
@@ -201,7 +201,7 @@ namespace ModifAmorphic.Outward.UI.Services
                 DisableKeyboardQuickslots();
                 ControlsInput.SetQuickSlotActive(_characterUI.RewiredID, false);
 
-                ConfigureHotbars(GetOrCreateActiveProfile());
+                ConfigureHotbars(GetOrCreateActiveProfile(), HotbarProfileChangeTypes.ProfileRefreshed);
                 _hotbars.ClearChanges();
                 _profileManager.HotbarProfileService.OnProfileChanged.AddListener(ConfigureHotbars);
 

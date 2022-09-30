@@ -10,6 +10,7 @@ namespace ModifAmorphic.Outward.UI.DataModels
         public bool ActionSlotsEnabled { get; set; }
 
         public bool DurabilityDisplayEnabled { get; set; }
+        public bool StashCraftingEnabled { get; set; }
 
         [JsonIgnore]
         public string Path { get; set; }

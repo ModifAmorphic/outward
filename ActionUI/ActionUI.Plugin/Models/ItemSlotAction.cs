@@ -114,7 +114,7 @@ namespace ModifAmorphic.Outward.UI.Models
 
         public bool GetIsActionRequested()
         {
-            return !IsEditable && player.GetButtonDown(actionConfig.RewiredActionId);
+            return !IsEditable && player.GetButtonDown(actionConfig.RewiredActionId) && GetEnabled();
         }
         public bool GetIsEditRequested()
         {

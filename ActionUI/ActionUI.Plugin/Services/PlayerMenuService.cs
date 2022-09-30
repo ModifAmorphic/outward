@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using ModifAmorphic.Outward.Coroutines;
+using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.UI.DataModels;
@@ -8,6 +9,7 @@ using ModifAmorphic.Outward.UI.Patches;
 using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
+using ModifAmorphic.Outward.Unity.ActionUI;
 using Rewired;
 using System;
 using System.Collections;
@@ -33,8 +35,8 @@ namespace ModifAmorphic.Outward.UI.Services
         private float _initialPauseMenuHeight;
         private const int _baseActivePauseButtons = 7;
 
-        private Button _actionMenusButton;
-        public Button ActionMenusButton => _actionMenusButton;
+        private Button _actionUiGo;
+        public Button ActionMenusButton => _actionUiGo;
 
         private readonly static Dictionary<int, ControllerMap> _controllerMaps = new Dictionary<int, ControllerMap>();
 
@@ -100,6 +102,8 @@ namespace ModifAmorphic.Outward.UI.Services
             return isShowing;
         }
 
+        private bool ShouldQuickslotItemBeDestroyed(bool actionSlotsActive, int playerID, int requestingPlayerID) => !actionSlotsActive || playerID != requestingPlayerID;
+
         private void SetPlayerMenuCharacter(SplitPlayer splitPlayer, Character character)
         {
             var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
@@ -115,7 +119,9 @@ namespace ModifAmorphic.Outward.UI.Services
             var player = ReInput.players.GetPlayer(splitPlayer.RewiredID);
 
             var hud = splitPlayer.CharUI.transform.Find("Canvas/GameplayPanels/HUD");
-            playerMenu.ConfigureExit(() => player.GetButtonDown(ControlsInput.GetMenuActionName(ControlsInput.MenuActions.Cancel)));
+
+
+            playerMenu.ConfigureNavigation(GetNavigationActions(player));
 
             Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(SetPlayerMenuCharacter)}(): Adding SplitScreenScaler component to Action UIs.");
             AddSplitScreenScaler(playerMenu, character.CharacterUI);
@@ -130,6 +136,26 @@ namespace ModifAmorphic.Outward.UI.Services
                 dropCanvas.overrideSorting = true;
                 dropCanvas.sortingOrder = 0;
             }
+
+            if (!CharacterQuickSlotManagerPatches.AllowItemDestroyed.ContainsKey(splitPlayer.RewiredID))
+                CharacterQuickSlotManagerPatches.AllowItemDestroyed.Add(splitPlayer.RewiredID,
+                    (requestingPlayerId) => ShouldQuickslotItemBeDestroyed(
+                        playerMenu.ProfileManager.ProfileService.GetActiveProfile().ActionSlotsEnabled,
+                        splitPlayer.RewiredID,
+                        requestingPlayerId)
+                    );
+        }
+
+        private MenuNavigationActions GetNavigationActions(Player player)
+        {
+            return new MenuNavigationActions()
+            {
+                MoveUp = () => player.GetButtonDown(ControlsInput.GetMenuActionName(ControlsInput.MenuActions.MoveUp)),
+                MoveDown = () => player.GetButtonDown(ControlsInput.GetMenuActionName(ControlsInput.MenuActions.MoveDown)),
+                MoveLeft = () => player.GetButtonDown(ControlsInput.GetMenuActionName(ControlsInput.MenuActions.MoveLeft)),
+                MoveRight = () => player.GetButtonDown(ControlsInput.GetMenuActionName(ControlsInput.MenuActions.MoveRight)),
+                Cancel = () => player.GetButtonDown(ControlsInput.GetMenuActionName(ControlsInput.MenuActions.Cancel)),
+            };
         }
 
         private ActionUIProfile GetOrCreateActiveProfile(ProfileManager profileManager)
@@ -192,20 +218,25 @@ namespace ModifAmorphic.Outward.UI.Services
             var hideOnPauseGo = splitPlayer.CharUI.transform.Find("Canvas/PauseMenu/Buttons/Content/HideOnPause/").gameObject;
             var settingsBtn = hideOnPauseGo.GetComponentsInChildren<Button>().First(b => b.name.Equals("btnOptions", StringComparison.InvariantCultureIgnoreCase));
 
-            _actionMenusButton = UnityEngine.Object.Instantiate(settingsBtn, hideOnPauseGo.transform);
-            _actionMenusButton.name = "btnActionMenuSettings";
-            _actionMenusButton.transform.SetSiblingIndex(settingsBtn.transform.GetSiblingIndex() + 1);
+            _actionUiGo = UnityEngine.Object.Instantiate(settingsBtn);
+            _actionUiGo.name = "btnActionUiSettings";
+            var localScale = _actionUiGo.transform.localScale;
+            _actionUiGo.transform.SetParent(settingsBtn.transform.parent, false);
+            _actionUiGo.transform.localScale = localScale;
+            _actionUiGo.transform.SetSiblingIndex(settingsBtn.transform.GetSiblingIndex() + 1);
 
-            var menuText = _actionMenusButton.GetComponentInChildren<Text>();
+            var actionUiButton = _actionUiGo.GetComponent<Button>();
+
+            var menuText = _actionUiGo.GetComponentInChildren<Text>();
             UnityEngine.Object.Destroy(menuText.GetComponent<UILocalize>());
             menuText.text = "Action UI";
 
             //get the PauseMenu component so the PauseMenu UI can be hidden later
             var pauseMenu = splitPlayer.CharUI.transform.Find("Canvas/PauseMenu").GetComponent<PauseMenu>();
             //This removes any persistent (set in Unity Editor) onClick listeners.
-            _actionMenusButton.onClick = new Button.ButtonClickedEvent();
+            _actionUiGo.onClick = new Button.ButtonClickedEvent();
             //Add a new listener to hide the pause menu and show the Action Setting Menu
-            _actionMenusButton.onClick.AddListener(() =>
+            _actionUiGo.onClick.AddListener(() =>
             {
                 pauseMenu.Hide();
                 actionMenus.MainSettingsMenu.Show();

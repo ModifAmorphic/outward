@@ -3,6 +3,7 @@ using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.UI.DataModels;
 using ModifAmorphic.Outward.UI.Models;
 using ModifAmorphic.Outward.UI.Patches;
+using ModifAmorphic.Outward.UI.Services.Injectors;
 using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
@@ -11,20 +12,21 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.UI.Services
 {
-    internal class ControllerMapService
+    internal class ControllerMapService : IDisposable
     {
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
         private readonly HotkeyCaptureMenu _captureDialog;
         private readonly ProfileService _profileService;
-        private readonly HotbarProfileJsonService _hotbarData;
+        private readonly HotbarProfileJsonService _hotbarProfileService;
         private readonly HotbarService _hotbarService;
         private readonly Player _player;
         private readonly ModifCoroutine _coroutine;
@@ -68,7 +70,7 @@ namespace ModifAmorphic.Outward.UI.Services
             { 7, new MouseButton() { KeyCode = KeyCode.Mouse4, elementIdentifierId = 6, DisplayName = "MB 4" } },
             { 8, new MouseButton() { KeyCode = KeyCode.Mouse5, elementIdentifierId = 7, DisplayName = "MB 5" } },
         };
-
+        private bool disposedValue;
         private static readonly HashSet<KeyCode> MouseKeyCodes = new HashSet<KeyCode>()
         {
             KeyCode.Mouse0, KeyCode.Mouse1, KeyCode.Mouse2, KeyCode.Mouse3, KeyCode.Mouse4, KeyCode.Mouse5, KeyCode.Mouse6
@@ -92,10 +94,12 @@ namespace ModifAmorphic.Outward.UI.Services
             (_captureDialog, _hotbarService, _player, _coroutine, _getLogger) = (captureDialog, hotbarService, player, coroutine, getLogger);
 
             _profileService = (ProfileService)profileManager.ProfileService;
-            _hotbarData = (HotbarProfileJsonService)profileManager.HotbarProfileService;
+            _hotbarProfileService = (HotbarProfileJsonService)profileManager.HotbarProfileService;
 
             RewiredInputsPatches.BeforeExportXmlData += RemoveActionUIMaps;
             RewiredInputsPatches.AfterExportXmlData += RewiredInputsPatches_AfterExportXmlData;
+            _profileService.OnActiveProfileSwitched.AddListener(LoadConfigMaps);
+            _hotbarProfileService.OnProfileChanged.AddListener(SlotAmountChanged);
 
             _captureDialog.OnKeysSelected += CaptureDialog_OnKeysSelected;
 
@@ -129,17 +133,22 @@ namespace ModifAmorphic.Outward.UI.Services
 
         }
 
-        public void LoadConfigMaps()
+        private void LoadConfigMaps(IActionUIProfile actionUIProfile) => _ = LoadConfigMaps(true);
+        public (KeyboardMap keyboardMap, MouseMap mouseMap) LoadConfigMaps(bool forceRefresh = false)
         {
-            GetActionSlotsMap<KeyboardMap>();
-            GetActionSlotsMap<MouseMap>();
+            var maps = (
+                GetActionSlotsMap<KeyboardMap>(forceRefresh),
+                GetActionSlotsMap<MouseMap>(forceRefresh)
+            );
+            if (forceRefresh)
+                _hotbarService.ConfigureHotbars(_hotbarProfileService.GetProfile());
+            return maps;
         }
 
-        private void CaptureDialog_OnKeysSelected(int id, HotkeyCategories category, KeyGroup keyGroup)
+        private void CaptureDialog_OnKeysSelected(int slotIndex, HotkeyCategories category, KeyGroup keyGroup)
         {
 
-            var keyboardMap = GetActionSlotsMap<KeyboardMap>();
-            var mouseMap = GetActionSlotsMap<MouseMap>();
+            (var keyboardMap, var mouseMap) = LoadConfigMaps();
 
             var maps = new List<ControllerMap>();
 
@@ -162,31 +171,161 @@ namespace ModifAmorphic.Outward.UI.Services
             maps.Add(mouseMap);
 
             if (category == HotkeyCategories.ActionSlot)
-                SetActionSlotHotkey(id, keyGroup, controllerType, maps);
+                SetActionSlotHotkey(slotIndex, keyGroup, controllerType, maps);
             else if (category == HotkeyCategories.Hotbar)
-                SetHotbarHotkey(id, keyGroup, controllerType, maps);
+                SetHotbarHotkey(slotIndex, keyGroup, controllerType, maps);
             else if (category == HotkeyCategories.NextHotbar || category == HotkeyCategories.PreviousHotbar)
                 SetHotbarNavHotkey(category, keyGroup, controllerType, maps);
         }
 
-        private void SetActionSlotHotkey(int id, KeyGroup keyGroup, ControllerType controllerType, List<ControllerMap> maps)
+        private void SlotAmountChanged(IHotbarProfile hotbarProfile, HotbarProfileChangeTypes changeType)
+        {
+            if (hotbarProfile.Rows == 1)
+                return;
+
+            if (changeType == HotbarProfileChangeTypes.SlotAdded)
+                ShiftActionSlotsForward(hotbarProfile);
+            else if (changeType == HotbarProfileChangeTypes.SlotRemoved)
+                ShiftActionSlotsBack(hotbarProfile);
+        }
+
+        private void ShiftActionSlotsForward(IHotbarProfile hotbarProfile)
+        {
+            (var keyboardMap, var mouseMap) = LoadConfigMaps();
+            var maps = new List<ControllerMap>() { keyboardMap, mouseMap };
+
+            var firstAddedSlot = hotbarProfile.SlotsPerRow - 1;
+            int totalSlots = hotbarProfile.Rows * hotbarProfile.SlotsPerRow;
+            var hotbars = hotbarProfile.Hotbars;
+            int lastRow = hotbarProfile.Rows - 1;
+
+            for (int r = lastRow; r > 0; r--)
+            {
+                var firstSlot = r * hotbarProfile.SlotsPerRow;
+                var lastSlot = (r + 1) * hotbarProfile.SlotsPerRow - 1;
+                for (int s = lastSlot; s >= firstSlot; s--)
+                {
+                    var slotConfig = hotbars[0].Slots[s].Config as ActionConfig;
+
+                    ControllerType controllerType = ControllerType.Keyboard;
+                    // - r because each row adds an new slot and a new offset to account for
+                    int previousActionId = ((ActionConfig)hotbars[0].Slots[s].Config).RewiredActionId - r;
+                    ActionElementMap previousMap = keyboardMap.ButtonMaps.FirstOrDefault(m => m.actionId == previousActionId);
+                    ControllerMap controllerMap = keyboardMap;
+                    //if (previousMap == null)
+                    //{
+                    //    previousMap = mouseMap.ButtonMaps.FirstOrDefault(m => m.actionId == previousSlotConfig.RewiredActionId);
+                    //    controllerType = ControllerType.Mouse;
+                    //    controllerMap = mouseMap;
+                    //}
+
+                    ElementAssignment elementAssignment;
+
+                    if (previousMap == null || s == lastSlot)
+                    {
+                        elementAssignment = new ElementAssignment(controllerType, ControllerElementType.Button, -1, AxisRange.Positive, KeyCode.None, ModifierKeyFlags.None, slotConfig.RewiredActionId, Pole.Positive, false);
+                    }
+                    else
+                    {
+                        elementAssignment = new ElementAssignment(controllerType, ControllerElementType.Button, previousMap.elementIdentifierId, AxisRange.Positive, previousMap.keyCode, previousMap.modifierKeyFlags, slotConfig.RewiredActionId, Pole.Positive, false);
+                    }
+                    ConfigureButtonMapping(elementAssignment, controllerType, controllerMap, out var hotkeyText);
+                    slotConfig.HotkeyText = hotkeyText;
+                }
+            }
+            
+            //Clear out the last slot of the first row since it wouldn't be handled above.
+            var lastConfig = hotbars[0].Slots[firstAddedSlot].Config as ActionConfig;
+            ConfigureButtonMapping(new ElementAssignment(KeyCode.None, ModifierKeyFlags.None, lastConfig.RewiredActionId, Pole.Positive, -1), ControllerType.Keyboard, keyboardMap, out _);
+            ConfigureButtonMapping(new ElementAssignment(KeyCode.None, ModifierKeyFlags.None, lastConfig.RewiredActionId, Pole.Positive, -1), ControllerType.Keyboard, mouseMap, out _);
+            lastConfig.HotkeyText = string.Empty;
+
+            //set the other bar hotkeys
+            for (int b = 1; b < hotbars.Count; b++)
+            {
+                for (int s = 0; s < hotbars[b].Slots.Count; s++)
+                {
+                    hotbars[b].Slots[s].Config.HotkeyText = hotbars[0].Slots[s].Config.HotkeyText;
+                }
+            }
+
+            SaveControllerMap(keyboardMap);
+            SaveControllerMap(mouseMap);
+        }
+
+        private void ShiftActionSlotsBack(IHotbarProfile hotbarProfile)
+        {
+            (var keyboardMap, var mouseMap) = LoadConfigMaps();
+            var maps = new List<ControllerMap>() { keyboardMap, mouseMap };
+
+            var hotbars = hotbarProfile.Hotbars;
+
+            for (int r = 1; r < hotbarProfile.Rows; r++)
+            {
+                var firstSlot = r * hotbarProfile.SlotsPerRow;
+                var lastSlot = (r + 1) * hotbarProfile.SlotsPerRow - 1;
+                for (int s = firstSlot; s <= lastSlot; s++)
+                {
+                    var slotConfig = hotbars[0].Slots[s].Config as ActionConfig;
+                    
+                    // + r because each row is offset +1 by the previous rows slot removal
+                    int nextActionId = ((ActionConfig)hotbars[0].Slots[s].Config).RewiredActionId + r;
+
+                    ControllerType controllerType = ControllerType.Keyboard;
+                    ActionElementMap nextMap = keyboardMap.ButtonMaps.FirstOrDefault(m => m.actionId == nextActionId);
+                    ControllerMap controllerMap = keyboardMap;
+                    if (nextMap == null)
+                    {
+                        nextMap = mouseMap.ButtonMaps.FirstOrDefault(m => m.actionId == nextActionId);
+                        controllerType = ControllerType.Mouse;
+                        controllerMap = mouseMap;
+                    }
+
+                    ElementAssignment elementAssignment;
+                    if (nextMap == null)
+                    {
+                        elementAssignment = new ElementAssignment(controllerType, ControllerElementType.Button, -1, AxisRange.Positive, KeyCode.None, ModifierKeyFlags.None, slotConfig.RewiredActionId, Pole.Positive, false);
+                    }
+                    else
+                    {
+                        elementAssignment = new ElementAssignment(controllerType, ControllerElementType.Button, nextMap.elementIdentifierId, AxisRange.Positive, nextMap.keyCode, nextMap.modifierKeyFlags, slotConfig.RewiredActionId, Pole.Positive, false);
+                    }
+                    ConfigureButtonMapping(elementAssignment, controllerType, controllerMap, out var hotkeyText);
+                    slotConfig.HotkeyText = hotkeyText;
+                }
+            }
+
+            //set the other bar hotkeys
+            for (int b = 1; b < hotbars.Count; b++)
+            {
+                for (int s = 0; s < hotbars[b].Slots.Count; s++)
+                {
+                    hotbars[b].Slots[s].Config.HotkeyText = hotbars[0].Slots[s].Config.HotkeyText;
+                }
+            }
+
+            SaveControllerMap(keyboardMap);
+            SaveControllerMap(mouseMap);
+        }
+
+        private void SetActionSlotHotkey(int slotIndex, KeyGroup keyGroup, ControllerType controllerType, List<ControllerMap> maps)
         {
 
-            Logger.LogDebug($"Setting ActionSlot Hotkey for Slot Index {id} to KeyCode {keyGroup.KeyCode}.");
+            Logger.LogDebug($"Setting ActionSlot Hotkey for Slot Index {slotIndex} to KeyCode {keyGroup.KeyCode}.");
 
-            var profile = _hotbarData.GetProfile();
+            var profile = _hotbarProfileService.GetProfile();
             var hotbars = profile.Hotbars;
-            var config = (ActionConfig)hotbars[0].Slots[id].Config;
+            var config = (ActionConfig)hotbars[0].Slots[slotIndex].Config;
 
             ConfigureButtonMapping(config.RewiredActionId, keyGroup, controllerType, maps, out var hotKey);
 
             for (int b = 0; b < hotbars.Count; b++)
             {
-                hotbars[b].Slots[id].Config.HotkeyText = hotKey;
-                Logger.LogDebug($"Setting Hotkey to '{hotKey}' for hotbar {b}, slot {id}.");
+                hotbars[b].Slots[slotIndex].Config.HotkeyText = hotKey;
+                Logger.LogDebug($"Setting Hotkey to '{hotKey}' for hotbar {b}, slot {slotIndex}.");
             }
 
-            _hotbarData.Save();
+            _hotbarProfileService.Save();
             _hotbarService.ConfigureHotbars(profile);
         }
 
@@ -194,21 +333,21 @@ namespace ModifAmorphic.Outward.UI.Services
         {
             Logger.LogDebug($"Setting Hotbar Hotkey for Bar Index {id}.");
 
-            var profile = _hotbarData.GetProfile();
+            var profile = _hotbarProfileService.GetProfile();
             var hotbar = (HotbarData)profile.Hotbars[id];
 
             ConfigureButtonMapping(hotbar.RewiredActionId, keyGroup, controllerType, maps, out var hotKey);
 
             hotbar.HotbarHotkey = hotKey;
 
-            _hotbarData.Save();
+            _hotbarProfileService.Save();
             _hotbarService.ConfigureHotbars(profile);
         }
 
         private void SetHotbarNavHotkey(HotkeyCategories category, KeyGroup keyGroup, ControllerType controllerType, IEnumerable<ControllerMap> maps)
         {
             //Logger.LogDebug($"Setting Hotbar Hotkey for Bar Index {id}.");
-            var profile = (HotbarProfileData)_hotbarData.GetProfile();
+            var profile = (HotbarProfileData)_hotbarProfileService.GetProfile();
             var rewiredId = category == HotkeyCategories.NextHotbar ? profile.NextRewiredActionId : profile.PrevRewiredActionId;
 
             ConfigureButtonMapping(rewiredId, keyGroup, controllerType, maps, out var hotKey);
@@ -224,7 +363,7 @@ namespace ModifAmorphic.Outward.UI.Services
                 profile.PrevHotkey = hotKey;
             }
 
-            _hotbarData.Save();
+            _hotbarProfileService.Save();
             _hotbarService.ConfigureHotbars(profile);
         }
 
@@ -248,33 +387,44 @@ namespace ModifAmorphic.Outward.UI.Services
                     Logger.LogDebug($"Configuring Removal Button Mapping for ControllerType {map.controllerType} and actionId {rewiredActionId}.");
                     eleMap = new ElementAssignment(map.controllerType, ControllerElementType.Button, elementIdentifierId, AxisRange.Positive, KeyCode.None, ModifierKeyFlags.None, rewiredActionId, Pole.Positive, false);
                 }
-                var existingMaps = map.ButtonMaps.Where(m => m.actionId == rewiredActionId).ToArray();
 
-                if (existingMaps.Any())
-                {
-                    for (int i = 0; i < existingMaps.Length; i++)
-                    {
-                        if (map.DeleteElementMap(existingMaps[i].id))
-                            Logger.LogDebug($"Deleted existing map {existingMaps[i].id} for rewiredId {rewiredActionId}.");
-                    }
-                }
-
-                RemoveExistingAssignments(eleMap, map);
-
-                if (map.controllerType == controllerType)
-                {
-                    if (keyGroup.KeyCode != KeyCode.None)
-                    {
-                        var result = map.ReplaceOrCreateElementMap(eleMap);
-                        Logger.LogDebug($"Attempted replace or create element map {eleMap.elementMapId} to use KeyCode {keyGroup.KeyCode} in {map.controllerType} ControllerMap {map.id}.  Result was {result}");
-                    }
-                    hotkeyText = map.ButtonMaps.FirstOrDefault(m => m.actionId == rewiredActionId)?.elementIdentifierName;
-                    if (map.controllerType == ControllerType.Mouse)
-                        hotkeyText = MouseButtons[keyGroup.KeyCode].DisplayName;
-                }
+                ConfigureButtonMapping(eleMap, controllerType, map, out var text);
+                if (!string.IsNullOrWhiteSpace(text))
+                    hotkeyText = text;
 
                 SaveControllerMap(map);
             }
+        }
+
+        private void ConfigureButtonMapping(ElementAssignment assignment, ControllerType controllerType, ControllerMap map, out string hotkeyText)
+        {
+            hotkeyText = string.Empty;
+
+            var existingMaps = map.ButtonMaps.Where(m => m.actionId == assignment.actionId).ToArray();
+
+            if (existingMaps.Any())
+            {
+                for (int i = 0; i < existingMaps.Length; i++)
+                {
+                    if (map.DeleteElementMap(existingMaps[i].id))
+                        Logger.LogDebug($"Deleted existing map {existingMaps[i].id} for rewiredId {assignment.actionId}.");
+                }
+            }
+
+            RemoveExistingAssignments(assignment, map);
+
+            if (map.controllerType == controllerType)
+            {
+                if (assignment.keyboardKey != KeyCode.None || (map.controllerType == ControllerType.Mouse && MouseButtonElementIds.TryGetValue(assignment.elementIdentifierId, out var mouseEleId) && mouseEleId.KeyCode != KeyCode.None))
+                {
+                    var result = map.ReplaceOrCreateElementMap(assignment);
+                    Logger.LogDebug($"Attempted replace or create element map {assignment.elementMapId} to use keyboardKey {assignment.keyboardKey} in {map.controllerType} ControllerMap {map.id}.  Result was {result}");
+                }
+                hotkeyText = map.ButtonMaps.FirstOrDefault(m => m.actionId == assignment.actionId)?.elementIdentifierName;
+                if (map.controllerType == ControllerType.Mouse && MouseButtonElementIds.TryGetValue(assignment.elementIdentifierId, out var hotkeyEleId))
+                    hotkeyText = hotkeyEleId.DisplayName;
+            }
+
         }
 
         private void RemoveExistingAssignments(ElementAssignment assignment, ControllerMap map)
@@ -319,7 +469,7 @@ namespace ModifAmorphic.Outward.UI.Services
             //File.WriteAllText(filePath, mapXml);
         }
 
-        private T GetActionSlotsMap<T>() where T : ControllerMap
+        private T GetActionSlotsMap<T>(bool forceRefresh) where T : ControllerMap
         {
             ControllerType controllerType = ControllerType.Custom;
 
@@ -336,21 +486,27 @@ namespace ModifAmorphic.Outward.UI.Services
                 return null;
 
             var map = _player.controllers.maps.GetMap<T>(0, RewiredConstants.ActionSlots.CategoryMapId, 0);
-            if (map != null)
+            if (map != null && !forceRefresh)
             {
-                Logger.LogDebug($"ActionSlots {controllerType} ControllerMap found for player {_player.id}");
+                Logger.LogDebug($"ActionSlots {controllerType} ControllerMap found loaded for player {_player.id}");
                 return map;
             }
 
             var xml = GetKeyMapFileXml(controllerType);
             var controllerMap = (T)ControllerMap.CreateFromXml(controllerType, xml);
+            if (map != null)
+            {
+                Logger.LogDebug($"Replacing ActionSlots {controllerType} ControllerMap found loaded for player {_player.id}");
+                _player.controllers.maps.RemoveMap<T>(0, controllerMap.id);
+            }
             _player.controllers.maps.AddMap<T>(0, controllerMap);
+            
             return controllerMap;
         }
 
         private string GetKeyMapFileXml(ControllerType controllerType)
         {
-            var hotbarProfile = (HotbarProfileData)_hotbarData.GetProfile();
+            var hotbarProfile = (HotbarProfileData)_hotbarProfileService.GetProfile();
 
             string defaultKeyMapFile;
 
@@ -399,5 +555,37 @@ namespace ModifAmorphic.Outward.UI.Services
             return modifierKeyFlags;
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    RewiredInputsPatches.BeforeExportXmlData -= RemoveActionUIMaps;
+                    RewiredInputsPatches.AfterExportXmlData -= RewiredInputsPatches_AfterExportXmlData;
+                    _profileService.OnActiveProfileSwitched.RemoveListener(LoadConfigMaps);
+                    _hotbarProfileService.OnProfileChanged.RemoveListener(SlotAmountChanged);
+                    _captureDialog.OnKeysSelected -= CaptureDialog_OnKeysSelected;
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~ControllerMapService()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

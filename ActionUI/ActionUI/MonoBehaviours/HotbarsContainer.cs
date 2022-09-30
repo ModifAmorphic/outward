@@ -1,3 +1,4 @@
+using ModifAmorphic.Outward.ActionMenus.Extensions;
 using ModifAmorphic.Outward.Unity.ActionMenus.Controllers;
 using System;
 using System.Collections.Generic;
@@ -154,10 +155,46 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         internal void ConfigureHotbars(int barsAmount)
         {
+            //DestroyHotbars();
+
             _hotbarGrid = new GridLayoutGroup[barsAmount];
             _hotbars = new ActionSlot[barsAmount][];
         }
 
-        internal void ConfigureActionSlots(int bar, int slotsAmount) => _hotbars[bar] = new ActionSlot[slotsAmount];
+        internal void ConfigureActionSlots(int bar, int slotsAmount)
+        {
+            _hotbars[bar] = new ActionSlot[slotsAmount];
+        }
+
+        //private void DestroyHotbars()
+        //{
+        //    if (_hotbarGrid != null)
+        //    {
+        //        for (int g = 0; g < _hotbarGrid.Length; g++)
+        //        {
+        //            if (_hotbarGrid[g] != null)
+        //                _hotbarGrid[g].gameObject.Destroy();
+        //        }
+        //    }
+        //    _hotbarGrid = null;
+
+        //    if (_hotbars != null)
+        //    {
+        //        for (int h = 0; h < _hotbars.Length; h++)
+        //        {
+        //            if (_hotbars[h] != null)
+        //            {
+        //                for (int s = 0; s < _hotbars[h].Length; s++)
+        //                {
+        //                    if (_hotbars[h][s].Controller is IDisposable disposable)
+        //                        disposable?.Dispose();
+        //                    _hotbars[h][s].gameObject.Destroy();
+        //                }
+        //                _hotbars[h] = null;
+        //            }
+        //        }
+        //    }
+        //    _hotbars = null;
+        //}
     }
 }

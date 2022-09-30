@@ -6,13 +6,14 @@ using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionMenus.Data;
 using System;
 
-namespace ModifAmorphic.Outward.UI.Services
+namespace ModifAmorphic.Outward.UI.Services.Injectors
 {
     internal class PositionsServicesInjector
     {
         private readonly ServicesProvider _provider;
         private readonly ModifGoService _modifGoService;
         private readonly ModifCoroutine _coroutines;
+        private bool _isInjected;
 
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
@@ -25,14 +26,18 @@ namespace ModifAmorphic.Outward.UI.Services
 
         private void AddPositionsServices(SplitPlayer splitPlayer, Character character)
         {
-            var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
-            var actionMenus = psp.GetService<PlayerActionMenus>();
-            var profileService = (ProfileService)psp.GetService<IActionUIProfileService>();
+            if (_isInjected)
+                return;
+            var usp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
+            var actionMenus = usp.GetService<PlayerActionMenus>();
+            var profileService = (ProfileService)usp.GetService<IActionUIProfileService>();
 
-            psp
+            usp.TryDispose<IPositionsProfileService>();
+            usp
                 .AddSingleton<IPositionsProfileService>(
                     new PositionsProfileJsonService(profileService, _getLogger));
 
+            _isInjected = true;
         }
     }
 }
