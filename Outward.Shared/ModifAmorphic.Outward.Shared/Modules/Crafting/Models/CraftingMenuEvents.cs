@@ -26,9 +26,14 @@
         /// </summary>
         public event MenuShowingDelegate MenuShowing;
 
+        public delegate void DynamicCraftCompleteDelegate(DynamicCraftingResult result, int resultMultiplier, CustomCraftingMenu menu);
+        public event DynamicCraftCompleteDelegate DynamicCraftComplete;
+
         internal void InvokeMenuHiding(CustomCraftingMenu menu) => MenuHiding?.Invoke(menu);
         internal void InvokeMenuLoading(CustomCraftingMenu menu) => MenuLoaded?.Invoke(menu);
         internal void InvokeMenuStarting(CustomCraftingMenu menu) => MenuStarting?.Invoke(menu);
         internal void InvokeMenuShowing(CustomCraftingMenu menu) => MenuShowing?.Invoke(menu);
+        internal void InvokeDynamicCraftComplete(DynamicCraftingResult result, int resultMultiplier, CustomCraftingMenu menu)
+            => DynamicCraftComplete?.Invoke(result, resultMultiplier, menu);
     }
 }

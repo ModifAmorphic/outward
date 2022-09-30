@@ -93,7 +93,8 @@ namespace ModifAmorphic.Outward.Modules.Crafting
         {
             var menuType = craftingMenu.GetType();
             var playerID = characterUI.RewiredID;
-            _craftingMenus.TryGetValue(menuType, out var metaParent);
+            if (!_craftingMenus.TryGetValue(menuType, out var metaParent))
+                return;
 
             var menuTabs = characterUI.GetPrivateField<CharacterUI, MenuTab[]>("m_menuTabs");
 
