@@ -2,6 +2,7 @@
 using ModifAmorphic.Outward.ActionUI.Patches;
 using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Coroutines;
+using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI;
@@ -30,14 +31,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private IActionUIProfile _profile => _profileManager.ProfileService.GetActiveProfile();
         private EquipmentSetsSettingsProfile _equipSetsProfile => _profileManager.ProfileService.GetActiveProfile().EquipmentSetsSettingsProfile;
         private EquipmentSetMenu _equipmentSetsMenus;
-        private readonly ModifCoroutine _coroutines;
+        private readonly LevelCoroutines _coroutines;
 
         public bool GetIsStashEquipEnabled() => _equipSetsProfile.StashEquipEnabled && (GetIsAreaStashEnabled() || _equipSetsProfile.StashEquipAnywhereEnabled);
         public bool GetIsStashUnequipEnabled() => _equipSetsProfile.StashUnequipEnabled && (GetIsAreaStashEnabled() || _equipSetsProfile.StashUnequipAnywhereEnabled);
-
-        private int _lastSetItemID = -1310000000;
-
-        private int GetNextItemID() => --_lastSetItemID;
 
         private bool disposedValue;
 
@@ -58,7 +55,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             { EquipSlots.LeftHand, EquipmentSlot.EquipmentSlotIDs.LeftHand },
         };
 
-        public InventoryService(Character character, ProfileManager profileManager, EquipmentSetMenu equipmentSetsMenus, ModifCoroutine coroutines, Func<IModifLogger> getLogger)
+        public InventoryService(Character character, ProfileManager profileManager, EquipmentSetMenu equipmentSetsMenus, LevelCoroutines coroutines, Func<IModifLogger> getLogger)
         {
             _character = character;
             _profileManager = profileManager;
@@ -73,58 +70,80 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             EquipmentMenuPatches.AfterShow += ShowEquipmentSetMenu;
             EquipmentMenuPatches.AfterOnHide += HideEquipmentSetMenu;
             ItemDisplayPatches.AfterSetReferencedItem += AddEquipmentSetIcon;
+            NetworkLevelLoaderPatches.MidLoadLevelAfter += ShowHideSkillsMenu;
 
             var armorService = (ArmorSetsJsonService)_profileManager.ArmorSetService;
             var weaponService = (WeaponSetsJsonService)_profileManager.WeaponSetService;
 
-            int weaponSetID = weaponService.GetLastSetID();
-            int armorSetID = armorService.GetLastSetID();
-            _lastSetItemID = armorSetID < weaponSetID ? armorSetID : weaponSetID;
-            if (_lastSetItemID == 0)
-                _lastSetItemID = -1310000000;
 
-
-            if (LearnEquipmentSets<ArmorSetSkill>(_profileManager.ArmorSetService.GetEquipmentSetsProfile().EquipmentSets))
-                armorService.Save();
-
-            if (LearnEquipmentSets<WeaponSetSkill>(_profileManager.WeaponSetService.GetEquipmentSetsProfile().EquipmentSets))
-                weaponService.Save();
-
-            //Creates ItemDisplays for equipment sets.
-            _coroutines.DoNextFrame(() =>
-            {
-                _character.CharacterUI.ShowMenu(CharacterUI.MenuScreens.Skills);
-                _character.CharacterUI.HideMenu(CharacterUI.MenuScreens.Skills);
-            });
+            LearnEquipmentSets<ArmorSetSkill>(_profileManager.ArmorSetService.GetEquipmentSetsProfile().EquipmentSets);
+            LearnEquipmentSets<WeaponSetSkill>(_profileManager.WeaponSetService.GetEquipmentSetsProfile().EquipmentSets);
         }
 
         public EquipSkillPreview GetEquipSkillPreview(IEquipmentSet set)
         {
-            return new EquipSkillPreview(_characterEquipment.GetMatchingSlot(ActionUiEquipSlotsXRef[set.SlotIcon]));
+            return new EquipSkillPreview(_characterEquipment.GetMatchingSlot(ActionUiEquipSlotsXRef[set.IconSlot]));
+        }
+
+        private void ShowHideSkillsMenu(NetworkLevelLoader networkLevelLoader)
+        {
+            if (_character?.CharacterUI == null)
+                return;
+            //Creates ItemDisplays for equipment set skills.
+            _coroutines.InvokeAfterLevelAndPlayersLoaded(networkLevelLoader,
+                () =>
+                {
+                    _character.CharacterUI.ShowMenu(CharacterUI.MenuScreens.Skills);
+                    _character.CharacterUI.HideMenu(CharacterUI.MenuScreens.Skills);
+                }, 120);
         }
 
         private void HideEquipmentSetMenu(EquipmentMenu obj)
         {
-            if (!_profileManager.ProfileService.GetActiveProfile().EquipmentSetsEnabled && !_equipmentSetsMenus.gameObject.activeSelf)
+            if (obj.LocalCharacter.UID != _character.UID || (!_profileManager.ProfileService.GetActiveProfile().EquipmentSetsEnabled && !_equipmentSetsMenus.gameObject.activeSelf))
                 return;
 
             _equipmentSetsMenus.Hide();
         }
 
-        private void ShowEquipmentSetMenu(EquipmentMenu obj)
+        private void ShowEquipmentSetMenu(EquipmentMenu equipMenu)
         {
-            if (!_profileManager.ProfileService.GetActiveProfile().EquipmentSetsEnabled)
+
+            if (equipMenu.LocalCharacter.UID != _character.UID || !_profileManager.ProfileService.GetActiveProfile().EquipmentSetsEnabled)
                 return;
 
+            if (_equipmentSetsMenus.transform.parent != equipMenu.transform)
+                _equipmentSetsMenus.transform.SetParent(equipMenu.transform);
             _equipmentSetsMenus.Show();
 
-            var equipXform = _equipmentSetsMenus.transform as RectTransform;
-            var charMenus = _character.CharacterUI.transform.Find("Canvas/GameplayPanels/Menus/CharacterMenus/MainPanel") as RectTransform;
-            var menuBg = charMenus.Find("Background").GetComponent<Image>();
-            var xpos = charMenus.anchoredPosition.x - equipXform.rect.width + 30;
-            var ypos = charMenus.anchoredPosition.y + 10;
-            equipXform.anchoredPosition = new Vector2(xpos, ypos);
-            equipXform.GetComponent<Image>().material = menuBg.material;
+            _coroutines.DoNextFrame(() =>
+            {
+                var mainMenuTransform = _character.CharacterUI.transform.Find("Canvas/GameplayPanels/Menus/CharacterMenus/MainPanel") as RectTransform;
+                var menuBg = mainMenuTransform.Find("Background").GetComponent<Image>();
+                var refCorners = new Vector3[4];
+                ((RectTransform)menuBg.transform).GetWorldCorners(refCorners);
+                var topLeft = refCorners[1];
+
+                Logger.LogDebug($"(x={topLeft.x}, y={topLeft.x})");
+
+                var equipRectTransform = _equipmentSetsMenus.transform as RectTransform;
+                equipRectTransform.anchorMax = new Vector2(1, 1);
+                equipRectTransform.anchorMin = new Vector2(1, 1);
+                //var xPos = topLeft.x - equipRectTransform.rect.width + 30;
+                //var yPos = topLeft.y + 10;
+                var xPos = topLeft.x; // + 20;
+                var yPos = topLeft.y; // + 13;
+                equipRectTransform.position = new Vector3(xPos, yPos);
+                equipRectTransform.anchoredPosition = new Vector3(equipRectTransform.anchoredPosition.x + 25, equipRectTransform.anchoredPosition.y);
+                equipRectTransform.GetComponent<Image>().material = menuBg.material;
+            });
+            //var equipXform = _equipmentSetsMenus.transform as RectTransform;
+            //var charMenus = _character.CharacterUI.transform.Find("Canvas/GameplayPanels/Menus/CharacterMenus/MainPanel") as RectTransform;
+            //var xpos = charMenus.anchoredPosition.x - equipXform.rect.width + 30;
+            //var ypos = charMenus.anchoredPosition.y + 10;
+            //equipXform.anchoredPosition = new Vector2(xpos, ypos);
+            //var menuBg = charMenus.Find("Background").GetComponent<Image>();
+            //equipXform.GetComponent<Image>().material = menuBg.material;
 
         }
 
@@ -154,59 +173,124 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return true;
         }
 
-        private bool LearnEquipmentSets<T>(IEnumerable<IEquipmentSet> sets) where T : EquipmentSetSkill
+        private void LearnEquipmentSets<T>(IEnumerable<IEquipmentSet> sets) where T : EquipmentSetSkill
         {
-            bool needsSave = false;
+            Logger.LogDebug($"Adding {sets?.Count()} {typeof(T).Name} prefabs for character {_character.name}.");
+            //bool needsSave = false;
             foreach (IEquipmentSet set in sets)
             {
-                int setId = set.SetID;
-                var skill = LearnEquipmentSetSkill<T>(set);
-                if (setId != set.SetID)
-                    needsSave = true;
+                //int setId = set.SetID;
+                var skill = AddOrGetEquipmentSetSkillPrefab<T>(set);
+                //AddOrUpdateEquipmentSetSkill(skill, set);
+                //if (setId != set.SetID)
+                //    needsSave = true;
                 if (skill.ItemDisplay != null)
                     AddEquipmentSetIcon(skill.ItemDisplay, skill);
             }
-            return needsSave;
+            //return needsSave;
         }
 
-        public T LearnEquipmentSetSkill<T>(IEquipmentSet equipmentSet) where T : EquipmentSetSkill
+        public T AddOrGetEquipmentSetSkillPrefab<T>(IEquipmentSet equipmentSet) where T : EquipmentSetSkill
         {
+            if (equipmentSet.SetID == 0)
+                throw new ArgumentException($"{nameof(IEquipmentSet.SetID)} must not be zero.", nameof(equipmentSet));
 
-            Logger.LogDebug($"LearnEquipmentSetSkill: SetID=={equipmentSet.SetID}, IsItemLearned({equipmentSet.SetID})=={_characterInventory.SkillKnowledge.IsItemLearned(equipmentSet.SetID)}");
-            if (equipmentSet.SetID == 0 || !_characterInventory.SkillKnowledge.IsItemLearned(equipmentSet.SetID))
+            if (ResourcesPrefabManager.Instance.ContainsItemPrefab(equipmentSet.SetID.ToString()))
+                return (T)ResourcesPrefabManager.Instance.GetItemPrefab(equipmentSet.SetID.ToString());
+
+            var skillGo = new GameObject(equipmentSet.Name.Replace(" ", string.Empty));
+
+            skillGo.SetActive(false);
+            T skill = skillGo.AddComponent<T>();
+            skill.SetEquipmentSet(equipmentSet, _character);
+            //skill.Character = _character;
+            skill.IsPrefab = true;
+            //skillGo.SetActive(true);
+            UnityEngine.Object.DontDestroyOnLoad(skillGo);
+            var itemPrefabs = GetItemPrefabs();
+            itemPrefabs.Add(skill.ItemIDString, skill);
+            //skillGo.SetActive(true);
+
+            Logger.LogDebug($"AddOrGetEquipmentSetSkillPrefab: Created skill prefab {skill.name}.");
+            return skill;
+        }
+
+        public void AddOrUpdateEquipmentSetSkill(EquipmentSetSkill skillPrefab, IEquipmentSet equipmentSet)
+        {
+            var existingSkill = _characterInventory.SkillKnowledge.transform.GetComponentsInChildren<Skill>().FirstOrDefault(s => s.ItemID == skillPrefab.ItemID);
+
+            Logger.LogDebug($"AddOrUpdateEquipmentSetSkill: {_characterInventory.SkillKnowledge.GetLearnedItems().Count} skills are known to character {_character.name}. existingSkill is {existingSkill?.name}");
+            if (!_characterInventory.SkillKnowledge.IsItemLearned(skillPrefab) && existingSkill == null)
             {
-                if (equipmentSet.SetID == 0)
-                    equipmentSet.SetID = GetNextItemID();
-                var skillGo = new GameObject(equipmentSet.Name.Replace(" ", string.Empty));
+                //var skill = (EquipmentSetSkill)ResourcesPrefabManager.Instance.GenerateItem(skillPrefab.ItemIDString);
+                var skill = UnityEngine.Object.Instantiate(skillPrefab, _characterInventory.SkillKnowledge.transform);
+                skill.IsPrefab = false;
+                if (!skill.gameObject.activeSelf)
+                    skill.gameObject.SetActive(true);
 
-                skillGo.SetActive(false);
-                T skill = skillGo.AddComponent<T>();
-                skill.SetEquipmentSet(equipmentSet);
-                skill.Character = _character;
-                skill.ItemID = equipmentSet.SetID;
-                skillGo.SetActive(true);
-                _coroutines.DoNextFrame(() =>
-                {
-                    _characterInventory.SkillKnowledge.AddItem(skill);
-                    Logger.LogDebug($"LearnEquipmentSetSkill: Added new Skill {skill.name}.");
-                });
-
-                return skill;
+                Logger.LogDebug($"AddOrUpdateEquipmentSetSkill: Added skill {skillPrefab.name} to character {_character.name}.");
+                ////skill.SetParent(_characterInventory.SkillKnowledge.transform);
+                ////Logger.LogDebug($"LearnEquipmentSetSkill: Skill {skill.name} parent is {skill.transform.parent?.name}.");
+                ////skill.transform.parent = _characterInventory.SkillKnowledge.transform;
+                ////Logger.LogDebug($"LearnEquipmentSetSkill: Skill {skill.name} parent set to {skill.transform.parent.name}.");
+                //_coroutines.DoNextFrame(() =>
+                //{
+                //    //_characterInventory.SkillKnowledge.AddItem(skill);
+                //    Logger.LogDebug($"LearnEquipmentSetSkill: Next Frame - Skill {skill.name} parent is {skill.transform.parent.name}.");
+                //    //skill.ForceUpdateParentChange();
+                //    Logger.LogDebug($"LearnEquipmentSetSkill: Next Frame - Skill {skill.name} parent set to {skill.transform.parent.name}.");
+                //    Logger.LogDebug($"LearnEquipmentSetSkill: Character {_character.name} learned new Skill {skill.name}.");
+                //});
             }
             else
             {
-                var skill = (T)_characterInventory.SkillKnowledge.GetLearnedItems().FirstOrDefault(s => s.ItemID == equipmentSet.SetID);
-                skill.SetEquipmentSet(equipmentSet);
-                Logger.LogDebug($"LearnEquipmentSetSkill: Updated existing EquipmentSetSkill {skill.name} with equipmentSet {equipmentSet.SetID} - {equipmentSet.Name}.");
-                return skill;
+                var learnedSkill = (EquipmentSetSkill)_characterInventory.SkillKnowledge.GetLearnedItems().FirstOrDefault(s => s.ItemID == equipmentSet.SetID) ?? (EquipmentSetSkill)existingSkill;
+                learnedSkill.SetEquipmentSet(equipmentSet, _character);
+                Logger.LogDebug($"AddOrUpdateEquipmentSetSkill: Character {_character.name} had existing EquipmentSetSkill {learnedSkill.name} updated with equipmentSet {equipmentSet.SetID} - {equipmentSet.Name}.");
             }
-
         }
 
-        private void AddEquipmentSetIcon(ItemDisplay itemDisplay, EquipmentSetSkill setSkill)
+        public void RemoveEquipmentSetSkill(int setID)
         {
-            if (itemDisplay.GetComponentsInChildren<Image>().Any(i => i.name == "imgEquipmentSet"))
+            if (!_characterInventory.SkillKnowledge.IsItemLearned(setID))
                 return;
+
+            var setSkill = _characterInventory.SkillKnowledge.GetLearnedItems().FirstOrDefault(l => l.ItemID == setID);
+
+            if (setSkill != null)
+            {
+                setSkill.transform.parent = null;
+                setSkill.gameObject.Destroy();
+            }
+
+            _characterInventory.SkillKnowledge.RemoveItem(setID);
+
+            if (ResourcesPrefabManager.Instance.ContainsItemPrefab(setID.ToString()))
+            {
+                var prefab = ResourcesPrefabManager.Instance.GetItemPrefab(setID);
+                GetItemPrefabs().Remove(setID.ToString());
+                prefab.gameObject.Destroy();
+            }
+        }
+
+        private Dictionary<string, Item> GetItemPrefabs()
+        {
+            var field = typeof(ResourcesPrefabManager).GetField("ITEM_PREFABS", BindingFlags.NonPublic | BindingFlags.Static);
+            return (Dictionary<string, Item>)field.GetValue(null);
+        }
+
+        private void AddEquipmentSetIcon(ItemDisplay itemDisplay, Skill skill)
+        {
+            //if (itemDisplay.GetComponentsInChildren<Image>().Any(i => i.name == "imgEquipmentSet"))
+            //    return;
+
+            var existingIcon = itemDisplay.GetComponentsInChildren<Image>().FirstOrDefault(i => i.name == "imgEquipmentSet");
+            if (!(skill is EquipmentSetSkill setSkill))
+            {
+                if (existingIcon != null)
+                    UnityEngine.Object.Destroy(existingIcon);
+                return;
+            }
 
             var enchantedGo = itemDisplay.transform.Find("imgEnchanted").gameObject;
             var equipmentSetIconGo = UnityEngine.Object.Instantiate(enchantedGo, itemDisplay.transform);
@@ -250,6 +334,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public bool TryEquipWeaponSet(WeaponSet weaponSet)
         {
+            //prevent additional sets from being queued
+            if (_castQueueProcessing || _stashQueueProcessing)
+                return false;
+
             var equippedSlots = _characterEquipment.EquipmentSlots.Where(s => s != null && s.HasItemEquipped).ToList();
             var equipFromStash = GetIsStashEquipEnabled();
             var unequipToStash = GetIsStashUnequipEnabled();
@@ -277,6 +365,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public bool TryEquipArmorSet(ArmorSet armorSet)
         {
+            //prevent additional sets from being queued
+            if (_castQueueProcessing || _stashQueueProcessing)
+                return false;
+
             if (_character.InCombat && !_equipSetsProfile.ArmorSetsInCombatEnabled)
             {
                 _character.CharacterUI.ShowInvalidActionNotification(armorSet.GetNotificationObject());
@@ -362,7 +454,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 Action unequipAction;
                 if (unequipToStash && !disableStashUnequip)
                 {
-
                     unequipAction = () =>
                     {
                         Logger.LogDebug($"Unequipping item UID {equipSlot.UID} from slot {slotID} to stash.");
@@ -540,6 +631,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     EquipmentMenuPatches.AfterShow -= ShowEquipmentSetMenu;
                     EquipmentMenuPatches.AfterOnHide -= HideEquipmentSetMenu;
                     ItemDisplayPatches.AfterSetReferencedItem -= AddEquipmentSetIcon;
+                    NetworkLevelLoaderPatches.MidLoadLevelAfter -= ShowHideSkillsMenu;
                 }
                 _character = null;
                 _equipmentSetsMenus = null;

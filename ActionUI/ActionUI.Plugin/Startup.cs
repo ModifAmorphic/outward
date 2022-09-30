@@ -45,10 +45,15 @@ namespace ModifAmorphic.Outward.ActionUI
                 .AddSingleton(new RewiredListener(services.GetService<BaseUnityPlugin>(),
                                                    services.GetService<LevelCoroutines>(),
                                                    confSettings,
-                                                   services.GetService<IModifLogger>));
+                                                   services.GetService<IModifLogger>))
+                .AddSingleton(new GlobalProfileService(ActionUISettings.CharactersProfilesPath, 
+                                                    ActionUISettings.CharactersProfilesPath, 
+                                                    services.GetService<IModifLogger>));
 
 
             _loggerFactory = services.GetServiceFactory<IModifLogger>();
+            //Retrieve the global profile early on to clean up any orphaned equipment sets.
+            _ = services.GetService<GlobalProfileService>().GetGlobalProfile();
 
             var actionUIPrefab = ConfigureAssetBundle();
 
@@ -61,11 +66,13 @@ namespace ModifAmorphic.Outward.ActionUI
                         services.GetService<IModifLogger>))
                 .AddSingleton(new PlayerMenuService(services.GetService<BaseUnityPlugin>(),
                                                   actionUIPrefab.GetComponentInChildren<PlayerActionMenus>(true).gameObject,
+                                                  services.GetService<SharedServicesInjector>(),
                                                   services.GetService<PositionsService>(),
                                                   services.GetService<LevelCoroutines>(),
                                                   services.GetService<ModifGoService>(),
                                                   services.GetService<IModifLogger>))
                 .AddSingleton(new PositionsServicesInjector(_services,
+                                services.GetService<PlayerMenuService>(),
                                 services.GetService<ModifGoService>(),
                                 services.GetService<LevelCoroutines>(),
                                 services.GetService<IModifLogger>));
@@ -73,6 +80,7 @@ namespace ModifAmorphic.Outward.ActionUI
             services
                 .AddSingleton(new HotbarsStartup(
                     services
+                    , services.GetService<PlayerMenuService>()
                     , services.GetService<ModifGoService>()
                     , services.GetService<LevelCoroutines>()
                     , _loggerFactory))
@@ -83,14 +91,15 @@ namespace ModifAmorphic.Outward.ActionUI
                     , _loggerFactory))
                 .AddSingleton(new InventoryStartup(
                     services
+                    , services.GetService<PlayerMenuService>()
                     , services.GetService<CustomCraftingModule>().CraftingMenuEvents
                     , services.GetService<ModifGoService>()
                     , services.GetService<LevelCoroutines>()
                     , _loggerFactory));
 
-            services.GetService<HotbarsStartup>().Start();
-            services.GetService<DurabilityDisplayStartup>().Start();
-            services.GetService<InventoryStartup>().Start();
+            TryStart(services.GetService<HotbarsStartup>());
+            TryStart(services.GetService<DurabilityDisplayStartup>());
+            TryStart(services.GetService<InventoryStartup>());
         }
         public GameObject ConfigureAssetBundle()
         {
@@ -171,6 +180,21 @@ namespace ModifAmorphic.Outward.ActionUI
             {
                 return AssetBundle.LoadFromStream(assetStream);
             }
+        }
+
+        private bool TryStart(IStartable startable)
+        {
+            try
+            {
+                Logger.LogDebug($"Starting {startable.GetType().Name}.");
+                startable.Start();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to start {startable.GetType().Name}.", ex);
+            }
+            return false;
         }
     }
 }

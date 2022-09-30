@@ -2,6 +2,7 @@
 using ModifAmorphic.Outward.ActionUI.DataModels;
 using ModifAmorphic.Outward.ActionUI.Monobehaviours;
 using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.ActionUI.Services.Injectors;
 using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.GameObjectResources;
@@ -30,6 +31,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private readonly PositionsService _positionsService;
         private readonly LevelCoroutines _coroutine;
         private readonly GameObject _modInactivableGo;
+        private readonly SharedServicesInjector _sharedServicesInjector;
 
         private float _initialPauseMenuHeight;
         private const int _baseActivePauseButtons = 7;
@@ -37,10 +39,14 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private Button _actionUiGo;
         public Button ActionMenusButton => _actionUiGo;
 
+        public delegate void PlayerActionMenusConfigured(PlayerActionMenus actionMenus, SplitPlayer splitPlayer);
+        public event PlayerActionMenusConfigured OnPlayerActionMenusConfigured;
+
         private readonly static Dictionary<int, ControllerMap> _controllerMaps = new Dictionary<int, ControllerMap>();
 
         public PlayerMenuService(BaseUnityPlugin baseUnityPlugin,
                                 GameObject playerMenuPrefab,
+                                SharedServicesInjector sharedServicesInjector,
                                 PositionsService positionsService,
                                 LevelCoroutines coroutine,
                                 ModifGoService modifGoService,
@@ -48,6 +54,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             _baseUnityPlugin = baseUnityPlugin;
             _playerMenuPrefab = playerMenuPrefab;
+            _sharedServicesInjector = sharedServicesInjector;
             _positionsService = positionsService;
             _coroutine = coroutine;
             _modInactivableGo = modifGoService.GetModResources(ModInfo.ModId, false);
@@ -55,7 +62,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
 
             SplitPlayerPatches.InitAfter += InjectMenus;
-            SplitPlayerPatches.SetCharacterAfter += SetPlayerMenuCharacter;
+            _sharedServicesInjector.OnSharedServicesInjected += SetPlayerMenuCharacter;
             SplitScreenManagerPatches.RemoveLocalPlayerAfter += RemovePlayerMenu;
             PauseMenuPatches.AfterRefreshDisplay += (pauseMenu) => _coroutine.StartRoutine(ResizePauseMenu(pauseMenu));
         }
@@ -103,16 +110,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private bool ShouldQuickslotItemBeDestroyed(bool actionSlotsActive, int playerID, int requestingPlayerID) => !actionSlotsActive || playerID != requestingPlayerID;
 
-        private void SetPlayerMenuCharacter(SplitPlayer splitPlayer, Character character)
+        private void SetPlayerMenuCharacter(SplitPlayer splitPlayer)
         {
             var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
             var playerMenu = psp.GetService<PlayerActionMenus>();
             var playerMenuGo = playerMenu.gameObject;
+            var character = splitPlayer.AssignedCharacter;
+
             playerMenuGo.name = "PlayerActionMenus_" + character.UID;
             Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(SetPlayerMenuCharacter)}(): Activating {playerMenuGo.name} for rewired ID {splitPlayer.RewiredID}.");
             playerMenuGo.SetActive(true);
 
-            var profile = GetOrCreateActiveProfile(playerMenu.ProfileManager);
+            var profile = GetActiveProfile(playerMenu.ProfileManager);
             _positionsService.ToggleQuickslotsPositonable(profile, playerMenu, character.CharacterUI);
 
             var player = ReInput.players.GetPlayer(splitPlayer.RewiredID);
@@ -143,6 +152,15 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                         splitPlayer.RewiredID,
                         requestingPlayerId)
                     );
+
+            try
+            {
+                OnPlayerActionMenusConfigured?.Invoke(playerMenu, splitPlayer);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex);
+            }
         }
 
         private MenuNavigationActions GetNavigationActions(Player player)
@@ -157,26 +175,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             };
         }
 
-        private ActionUIProfile GetOrCreateActiveProfile(ProfileManager profileManager)
-        {
-            var activeProfile = profileManager.ProfileService.GetActiveProfile();
-
-            if (activeProfile == null)
-            {
-                Logger.LogDebug($"No active profile set. Checking if any profiles exist");
-                var names = profileManager.ProfileService.GetProfileNames();
-                if (names == null || !names.Any())
-                {
-                    Logger.LogDebug($"No profiles found. Creating default profile '{ActionUISettings.DefaultProfile.Name}'");
-                    profileManager.ProfileService.SaveNew(ActionUISettings.DefaultProfile);
-                    names = profileManager.ProfileService.GetProfileNames();
-                }
-                else
-                    profileManager.ProfileService.SetActiveProfile(names.First());
-            }
-
-            return (ActionUIProfile)profileManager.ProfileService.GetActiveProfile();
-        }
+        private ActionUIProfile GetActiveProfile(ProfileManager profileManager) => (ActionUIProfile)profileManager.ProfileService.GetActiveProfile();
 
         private void AddSplitScreenScaler(PlayerActionMenus actionMenus, CharacterUI characterUI)
         {

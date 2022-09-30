@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.ActionUI.Services;
 using ModifAmorphic.Outward.ActionUI.Services.Injectors;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.GameObjectResources;
@@ -12,6 +13,7 @@ namespace ModifAmorphic.Outward.ActionUI
     {
         private readonly Harmony _harmony;
         private readonly ServicesProvider _services;
+        private readonly PlayerMenuService _playerMenuService;
         private readonly Func<IModifLogger> _loggerFactory;
         private readonly ModifGoService _modifGoService;
         private readonly LevelCoroutines _coroutines;
@@ -19,9 +21,9 @@ namespace ModifAmorphic.Outward.ActionUI
 
         private IModifLogger Logger => _loggerFactory.Invoke();
 
-        public HotbarsStartup(ServicesProvider services, ModifGoService modifGoService, LevelCoroutines coroutines, Func<IModifLogger> loggerFactory)
+        public HotbarsStartup(ServicesProvider services, PlayerMenuService playerMenuService, ModifGoService modifGoService, LevelCoroutines coroutines, Func<IModifLogger> loggerFactory)
         {
-            (_services, _modifGoService, _coroutines, _loggerFactory) = (services, modifGoService, coroutines, loggerFactory);
+            (_services, _playerMenuService, _modifGoService, _coroutines, _loggerFactory) = (services, playerMenuService, modifGoService, coroutines, loggerFactory);
             _harmony = new Harmony(HotbarsModId);
         }
 
@@ -41,6 +43,7 @@ namespace ModifAmorphic.Outward.ActionUI
             _harmony.PatchAll(typeof(SkillMenuPatches));
 
             _services.AddSingleton(new HotbarServicesInjector(_services,
+                                                    _playerMenuService,
                                                     _coroutines,
                                                     _loggerFactory));
 

@@ -34,7 +34,7 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(CharacterUIPatches)}::{nameof(IsMenuFocusedPostfix)}(): Exception Invoking {nameof(GetIsMenuFocused)}({nameof(MenuManagerPatches)}).", ex);
+                Logger.LogException($"{nameof(CharacterUIPatches)}::{nameof(IsMenuFocusedPostfix)}(): Exception Invoking {nameof(GetIsMenuFocused)}.", ex);
             }
         }
     }

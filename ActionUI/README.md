@@ -6,6 +6,7 @@
 
 - Add Multiple Hotbars and Action Slots (Quick Slots)
 - Combat Mode: Extra Slots without ruining game balance.
+- Adds Equipment Sets. Create weapon and armor sets and swap gear with a single click.
 - Reposition UI Elements with Drag and Drop
 - New Durability UI Displays Equipment
 - See the [Action UI Wiki](https://github.com/ModifAmorphic/outward/wiki/Action-UI) for more details
@@ -18,25 +19,45 @@
 
 ![Hotbars](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/Hotbar.png?raw=true)
 
-## Drag Actions to Slots right from Inventory!
+### Drag Actions to Slots right from Inventory!
 
 [ ![Assign Actions YouTube Video](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/AssignActionSlotVideo.png?raw=true) ](https://youtu.be/nJT76DLFIqw)
+
+***
+
+## Equipment Sets and Quickslotable Skills
+
+![Equipment Sets Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/EquipmentSetSettingsView_small.png?raw=true)
+
+### Create and Customize Equipment Sets
+
+![Equipment Sets](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/EquipmentSetsMenu_small.png?raw=true)
+
+### New Equipment Set Skills, slottable in Outward's Quickslots or ActionUI's Action Slots.
+
+![Equipment Set Skills](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/EquipmentSetSkills_small.png?raw=true)
+
+***
 
 ## Reposition UI Elements
 
 [ ![UI Positioning YouTube Video](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/UIPositioningVideo.png?raw=true) ](https://youtu.be/zoY1qEdeATg)
 
+***
+
 ## Equipment Durability UI
 
 ![Durability Display](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/DurabilityDisplay.png?raw=true)
 
+***
 
 ## Latest Release ${PACKAGE_VERSION}
   - Weapon and Equipment Sets functionality added.
   - Craft from stash now limited to in town only by default with an option to enable it from any scene.
   - Optimized settings menu so Action Slots were only reloaded for action slots changes. Should remove most of the lag from changing other menu options.
-  - Fixed bug with stack counts not showing for ammunition (arrows, bullets).
+  - Stack counts now show for ammunition (arrows, bullets).
   - Fixed bug where equipment showed the broken icon in an action slot if the scene was loaded without the item in the characters inventory.
+  - Switching to controller and back to keyboard should no longer cause action slots to stop updating cooldowns, stack counts, and enabled status.
 
 ## Release 1.0.1
   - Fixes profile character switching bug. 

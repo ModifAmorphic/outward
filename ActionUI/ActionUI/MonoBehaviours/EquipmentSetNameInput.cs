@@ -30,6 +30,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private EquipmentSetTypes _equipmentSetType;
         private bool _isRename = false;
         private string _setName;
+        private EquipSlots _setIconSlot;
         private bool _isOkClicked;
 
         public UnityEvent OnShow { get; } = new UnityEvent();
@@ -57,10 +58,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _isInit = true;
         }
 
-        public void Show(EquipmentSetTypes equipmentSetType)
+        public void Show(EquipmentSetTypes equipmentSetType, EquipSlots setIconSlot)
         {
             _equipmentSetType = equipmentSetType;
             _isRename = false;
+            _setIconSlot = setIconSlot;
             gameObject.SetActive(true);
             Caption.text = "New Equipment Set";
             NameInput.text = String.Empty;
@@ -157,7 +159,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 return;
             }
 
-            GetEquipmentService<T>().CreateEmptyEquipmentSet(NameInput.text);
+            GetEquipmentService<T>().CreateNewEquipmentSet(NameInput.text, _setIconSlot);
 
             Hide();
         }

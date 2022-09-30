@@ -24,7 +24,7 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets
                 _notificationObject = new GameObject(_name);
             }
         }
-        public EquipSlots SlotIcon { get; set; } = EquipSlots.RightHand;
+        public EquipSlots IconSlot { get; set; } = EquipSlots.RightHand;
         public EquipSlot LeftHand
         {
             get => _equipSlots.TryGetValue(EquipSlots.LeftHand, out var equip) ? equip : null;
@@ -51,7 +51,7 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets
 
         public IEnumerable<EquipSlot> GetEquipSlots() => _equipSlots.Values;
 
-        public EquipSlot GetIconEquipSlot() => _equipSlots.TryGetValue(SlotIcon, out var iconSlot) ? iconSlot : null;
+        public EquipSlot GetIconEquipSlot() => _equipSlots.TryGetValue(IconSlot, out var iconSlot) ? iconSlot : null;
 
         private GameObject _notificationObject;
         public GameObject GetNotificationObject() => _notificationObject;

@@ -97,7 +97,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             SkipWeaponAnimation.isOn = _activeProfile.EquipmentSetsSettingsProfile?.SkipWeaponAnimationsEnabled ?? false;
             EquipFromStash.isOn = _activeProfile.EquipmentSetsSettingsProfile?.StashEquipEnabled ?? true;
             StashEquipAnywhere.isOn = _activeProfile.EquipmentSetsSettingsProfile?.StashEquipAnywhereEnabled ?? false;
-            UnequipToStash.isOn = _activeProfile.EquipmentSetsSettingsProfile?.StashUnequipEnabled ?? true;
+            UnequipToStash.isOn = _activeProfile.EquipmentSetsSettingsProfile?.StashUnequipEnabled ?? false;
             StashUnequipAnywhere.isOn = _activeProfile.EquipmentSetsSettingsProfile?.StashUnequipAnywhereEnabled ?? false;
         }
 

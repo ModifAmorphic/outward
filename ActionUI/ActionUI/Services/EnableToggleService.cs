@@ -20,7 +20,7 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Services
         public void TrackEnableToggle(Func<bool> getEnabled)
         {
             _getEnabled = getEnabled;
-
+            //DebugLogger.Log($"EnableToggleService::TrackEnableToggle: called for action slot {_controller.ActionSlot.name}. _coroutine == null == {_coroutine == null}, _coroutineStarted == {_coroutineStarted}");
             if (_coroutine == null || !_coroutineStarted)
             {
                 _coroutine = _controller.ActionSlot.StartCoroutine(ToggleActionSlot());
@@ -29,20 +29,26 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Services
         }
         public void StopTracking()
         {
+            //DebugLogger.Log($"EnableToggleService::StopTracking: called for action slot {_controller.ActionSlot.name}. _coroutine == null == {_coroutine == null}");
             if (_coroutine != null)
             {
                 _controller.ActionSlot.StopCoroutine(_coroutine);
             }
+            _coroutineStarted = false;
         }
         private IEnumerator ToggleActionSlot()
         {
             while (true)
             {
                 if (_getEnabled() || _controller.ActionSlot.IsInEditMode)
+                {
                     _controller.ToggleEnabled(true);
+                }
                 else
+                {
                     _controller.ToggleEnabled(false);
-
+                }
+                
                 yield return new WaitForSeconds(Timings.EnabledWait);
             }
         }

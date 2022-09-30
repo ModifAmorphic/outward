@@ -48,10 +48,10 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Services
             if (_coroutine != null)
             {
                 _controller.ActionSlot?.StopCoroutine(_coroutine);
-                _coroutineStarted = false;
                 //_coroutine = null;
                 _controller.HideSlider(_barPosition);
             }
+            _coroutineStarted = false;
         }
         private IEnumerator DisplayProgress()
         {

@@ -33,6 +33,7 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Services
             {
                 _controller.ActionSlot.StopCoroutine(_coroutine);
             }
+            _coroutineStarted = false;
         }
         private IEnumerator ToggleActionSlot()
         {

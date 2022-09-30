@@ -28,14 +28,13 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public Button NewSetButton;
         public Button RenameSetButton;
         public Button SaveSetButton;
-        //public Button LoadSetButton;
-
-
+        public Button DeleteSetButton;
         public Dropdown EquipmentIconDropdown;
 
         public ActionItemView EquipmentIcon;
 
         public EquipmentSetNameInput SetNamePanel;
+        public ConfirmationPanel ConfirmationPanel;
 
         private Dictionary<EquipSlots, string> _equipSlotsNames = new Dictionary<EquipSlots, string>()
         {
@@ -85,7 +84,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 EquipmentSetDropdown.onValueChanged.AddListener(EquipmentSetChanged<ArmorSet>);
                 EquipmentIconDropdown.onValueChanged.AddListener((index) => UpdateSetIcon<ArmorSet>());
                 SaveSetButton.onClick.AddListener(SaveEquipmentSet<ArmorSet>);
-                GetEquipmentService<ArmorSet>().OnNewSet += (set) => SaveNewSet<ArmorSet>(set.Name);
+                DeleteSetButton.onClick.AddListener(ConfirmDeleteEquipmentSet<ArmorSet>);
+                GetEquipmentService<ArmorSet>().OnNewSet += (set) => Refresh();
                 GetEquipmentService<ArmorSet>().OnRenamedSet += SetRenamed;
             }
             else
@@ -93,7 +93,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 EquipmentSetDropdown.onValueChanged.AddListener(EquipmentSetChanged<WeaponSet>);
                 EquipmentIconDropdown.onValueChanged.AddListener((index) => UpdateSetIcon<WeaponSet>());
                 SaveSetButton.onClick.AddListener(SaveEquipmentSet<WeaponSet>);
-                GetEquipmentService<WeaponSet>().OnNewSet += (set) => SaveNewSet<WeaponSet>(set.Name);
+                DeleteSetButton.onClick.AddListener(ConfirmDeleteEquipmentSet<WeaponSet>);
+                GetEquipmentService<WeaponSet>().OnNewSet += (set) => Refresh();
                 GetEquipmentService<WeaponSet>().OnRenamedSet += SetRenamed;
             }
         }
@@ -116,6 +117,23 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         {
             gameObject.SetActive(true);
 
+            Refresh();
+        }
+
+        public void Hide()
+        {
+            if (SetNamePanel.IsShowing)
+            {
+                SetNamePanel.Hide();
+                return;
+            }
+            EquipmentSetDropdown.ClearOptions();
+            EquipmentIconDropdown.ClearOptions();
+            gameObject.SetActive(false);
+        }
+
+        public void Refresh()
+        {
             SetEquipmentIconOptions();
             if (EquipmentSetType == EquipmentSetTypes.Armor)
             {
@@ -129,18 +147,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 SelectEquippedSet<WeaponSet>();
                 UpdateSetIcon<WeaponSet>();
             }
-        }
-
-        public void Hide()
-        {
-            if (SetNamePanel.IsShowing)
-            {
-                SetNamePanel.Hide();
-                return;
-            }
-            EquipmentSetDropdown.ClearOptions();
-            EquipmentIconDropdown.ClearOptions();
-            gameObject.SetActive(false);
         }
 
         private void SetEquipmentIconOptions()
@@ -180,13 +186,13 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             DebugLogger.Log($"Got equipment set {set?.Name}");
 
             //stash the slot icon set it to the dropdown value
-            var slotIcon = set.SlotIcon;
+            var slotIcon = set.IconSlot;
             DebugLogger.Log($"Setting SlotIcon to {EquipmentIconDropdown.GetSelectedOption().text}. _equipSlots.ContainsKey(\"{ EquipmentIconDropdown.GetSelectedOption().text}\") == {_equipSlots.ContainsKey(EquipmentIconDropdown.GetSelectedOption().text)}");
-            set.SlotIcon = _equipSlots[EquipmentIconDropdown.GetSelectedOption().text];
+            set.IconSlot = GetSelectedIconSlot();
             EquipmentIcon.SetViewItem(GetEquipmentService<T>().GetSlotActionPreview(set));
 
             //Set icon back to original
-            set.SlotIcon = slotIcon;
+            set.IconSlot = slotIcon;
 
             DebugLogger.Log($"Done updating preview icon.");
         }
@@ -230,7 +236,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private void SelectSlotIcon<T>() where T : IEquipmentSet
         {
             var set = GetEquipmentService<T>().GetEquipmentSet(EquipmentSetDropdown.GetSelectedOption().text);
-            EquipmentIconDropdown.SelectOption(_equipSlotsNames[set.SlotIcon]);
+            EquipmentIconDropdown.SelectOption(_equipSlotsNames[set.IconSlot]);
         }
 
         private void SaveNewSet<T>(string name) where T : IEquipmentSet
@@ -245,9 +251,11 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             if (index < EquipmentSetDropdown.options.Count)
             {
                 EquipmentSetDropdown.SetValueWithoutNotify(index);
-                EquipmentIconDropdown.value = EquipmentSetType == EquipmentSetTypes.Weapon ? 0 : 1;
+                var equippedSet = GetEquipmentService<T>().GetEquippedAsSet("Temporary");
+                if (!equippedSet.GetEquipSlots().Any(s => s != null && s.Slot == GetSelectedIconSlot()))
+                    EquipmentIconDropdown.value = EquipmentSetType == EquipmentSetTypes.Weapon ? 0 : 1;
             }
-            SaveEquipmentSet<T>();
+            //SaveEquipmentSet<T>();
         }
 
         private void EquipmentSetChanged<T>(int index) where T : IEquipmentSet
@@ -257,6 +265,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             if (index == 0)
             {
                 SaveSetButton.interactable = false;
+                DeleteSetButton.interactable = false;
                 return;
             }
 
@@ -265,12 +274,17 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 //TODO: Give better indicator that equippin failed
             }
             SaveSetButton.interactable = true;
+            DeleteSetButton.interactable = true;
             SelectSlotIcon<T>();
         }
 
-        private void PromptRenameSet() => SetNamePanel.Show(EquipmentSetType, EquipmentSetDropdown.GetSelectedOption().text);
+        private void PromptRenameSet()
+        {
+            if (EquipmentSetDropdown.value != 0)
+                SetNamePanel.Show(EquipmentSetType, EquipmentSetDropdown.GetSelectedOption().text);
+        }
 
-        private void PromptNewSet() => SetNamePanel.Show(EquipmentSetType);
+        private void PromptNewSet() => SetNamePanel.Show(EquipmentSetType, GetSelectedIconSlot());
 
         private void SaveEquipmentSet<T>() where T : IEquipmentSet
         {
@@ -278,9 +292,37 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 return;
 
             var set = GetEquipmentService<T>().GetEquippedAsSet(EquipmentSetDropdown.GetSelectedOption().text);
-            set.SlotIcon = _equipSlots[EquipmentIconDropdown.GetSelectedOption().text];
-            GetEquipmentService<T>().LearnEquipmentSetSkill(set);
+            set.IconSlot = GetSelectedIconSlot();
             GetEquipmentService<T>().SaveEquipmentSet(set);
+        }
+        private EquipSlots GetSelectedIconSlot() => _equipSlots[EquipmentIconDropdown.GetSelectedOption().text];
+
+        private void RefreshDropdowns<T>() where T : IEquipmentSet
+        {
+            SetEquipmentSetOptions<T>();
+            SelectEquippedSet<T>();
+        }
+        private void ConfirmDeleteEquipmentSet<T>() where T : IEquipmentSet
+        {
+            if (EquipmentSetDropdown.value == 0)
+                return;
+
+            var setName = EquipmentSetDropdown.GetSelectedOption().text;
+
+            var set = GetEquipmentService<T>().GetEquipmentSet(setName);
+            if (set == null)
+            {
+                RefreshDropdowns<T>();
+                return;
+            }
+
+            var deleteAction = new Action(() =>
+            {
+                GetEquipmentService<T>().DeleteEquipmentSet(set.Name);
+                RefreshDropdowns<T>();
+            });
+            DebugLogger.Log($"Showing Delete Confirmation for set \"{setName}\".");
+            ConfirmationPanel.Show(deleteAction, $"Delete set \"{setName}\"?");
         }
     }
 }

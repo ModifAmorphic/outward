@@ -68,7 +68,7 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
 
         }
 
-        public void AssignSlotAction(ISlotAction slotAction)
+        public void AssignSlotAction(ISlotAction slotAction, bool surpressChangeFlag = false)
         {
             if (slotAction == null)
                 throw new ArgumentNullException(nameof(slotAction));
@@ -112,7 +112,8 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
 
             slotAction.SlotActionAssigned(ActionSlot);
 
-            ActionSlot.HotbarsContainer.HasChanges = true;
+            if (!surpressChangeFlag)
+                ActionSlot.HotbarsContainer.HasChanges = true;
         }
 
         public void Refresh()
@@ -154,7 +155,20 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
             }
         }
 
-        private void OnActionButtonClicked()
+        public void ActionSlotOnDisable()
+        {
+            _cooldownService?.StopTracking();
+
+            foreach (var progressTracker in _progressBarServices.Values)
+                progressTracker.StopTracking();
+            
+            _stackService?.StopTracking();
+            _toggleService?.StopTracking();
+            if (_iconCoroutine != null)
+                ActionSlot.StopCoroutine(_iconCoroutine);
+        }
+
+    private void OnActionButtonClicked()
         {
             if (ActionSlot.HotbarsContainer.IsInActionSlotEditMode)
             {
@@ -428,7 +442,11 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
             if (getEnabled == null)
                 throw new ArgumentNullException(nameof(getEnabled));
 
-            if (_toggleService == null)
+            if (_toggleService != null)
+            {
+                _toggleService.StopTracking();
+            }
+            else
                 _toggleService = new EnableToggleService(this);
 
             _toggleService.TrackEnableToggle(getEnabled);

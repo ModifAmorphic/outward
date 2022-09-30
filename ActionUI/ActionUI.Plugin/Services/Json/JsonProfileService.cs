@@ -15,20 +15,20 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         protected abstract string FileName { get; }
 
-        //public string PositionsFile = "UIPositions.json";
+        protected GlobalProfileService GlobalProfileService { get; set; }
 
         protected ProfileService ProfileService { get; set; }
-
+        
         protected T CachedProfile { get; set; }
+
+        protected string CharacterUID;
 
         private bool disposedValue;
 
-        //public virtual UnityEvent<T> OnProfileChanged { get; } = new UnityEvent<T>();
 
-        public JsonProfileService(ProfileService profileService, Func<IModifLogger> getLogger)
+        public JsonProfileService(GlobalProfileService globalProfileService, ProfileService profileService, string characterUID, Func<IModifLogger> getLogger)
         {
-            (ProfileService, _getLogger) = (profileService, getLogger);
-            //profileService.OnActiveProfileChanged.AddListener((profile) => RefreshCachedProfile(profile));
+            (GlobalProfileService, ProfileService, CharacterUID, _getLogger) = (globalProfileService, profileService, characterUID, getLogger);
             profileService.OnActiveProfileSwitched.AddListener((profile) => RefreshCachedProfile(profile, true));
         }
 

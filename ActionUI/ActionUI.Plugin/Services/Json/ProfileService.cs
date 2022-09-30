@@ -1,4 +1,5 @@
 ﻿using ModifAmorphic.Outward.ActionUI.DataModels;
+using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
@@ -22,11 +23,13 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         public string ProfilesPath { get; private set; }
         public string ProfilesFile => Path.Combine(ProfilesPath, "profile.json");
 
+        public GlobalProfileService GlobalProfileService { get; private set; }
+
         public UnityEvent<IActionUIProfile> OnNewProfile { get; } = new UnityEvent<IActionUIProfile>();
         public UnityEvent<IActionUIProfile> OnActiveProfileChanged { get; } = new UnityEvent<IActionUIProfile>();
         public UnityEvent<IActionUIProfile> OnActiveProfileSwitched { get; } = new UnityEvent<IActionUIProfile>();
 
-        public ProfileService(string profilesRootPath, Func<IModifLogger> getLogger) => (ProfilesPath, _getLogger) = (profilesRootPath, getLogger);
+        public ProfileService(string characterProfilesPath, GlobalProfileService globalProfileService, Func<IModifLogger> getLogger) => (ProfilesPath, GlobalProfileService, _getLogger) = (characterProfilesPath, globalProfileService, getLogger);
 
         public IActionUIProfile GetActiveProfile() => GetActiveActionUIProfile();
 
@@ -45,6 +48,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 }
                 _activeProfile.Path = Path.Combine(ProfilesPath, _activeProfile.Name);
             }
+
+            if (_activeProfile != null && _activeProfile.EquipmentSetsSettingsProfile == null)
+                _activeProfile.EquipmentSetsSettingsProfile = CreateDefaultEquipmentSetsSettingsProfile();
 
             return _activeProfile;
         }
@@ -177,6 +183,34 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return names;
         }
 
+        private ActionUIProfile CreateDefaultProfile(string name)
+        {
+            return new ActionUIProfile()
+            {
+                ActionSlotsEnabled = ActionUISettings.DefaultProfile.ActionSlotsEnabled,
+                DurabilityDisplayEnabled = ActionUISettings.DefaultProfile.DurabilityDisplayEnabled,
+                EquipmentSetsEnabled = ActionUISettings.DefaultProfile.EquipmentSetsEnabled,
+                StashCraftingEnabled = ActionUISettings.DefaultProfile.StashCraftingEnabled,
+                CraftingOutsideTownEnabled = ActionUISettings.DefaultProfile.CraftingOutsideTownEnabled,
+                EquipmentSetsSettingsProfile = CreateDefaultEquipmentSetsSettingsProfile(),
+                Name = name,
+            };
+        }
+
+        private EquipmentSetsSettingsProfile CreateDefaultEquipmentSetsSettingsProfile()
+        {
+            return new EquipmentSetsSettingsProfile()
+            {
+                ArmorSetsInCombatEnabled = ActionUISettings.DefaultProfile.EquipmentSetsSettingsProfile.ArmorSetsInCombatEnabled,
+                SkipWeaponAnimationsEnabled = ActionUISettings.DefaultProfile.EquipmentSetsSettingsProfile.SkipWeaponAnimationsEnabled,
+                StashEquipEnabled = ActionUISettings.DefaultProfile.EquipmentSetsSettingsProfile.StashEquipEnabled,
+                StashEquipAnywhereEnabled = ActionUISettings.DefaultProfile.EquipmentSetsSettingsProfile.StashEquipAnywhereEnabled,
+                StashUnequipEnabled = ActionUISettings.DefaultProfile.EquipmentSetsSettingsProfile.StashUnequipEnabled,
+                StashUnequipAnywhereEnabled = ActionUISettings.DefaultProfile.EquipmentSetsSettingsProfile.StashUnequipAnywhereEnabled,
+            };
+        }
+
+
         private ActionUIProfiles GetOrCreateProfiles()
         {
             var profileNames = GetProfileDirectories();
@@ -200,18 +234,21 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     profiles.Profiles.RemoveAt(i);
             }
             else
+            {
                 profiles = new ActionUIProfiles();
+            }
+
+            if (!profileNames.Any())
+            {
+                profileNames.Add(GetOrAddProfileDir(ActionUISettings.DefaultProfile.Name));
+                saveNeeded = true;
+            }
 
             foreach (var name in profileNames)
             {
                 if (!profiles.Profiles.Any(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    profiles.Profiles.Add(new ActionUIProfile()
-                    {
-                        ActionSlotsEnabled = true,
-                        DurabilityDisplayEnabled = true,
-                        Name = name,
-                    });
+                    profiles.Profiles.Add(CreateDefaultProfile(name));
                     saveNeeded = true;
                 }
             }

@@ -7,11 +7,12 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
         ActionSlot ActionSlot { get; }
 
         void AssignEmptyAction();
-        void AssignSlotAction(ISlotAction slotAction);
+        void AssignSlotAction(ISlotAction slotAction, bool surpressChangeFlag = false);
         void Configure(IActionSlotConfig config);
         void Refresh();
         void ActionSlotUpdate();
         void ActionSlotAwake();
+        void ActionSlotOnDisable();
         void ToggleHotkeyEditMode(bool toggle);
         void HideCooldown();
         void HideSlider(BarPositions slider);

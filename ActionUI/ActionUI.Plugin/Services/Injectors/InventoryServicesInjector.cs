@@ -11,21 +11,21 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
 {
     internal class InventoryServicesInjector
     {
-        private readonly ServicesProvider _provider;
+        private readonly ServicesProvider _services;
 
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
 
         private readonly CraftingMenuEvents _craftingEvents;
-        private readonly ModifCoroutine _coroutines;
+        private readonly LevelCoroutines _coroutines;
 
-        public InventoryServicesInjector(ServicesProvider provider, CraftingMenuEvents craftingEvents, ModifCoroutine coroutines, Func<IModifLogger> getLogger)
+        public InventoryServicesInjector(ServicesProvider services, PlayerMenuService playerMenuService, CraftingMenuEvents craftingEvents, LevelCoroutines coroutines, Func<IModifLogger> getLogger)
         {
-            (_provider, _craftingEvents, _coroutines, _getLogger) = (provider, craftingEvents, coroutines, getLogger);
-            SplitPlayerPatches.SetCharacterAfter += AddInventoryServices;
+            (_services, _craftingEvents, _coroutines, _getLogger) = (services, craftingEvents, coroutines, getLogger);
+            playerMenuService.OnPlayerActionMenusConfigured += AddInventoryServices;
         }
 
-        private void AddInventoryServices(SplitPlayer splitPlayer, Character character)
+        private void AddInventoryServices(PlayerActionMenus actionMenus, SplitPlayer splitPlayer)
         {
 
             var usp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
@@ -37,25 +37,29 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
 
             usp
                 .AddSingleton(new InventoryService(
-                                                    character,
+                                                    splitPlayer.AssignedCharacter,
                                                     profileManager,
-                                                    usp.GetService<PlayerActionMenus>().EquipmentSetMenus,
+                                                    actionMenus.EquipmentSetMenus,
                                                     _coroutines,
                                                     _getLogger))
                 .AddSingleton<IEquipmentSetService<WeaponSet>>(new WeaponSetsJsonService(
+                    _services.GetService<GlobalProfileService>(),
                     (ProfileService)profileManager.ProfileService,
                     usp.GetService<InventoryService>(),
                     _craftingEvents,
+                    splitPlayer.AssignedCharacter.UID,
                     _getLogger
                     ))
                 .AddSingleton<IEquipmentSetService<ArmorSet>>(new ArmorSetsJsonService(
+                    _services.GetService<GlobalProfileService>(),
                     (ProfileService)profileManager.ProfileService,
                     usp.GetService<InventoryService>(),
                     _craftingEvents,
+                    splitPlayer.AssignedCharacter.UID,
                     _getLogger
                     ))
                 .AddSingleton(new EquipmentMenuStashService(
-                    character,
+                    splitPlayer.AssignedCharacter,
                     profileManager,
                     usp.GetService<InventoryService>(),
                     _coroutines,

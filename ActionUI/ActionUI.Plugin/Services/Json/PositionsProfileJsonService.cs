@@ -13,7 +13,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public event Action<PositionsProfile> OnProfileChanged;
 
-        public PositionsProfileJsonService(ProfileService profileService, Func<IModifLogger> getLogger) : base(profileService, getLogger)
+        public PositionsProfileJsonService(GlobalProfileService globalProfileService, ProfileService profileService, string characterUID, Func<IModifLogger> getLogger) : base(globalProfileService, profileService, characterUID, getLogger)
         {
         }
 

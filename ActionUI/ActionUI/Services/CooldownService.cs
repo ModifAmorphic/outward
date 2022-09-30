@@ -41,7 +41,7 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Services
         public void TrackCooldown(ICooldown cooldown)
         {
             _cooldown = cooldown;
-
+            //DebugLogger.Log($"CooldownService::TrackEnableToggle: called for action slot {_controller.ActionSlot.name}. _coroutine == null == {_coroutine == null}, _coroutineStarted == {_coroutineStarted}");
             if (_coroutine == null || !_coroutineStarted)
             {
                 _coroutine = _controller.ActionSlot.StartCoroutine(DisplayCooldown());
@@ -50,13 +50,14 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Services
         }
         public void StopTracking()
         {
+            //DebugLogger.Log($"CooldownService::StopTracking: called for action slot {_controller.ActionSlot.name}. _coroutine == null == {_coroutine == null}");
             if (_coroutine != null)
             {
                 _controller.ActionSlot?.StopCoroutine(_coroutine);
-                _coroutineStarted = false;
                 //_coroutine = null;
                 _controller.HideCooldown();
             }
+            _coroutineStarted = false;
         }
         private void UpdateTimeFormat()
         {

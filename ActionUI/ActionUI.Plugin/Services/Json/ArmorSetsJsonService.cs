@@ -18,7 +18,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private InventoryService _inventoryService;
         private CraftingMenuEvents _craftingEvents;
 
-        public ArmorSetsJsonService(ProfileService profileService, InventoryService inventoryService, CraftingMenuEvents craftingEvents, Func<IModifLogger> getLogger) : base(profileService, getLogger)
+        public ArmorSetsJsonService(GlobalProfileService globalProfileService,
+                                     ProfileService profileService,
+                                     InventoryService inventoryService,
+                                     CraftingMenuEvents craftingEvents,
+                                     string characterUID,
+                                     Func<IModifLogger> getLogger) : base(globalProfileService, profileService, characterUID, getLogger)
         {
             (_inventoryService, _craftingEvents) = (inventoryService, craftingEvents);
             _craftingEvents.DynamicCraftComplete += UpdateSetsCraftResults;
@@ -26,6 +31,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public event Action<ArmorSet> OnNewSet;
         public event OnRenamedSetDelegate<ArmorSet> OnRenamedSet;
+        public event Action<string> OnDeletedSet;
 
         public event Action<EquipmentSetsProfile<ArmorSet>> OnProfileChanged;
 
@@ -40,33 +46,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             var profiles = GetProfile();
             return profiles;
         }
-
-        //public ArmorSet GetActiveEquipmentSet()
-        //{
-        //    if (_cachedSet != null)
-        //        return _cachedSet;
-
-        //    var profiles = GetProfile();
-        //    _cachedSet = GetEquipmentSet(profiles.ActiveSetName);
-        //    return _cachedSet;
-        //}
-
-        //public ArmorSet SetActiveEquipmentSet(string name)
-        //{
-        //    var activeSet = GetActiveEquipmentSet();
-        //    if (activeSet != null && activeSet.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
-        //        return activeSet;
-
-        //    var profiles = GetProfile();
-        //    profiles.ActiveSetName = name;
-        //    base.Save();
-        //    _cachedSet = null;
-        //    Logger.LogDebug($"Set Active Armor Set to '{name}'.");
-        //    OnSetActiveSet?.TryInvoke(GetActiveEquipmentSet());
-        //    return GetActiveEquipmentSet();
-        //}
-
-        public int GetLastSetID() => GetProfile().EquipmentSets.Min(e => e.SetID);
 
         public ArmorSet GetEquipmentSet(string name)
         {
@@ -85,7 +64,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 throw new ArgumentException($"Equipment set '{setName}' not found.", nameof(setName));
 
             equipSet.Name = newName;
-            Save();
+            Save(equipSet);
             OnProfileChanged?.TryInvoke(GetProfile());
             try { OnRenamedSet?.Invoke(equipSet, setName, newName); }
             catch (Exception ex) { Logger.LogException(ex); }
@@ -115,7 +94,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (existingSet != null)
             {
                 set.SetID = existingSet.SetID;
-                set.SlotIcon = existingSet.SlotIcon;
+                set.IconSlot = existingSet.IconSlot;
             }
 
             return set;
@@ -123,39 +102,67 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public void SaveEquipmentSet(ArmorSet armorSet)
         {
-            bool isUpdate = false;
             var sets = GetProfile().EquipmentSets;
 
-            if (sets.Any(s => s.Name.Equals(armorSet.Name, StringComparison.InvariantCultureIgnoreCase)))
-            {
-                sets.RemoveAll(s => s.Name.Equals(armorSet.Name, StringComparison.InvariantCultureIgnoreCase));
-                isUpdate = true;
-            }
+            var removed = sets.RemoveAll(s => s.Name.Equals(armorSet.Name, StringComparison.InvariantCultureIgnoreCase));
 
             sets.Add(armorSet);
-            Save();
+            Save(armorSet);
 
-            if (!isUpdate)
-                OnNewSet(armorSet);
+            if (removed < 1)
+                OnNewSet?.TryInvoke(armorSet);
         }
 
-        public ArmorSet CreateEmptyEquipmentSet(string name)
+        public void DeleteEquipmentSet(string setName)
+        {
+            var sets = GetProfile().EquipmentSets;
+            var removedSet = GetEquipmentSet(setName);
+            var removed = sets.RemoveAll(s => s.Name.Equals(setName, StringComparison.InvariantCultureIgnoreCase));
+
+            if (removed > 0)
+            {
+                _ = GlobalProfileService.RemoveEquipmentSet(removedSet.SetID);
+                Save();
+                ForgetEquipmentSetSkill(removedSet.SetID);
+                OnDeletedSet?.Invoke(setName);
+            }
+        }
+
+        public ArmorSet CreateNewEquipmentSet(string name, EquipSlots iconSlot)
         {
             if (GetSetExists(name))
                 throw new ArgumentException($"Set with name '{name}' already exists.", nameof(name));
 
-            GetProfile().EquipmentSets.Add(new ArmorSet() { Name = name });
-            Save();
+            var set = GetEquippedAsSet(name);
+            set.IconSlot = iconSlot;
+            set.SetID = GlobalProfileService.GetMinEquipmentSetID() - 1;
+
+            GetProfile().EquipmentSets.Add(set);
+            Save(set);
             var newSet = GetEquipmentSet(name);
             OnNewSet?.TryInvoke(newSet);
 
             return newSet;
         }
 
-        public void LearnEquipmentSetSkill(IEquipmentSet equipmentSet) => _inventoryService.LearnEquipmentSetSkill<ArmorSetSkill>(equipmentSet);
+
+        private void LearnEquipmentSetSkill(IEquipmentSet equipmentSet)
+        {
+            var prefab = _inventoryService.AddOrGetEquipmentSetSkillPrefab<ArmorSetSkill>(equipmentSet);
+            _inventoryService.AddOrUpdateEquipmentSetSkill(prefab, equipmentSet);
+        }
+
+        private void ForgetEquipmentSetSkill(int SetID) => _inventoryService.RemoveEquipmentSetSkill(SetID);
 
         private bool GetSetExists(string name)
             => GetEquipmentSet(name) != null;
+
+        private void Save(ArmorSet armorSet)
+        {
+            GlobalProfileService.AddOrUpdateEquipmentSet(armorSet, CharacterUID);
+            Save();
+            LearnEquipmentSetSkill(armorSet);
+        }
 
         private void UpdateSetsCraftResults(DynamicCraftingResult result, int resultMultiplier, CustomCraftingMenu menu)
         {

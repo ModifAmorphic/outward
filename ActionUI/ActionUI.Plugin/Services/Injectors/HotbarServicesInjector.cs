@@ -12,18 +12,19 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
     internal class HotbarServicesInjector
     {
         private readonly ServicesProvider _provider;
+        private PlayerMenuService _playerMenuService;
         private readonly LevelCoroutines _levelCoroutines;
 
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
 
-        public HotbarServicesInjector(ServicesProvider provider, LevelCoroutines levelCoroutines, Func<IModifLogger> getLogger)
+        public HotbarServicesInjector(ServicesProvider provider, PlayerMenuService playerMenuService, LevelCoroutines levelCoroutines, Func<IModifLogger> getLogger)
         {
-            (_provider, _levelCoroutines, _getLogger) = (provider, levelCoroutines, getLogger);
-            SplitPlayerPatches.SetCharacterAfter += AddHotbarServices;
+            (_provider, _playerMenuService, _levelCoroutines, _getLogger) = (provider, playerMenuService, levelCoroutines, getLogger);
+            _playerMenuService.OnPlayerActionMenusConfigured += AddHotbarServices;
         }
 
-        private void AddHotbarServices(SplitPlayer splitPlayer, Character character)
+        private void AddHotbarServices(PlayerActionMenus actionMenus, SplitPlayer splitPlayer)
         {
             Logger.LogDebug($"{nameof(HotbarServicesInjector)}::{nameof(AddHotbarServices)} Beginning Hotbar Services Injection.");
             var usp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
@@ -35,8 +36,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                 return;
             }
 
-            var playerMenus = usp.GetService<PlayerActionMenus>();
-            var hotbars = playerMenus.gameObject.GetComponentInChildren<HotbarsContainer>();
+            var hotbars = actionMenus.gameObject.GetComponentInChildren<HotbarsContainer>(true);
             var player = ReInput.players.GetPlayer(splitPlayer.RewiredID);
 
             if (!usp.ContainsService<HotbarsContainer>())
@@ -60,12 +60,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                 .AddSingleton(new HotbarService(hotbars
                                         , player
                                         , splitPlayer.AssignedCharacter
-                                        , playerMenus.ProfileManager
+                                        , actionMenus.ProfileManager
                                         , usp.GetService<SlotDataService>()
                                         , _levelCoroutines
                                         , _getLogger))
                 .AddSingleton(new ControllerMapService(usp.GetService<HotkeyCaptureMenu>()
-                                        , playerMenus.ProfileManager
+                                        , actionMenus.ProfileManager
                                         , usp.GetService<HotbarService>()
                                         , player
                                         , _levelCoroutines
