@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Unity.ActionUI.Extensions
@@ -34,6 +33,35 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Extensions
             dropdown.onValueChanged = noDropdownEvent;
             dropdown.AddOptions(options.ToList());
             dropdown.onValueChanged = onValueChanged;
+        }
+
+        public static Dropdown.OptionData GetSelectedOption(this Dropdown dropdown) => dropdown.options[dropdown.value];
+
+        public static int SelectOption(this Dropdown dropdown, string optionText, bool caseSensitive = false)
+        {
+            for (int i = 0; i < dropdown.options.Count; i++)
+            {
+                if (dropdown.options[i].text.Equals(optionText, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    dropdown.value = i;
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+        public static int SelectOptionSilent(this Dropdown dropdown, string optionText, bool caseSensitive = false)
+        {
+            for (int i = 0; i < dropdown.options.Count; i++)
+            {
+                if (dropdown.options[i].text.Equals(optionText, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    dropdown.SetValueWithoutNotify(i);
+                    return i;
+                }
+            }
+
+            return -1;
         }
     }
 }

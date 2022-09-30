@@ -1,6 +1,6 @@
-﻿using ModifAmorphic.Outward.UI.Models;
+﻿using ModifAmorphic.Outward.ActionUI.Models;
 
-namespace ModifAmorphic.Outward.UI.Extensions
+namespace ModifAmorphic.Outward.ActionUI.Extensions
 {
     internal static class ItemExtensions
     {

@@ -1,5 +1,5 @@
-using ModifAmorphic.Outward.Unity.ActionMenus.Extensions;
 using ModifAmorphic.Outward.Unity.ActionUI;
+using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -113,12 +113,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         }
         private bool IsClosedOrClear()
         {
-            return (ClearButton.GetSelectionState() == ButtonExtensions.SelectionState.Selected
-                || ClearButton.GetSelectionState() == ButtonExtensions.SelectionState.Highlighted
-                || ClearButton.GetSelectionState() == ButtonExtensions.SelectionState.Pressed)
-                || (CloseButton.GetSelectionState() == ButtonExtensions.SelectionState.Selected
-                || CloseButton.GetSelectionState() == ButtonExtensions.SelectionState.Highlighted
-                || CloseButton.GetSelectionState() == ButtonExtensions.SelectionState.Pressed);
+            return (ClearButton.GetSelectionState() == SelectableExtensions.SelectionState.Selected
+                || ClearButton.GetSelectionState() == SelectableExtensions.SelectionState.Highlighted
+                || ClearButton.GetSelectionState() == SelectableExtensions.SelectionState.Pressed)
+                || (CloseButton.GetSelectionState() == SelectableExtensions.SelectionState.Selected
+                || CloseButton.GetSelectionState() == SelectableExtensions.SelectionState.Highlighted
+                || CloseButton.GetSelectionState() == SelectableExtensions.SelectionState.Pressed);
         }
 
         private static Dictionary<KeyCode, string> MouseButtonNames = new Dictionary<KeyCode, string>()

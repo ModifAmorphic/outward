@@ -3,7 +3,7 @@ using ModifAmorphic.Outward.Logging;
 using System;
 using UnityEngine.EventSystems;
 
-namespace ModifAmorphic.Outward.UI.Patches
+namespace ModifAmorphic.Outward.ActionUI.Patches.Sandbox
 {
     [HarmonyPatch(typeof(ItemDisplayDrop))]
     internal static class ItemDisplayDropPatches

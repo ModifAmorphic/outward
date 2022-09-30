@@ -1,9 +1,9 @@
-﻿using ModifAmorphic.Outward.UI.Models;
-using ModifAmorphic.Outward.Unity.ActionMenus;
+﻿using ModifAmorphic.Outward.ActionUI.Models;
+using ModifAmorphic.Outward.Unity.ActionUI;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.UI.Services
+namespace ModifAmorphic.Outward.ActionUI.Services
 {
     internal class DurabilityActionSlotTracker : IBarProgress
     {
@@ -35,12 +35,19 @@ namespace ModifAmorphic.Outward.UI.Services
 
         public float GetProgress()
         {
-            if (_equipment.CurrentDurability != _lastDurability)
+            if (_equipment.CurrentDurability != _lastDurability && !string.IsNullOrEmpty(_equipment.UID))
             {
-                _lastDurability = _equipment.CurrentDurability;
-                _equipSlotAction.DurabilityChanged(_equipment.CurrentDurability);
+                if (!string.IsNullOrEmpty(_equipment.UID))
+                {
+                    _lastDurability = _equipment.CurrentDurability;
+                    _equipSlotAction.DurabilityChanged(_equipment.CurrentDurability);
+                }
+                return IsEnabled ? _equipment.DurabilityRatio : 0f;
             }
-            return IsEnabled ? _equipment.DurabilityRatio : 0f; ;
+            else //If prefab, always return full durability
+            {
+                return IsEnabled ? 1f : 0f;
+            }
         }
     }
 }

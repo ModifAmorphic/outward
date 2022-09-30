@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace ModifAmorphic.Outward.UI.DataModels
+namespace ModifAmorphic.Outward.ActionUI.DataModels
 {
     public class ConcreteTypeConverter<TConcrete> : JsonConverter
     {

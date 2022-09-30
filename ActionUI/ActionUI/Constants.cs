@@ -1,4 +1,4 @@
-﻿namespace ModifAmorphic.Outward.Unity.ActionMenus
+﻿namespace ModifAmorphic.Outward.Unity.ActionUI
 {
     internal static class Timings
     {

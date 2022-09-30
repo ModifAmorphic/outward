@@ -1,6 +1,6 @@
-﻿using ModifAmorphic.Outward.Unity.ActionMenus;
+﻿using ModifAmorphic.Outward.Unity.ActionUI;
 
-namespace ModifAmorphic.Outward.UI.Models
+namespace ModifAmorphic.Outward.ActionUI.Models
 {
     internal class ActionConfig : IActionSlotConfig
     {

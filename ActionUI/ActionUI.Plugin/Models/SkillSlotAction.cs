@@ -1,13 +1,14 @@
-﻿using ModifAmorphic.Outward.Extensions;
+﻿using ModifAmorphic.Outward.ActionUI.Services;
+using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.Services;
 using ModifAmorphic.Outward.Unity.ActionMenus;
+using ModifAmorphic.Outward.Unity.ActionUI;
 using Rewired;
 using System;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-namespace ModifAmorphic.Outward.UI.Models
+namespace ModifAmorphic.Outward.ActionUI.Models
 {
     internal class SkillSlotAction : ISlotAction, IOutwardItem
     {
@@ -43,8 +44,6 @@ namespace ModifAmorphic.Outward.UI.Models
         public IStackable Stack => null;
 
         public Dictionary<BarPositions, IBarProgress> ActiveBars => null;
-
-        public IBarProgress RightSlider => null;
 
         public ActionSlotIcon[] ActionIcons { get; internal set; }
 

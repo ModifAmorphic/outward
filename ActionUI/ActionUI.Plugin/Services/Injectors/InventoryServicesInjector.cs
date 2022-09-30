@@ -1,40 +1,72 @@
-﻿using ModifAmorphic.Outward.ActionUI.Services;
+﻿using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.Patches;
-using ModifAmorphic.Outward.UI.Settings;
+using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Unity.ActionMenus;
-using ModifAmorphic.Outward.Unity.ActionMenus.Data;
+using ModifAmorphic.Outward.Unity.ActionUI.Data;
+using ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets;
 using System;
-using System.IO;
 
-namespace ModifAmorphic.Outward.UI.Services.Injectors
+namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
 {
     internal class InventoryServicesInjector
     {
-        private readonly ServicesProvider _provider;
+        private readonly ServicesProvider _services;
 
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
 
-        public InventoryServicesInjector(ServicesProvider provider, Func<IModifLogger> getLogger)
+        private readonly CraftingMenuEvents _craftingEvents;
+        private readonly LevelCoroutines _coroutines;
+
+        public InventoryServicesInjector(ServicesProvider services, PlayerMenuService playerMenuService, CraftingMenuEvents craftingEvents, LevelCoroutines coroutines, Func<IModifLogger> getLogger)
         {
-            (_provider, _getLogger) = (provider, getLogger);
-            SplitPlayerPatches.SetCharacterAfter += AddSharedServices;
+            (_services, _craftingEvents, _coroutines, _getLogger) = (services, craftingEvents, coroutines, getLogger);
+            playerMenuService.OnPlayerActionMenusConfigured += AddInventoryServices;
         }
 
-        private void AddSharedServices(SplitPlayer splitPlayer, Character character)
+        private void AddInventoryServices(PlayerActionMenus actionMenus, SplitPlayer splitPlayer)
         {
 
             var usp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
             var profileManager = usp.GetService<ProfileManager>();
-
             usp.TryDispose<InventoryService>();
+            usp.TryDispose<IEquipmentSetService<ArmorSet>>();
+            usp.TryDispose<IEquipmentSetService<WeaponSet>>();
+            usp.TryDispose<EquipmentMenuStashService>();
+
             usp
                 .AddSingleton(new InventoryService(
-                                                    character,
+                                                    splitPlayer.AssignedCharacter,
                                                     profileManager,
-                                                    _getLogger));
+                                                    actionMenus.EquipmentSetMenus,
+                                                    _coroutines,
+                                                    _getLogger))
+                .AddSingleton<IEquipmentSetService<WeaponSet>>(new WeaponSetsJsonService(
+                    _services.GetService<GlobalProfileService>(),
+                    (ProfileService)profileManager.ProfileService,
+                    usp.GetService<InventoryService>(),
+                    _craftingEvents,
+                    splitPlayer.AssignedCharacter.UID,
+                    _getLogger
+                    ))
+                .AddSingleton<IEquipmentSetService<ArmorSet>>(new ArmorSetsJsonService(
+                    _services.GetService<GlobalProfileService>(),
+                    (ProfileService)profileManager.ProfileService,
+                    usp.GetService<InventoryService>(),
+                    _craftingEvents,
+                    splitPlayer.AssignedCharacter.UID,
+                    _getLogger
+                    ))
+                .AddSingleton(new EquipmentMenuStashService(
+                    splitPlayer.AssignedCharacter,
+                    profileManager,
+                    usp.GetService<InventoryService>(),
+                    _coroutines,
+                    _getLogger
+                    ));
 
+            usp.GetService<InventoryService>().Start();
         }
     }
 }

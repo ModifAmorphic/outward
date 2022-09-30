@@ -1,10 +1,9 @@
 ﻿using ModifAmorphic.Outward.Unity.ActionMenus;
-using ModifAmorphic.Outward.Unity.ActionMenus.Data;
+using ModifAmorphic.Outward.Unity.ActionUI;
+using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine.Events;
 
 namespace Assets.Testing
@@ -17,9 +16,20 @@ namespace Assets.Testing
             { TestDefaultProfile.DefaultProfile.Name, TestDefaultProfile.DefaultProfile }
         };
 
-        UnityEvent<IHotbarProfile, HotbarProfileChangeTypes> IHotbarProfileService.OnProfileChanged => throw new NotImplementedException();
-
         public event Action<IHotbarProfile> OnProfileChanged;
+
+        event Action<IHotbarProfile, HotbarProfileChangeTypes> IHotbarProfileService.OnProfileChanged
+        {
+            add
+            {
+                throw new NotImplementedException();
+            }
+
+            remove
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public IHotbarProfile AddHotbar()
         {

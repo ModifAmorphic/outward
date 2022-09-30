@@ -2,7 +2,7 @@
 using ModifAmorphic.Outward.Logging;
 using System;
 
-namespace ModifAmorphic.Outward.UI.Settings
+namespace ModifAmorphic.Outward.ActionUI.Settings
 {
     internal class ConfigSettings
     {

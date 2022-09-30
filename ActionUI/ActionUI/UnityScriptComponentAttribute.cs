@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenus
+namespace ModifAmorphic.Outward.Unity.ActionUI
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class UnityScriptComponentAttribute : Attribute

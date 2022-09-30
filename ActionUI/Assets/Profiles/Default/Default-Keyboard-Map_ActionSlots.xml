@@ -6,7 +6,7 @@
     <categoryId>131000</categoryId>
     <layoutId>0</layoutId>
     <name></name>
-    <hardwareGuid>ae4830f9-63db-4d4c-90b3-1beb46ecaf49</hardwareGuid>
+    <hardwareGuid>6f8549b7-a119-4689-bfc4-ef812869c1f2</hardwareGuid>
     <enabled>true</enabled>
     <buttonMaps>
         <ActionElementMap>
@@ -41,118 +41,6 @@
             <actionCategoryId>131001</actionCategoryId>
             <actionId>131500</actionId>
             <elementType>1</elementType>
-            <elementIdentifierId>28</elementIdentifierId>
-            <axisRange>0</axisRange>
-            <invert>false</invert>
-            <axisContribution>0</axisContribution>
-            <keyboardKeyCode>49</keyboardKeyCode>
-            <modifierKey1>0</modifierKey1>
-            <modifierKey2>0</modifierKey2>
-            <modifierKey3>0</modifierKey3>
-            <enabled>true</enabled>
-        </ActionElementMap>
-        <ActionElementMap>
-            <actionCategoryId>131001</actionCategoryId>
-            <actionId>131501</actionId>
-            <elementType>1</elementType>
-            <elementIdentifierId>29</elementIdentifierId>
-            <axisRange>0</axisRange>
-            <invert>false</invert>
-            <axisContribution>0</axisContribution>
-            <keyboardKeyCode>50</keyboardKeyCode>
-            <modifierKey1>0</modifierKey1>
-            <modifierKey2>0</modifierKey2>
-            <modifierKey3>0</modifierKey3>
-            <enabled>true</enabled>
-        </ActionElementMap>
-        <ActionElementMap>
-            <actionCategoryId>131001</actionCategoryId>
-            <actionId>131502</actionId>
-            <elementType>1</elementType>
-            <elementIdentifierId>30</elementIdentifierId>
-            <axisRange>0</axisRange>
-            <invert>false</invert>
-            <axisContribution>0</axisContribution>
-            <keyboardKeyCode>51</keyboardKeyCode>
-            <modifierKey1>0</modifierKey1>
-            <modifierKey2>0</modifierKey2>
-            <modifierKey3>0</modifierKey3>
-            <enabled>true</enabled>
-        </ActionElementMap>
-        <ActionElementMap>
-            <actionCategoryId>131001</actionCategoryId>
-            <actionId>131503</actionId>
-            <elementType>1</elementType>
-            <elementIdentifierId>31</elementIdentifierId>
-            <axisRange>0</axisRange>
-            <invert>false</invert>
-            <axisContribution>0</axisContribution>
-            <keyboardKeyCode>52</keyboardKeyCode>
-            <modifierKey1>0</modifierKey1>
-            <modifierKey2>0</modifierKey2>
-            <modifierKey3>0</modifierKey3>
-            <enabled>true</enabled>
-        </ActionElementMap>
-        <ActionElementMap>
-            <actionCategoryId>131001</actionCategoryId>
-            <actionId>131504</actionId>
-            <elementType>1</elementType>
-            <elementIdentifierId>32</elementIdentifierId>
-            <axisRange>0</axisRange>
-            <invert>false</invert>
-            <axisContribution>0</axisContribution>
-            <keyboardKeyCode>53</keyboardKeyCode>
-            <modifierKey1>0</modifierKey1>
-            <modifierKey2>0</modifierKey2>
-            <modifierKey3>0</modifierKey3>
-            <enabled>true</enabled>
-        </ActionElementMap>
-        <ActionElementMap>
-            <actionCategoryId>131001</actionCategoryId>
-            <actionId>131505</actionId>
-            <elementType>1</elementType>
-            <elementIdentifierId>33</elementIdentifierId>
-            <axisRange>0</axisRange>
-            <invert>false</invert>
-            <axisContribution>0</axisContribution>
-            <keyboardKeyCode>54</keyboardKeyCode>
-            <modifierKey1>0</modifierKey1>
-            <modifierKey2>0</modifierKey2>
-            <modifierKey3>0</modifierKey3>
-            <enabled>true</enabled>
-        </ActionElementMap>
-        <ActionElementMap>
-            <actionCategoryId>131001</actionCategoryId>
-            <actionId>131506</actionId>
-            <elementType>1</elementType>
-            <elementIdentifierId>34</elementIdentifierId>
-            <axisRange>0</axisRange>
-            <invert>false</invert>
-            <axisContribution>0</axisContribution>
-            <keyboardKeyCode>55</keyboardKeyCode>
-            <modifierKey1>0</modifierKey1>
-            <modifierKey2>0</modifierKey2>
-            <modifierKey3>0</modifierKey3>
-            <enabled>true</enabled>
-        </ActionElementMap>
-        <ActionElementMap>
-            <actionCategoryId>131001</actionCategoryId>
-            <actionId>131507</actionId>
-            <elementType>1</elementType>
-            <elementIdentifierId>35</elementIdentifierId>
-            <axisRange>0</axisRange>
-            <invert>false</invert>
-            <axisContribution>0</axisContribution>
-            <keyboardKeyCode>56</keyboardKeyCode>
-            <modifierKey1>0</modifierKey1>
-            <modifierKey2>0</modifierKey2>
-            <modifierKey3>0</modifierKey3>
-            <enabled>true</enabled>
-        </ActionElementMap>
-        <ActionElementMap>
-            <actionCategoryId>131001</actionCategoryId>
-            <actionId>131508</actionId>
-            <elementType>1</elementType>
             <elementIdentifierId>17</elementIdentifierId>
             <axisRange>0</axisRange>
             <invert>false</invert>
@@ -165,7 +53,7 @@
         </ActionElementMap>
         <ActionElementMap>
             <actionCategoryId>131001</actionCategoryId>
-            <actionId>131509</actionId>
+            <actionId>131501</actionId>
             <elementType>1</elementType>
             <elementIdentifierId>5</elementIdentifierId>
             <axisRange>0</axisRange>
@@ -179,13 +67,125 @@
         </ActionElementMap>
         <ActionElementMap>
             <actionCategoryId>131001</actionCategoryId>
-            <actionId>131510</actionId>
+            <actionId>131502</actionId>
             <elementType>1</elementType>
             <elementIdentifierId>18</elementIdentifierId>
             <axisRange>0</axisRange>
             <invert>false</invert>
             <axisContribution>0</axisContribution>
             <keyboardKeyCode>114</keyboardKeyCode>
+            <modifierKey1>0</modifierKey1>
+            <modifierKey2>0</modifierKey2>
+            <modifierKey3>0</modifierKey3>
+            <enabled>true</enabled>
+        </ActionElementMap>
+        <ActionElementMap>
+            <actionCategoryId>131001</actionCategoryId>
+            <actionId>131503</actionId>
+            <elementType>1</elementType>
+            <elementIdentifierId>28</elementIdentifierId>
+            <axisRange>0</axisRange>
+            <invert>false</invert>
+            <axisContribution>0</axisContribution>
+            <keyboardKeyCode>49</keyboardKeyCode>
+            <modifierKey1>0</modifierKey1>
+            <modifierKey2>0</modifierKey2>
+            <modifierKey3>0</modifierKey3>
+            <enabled>true</enabled>
+        </ActionElementMap>
+        <ActionElementMap>
+            <actionCategoryId>131001</actionCategoryId>
+            <actionId>131504</actionId>
+            <elementType>1</elementType>
+            <elementIdentifierId>29</elementIdentifierId>
+            <axisRange>0</axisRange>
+            <invert>false</invert>
+            <axisContribution>0</axisContribution>
+            <keyboardKeyCode>50</keyboardKeyCode>
+            <modifierKey1>0</modifierKey1>
+            <modifierKey2>0</modifierKey2>
+            <modifierKey3>0</modifierKey3>
+            <enabled>true</enabled>
+        </ActionElementMap>
+        <ActionElementMap>
+            <actionCategoryId>131001</actionCategoryId>
+            <actionId>131505</actionId>
+            <elementType>1</elementType>
+            <elementIdentifierId>30</elementIdentifierId>
+            <axisRange>0</axisRange>
+            <invert>false</invert>
+            <axisContribution>0</axisContribution>
+            <keyboardKeyCode>51</keyboardKeyCode>
+            <modifierKey1>0</modifierKey1>
+            <modifierKey2>0</modifierKey2>
+            <modifierKey3>0</modifierKey3>
+            <enabled>true</enabled>
+        </ActionElementMap>
+        <ActionElementMap>
+            <actionCategoryId>131001</actionCategoryId>
+            <actionId>131506</actionId>
+            <elementType>1</elementType>
+            <elementIdentifierId>31</elementIdentifierId>
+            <axisRange>0</axisRange>
+            <invert>false</invert>
+            <axisContribution>0</axisContribution>
+            <keyboardKeyCode>52</keyboardKeyCode>
+            <modifierKey1>0</modifierKey1>
+            <modifierKey2>0</modifierKey2>
+            <modifierKey3>0</modifierKey3>
+            <enabled>true</enabled>
+        </ActionElementMap>
+        <ActionElementMap>
+            <actionCategoryId>131001</actionCategoryId>
+            <actionId>131507</actionId>
+            <elementType>1</elementType>
+            <elementIdentifierId>32</elementIdentifierId>
+            <axisRange>0</axisRange>
+            <invert>false</invert>
+            <axisContribution>0</axisContribution>
+            <keyboardKeyCode>53</keyboardKeyCode>
+            <modifierKey1>0</modifierKey1>
+            <modifierKey2>0</modifierKey2>
+            <modifierKey3>0</modifierKey3>
+            <enabled>true</enabled>
+        </ActionElementMap>
+        <ActionElementMap>
+            <actionCategoryId>131001</actionCategoryId>
+            <actionId>131508</actionId>
+            <elementType>1</elementType>
+            <elementIdentifierId>33</elementIdentifierId>
+            <axisRange>0</axisRange>
+            <invert>false</invert>
+            <axisContribution>0</axisContribution>
+            <keyboardKeyCode>54</keyboardKeyCode>
+            <modifierKey1>0</modifierKey1>
+            <modifierKey2>0</modifierKey2>
+            <modifierKey3>0</modifierKey3>
+            <enabled>true</enabled>
+        </ActionElementMap>
+        <ActionElementMap>
+            <actionCategoryId>131001</actionCategoryId>
+            <actionId>131509</actionId>
+            <elementType>1</elementType>
+            <elementIdentifierId>34</elementIdentifierId>
+            <axisRange>0</axisRange>
+            <invert>false</invert>
+            <axisContribution>0</axisContribution>
+            <keyboardKeyCode>55</keyboardKeyCode>
+            <modifierKey1>0</modifierKey1>
+            <modifierKey2>0</modifierKey2>
+            <modifierKey3>0</modifierKey3>
+            <enabled>true</enabled>
+        </ActionElementMap>
+        <ActionElementMap>
+            <actionCategoryId>131001</actionCategoryId>
+            <actionId>131510</actionId>
+            <elementType>1</elementType>
+            <elementIdentifierId>35</elementIdentifierId>
+            <axisRange>0</axisRange>
+            <invert>false</invert>
+            <axisContribution>0</axisContribution>
+            <keyboardKeyCode>56</keyboardKeyCode>
             <modifierKey1>0</modifierKey1>
             <modifierKey2>0</modifierKey2>
             <modifierKey3>0</modifierKey3>

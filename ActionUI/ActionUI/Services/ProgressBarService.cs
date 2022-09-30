@@ -1,9 +1,10 @@
-﻿using ModifAmorphic.Outward.Unity.ActionMenus.Controllers;
+﻿using ModifAmorphic.Outward.Unity.ActionMenus;
+using ModifAmorphic.Outward.Unity.ActionUI.Controllers;
 using System;
 using System.Collections;
 using UnityEngine;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenus.Services
+namespace ModifAmorphic.Outward.Unity.ActionUI.Services
 {
     internal class ProgressBarService : IDisposable
     {
@@ -47,10 +48,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus.Services
             if (_coroutine != null)
             {
                 _controller.ActionSlot?.StopCoroutine(_coroutine);
-                _coroutineStarted = false;
                 //_coroutine = null;
                 _controller.HideSlider(_barPosition);
             }
+            _coroutineStarted = false;
         }
         private IEnumerator DisplayProgress()
         {

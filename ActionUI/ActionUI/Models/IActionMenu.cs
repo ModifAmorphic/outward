@@ -1,6 +1,6 @@
 ﻿using UnityEngine.Events;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenus
+namespace ModifAmorphic.Outward.Unity.ActionUI
 {
     public interface IActionMenu
     {

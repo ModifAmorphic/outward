@@ -1,11 +1,11 @@
 ﻿using HarmonyLib;
+using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using Rewired;
 using System;
 
-namespace ModifAmorphic.Outward.UI.Patches
+namespace ModifAmorphic.Outward.ActionUI.Patches
 {
     [HarmonyPatch(typeof(ControlsInput))]
     internal static class ControlsInputPatches
