@@ -91,6 +91,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
                       )
                      .AddSingleton(new TransmogCrafter(_services.GetService<ItemVisualizer>(),
                                         _services.GetService<LevelCoroutines>(),
+                                        _services.GetService<CustomCraftingModule>().CraftingMenuEvents,
                                         _services.GetService<IModifLogger>)
                       );
 

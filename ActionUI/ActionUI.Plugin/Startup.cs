@@ -36,6 +36,7 @@ namespace ModifAmorphic.Outward.ActionUI
             services
                 .AddSingleton(confSettings)
                 .AddFactory(() => LoggerFactory.GetLogger(ModInfo.ModId))
+                .AddSingleton(ModifModules.GetCustomCraftingModule(ModInfo.ModId))
                 .AddSingleton(new ModifCoroutine(services.GetService<BaseUnityPlugin>(),
                                                   services.GetService<IModifLogger>))
                 .AddSingleton(new LevelCoroutines(services.GetService<BaseUnityPlugin>(),
