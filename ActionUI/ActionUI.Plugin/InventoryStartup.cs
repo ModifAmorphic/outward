@@ -15,7 +15,6 @@ namespace ModifAmorphic.Outward.ActionUI
         private readonly Harmony _harmony;
         private readonly ServicesProvider _services;
         private readonly PlayerMenuService _playerMenuService;
-        private readonly CraftingMenuEvents _craftingEvents;
         private readonly Func<IModifLogger> _loggerFactory;
         private readonly ModifGoService _modifGoService;
         private readonly LevelCoroutines _coroutines;
@@ -23,9 +22,9 @@ namespace ModifAmorphic.Outward.ActionUI
 
         private IModifLogger Logger => _loggerFactory.Invoke();
 
-        public InventoryStartup(ServicesProvider services, PlayerMenuService playerMenuService, CraftingMenuEvents craftingEvents, ModifGoService modifGoService, LevelCoroutines coroutines, Func<IModifLogger> loggerFactory)
+        public InventoryStartup(ServicesProvider services, PlayerMenuService playerMenuService, ModifGoService modifGoService, LevelCoroutines coroutines, Func<IModifLogger> loggerFactory)
         {
-            (_services, _playerMenuService, _craftingEvents, _modifGoService, _coroutines, _loggerFactory) = (services, playerMenuService, craftingEvents, modifGoService, coroutines, loggerFactory);
+            (_services, _playerMenuService, _modifGoService, _coroutines, _loggerFactory) = (services, playerMenuService, modifGoService, coroutines, loggerFactory);
             _harmony = new Harmony(ModId);
         }
 
@@ -39,7 +38,7 @@ namespace ModifAmorphic.Outward.ActionUI
             _harmony.PatchAll(typeof(NetworkLevelLoaderPatches));
 
             _services
-                     .AddSingleton(new InventoryServicesInjector(_services, _playerMenuService, _craftingEvents, _coroutines, _loggerFactory));
+                     .AddSingleton(new InventoryServicesInjector(_services, _playerMenuService, _coroutines, _loggerFactory));
 
         }
     }

@@ -8,6 +8,7 @@ namespace ModifAmorphic.Outward.ActionUI
 {
     [BepInDependency("com.bepis.bepinex.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("io.mefino.configurationmanager", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("modifamorphic.outward.transmorphic", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInPlugin(ModInfo.ModId, ModInfo.ModName, ModInfo.ModVersion)]
     public class ActionUIPlugin : BaseUnityPlugin
     {

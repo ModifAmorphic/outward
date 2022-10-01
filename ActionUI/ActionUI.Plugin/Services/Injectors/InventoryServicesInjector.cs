@@ -16,12 +16,11 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
 
-        private readonly CraftingMenuEvents _craftingEvents;
         private readonly LevelCoroutines _coroutines;
 
-        public InventoryServicesInjector(ServicesProvider services, PlayerMenuService playerMenuService, CraftingMenuEvents craftingEvents, LevelCoroutines coroutines, Func<IModifLogger> getLogger)
+        public InventoryServicesInjector(ServicesProvider services, PlayerMenuService playerMenuService, LevelCoroutines coroutines, Func<IModifLogger> getLogger)
         {
-            (_services, _craftingEvents, _coroutines, _getLogger) = (services, craftingEvents, coroutines, getLogger);
+            (_services, _coroutines, _getLogger) = (services, coroutines, getLogger);
             playerMenuService.OnPlayerActionMenusConfigured += AddInventoryServices;
         }
 
@@ -46,7 +45,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                     _services.GetService<GlobalProfileService>(),
                     (ProfileService)profileManager.ProfileService,
                     usp.GetService<InventoryService>(),
-                    _craftingEvents,
                     splitPlayer.AssignedCharacter.UID,
                     _getLogger
                     ))
@@ -54,7 +52,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                     _services.GetService<GlobalProfileService>(),
                     (ProfileService)profileManager.ProfileService,
                     usp.GetService<InventoryService>(),
-                    _craftingEvents,
                     splitPlayer.AssignedCharacter.UID,
                     _getLogger
                     ))

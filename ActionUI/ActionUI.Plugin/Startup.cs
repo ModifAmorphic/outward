@@ -92,7 +92,6 @@ namespace ModifAmorphic.Outward.ActionUI
                 .AddSingleton(new InventoryStartup(
                     services
                     , services.GetService<PlayerMenuService>()
-                    , services.GetService<CustomCraftingModule>().CraftingMenuEvents
                     , services.GetService<ModifGoService>()
                     , services.GetService<LevelCoroutines>()
                     , _loggerFactory));
