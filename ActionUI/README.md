@@ -1,12 +1,12 @@
 # ![Action UI](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/Banner.png?raw=true)
 
-## ⚡ Additional Quickslots, UI Positioning, Durability Display ⚡
+## ⚡ Equipment Sets, Additional Quickslots, UI Positioning, Durability Display ⚡
 
 ***
 
 - Add Multiple Hotbars and Action Slots (Quick Slots)
-- Combat Mode: Extra Slots without ruining game balance.
-- Adds Equipment Sets. Create weapon and armor sets and swap gear with a single click.
+  - Combat Mode: Extra Slots without ruining game balance.
+- Create Weapon and Armor Sets. Equip entire sets with a single hotkey.
 - Reposition UI Elements with Drag and Drop
 - New Durability UI Displays Equipment
 - See the [Action UI Wiki](https://github.com/ModifAmorphic/outward/wiki/Action-UI) for more details
