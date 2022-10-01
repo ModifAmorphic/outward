@@ -1,4 +1,5 @@
 ﻿using ModifAmorphic.Outward.ActionUI.Models;
+using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Unity.ActionUI;
@@ -14,19 +15,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
     public class WeaponSetsJsonService : JsonProfileService<EquipmentSetsProfile<WeaponSet>>, IEquipmentSetService<WeaponSet>
     {
+
         protected override string FileName => "WeaponSets.json";
         private InventoryService _inventoryService;
-        private CraftingMenuEvents _craftingEvents;
 
         public WeaponSetsJsonService(GlobalProfileService globalProfileService, 
                                      ProfileService profileService, 
                                      InventoryService inventoryService, 
-                                     CraftingMenuEvents craftingEvents, 
                                      string characterUID, 
                                      Func<IModifLogger> getLogger) : base(globalProfileService, profileService, characterUID, getLogger)
         {
-            (_inventoryService, _craftingEvents) = (inventoryService, craftingEvents);
-            _craftingEvents.DynamicCraftComplete += UpdateSetsCraftResults;
+            _inventoryService = inventoryService;
+            TransmorphicEventsEx.TryHookOnTransmogrified(this, OnTransmogrified);
         }
 
         public event Action<WeaponSet> OnNewSet;
@@ -163,10 +163,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _inventoryService.AddOrUpdateEquipmentSetSkill(prefab, equipmentSet);
         }
 
-        private void ForgetEquipmentSetSkill(int SetID) => _inventoryService.RemoveEquipmentSetSkill(SetID);
+        private void ForgetEquipmentSetSkill(int SetID) => _inventoryService.RemoveEquipmentSet(SetID);
 
-        private void UpdateSetsCraftResults(DynamicCraftingResult result, int resultMultiplier, CustomCraftingMenu menu)
+        private void OnTransmogrified(int consumedItemID, string consumedItemUID, int transmogItemID, string transmogItemUID)
         {
+            Logger.LogDebug($"WeaponSetsJsonService::OnTransmogrified" +
+                    $"(consumedItemID: {consumedItemID}, consumedItemUID: '{consumedItemUID}', transmogItemID: {transmogItemID}, transmogItemUID: '{transmogItemUID}')");
             var sets = GetProfile().EquipmentSets.ToList();
             foreach (var set in sets)
             {
@@ -176,11 +178,11 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
                     if (equipSlot != null && equipSlot.ItemID != 0 && !string.IsNullOrEmpty(equipSlot.UID))
                     {
-                        if (result.IngredientCraftData.ConsumedItems.TryGetValue(equipSlot.ItemID, out var itemResults)
-                            && itemResults.TryGetValue(equipSlot.UID, out var oldUID))
+                        if (equipSlot.ItemID == consumedItemID && equipSlot.UID == consumedItemUID)
                         {
-                            equipSlot.UID = result.ResultItem.UID;
+                            equipSlot.UID = transmogItemUID;
                             saveSet = true;
+                            Logger.LogDebug($"Found and updated set {set.Name} ItemID {equipSlot.ItemID}'s UID from '{consumedItemUID}' to '{transmogItemUID}'");
                         }
                     }
                 }
@@ -191,14 +193,13 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 }
             }
         }
+
         public ISlotAction GetSlotActionPreview(IEquipmentSet set) => _inventoryService.GetEquipSkillPreview(set);
 
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            _craftingEvents.DynamicCraftComplete -= UpdateSetsCraftResults;
             _inventoryService = null;
-            _craftingEvents = null;
         }
     }
 }

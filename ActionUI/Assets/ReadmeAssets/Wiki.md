@@ -29,6 +29,9 @@ Select the profile you wish to rename from the drop down, click the the rename b
 #### Component Toggles
 - The "Action Slots (Restart)" option enables or disables Action UI's configurable Hotbars.  A **game restart** is required for this to take effect. Disabling enables Outward's built in Quick Slots.
 - "Durability Display" toggles the durability display on and off. No restart required.
+- "Equipment Sets" toggles Equipment Sets addon menu and skills.
+- "Craft from Stash" allows use of items in crafting menus directly from the character's stash.
+  - "Outside Towns" enables "Craft from Stash" anywhere.
 
 ***
 
