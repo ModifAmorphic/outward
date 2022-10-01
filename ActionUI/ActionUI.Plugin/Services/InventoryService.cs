@@ -76,7 +76,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             ItemDisplayPatches.AfterSetReferencedItem += AddEquipmentSetIcon;
             NetworkLevelLoaderPatches.MidLoadLevelAfter += ShowHideSkillsMenu;
             _profileManager.ProfileService.OnActiveProfileChanged.AddListener(ProfileChanged);
-            _profileManager.ProfileService.OnActiveProfileSwitched.AddListener(ProfileChanged);
+            _profileManager.ProfileService.OnActiveProfileSwitched.AddListener(ProfileSwitched);
 
             var armorService = (ArmorSetsJsonService)_profileManager.ArmorSetService;
             var weaponService = (WeaponSetsJsonService)_profileManager.WeaponSetService;
@@ -89,9 +89,22 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _firstSetsAddedComplete = true;
         }
 
+        private Dictionary<EquipSlots, EquipSkillPreview> _cachedSkillPreviews = new Dictionary<EquipSlots, EquipSkillPreview>();
         public EquipSkillPreview GetEquipSkillPreview(IEquipmentSet set)
         {
-            return new EquipSkillPreview(_characterEquipment.GetMatchingSlot(ActionUiEquipSlotsXRef[set.IconSlot]));
+            if (_cachedSkillPreviews.TryGetValue(set.IconSlot, out var skillPreview))
+                return skillPreview;
+
+            _cachedSkillPreviews.Add(set.IconSlot, new EquipSkillPreview(_characterEquipment.GetMatchingSlot(ActionUiEquipSlotsXRef[set.IconSlot])));
+            return _cachedSkillPreviews[set.IconSlot];
+        }
+        private void ClearSkillPreviewCache()
+        {
+            var skillPreviews = _cachedSkillPreviews.Values.ToArray();
+            for (int i = 0; i < skillPreviews.Length; i++)
+                skillPreviews[i].Dispose();
+
+            _cachedSkillPreviews.Clear();
         }
 
         private void ShowHideSkillsMenu(NetworkLevelLoader networkLevelLoader)
@@ -184,9 +197,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void ProfileChanged(IActionUIProfile profile)
         {
+            Logger.LogDebug($"{nameof(InventoryService)}::{nameof(ProfileChanged)}: Profile changed or switched. Profile is '{profile.Name}'. EquipmentSetsEnabled == {profile.EquipmentSetsEnabled}.");
+
             if (_equipmentSetsEnabled != profile.EquipmentSetsEnabled)
             {
                 _equipmentSetsEnabled = profile.EquipmentSetsEnabled;
+
                 if (_equipmentSetsEnabled && _firstSetsAddedComplete)
                 {
                     AddEquipmentSets<ArmorSetSkill>(_profileManager.ArmorSetService.GetEquipmentSetsProfile().EquipmentSets, true);
@@ -194,10 +210,32 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 }
                 else
                 {
+                    ClearSkillPreviewCache();
                     RemoveEquipmentSets(_profileManager.ArmorSetService.GetEquipmentSetsProfile().EquipmentSets);
                     RemoveEquipmentSets(_profileManager.WeaponSetService.GetEquipmentSetsProfile().EquipmentSets);
                 }
             }
+        }
+
+        private void ProfileSwitched(IActionUIProfile profile)
+        {
+            _equipmentSetsEnabled = profile.EquipmentSetsEnabled;
+
+            ClearSkillPreviewCache();
+            RemoveUnknownEquipmentSets<ArmorSetSkill>(_profileManager.ArmorSetService.GetEquipmentSetsProfile().EquipmentSets);
+            RemoveUnknownEquipmentSets<WeaponSetSkill>(_profileManager.WeaponSetService.GetEquipmentSetsProfile().EquipmentSets);
+            
+            if (_equipmentSetsEnabled && _firstSetsAddedComplete)
+            {
+                AddEquipmentSets<ArmorSetSkill>(_profileManager.ArmorSetService.GetEquipmentSetsProfile().EquipmentSets, true);
+                AddEquipmentSets<WeaponSetSkill>(_profileManager.WeaponSetService.GetEquipmentSetsProfile().EquipmentSets, true);
+            }
+            else
+            {
+                RemoveEquipmentSets(_profileManager.ArmorSetService.GetEquipmentSetsProfile().EquipmentSets);
+                RemoveEquipmentSets(_profileManager.WeaponSetService.GetEquipmentSetsProfile().EquipmentSets);
+            }
+            
         }
 
         private void AddEquipmentSets<T>(IEnumerable<IEquipmentSet> sets, bool learnSets = false) where T : EquipmentSetSkill
@@ -285,6 +323,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 RemoveEquipmentSet(removeSets[i].SetID);
         }
 
+        public void RemoveUnknownEquipmentSets<T>(IEnumerable<IEquipmentSet> knownSets) where T : EquipmentSetSkill
+        {
+            Logger.LogDebug($"{nameof(InventoryService)}::{nameof(RemoveUnknownEquipmentSets)}: Removing any unknown {typeof(T).Name} sets.");
+            var setSkills = _characterInventory.SkillKnowledge.GetLearnedItems().Where(s => s is T).Cast<T>().ToArray();
+
+            for (int i = 0; i < setSkills.Length; i++)
+            {
+                if (!knownSets.Any(s => s.SetID == setSkills[i].ItemID))
+                    RemoveEquipmentSet(setSkills[i].ItemID);
+            }
+        }
+
         public void RemoveEquipmentSet(int setID)
         {
             if (!_characterInventory.SkillKnowledge.IsItemLearned(setID))
@@ -296,6 +346,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 setSkill.transform.parent = null;
                 setSkill.gameObject.Destroy();
+                Logger.LogDebug($"{nameof(InventoryService)}::{nameof(RemoveEquipmentSet)}: Destroyed set skill with SetID == {setID}.");
             }
 
             _characterInventory.SkillKnowledge.RemoveItem(setID);
@@ -305,7 +356,11 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 var prefab = ResourcesPrefabManager.Instance.GetItemPrefab(setID);
                 GetItemPrefabs().Remove(setID.ToString());
                 prefab.gameObject.Destroy();
+
+                Logger.LogDebug($"{nameof(InventoryService)}::{nameof(RemoveEquipmentSet)}: Destroyed set prefab with SetID == {setID}.");
             }
+
+            
         }
 
         private Dictionary<string, Item> GetItemPrefabs()
@@ -314,18 +369,21 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return (Dictionary<string, Item>)field.GetValue(null);
         }
 
-        private void AddEquipmentSetIcon(ItemDisplay itemDisplay, Skill skill)
+        private void AddEquipmentSetIcon(ItemDisplay itemDisplay, Item item)
         {
             //if (itemDisplay.GetComponentsInChildren<Image>().Any(i => i.name == "imgEquipmentSet"))
             //    return;
 
-            var existingIcon = itemDisplay.GetComponentsInChildren<Image>().FirstOrDefault(i => i.name == "imgEquipmentSet");
-            if (!(skill is EquipmentSetSkill setSkill))
+            var existingIcons = itemDisplay.GetComponentsInChildren<Image>().Where(i => i.name == "imgEquipmentSet").ToArray();
+
+            if (!(item is EquipmentSetSkill setSkill))
             {
-                if (existingIcon != null)
-                    UnityEngine.Object.Destroy(existingIcon);
+                for (int i = 0; i < existingIcons.Length; i++)
+                    UnityEngine.Object.Destroy(existingIcons[i].gameObject);
                 return;
             }
+            else if (existingIcons.Any())
+                return;
 
             var enchantedGo = itemDisplay.transform.Find("imgEnchanted").gameObject;
             var equipmentSetIconGo = UnityEngine.Object.Instantiate(enchantedGo, itemDisplay.transform);
@@ -667,6 +725,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     EquipmentMenuPatches.AfterOnHide -= HideEquipmentSetMenu;
                     ItemDisplayPatches.AfterSetReferencedItem -= AddEquipmentSetIcon;
                     NetworkLevelLoaderPatches.MidLoadLevelAfter -= ShowHideSkillsMenu;
+                    ClearSkillPreviewCache();
                 }
                 _character = null;
                 _equipmentSetsMenus = null;

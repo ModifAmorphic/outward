@@ -562,9 +562,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 {
                     RewiredInputsPatches.BeforeExportXmlData -= RemoveActionUIMaps;
                     RewiredInputsPatches.AfterExportXmlData -= RewiredInputsPatches_AfterExportXmlData;
-                    _profileService.OnActiveProfileSwitched.RemoveListener(LoadConfigMaps);
-                    _hotbarProfileService.OnProfileChanged -= SlotAmountChanged;
-                    _captureDialog.OnKeysSelected -= CaptureDialog_OnKeysSelected;
+                    if (_profileService != null)
+                        _profileService.OnActiveProfileSwitched.RemoveListener(LoadConfigMaps);
+                    if (_hotbarProfileService != null)
+                        _hotbarProfileService.OnProfileChanged -= SlotAmountChanged;
+                    if (_captureDialog != null)
+                        _captureDialog.OnKeysSelected -= CaptureDialog_OnKeysSelected;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer

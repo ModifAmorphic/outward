@@ -24,7 +24,7 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
                 Logger.LogTrace($"{nameof(CharacterQuickSlotManagerPatches)}::{nameof(ItemDestroyedPrefix)}(): Invoked for PlayerID {___m_character?.OwnerPlayerSys?.PlayerID}.");
                 if (___m_character?.OwnerPlayerSys != null)
                 {
-                    if (___m_quickSlots.Length >= _quickSlotID && ___m_quickSlots[_quickSlotID] != null)
+                    if (___m_quickSlots.Length > _quickSlotID && ___m_quickSlots[_quickSlotID] != null)
                         return true;
 
                     var playerId = ___m_character.OwnerPlayerSys.PlayerID;

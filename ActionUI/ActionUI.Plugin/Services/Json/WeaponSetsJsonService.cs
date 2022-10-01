@@ -140,6 +140,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             Save(set);
 
             var newSet = GetEquipmentSet(name);
+            Logger.LogDebug($"Created new set {newSet.Name}. Invoking event OnNewSet.");
 
             OnNewSet?.TryInvoke(newSet);
 

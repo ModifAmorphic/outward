@@ -23,8 +23,6 @@ namespace ModifAmorphic.Outward.ActionUI.Models
         [SerializeField]
         protected EquipSlots _iconSlot;
 
-        protected InventoryService _inventoryService;
-
         //public Character Character { get; set; }
         public ItemDisplay ItemDisplay => m_refItemDisplay;
 
@@ -82,26 +80,36 @@ namespace ModifAmorphic.Outward.ActionUI.Models
             m_refItemDisplay?.RefreshIcon();
         }
 
-        protected override bool OwnerHasAllRequiredItems(bool _tryingToActivate) => GetInventoryService().HasItems(GetEquipmentSet().GetEquipSlots());
+        protected override bool OwnerHasAllRequiredItems(bool _tryingToActivate)
+        {
+            if (TryGetInventoryService(out var inventoryService) && TryGetEquipmentSet(out var equipmentSet))
+                return inventoryService.HasItems(equipmentSet.GetEquipSlots());
+
+            return false;
+        }
 
         protected Item GetIconOwnerPrefab()
         {
-            var iconSlot = GetEquipmentSet()?.GetIconEquipSlot();
+            if (!TryGetEquipmentSet(out var equipmentSet))
+                return null;
+
+            var iconSlot = equipmentSet.GetIconEquipSlot();
             if (iconSlot == null)
                 return null;
 
             return ResourcesPrefabManager.Instance.GetItemPrefab(iconSlot.ItemID);
         }
 
-        protected InventoryService GetInventoryService()
+        protected bool TryGetInventoryService(out InventoryService inventoryService)
         {
-            if (_inventoryService == null)
-                _inventoryService = Psp.Instance.GetServicesProvider(this.m_ownerCharacter.OwnerPlayerSys.PlayerID).GetService<InventoryService>();
-
-            return _inventoryService;
+            inventoryService = null;
+            if (Psp.Instance.TryGetServicesProvider(this.m_ownerCharacter.OwnerPlayerSys.PlayerID, out var usp))
+                return usp.TryGetService<InventoryService>(out inventoryService);
+                    
+            return false;
         }
 
-        protected abstract IEquipmentSet GetEquipmentSet();
+        protected abstract bool TryGetEquipmentSet(out IEquipmentSet equipmentSet);
 
     }
 }

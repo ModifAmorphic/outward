@@ -29,7 +29,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
 
             var usp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
 
-            usp.TryDispose<IActionUIProfileService>();
 
             usp.AddSingleton<IActionUIProfileService>(new ProfileService(
                                 Path.Combine(ActionUISettings.CharactersProfilesPath, character.UID), 
@@ -42,5 +41,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
             OnSharedServicesInjected?.Invoke(splitPlayer);
 
         }
+
     }
 }

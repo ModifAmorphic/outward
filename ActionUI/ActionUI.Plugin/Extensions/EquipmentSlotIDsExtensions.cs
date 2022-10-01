@@ -17,7 +17,7 @@ namespace ModifAmorphic.Outward.ActionUI.Extensions
                     return EquipSlots.LeftHand;
                 case EquipmentSlotIDs.RightHand:
                     return EquipSlots.RightHand;
-                case EquipmentSlotIDs.Legs:
+                case EquipmentSlotIDs.Foot:
                     return EquipSlots.Feet;
                 default:
                     return EquipSlots.None;

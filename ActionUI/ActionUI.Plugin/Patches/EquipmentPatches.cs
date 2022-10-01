@@ -49,7 +49,7 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(EquipmentPatches)}::{nameof(OnUnequipPostfix)}(): Exception disabling quickslots for character {_char?.name}.", ex);
+                Logger.LogException($"{nameof(EquipmentPatches)}::{nameof(OnUnequipPostfix)}(): Exception invoking {nameof(AfterOnUnequip)} for character {_char?.name} and equipment {__instance?.name}.", ex);
             }
         }
     }

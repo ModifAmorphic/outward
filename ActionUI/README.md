@@ -59,6 +59,8 @@
   - Empty Action Slots no longer show as disabled if a disabled skill / item was removed from the slot.
   - Fixed bug where equipment showed the broken icon in an action slot if the scene was loaded without the item in the characters inventory.
   - Switching to controller and back to keyboard should no longer cause action slots to stop updating cooldowns, stack counts, and enabled status.
+  - Fixed several issues when transitioning between the main menu and continuing other saves after the first character save is loaded.
+  - Durability Display should no properly track equipped boots.
 
 ## Release 1.0.1
   - Fixes profile character switching bug. 

@@ -250,9 +250,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     QuickSlotControllerSwitcherPatches.StartInitAfter -= SwapCanvasGroup;
                     NetworkLevelLoader.Instance.onOverallLoadingDone -= AssignSlotActions;
                     SkillMenuPatches.AfterOnSectionSelected -= SetSkillsMovable;
-                    _hotbars.OnAwake -= StartNextFrame;
-                    _profileManager.HotbarProfileService.OnProfileChanged += ConfigureHotbars;
-                    _hotbars.OnHasChanges.RemoveListener(Save);
+                    if (_hotbars != null)
+                        _hotbars.OnAwake -= StartNextFrame;
+                    if (_profileManager?.HotbarProfileService != null)
+                        _profileManager.HotbarProfileService.OnProfileChanged += ConfigureHotbars;
+                    if (_hotbars != null)
+                        _hotbars.OnHasChanges.RemoveListener(Save);
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer

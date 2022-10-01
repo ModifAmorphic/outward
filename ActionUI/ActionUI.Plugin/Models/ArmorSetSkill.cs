@@ -8,27 +8,56 @@ namespace ModifAmorphic.Outward.ActionUI.Models
 {
     internal class ArmorSetSkill : EquipmentSetSkill
     {
-        private ArmorSet _armorSet => (ArmorSet)GetEquipmentSet();
+        private ArmorSet _armorSet
+        {
+            get
+            {
+                if (TryGetEquipmentSet(out var equipmentSet))
+                    return (ArmorSet)equipmentSet;
+                return null;
+            }
+        }
 
         protected override void OnAwake()
         {
-
             base.OnAwake();
         }
 
-        protected override bool OwnerHasAllRequiredItems(bool _tryingToActivate) => _armorSet != null && GetInventoryService().HasItems(_armorSet.GetEquipSlots()) && !GetInventoryService().IsArmorSetEquipped(_armorSet);
+        protected override bool OwnerHasAllRequiredItems(bool _tryingToActivate)
+        {
+            if (_armorSet == null)
+                return false;
+
+            if (TryGetInventoryService(out var inventoryService) && TryGetEquipmentSet(out var equipmentSet))
+                return inventoryService.HasItems(_armorSet.GetEquipSlots()) && !inventoryService.IsArmorSetEquipped(_armorSet);
+
+            return false;
+        }
 
         protected override void QuickSlotUse()
         {
-            GetInventoryService().TryEquipArmorSet(_armorSet);
-        }
-        protected override IEquipmentSet GetEquipmentSet()
-        {
-            if (this.m_ownerCharacter == null)
-                return null;
+            if (_armorSet == null)
+                return;
 
-            var equipService = Psp.Instance.GetServicesProvider(this.m_ownerCharacter.OwnerPlayerSys.PlayerID).GetService<IEquipmentSetService<ArmorSet>>();
-            return equipService.GetEquipmentSet(_setName);
+            if (TryGetInventoryService(out var inventoryService))
+                inventoryService.TryEquipArmorSet(_armorSet);
+        }
+
+        protected override bool TryGetEquipmentSet(out IEquipmentSet equipmentSet)
+        {
+            equipmentSet = null;
+            if (this.m_ownerCharacter == null)
+                return false;
+
+            if (Psp.Instance.TryGetServicesProvider(this.m_ownerCharacter.OwnerPlayerSys.PlayerID, out var usp))
+            {
+                if (usp.TryGetService<IEquipmentSetService<ArmorSet>>(out var equipService))
+                {
+                    equipmentSet = equipService.GetEquipmentSet(_setName);
+                    return equipmentSet != null;
+                }
+            }
+            return false;
         }
     }
 }

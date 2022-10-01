@@ -6,11 +6,13 @@ using System.Linq;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
-    public class UnityServicesProvider
+    public class UnityServicesProvider : IDisposable
     {
         private readonly ConcurrentDictionary<Type, Delegate> _serviceFactories = new ConcurrentDictionary<Type, Delegate>();
 
         public static UnityServicesProvider _instance;
+        private bool disposedValue;
+
         public static UnityServicesProvider Instance { get; private set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
@@ -32,10 +34,12 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public bool TryRemove<T>() => _serviceFactories.TryRemove(typeof(T), out var _);
 
-        public bool TryDispose<T>()
+        public bool TryDispose<T>() => TryDispose(typeof(T));
+
+        public bool TryDispose(Type typeKey)
         {
             bool isDisposed = false;
-            if (_serviceFactories.TryGetValue(typeof(T), out var factory))
+            if (_serviceFactories.TryGetValue(typeKey, out var factory))
             {
                 var service = factory.DynamicInvoke();
 
@@ -46,7 +50,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 }
             }
 
-            return _serviceFactories.TryRemove(typeof(T), out var _) && isDisposed;
+            return _serviceFactories.TryRemove(typeKey, out var _) && isDisposed;
         }
 
         public Func<T> GetServiceFactory<T>()
@@ -106,5 +110,36 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         }
 
         public bool ContainsService<T>() => _serviceFactories.ContainsKey(typeof(T));
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    var keys = _serviceFactories.Keys.ToArray();
+                    for (int i = 0; i < keys.Length; i++)
+                    {
+                        TryDispose(keys[i]);
+                    }
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~UnityServicesProvider()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

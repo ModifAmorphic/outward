@@ -67,6 +67,17 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             }
         }
 
+        public void DestroyPositionableUIs(CharacterUI characterUI)
+        {
+            var hud = characterUI.transform.Find("Canvas/GameplayPanels/HUD");
+            //hud.GetOrAddComponent<GraphicRaycaster>();
+            var positionables = hud.GetComponentsInChildren<PositionableUI>();
+            for (int i = 0; i < positionables.Length; i++)
+            {
+                UnityEngine.Object.Destroy(positionables[i]);
+            }
+        }
+
         private static void AddPositionableUI(RectTransform transform, GameObject positionablePrefab)
         {
             var bg = UnityEngine.Object.Instantiate(positionablePrefab, transform);

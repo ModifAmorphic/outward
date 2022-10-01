@@ -10,7 +10,7 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
     {
         private static IModifLogger Logger => LoggerFactory.GetLogger(ModInfo.ModId);
 
-        public delegate void AfterSetReferencedItemDelegate(ItemDisplay itemDisplay, Skill skill);
+        public delegate void AfterSetReferencedItemDelegate(ItemDisplay itemDisplay, Item item);
         public static event AfterSetReferencedItemDelegate AfterSetReferencedItem;
 
         [HarmonyPatch(nameof(ItemDisplay.SetReferencedItem))]
@@ -20,11 +20,11 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
-                if (_item == null || !(_item is Skill skill))
+                if (_item == null)
                     return;
 
-                Logger.LogTrace($"{nameof(ItemDisplayPatches)}::{nameof(SetReferencedItemPostfix)}(): Invoking {nameof(AfterSetReferencedItem)} for EquipmentSetSkill {skill.name}.");
-                AfterSetReferencedItem?.Invoke(__instance, skill);
+                Logger.LogTrace($"{nameof(ItemDisplayPatches)}::{nameof(SetReferencedItemPostfix)}(): Invoking {nameof(AfterSetReferencedItem)} for Item {_item.name}.");
+                AfterSetReferencedItem?.Invoke(__instance, _item);
             }
             catch (Exception ex)
             {

@@ -29,10 +29,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
 
             var usp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
             var profileManager = usp.GetService<ProfileManager>();
-            usp.TryDispose<InventoryService>();
-            usp.TryDispose<IEquipmentSetService<ArmorSet>>();
-            usp.TryDispose<IEquipmentSetService<WeaponSet>>();
-            usp.TryDispose<EquipmentMenuStashService>();
 
             usp
                 .AddSingleton(new InventoryService(

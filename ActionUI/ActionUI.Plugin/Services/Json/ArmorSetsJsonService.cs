@@ -112,6 +112,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 OnNewSet?.TryInvoke(armorSet);
         }
 
+        
+
         public void DeleteEquipmentSet(string setName)
         {
             var sets = GetProfile().EquipmentSets;
