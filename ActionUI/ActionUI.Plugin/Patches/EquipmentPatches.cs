@@ -2,7 +2,7 @@
 using ModifAmorphic.Outward.Logging;
 using System;
 
-namespace ModifAmorphic.Outward.UI.Patches
+namespace ModifAmorphic.Outward.ActionUI.Patches
 {
     [HarmonyPatch(typeof(Equipment))]
     internal static class EquipmentPatches
@@ -22,7 +22,7 @@ namespace ModifAmorphic.Outward.UI.Patches
                 if (!_char.IsLocalPlayer)
                     return;
 
-                Logger.LogTrace($"{nameof(EquipmentPatches)}::{nameof(OnEquipPostfix)}(): Invoked. Equipment item '{__instance.name}' equiped to slot '{__instance.CurrentEquipmentSlot?.SlotType}' for character {_char?.name}. Invoking {nameof(AfterOnEquip)}.");
+                Logger.LogTrace($"{nameof(EquipmentPatches)}::{nameof(OnEquipPostfix)}(): Invoked. Equipped item '{__instance.name}' to slot '{__instance.CurrentEquipmentSlot?.SlotType}' for character {_char?.name}. Invoking {nameof(AfterOnEquip)}.");
                 AfterOnEquip?.Invoke(_char, __instance);
             }
             catch (Exception ex)
@@ -44,7 +44,7 @@ namespace ModifAmorphic.Outward.UI.Patches
                 if (!_char.IsLocalPlayer)
                     return;
 
-                Logger.LogTrace($"{nameof(EquipmentPatches)}::{nameof(OnUnequipPostfix)}(): Invoked. Unequipped item '{__instance.name}' equiped from slot '{__instance.CurrentEquipmentSlot?.SlotType}' for character {_char?.name}. Invoking {nameof(AfterOnUnequip)}.");
+                Logger.LogTrace($"{nameof(EquipmentPatches)}::{nameof(OnUnequipPostfix)}(): Invoked. Unequipped item '{__instance.name}' from slot '{__instance.CurrentEquipmentSlot?.SlotType}' for character {_char?.name}. Invoking {nameof(AfterOnUnequip)}.");
                 AfterOnUnequip?.Invoke(_char, __instance);
             }
             catch (Exception ex)

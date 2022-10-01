@@ -1,7 +1,8 @@
-﻿using ModifAmorphic.Outward.Unity.ActionMenus.Data;
+﻿using ModifAmorphic.Outward.Unity.ActionMenus;
+using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using UnityEngine.UI;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
+namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
 {
     public interface IHotbarController
     {

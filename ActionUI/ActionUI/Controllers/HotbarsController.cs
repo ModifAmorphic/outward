@@ -1,12 +1,12 @@
-using ModifAmorphic.Outward.ActionMenus.Extensions;
-using ModifAmorphic.Outward.Unity.ActionMenus.Data;
-using ModifAmorphic.Outward.Unity.ActionUI;
+using ModifAmorphic.Outward.Unity.ActionMenus;
+using ModifAmorphic.Outward.Unity.ActionUI.Data;
+using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
 using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenus.Controllers
+namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
 {
     public class HotbarsController : IHotbarController
     {

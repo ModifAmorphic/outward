@@ -1,15 +1,14 @@
-﻿using ModifAmorphic.Outward.UI.DataModels;
+﻿using ModifAmorphic.Outward.ActionUI.DataModels;
+using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using System.IO;
 
-namespace ModifAmorphic.Outward.UI.Settings
+namespace ModifAmorphic.Outward.ActionUI.Settings
 {
     internal class ActionUISettings
     {
-        public const string GameObjectName = "MenuOverhaul";
-
         public static readonly string PluginPath = Path.GetDirectoryName(ActionUIPlugin.Instance.Info.Location);
         public static readonly string ConfigPath = Path.GetDirectoryName(ActionUIPlugin.Instance.Config.ConfigFilePath);
-        public static readonly string ProfilesPath = Path.Combine(ConfigPath, ModInfo.ModId, "profiles");
+        public static readonly string CharactersProfilesPath = Path.Combine(ConfigPath, ModInfo.ModId, "profiles");
 
         public static class ActionViewer
         {
@@ -27,6 +26,17 @@ namespace ModifAmorphic.Outward.UI.Settings
             ActionSlotsEnabled = true,
             DurabilityDisplayEnabled = true,
             StashCraftingEnabled = true,
+            CraftingOutsideTownEnabled = false,
+            EquipmentSetsEnabled = true,
+            EquipmentSetsSettingsProfile = new EquipmentSetsSettingsProfile()
+            {
+                ArmorSetsInCombatEnabled = false,
+                SkipWeaponAnimationsEnabled = false,
+                StashEquipEnabled = true,
+                StashEquipAnywhereEnabled = false,
+                StashUnequipEnabled = false,
+                StashUnequipAnywhereEnabled = false,
+            }
         };
 
     }

@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
+namespace ModifAmorphic.Outward.Unity.ActionUI.Data
 {
     public class UIPositions : IEquatable<UIPositions>, IComparable<UIPositions>
     {
         public string TransformPath { get; set; }
-        public ActionMenus.UIPosition OriginPosition { get; set; }
-        public ActionMenus.UIPosition ModifiedPosition { get; set; }
+        public UIPosition OriginPosition { get; set; }
+        public UIPosition ModifiedPosition { get; set; }
 
         public int CompareTo(UIPositions other)
         {

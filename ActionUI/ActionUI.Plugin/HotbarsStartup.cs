@@ -1,19 +1,19 @@
 ﻿using HarmonyLib;
+using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.ActionUI.Services;
+using ModifAmorphic.Outward.ActionUI.Services.Injectors;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.Patches;
-using ModifAmorphic.Outward.UI.Services;
-using ModifAmorphic.Outward.UI.Services.Injectors;
-using ModifAmorphic.Outward.UI.Settings;
 using System;
 
-namespace ModifAmorphic.Outward.UI
+namespace ModifAmorphic.Outward.ActionUI
 {
     internal class HotbarsStartup : IStartable
     {
         private readonly Harmony _harmony;
         private readonly ServicesProvider _services;
+        private readonly PlayerMenuService _playerMenuService;
         private readonly Func<IModifLogger> _loggerFactory;
         private readonly ModifGoService _modifGoService;
         private readonly LevelCoroutines _coroutines;
@@ -21,9 +21,9 @@ namespace ModifAmorphic.Outward.UI
 
         private IModifLogger Logger => _loggerFactory.Invoke();
 
-        public HotbarsStartup(ServicesProvider services, ModifGoService modifGoService, LevelCoroutines coroutines, Func<IModifLogger> loggerFactory)
+        public HotbarsStartup(ServicesProvider services, PlayerMenuService playerMenuService, ModifGoService modifGoService, LevelCoroutines coroutines, Func<IModifLogger> loggerFactory)
         {
-            (_services, _modifGoService, _coroutines, _loggerFactory) = (services, modifGoService, coroutines, loggerFactory);
+            (_services, _playerMenuService, _modifGoService, _coroutines, _loggerFactory) = (services, playerMenuService, modifGoService, coroutines, loggerFactory);
             _harmony = new Harmony(HotbarsModId);
         }
 
@@ -43,6 +43,7 @@ namespace ModifAmorphic.Outward.UI
             _harmony.PatchAll(typeof(SkillMenuPatches));
 
             _services.AddSingleton(new HotbarServicesInjector(_services,
+                                                    _playerMenuService,
                                                     _coroutines,
                                                     _loggerFactory));
 

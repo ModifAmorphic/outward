@@ -1,6 +1,5 @@
-﻿using ModifAmorphic.Outward.Unity.ActionMenus.Data;
-using ModifAmorphic.Outward.Unity.ActionUI;
-using System;
+﻿using ModifAmorphic.Outward.Unity.ActionUI;
+using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
@@ -15,6 +14,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public MainSettingsMenu MainSettingsMenu;
         public DurabilityDisplay DurabilityDisplay;
+        public EquipmentSetMenu EquipmentSetMenus;
         //public SettingsView SettingsView;
         //public HotkeyCaptureMenu HotkeyCaptureMenu;
         //public HotbarSettingsView HotbarSettingsViewer;
@@ -31,7 +31,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         //private Func<bool> _exitRequested;
 
         private MenuNavigationActions _navActions;
-        public MenuNavigationActions NavACtions => _navActions;
+        public MenuNavigationActions NavActions => _navActions;
 
         private bool _isAwake = false;
         private bool _isPlayerAssigned = false;
@@ -82,7 +82,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             //posText.text = $"Player Pos: {rectTransform.position.x}, {rectTransform.position.y}. Size {rectTransform.sizeDelta.x}, {rectTransform.sizeDelta.y}";
             //canvasPosText.text = $"ActionCanvas Pos: {canvasRectTransform.position.x}, {canvasRectTransform.position.y}. Size {canvasRectTransform.sizeDelta.x}, {canvasRectTransform.sizeDelta.y}";
 
-            if (_navActions != null && (_navActions.Cancel?.Invoke()??false))
+            if (_navActions != null && (_navActions.Cancel?.Invoke() ?? false))
             {
                 for (int i = 0; i < _actionMenus.Length; i++)
                 {

@@ -1,10 +1,11 @@
-﻿using UnityEngine.Events;
+﻿using ModifAmorphic.Outward.Unity.ActionMenus;
+using System;
 
-namespace ModifAmorphic.Outward.Unity.ActionMenus.Data
+namespace ModifAmorphic.Outward.Unity.ActionUI.Data
 {
     public interface IHotbarProfileService
     {
-        UnityEvent<IHotbarProfile, HotbarProfileChangeTypes> OnProfileChanged { get; }
+        event Action<IHotbarProfile, HotbarProfileChangeTypes> OnProfileChanged;
         IHotbarProfile GetProfile();
         void Save();
         void SaveNew(IHotbarProfile hotbarProfile);

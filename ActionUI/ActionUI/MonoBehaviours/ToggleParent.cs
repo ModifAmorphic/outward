@@ -6,6 +6,8 @@ public class ToggleParent : MonoBehaviour
 {
     public List<ToggleChild> Children;
 
+    private void Awake() => GetComponent<Toggle>().onValueChanged.AddListener(ToggleChildren);
+
     private void Start() => ToggleChildren(GetComponent<Toggle>().isOn);
     public void ToggleChildren(bool enabled)
     {

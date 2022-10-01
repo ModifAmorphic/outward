@@ -1,26 +1,26 @@
-﻿using ModifAmorphic.Outward.Unity.ActionMenus;
+﻿using ModifAmorphic.Outward.Unity.ActionUI;
 using static EquipmentSlot;
 
-namespace ModifAmorphic.Outward.UI.Extensions
+namespace ModifAmorphic.Outward.ActionUI.Extensions
 {
     internal static class EquipmentSlotIDsExtensions
     {
-        public static DurableEquipmentSlot ToDurableEquipmentSlot(this EquipmentSlotIDs slot)
+        public static EquipSlots ToDurableEquipmentSlot(this EquipmentSlotIDs slot)
         {
             switch (slot)
             {
                 case EquipmentSlotIDs.Helmet:
-                    return DurableEquipmentSlot.Head;
+                    return EquipSlots.Head;
                 case EquipmentSlotIDs.Chest:
-                    return DurableEquipmentSlot.Chest;
+                    return EquipSlots.Chest;
                 case EquipmentSlotIDs.LeftHand:
-                    return DurableEquipmentSlot.LeftHand;
+                    return EquipSlots.LeftHand;
                 case EquipmentSlotIDs.RightHand:
-                    return DurableEquipmentSlot.RightHand;
+                    return EquipSlots.RightHand;
                 case EquipmentSlotIDs.Legs:
-                    return DurableEquipmentSlot.Feet;
+                    return EquipSlots.Feet;
                 default:
-                    return DurableEquipmentSlot.None;
+                    return EquipSlots.None;
             }
         }
     }

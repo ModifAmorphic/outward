@@ -4,7 +4,7 @@ using Rewired;
 using System;
 using System.Reflection;
 
-namespace ModifAmorphic.Outward.UI.Patches
+namespace ModifAmorphic.Outward.ActionUI.Patches.Sandbox
 {
 
     //[HarmonyPatch(typeof(Player.ControllerHelper.MapHelper))]

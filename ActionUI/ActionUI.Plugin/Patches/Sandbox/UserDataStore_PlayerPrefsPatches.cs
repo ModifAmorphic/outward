@@ -3,7 +3,7 @@ using ModifAmorphic.Outward.Logging;
 using Rewired.Data;
 using System;
 
-namespace ModifAmorphic.Outward.UI.Patches
+namespace ModifAmorphic.Outward.ActionUI.Patches.Sandbox
 {
     [HarmonyPatch(typeof(UserDataStore_PlayerPrefs))]
     public class UserDataStore_PlayerPrefsPatches

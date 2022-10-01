@@ -1,12 +1,12 @@
-﻿using ModifAmorphic.Outward.Coroutines;
+﻿using ModifAmorphic.Outward.ActionUI.DataModels;
+using ModifAmorphic.Outward.ActionUI.Models;
+using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.ActionUI.Settings;
+using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.DataModels;
-using ModifAmorphic.Outward.UI.Models;
-using ModifAmorphic.Outward.UI.Patches;
-using ModifAmorphic.Outward.UI.Settings;
 using ModifAmorphic.Outward.Unity.ActionMenus;
-using ModifAmorphic.Outward.Unity.ActionMenus.Data;
+using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using Rewired;
 using System;
 using System.Collections;
@@ -14,7 +14,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 #if DEBUG
-namespace ModifAmorphic.Outward.UI.Services
+namespace ModifAmorphic.Outward.ActionUI.Services
 {
     internal class HotbarServiceSwitched
     {
@@ -104,7 +104,7 @@ namespace ModifAmorphic.Outward.UI.Services
             {
                 ConfigureHotbars(profile, HotbarProfileChangeTypes.ProfileRefreshed);
                 _hotbars.ClearChanges();
-                _profileManager.HotbarProfileService.OnProfileChanged.AddListener(ConfigureHotbars);
+                _profileManager.HotbarProfileService.OnProfileChanged -= ConfigureHotbars;
                 _levelCoroutines.StartRoutine(CheckProfileForSave());
             }
             else
@@ -203,7 +203,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
                 ConfigureHotbars(GetOrCreateActiveProfile(), HotbarProfileChangeTypes.ProfileRefreshed);
                 _hotbars.ClearChanges();
-                _profileManager.HotbarProfileService.OnProfileChanged.AddListener(ConfigureHotbars);
+                _profileManager.HotbarProfileService.OnProfileChanged += ConfigureHotbars;
 
                 var positionable = _hotbars.GetComponent<PositionableUI>();
                 positionable.SetPositionFromProfile(_profileManager.PositionsProfileService.GetProfile());
@@ -217,7 +217,7 @@ namespace ModifAmorphic.Outward.UI.Services
 
         public void DisableHotbars()
         {
-            _profileManager.HotbarProfileService.OnProfileChanged.RemoveListener(ConfigureHotbars);
+            _profileManager.HotbarProfileService.OnProfileChanged -= ConfigureHotbars;
             _levelCoroutines.StopRoutine(CheckProfileForSave());
 
             _hotbars.Controller.DisableHotbars();
@@ -252,20 +252,6 @@ namespace ModifAmorphic.Outward.UI.Services
         private IHotbarProfile GetOrCreateActiveProfile()
         {
             var activeProfile = _profileManager.ProfileService.GetActiveProfile();
-
-            if (activeProfile == null)
-            {
-                Logger.LogDebug($"No active profile set. Checking if any profiles exist");
-                var names = _profileManager.ProfileService.GetProfileNames();
-                if (names == null || !names.Any())
-                {
-                    Logger.LogDebug($"No profiles found. Creating default profile '{ActionUISettings.DefaultProfile.Name}'");
-                    _profileManager.ProfileService.SaveNew(ActionUISettings.DefaultProfile);
-                    names = _profileManager.ProfileService.GetProfileNames();
-                }
-                else
-                    _profileManager.ProfileService.SetActiveProfile(names.First());
-            }
 
             var hotbarProfile = _profileManager.HotbarProfileService.GetProfile();
             if (hotbarProfile == null)

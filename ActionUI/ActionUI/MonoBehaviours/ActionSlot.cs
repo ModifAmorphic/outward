@@ -1,4 +1,5 @@
-using ModifAmorphic.Outward.Unity.ActionMenus.Controllers;
+using ModifAmorphic.Outward.Unity.ActionUI;
+using ModifAmorphic.Outward.Unity.ActionUI.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -104,6 +105,22 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             }
 
         }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+        private void OnEnable()
+        {
+            if (SlotAction != null)
+            {
+                DebugLogger.Log($"ActionSlot::OnEnable: Reassigning SlotAction {SlotAction.DisplayName}");
+                _controller.AssignSlotAction(SlotAction, true);
+            }
+        }
+
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+        //private void OnDisable()
+        //{
+        //    _controller.ActionSlotOnDisable();
+        //}
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Update()

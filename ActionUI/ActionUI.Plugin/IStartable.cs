@@ -1,4 +1,4 @@
-﻿namespace ModifAmorphic.Outward.UI
+﻿namespace ModifAmorphic.Outward.ActionUI
 {
     interface IStartable
     {

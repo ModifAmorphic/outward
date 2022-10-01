@@ -3,7 +3,7 @@ using ModifAmorphic.Outward.Logging;
 using System;
 using System.Collections.Generic;
 
-namespace ModifAmorphic.Outward.UI.Patches
+namespace ModifAmorphic.Outward.ActionUI.Patches
 {
     [HarmonyPatch(typeof(CharacterUI))]
     internal static class CharacterUIPatches
@@ -34,7 +34,7 @@ namespace ModifAmorphic.Outward.UI.Patches
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(CharacterUIPatches)}::{nameof(IsMenuFocusedPostfix)}(): Exception Invoking {nameof(GetIsMenuFocused)}({nameof(MenuManagerPatches)}).", ex);
+                Logger.LogException($"{nameof(CharacterUIPatches)}::{nameof(IsMenuFocusedPostfix)}(): Exception Invoking {nameof(GetIsMenuFocused)}.", ex);
             }
         }
     }

@@ -1,13 +1,13 @@
-﻿using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.UI.DataModels;
-using ModifAmorphic.Outward.UI.Extensions;
-using ModifAmorphic.Outward.UI.Models;
-using ModifAmorphic.Outward.Unity.ActionMenus;
+﻿using ModifAmorphic.Outward.ActionUI.DataModels;
+using ModifAmorphic.Outward.ActionUI.Extensions;
+using ModifAmorphic.Outward.ActionUI.Models;
+using ModifAmorphic.Outward.Logging;
+using ModifAmorphic.Outward.Unity.ActionUI;
 using Rewired;
 using System;
 using System.Linq;
 
-namespace ModifAmorphic.Outward.UI.Services
+namespace ModifAmorphic.Outward.ActionUI.Services
 {
     internal class SlotDataService : IDisposable
     {
@@ -53,7 +53,8 @@ namespace ModifAmorphic.Outward.UI.Services
             {
                 slotAction = new EquipmentSlotAction(equipment, _rewiredPlayer, _character, this, combatModeEnabled, _getLogger)
                 {
-                    Cooldown = new ItemCooldownTracker(equipment)
+                    Cooldown = new ItemCooldownTracker(equipment),
+                    Stack = item.IsStackable() ? item.ToStackable(_character.Inventory) : null,
                 };
             }
             else

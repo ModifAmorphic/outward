@@ -3,7 +3,7 @@ using ModifAmorphic.Outward.Logging;
 using Rewired;
 using System;
 
-namespace ModifAmorphic.Outward.UI.Patches
+namespace ModifAmorphic.Outward.ActionUI.Patches
 {
     [HarmonyPatch(typeof(InputManager_Base))]
     public class InputManager_BasePatches
