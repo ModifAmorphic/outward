@@ -141,10 +141,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (profile.ActionSlotsEnabled)
             {
                 //Add canvas with 0 sort order to drop panel to allow drag and drop to the hotbar.
-                var dropPanel = splitPlayer.CharUI.transform.Find("Canvas/GameplayPanels/Menus/DropPanel");
-                var dropCanvas = dropPanel.GetOrAddComponent<Canvas>();
-                dropCanvas.overrideSorting = true;
-                dropCanvas.sortingOrder = 0;
+                //var dropPanel = splitPlayer.CharUI.transform.Find("Canvas/GameplayPanels/Menus/DropPanel");
+                //var dropCanvas = dropPanel.GetOrAddComponent<Canvas>();
+                //dropCanvas.overrideSorting = true;
+                //dropCanvas.sortingOrder = 0;
             }
             var isActionSlotsEnabled = playerMenu.ProfileManager.ProfileService.GetActiveProfile().ActionSlotsEnabled;
             if (!CharacterQuickSlotManagerPatches.AllowItemDestroyed.ContainsKey(splitPlayer.RewiredID))

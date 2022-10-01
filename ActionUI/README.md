@@ -61,6 +61,7 @@
   - Switching to controller and back to keyboard should no longer cause action slots to stop updating cooldowns, stack counts, and enabled status.
   - Fixed several issues when transitioning between the main menu and continuing other saves after the first character save is loaded.
   - Durability Display should no properly track equipped boots.
+  - Fixed issue where items could not be drag and dropped from the inventory menu.
 
 ## Release 1.0.1
   - Fixes profile character switching bug. 
