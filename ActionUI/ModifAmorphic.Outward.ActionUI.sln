@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModifAmorphic.Outward.Actio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModifAmorphic.Outward.ActionUI", "ActionUI\ModifAmorphic.Outward.ActionUI.csproj", "{812D0067-22E7-46A4-90E7-206D8B23C879}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModifAmorphic.Outward.Shared", "..\..\..\..\modifamorphic\GitHub-Outward\outward-shared\outward\Outward.Shared\ModifAmorphic.Outward.Shared\ModifAmorphic.Outward.Shared.csproj", "{466DFAC2-150D-4A18-B06E-CFB7FC93A70F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,12 +26,6 @@ Global
 		{812D0067-22E7-46A4-90E7-206D8B23C879}.DebugLocal|Any CPU.Build.0 = DebugLocal|Any CPU
 		{812D0067-22E7-46A4-90E7-206D8B23C879}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{812D0067-22E7-46A4-90E7-206D8B23C879}.Release|Any CPU.Build.0 = Release|Any CPU
-		{466DFAC2-150D-4A18-B06E-CFB7FC93A70F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{466DFAC2-150D-4A18-B06E-CFB7FC93A70F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{466DFAC2-150D-4A18-B06E-CFB7FC93A70F}.DebugLocal|Any CPU.ActiveCfg = Debug|Any CPU
-		{466DFAC2-150D-4A18-B06E-CFB7FC93A70F}.DebugLocal|Any CPU.Build.0 = Debug|Any CPU
-		{466DFAC2-150D-4A18-B06E-CFB7FC93A70F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{466DFAC2-150D-4A18-B06E-CFB7FC93A70F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
