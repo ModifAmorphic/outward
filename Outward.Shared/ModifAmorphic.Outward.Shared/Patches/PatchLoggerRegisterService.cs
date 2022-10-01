@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace ModifAmorphic.Outward.Events
 {
-    internal static class PatchLoggerRegisterService
+    public static class PatchLoggerRegisterService
     {
 #if DEBUG
         private readonly static IModifLogger _logger = LoggerFactory.ConfigureLogger(DefaultLoggerInfo.ModId, DefaultLoggerInfo.ModName, DefaultLoggerInfo.DebugLogLevel);
