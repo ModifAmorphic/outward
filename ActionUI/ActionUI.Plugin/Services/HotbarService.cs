@@ -62,6 +62,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             QuickSlotControllerSwitcherPatches.StartInitAfter += SwapCanvasGroup;
             NetworkLevelLoader.Instance.onOverallLoadingDone += AssignSlotActions;
             SkillMenuPatches.AfterOnSectionSelected += SetSkillsMovable;
+            ItemDisplayDropGroundPatches.TryGetIsDropValids.Add(_player.id, TryGetIsDropValid);
             _hotbars.OnAwake += StartNextFrame;
             if (_hotbars.IsAwake)
                 StartNextFrame();
@@ -70,11 +71,24 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void SetSkillsMovable(ItemListDisplay itemListDisplay)
         {
+            if (!_profileManager?.ProfileService?.GetActiveProfile()?.ActionSlotsEnabled ?? false)
+                return;
+
             var displays = itemListDisplay.GetComponentsInChildren<ItemDisplay>();
             for (int i = 0; i < displays.Length; i++)
             {
                 displays[i].Movable = true;
             }
+        }
+
+        private bool TryGetIsDropValid(ItemDisplay draggedDisplay, Character character, out bool result)
+        {
+            result = false;
+            if (draggedDisplay?.RefItem == null || !(draggedDisplay.RefItem is Skill skill))
+                return false;
+
+            Logger.LogDebug($"TryGetIsDropValid:: Blocking drop of skill {skill.name} to DropPanel.");
+            return true;
         }
 
         private void StartNextFrame() => _levelCoroutines.DoNextFrame(() => Start());
@@ -186,7 +200,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     {
                         actionSlot.Controller.AssignSlotAction(slotAction);
                     }
-                    actionSlot.ActionButton.gameObject.GetOrAddComponent<ActionSlotDropper>(); //.SetLogger(_getLogger);
+                    actionSlot.ActionButton.gameObject.GetOrAddComponent<ActionSlotDropper>().SetLogger(_getLogger);
                 }
             }
             SetProfileHotkeys(profile);
@@ -250,6 +264,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     QuickSlotControllerSwitcherPatches.StartInitAfter -= SwapCanvasGroup;
                     NetworkLevelLoader.Instance.onOverallLoadingDone -= AssignSlotActions;
                     SkillMenuPatches.AfterOnSectionSelected -= SetSkillsMovable;
+                    
+                    if (ItemDisplayDropGroundPatches.TryGetIsDropValids.ContainsKey(_player.id))
+                        ItemDisplayDropGroundPatches.TryGetIsDropValids.Remove(_player.id);
+
                     if (_hotbars != null)
                         _hotbars.OnAwake -= StartNextFrame;
                     if (_profileManager?.HotbarProfileService != null)

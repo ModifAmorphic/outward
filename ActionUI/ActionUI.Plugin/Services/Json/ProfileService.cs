@@ -68,7 +68,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 var currentVersion = new Version(ModInfo.ModVersion);
                 if (string.IsNullOrWhiteSpace(_activeProfile.LastLoadedModVersion) || (new Version(_activeProfile.LastLoadedModVersion)).CompareTo(currentVersion) == -1)
                 {
-                    if (ModInfo.ModVersion == "1.0.2")
+                    if (ModInfo.ModVersion == "1.0.2" || ModInfo.ModVersion == "1.0.3")
                         _activeProfile.EquipmentSetsEnabled = true;
 
                     _activeProfile.LastLoadedModVersion = ModInfo.ModVersion;

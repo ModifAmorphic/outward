@@ -5,6 +5,7 @@ using ModifAmorphic.Outward.ActionUI.Patches;
 using ModifAmorphic.Outward.ActionUI.Services.Injectors;
 using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Coroutines;
+using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
@@ -141,11 +142,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (profile.ActionSlotsEnabled)
             {
                 //Add canvas with 0 sort order to drop panel to allow drag and drop to the hotbar.
-                //var dropPanel = splitPlayer.CharUI.transform.Find("Canvas/GameplayPanels/Menus/DropPanel");
-                //var dropCanvas = dropPanel.GetOrAddComponent<Canvas>();
-                //dropCanvas.overrideSorting = true;
-                //dropCanvas.sortingOrder = 0;
+                var dropPanel = splitPlayer.CharUI.transform.Find("Canvas/GameplayPanels/Menus/DropPanel");
+                var dropCanvas = dropPanel.GetOrAddComponent<Canvas>();
+                dropPanel.GetOrAddComponent<GraphicRaycaster>();
+               
+                _coroutine.DoNextFrame(() => {
+                    dropCanvas.overrideSorting = true;
+                    dropCanvas.sortingOrder = 0;
+                    Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(SetPlayerMenuCharacter)}(): Changed '{dropCanvas.gameObject.GetPath()}' sortingOrder to {dropCanvas.sortingOrder}.");
+                });
+                
             }
+
             var isActionSlotsEnabled = playerMenu.ProfileManager.ProfileService.GetActiveProfile().ActionSlotsEnabled;
             if (!CharacterQuickSlotManagerPatches.AllowItemDestroyed.ContainsKey(splitPlayer.RewiredID))
                 CharacterQuickSlotManagerPatches.AllowItemDestroyed.Add(splitPlayer.RewiredID,
