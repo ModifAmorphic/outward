@@ -52,9 +52,13 @@
 ***
 
 ## Latest Release ${PACKAGE_VERSION}
+  - Bug fix for "floating" backpacks.
+    - Backpacks or items could remain stuck floating in the air if the item was slotted one of the action slots higher than Outwards base quickslots. Outward technically has 11 quickslots, so any amount of action slots higher than 11 could cause this issue if an item was slotted to it.
+
+## Release 1.0.3
   - Fix for drag and drop issue. Skills could be dragged and destroyed. Items couldn't be dragged to action slots.
 
-## Latest Release 1.0.2
+## Release 1.0.2
   - Weapon and Equipment Sets functionality added.
   - Craft from stash now limited to in town only by default with an option to enable it from any scene.
   - Optimized settings menu so Action Slots were only reloaded for action slots changes. Should remove most of the lag from changing other menu options.
