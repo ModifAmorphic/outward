@@ -161,6 +161,8 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
                     $"Source ItemID was {sourceItemID}. Applying Enchantment {enchantment.PresetID} - {enchantment.Name}. Item is active? {resultPreFab.gameObject.activeSelf}");
             }
 
+            resultPreFab.hideFlags = HideFlags.HideAndDontSave;
+
             if (isTemporary)
             {
                 var tempItems = _tempRecipeResultItemIDs.GetOrAdd(recipeSource.RecipeID, new HashSet<int>());
