@@ -3,7 +3,6 @@ using ModifAmorphic.Outward.ActionUI.DataModels;
 using ModifAmorphic.Outward.ActionUI.Monobehaviours;
 using ModifAmorphic.Outward.ActionUI.Patches;
 using ModifAmorphic.Outward.ActionUI.Services.Injectors;
-using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.GameObjectResources;
@@ -159,13 +158,14 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 var dropPanel = splitPlayer.CharUI.transform.Find("Canvas/GameplayPanels/Menus/DropPanel");
                 var dropCanvas = dropPanel.GetOrAddComponent<Canvas>();
                 dropPanel.GetOrAddComponent<GraphicRaycaster>();
-               
-                _coroutine.DoNextFrame(() => {
+
+                _coroutine.DoNextFrame(() =>
+                {
                     dropCanvas.overrideSorting = true;
                     dropCanvas.sortingOrder = 0;
                     Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(ConfigureCharacterUI)}(): Changed '{dropCanvas.gameObject.GetPath()}' sortingOrder to {dropCanvas.sortingOrder}.");
                 });
-                
+
             }
 
             var isActionSlotsEnabled = playerMenu.ProfileManager.ProfileService.GetActiveProfile().ActionSlotsEnabled;

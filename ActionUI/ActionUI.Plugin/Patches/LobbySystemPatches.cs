@@ -1,8 +1,6 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ModifAmorphic.Outward.ActionUI.Patches
 {
@@ -50,7 +48,7 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
             {
                 Logger.LogDebug($"{nameof(LobbySystemPatches)}::{nameof(ClearPlayerSystemsPrefix)}: Invoking {nameof(BeforeClearPlayerSystems)}.");
                 BeforeClearPlayerSystems?.Invoke(__instance);
-                
+
             }
             catch (Exception ex)
             {
@@ -58,6 +56,6 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
             }
         }
 
-        
+
     }
 }

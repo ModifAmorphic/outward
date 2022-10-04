@@ -5,7 +5,6 @@ using ModifAmorphic.Outward.ActionUI.Services.Injectors;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Modules.Crafting;
 using System;
 
 namespace ModifAmorphic.Outward.ActionUI

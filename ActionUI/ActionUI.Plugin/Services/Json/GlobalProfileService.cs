@@ -1,18 +1,14 @@
-﻿using ModifAmorphic.Outward.ActionUI.DataModels;
-using ModifAmorphic.Outward.ActionUI.DataModels.Global;
+﻿using ModifAmorphic.Outward.ActionUI.DataModels.Global;
 using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets;
-using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
 using ModifAmorphic.Outward.Unity.ActionUI.Models.EquipmentSets;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
@@ -39,10 +35,13 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             var setType = set is ArmorSet ? EquipmentSetTypes.Armor : EquipmentSetTypes.Weapon;
 
             GetGlobalProfile().CharacterEquipmentSets.AddOrUpdate(
-                set.SetID, 
+                set.SetID,
                 new CharacterEquipmentSet()
-                { 
-                    SetID = set.SetID, CharacterUID = characterUID, EquipmentSetType = setType, Name = set.Name 
+                {
+                    SetID = set.SetID,
+                    CharacterUID = characterUID,
+                    EquipmentSetType = setType,
+                    Name = set.Name
                 });
             Save();
         }
@@ -133,7 +132,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 if (disposing)
                 {
-                    
+
                 }
 
                 _cachedProfile = null;

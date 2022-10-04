@@ -18,7 +18,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         protected GlobalProfileService GlobalProfileService { get; set; }
 
         protected ProfileService ProfileService { get; set; }
-        
+
         protected T CachedProfile { get; set; }
 
         protected string CharacterUID;

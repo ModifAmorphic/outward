@@ -48,7 +48,7 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Services
                 {
                     _controller.ToggleEnabled(false);
                 }
-                
+
                 yield return new WaitForSeconds(Timings.EnabledWait);
             }
         }

@@ -1,16 +1,9 @@
-﻿using BepInEx;
-using ModifAmorphic.Outward.ActionUI.Monobehaviours;
-using ModifAmorphic.Outward.ActionUI.Patches;
-using ModifAmorphic.Outward.ActionUI.Services.Injectors;
+﻿using ModifAmorphic.Outward.ActionUI.Patches;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
-using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {

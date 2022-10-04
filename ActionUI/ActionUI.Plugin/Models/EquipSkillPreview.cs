@@ -91,7 +91,7 @@ namespace ModifAmorphic.Outward.ActionUI.Models
             {
                 if (disposing)
                 {
-                    
+
                     EquipmentPatches.AfterOnEquip -= EquipmentChanged;
                     EquipmentPatches.AfterOnUnequip -= EquipmentChanged;
                 }

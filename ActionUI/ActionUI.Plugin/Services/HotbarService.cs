@@ -264,7 +264,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     QuickSlotControllerSwitcherPatches.StartInitAfter -= SwapCanvasGroup;
                     NetworkLevelLoader.Instance.onOverallLoadingDone -= AssignSlotActions;
                     SkillMenuPatches.AfterOnSectionSelected -= SetSkillsMovable;
-                    
+
                     if (ItemDisplayDropGroundPatches.TryGetIsDropValids.ContainsKey(_player.id))
                         ItemDisplayDropGroundPatches.TryGetIsDropValids.Remove(_player.id);
 

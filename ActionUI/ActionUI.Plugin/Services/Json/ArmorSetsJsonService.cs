@@ -1,7 +1,6 @@
 ﻿using ModifAmorphic.Outward.ActionUI.Models;
 using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Unity.ActionUI;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets;
@@ -16,15 +15,15 @@ namespace ModifAmorphic.Outward.ActionUI.Services
     public class ArmorSetsJsonService : JsonProfileService<EquipmentSetsProfile<ArmorSet>>, IEquipmentSetService<ArmorSet>
     {
         protected override string FileName => "ArmorSets.json";
-        private InventoryService _inventoryService;
+        private EquipService _equipService;
 
         public ArmorSetsJsonService(GlobalProfileService globalProfileService,
                                      ProfileService profileService,
-                                     InventoryService inventoryService,
+                                     EquipService equipService,
                                      string characterUID,
                                      Func<IModifLogger> getLogger) : base(globalProfileService, profileService, characterUID, getLogger)
         {
-            _inventoryService = inventoryService;
+            _equipService = equipService;
             TransmorphicEventsEx.TryHookOnTransmogrified(this, OnTransmogrified);
         }
 
@@ -69,7 +68,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             catch (Exception ex) { Logger.LogException(ex); }
         }
 
-        public bool TryEquipSet(ArmorSet armorSet) => _inventoryService.TryEquipArmorSet(armorSet);
+        public bool TryEquipSet(ArmorSet armorSet) => _equipService.TryEquipArmorSet(armorSet);
 
         public bool IsSetEquipped(string name)
         {
@@ -80,7 +79,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return IsSetEquipped(set);
         }
 
-        public bool IsSetEquipped(ArmorSet armorSet) => _inventoryService.IsArmorSetEquipped(armorSet);
+        public bool IsSetEquipped(ArmorSet armorSet) => _equipService.IsArmorSetEquipped(armorSet);
 
         public bool IsContainedInSet(string itemUID) =>
             GetEquipmentSetsProfile().EquipmentSets.Any(set => set.GetEquipSlots().Any(slot => slot != null && slot.UID == itemUID));
@@ -88,7 +87,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public ArmorSet GetEquippedAsSet(string name)
         {
-            var set = _inventoryService.GetEquippedAsArmorSet(name);
+            var set = _equipService.GetEquippedAsArmorSet(name);
             var existingSet = GetEquipmentSet(name);
             if (existingSet != null)
             {
@@ -112,7 +111,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 OnNewSet?.TryInvoke(armorSet);
         }
 
-        
+
 
         public void DeleteEquipmentSet(string setName)
         {
@@ -149,11 +148,11 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void LearnEquipmentSetSkill(IEquipmentSet equipmentSet)
         {
-            var prefab = _inventoryService.AddOrGetEquipmentSetSkillPrefab<ArmorSetSkill>(equipmentSet);
-            _inventoryService.AddOrUpdateEquipmentSetSkill(prefab, equipmentSet);
+            var prefab = _equipService.AddOrGetEquipmentSetSkillPrefab<ArmorSetSkill>(equipmentSet);
+            _equipService.AddOrUpdateEquipmentSetSkill(prefab, equipmentSet);
         }
 
-        private void ForgetEquipmentSetSkill(int SetID) => _inventoryService.RemoveEquipmentSet(SetID);
+        private void ForgetEquipmentSetSkill(int SetID) => _equipService.RemoveEquipmentSet(SetID);
 
         private bool GetSetExists(string name)
             => GetEquipmentSet(name) != null;
@@ -194,12 +193,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             }
         }
 
-        public ISlotAction GetSlotActionPreview(IEquipmentSet set) => _inventoryService.GetEquipSkillPreview(set);
+        public ISlotAction GetSlotActionPreview(IEquipmentSet set) => _equipService.GetEquipSkillPreview(set);
 
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            _inventoryService = null;
+            _equipService = null;
         }
     }
 }

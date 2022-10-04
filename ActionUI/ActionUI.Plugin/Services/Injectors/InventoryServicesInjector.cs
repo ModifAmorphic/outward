@@ -1,7 +1,5 @@
-﻿using ModifAmorphic.Outward.ActionUI.Patches;
-using ModifAmorphic.Outward.Coroutines;
+﻿using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets;
@@ -34,27 +32,33 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                 .AddSingleton(new InventoryService(
                                                     splitPlayer.AssignedCharacter,
                                                     profileManager,
-                                                    actionMenus.EquipmentSetMenus,
+                                                    _coroutines,
+                                                    _getLogger))
+                .AddSingleton(new EquipService(
+                                                    splitPlayer.AssignedCharacter,
+                                                    profileManager,
+                                                    usp.GetService<EquipmentSetMenu>(),
+                                                    usp.GetService<InventoryService>(),
                                                     _coroutines,
                                                     _getLogger))
                 .AddSingleton<IEquipmentSetService<WeaponSet>>(new WeaponSetsJsonService(
                     _services.GetService<GlobalProfileService>(),
                     (ProfileService)profileManager.ProfileService,
-                    usp.GetService<InventoryService>(),
+                    usp.GetService<EquipService>(),
                     splitPlayer.AssignedCharacter.UID,
                     _getLogger
                     ))
                 .AddSingleton<IEquipmentSetService<ArmorSet>>(new ArmorSetsJsonService(
                     _services.GetService<GlobalProfileService>(),
                     (ProfileService)profileManager.ProfileService,
-                    usp.GetService<InventoryService>(),
+                    usp.GetService<EquipService>(),
                     splitPlayer.AssignedCharacter.UID,
                     _getLogger
                     ))
                 .AddSingleton(new EquipmentMenuStashService(
                     splitPlayer.AssignedCharacter,
                     profileManager,
-                    usp.GetService<InventoryService>(),
+                    usp.GetService<EquipService>(),
                     _coroutines,
                     _getLogger
                     ));

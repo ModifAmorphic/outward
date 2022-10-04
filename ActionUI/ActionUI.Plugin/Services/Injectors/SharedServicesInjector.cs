@@ -1,5 +1,4 @@
-﻿using ModifAmorphic.Outward.ActionUI.Patches;
-using ModifAmorphic.Outward.ActionUI.Settings;
+﻿using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
@@ -31,7 +30,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
 
 
             usp.AddSingleton<IActionUIProfileService>(new ProfileService(
-                                Path.Combine(ActionUISettings.CharactersProfilesPath, splitPlayer.AssignedCharacter.UID), 
+                                Path.Combine(ActionUISettings.CharactersProfilesPath, splitPlayer.AssignedCharacter.UID),
                                 _services.GetService<GlobalProfileService>(),
                                 _getLogger));
 

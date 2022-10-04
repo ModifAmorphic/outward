@@ -47,7 +47,7 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
                 DisableBarService(kvp.Key);
             }
 
-            
+
 
             ActionSlot.StackText.enabled = false;
 
@@ -169,14 +169,14 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
 
             foreach (var progressTracker in _progressBarServices.Values)
                 progressTracker.StopTracking();
-            
+
             _stackService?.StopTracking();
             _toggleService?.StopTracking();
             if (_iconCoroutine != null)
                 ActionSlot.StopCoroutine(_iconCoroutine);
         }
 
-    private void OnActionButtonClicked()
+        private void OnActionButtonClicked()
         {
             if (ActionSlot.HotbarsContainer.IsInActionSlotEditMode)
             {

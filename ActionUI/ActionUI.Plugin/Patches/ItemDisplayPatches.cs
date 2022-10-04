@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using ModifAmorphic.Outward.ActionUI.Models;
 using ModifAmorphic.Outward.Logging;
 using System;
 

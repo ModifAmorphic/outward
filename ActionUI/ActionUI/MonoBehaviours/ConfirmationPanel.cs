@@ -1,11 +1,6 @@
 using ModifAmorphic.Outward.Unity.ActionUI;
-using ModifAmorphic.Outward.Unity.ActionUI.Data;
-using ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets;
 using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
-using ModifAmorphic.Outward.Unity.ActionUI.Models.EquipmentSets;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -15,7 +10,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
     [UnityScriptComponent]
     public class ConfirmationPanel : MonoBehaviour
     {
-        
+
         public Button ConfirmButton;
         public Button CancelButton;
         public Text PromptText;
