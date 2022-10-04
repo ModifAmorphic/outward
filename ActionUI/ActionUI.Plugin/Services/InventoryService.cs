@@ -74,7 +74,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             EquipmentMenuPatches.AfterShow += ShowEquipmentSetMenu;
             EquipmentMenuPatches.AfterOnHide += HideEquipmentSetMenu;
             ItemDisplayPatches.AfterSetReferencedItem += AddEquipmentSetIcon;
-            NetworkLevelLoaderPatches.MidLoadLevelAfter += ShowHideSkillsMenu;
+            //NetworkLevelLoaderPatches.MidLoadLevelAfter += ShowHideSkillsMenu;
+            NetworkLevelLoader.Instance.onOverallLoadingDone += ShowHideSkillsMenu;
             _profileManager.ProfileService.OnActiveProfileChanged.AddListener(ProfileChanged);
             _profileManager.ProfileService.OnActiveProfileSwitched.AddListener(ProfileSwitched);
 
@@ -107,10 +108,23 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _cachedSkillPreviews.Clear();
         }
 
+        private void ShowHideSkillsMenu()
+        {
+            if (_character?.CharacterUI == null)
+                return;
+
+            //Creates ItemDisplays for equipment set skills.
+
+            _character.CharacterUI.ShowMenu(CharacterUI.MenuScreens.Skills);
+            _character.CharacterUI.HideMenu(CharacterUI.MenuScreens.Skills);
+
+        }
+
         private void ShowHideSkillsMenu(NetworkLevelLoader networkLevelLoader)
         {
             if (_character?.CharacterUI == null)
                 return;
+
             //Creates ItemDisplays for equipment set skills.
             _coroutines.InvokeAfterLevelAndPlayersLoaded(networkLevelLoader,
                 () =>
@@ -724,7 +738,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     EquipmentMenuPatches.AfterShow -= ShowEquipmentSetMenu;
                     EquipmentMenuPatches.AfterOnHide -= HideEquipmentSetMenu;
                     ItemDisplayPatches.AfterSetReferencedItem -= AddEquipmentSetIcon;
-                    NetworkLevelLoaderPatches.MidLoadLevelAfter -= ShowHideSkillsMenu;
+                    //NetworkLevelLoaderPatches.MidLoadLevelAfter -= ShowHideSkillsMenu;
+                    NetworkLevelLoader.Instance.onOverallLoadingDone -= ShowHideSkillsMenu;
                     ClearSkillPreviewCache();
                 }
                 _character = null;

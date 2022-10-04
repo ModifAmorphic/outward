@@ -42,6 +42,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public Button ActionMenusButton => _actionUiGo;
 
+        public event Action<SplitPlayer> OnActionUiInjected;
+
         public delegate void PlayerActionMenusConfigured(PlayerActionMenus actionMenus, SplitPlayer splitPlayer);
         public event PlayerActionMenusConfigured OnPlayerActionMenusConfigured;
 
@@ -64,7 +66,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _getLogger = getLogger;
 
 
-            SplitPlayerPatches.InitAfter += InjectMenus;
+            //SplitPlayerPatches.InitAfter += InjectMenus;
+            SplitPlayerPatches.SetCharacterAfter += (p, c) => InjectMenus(p);
             _sharedServicesInjector.OnSharedServicesInjected += SetPlayerMenuCharacter;
             SplitScreenManagerPatches.RemoveLocalPlayerAfter += RemovePlayerMenu;
             PauseMenuPatches.AfterRefreshDisplay += (pauseMenu) => _coroutine.StartRoutine(ResizePauseMenu(pauseMenu));
@@ -99,6 +102,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             //UnityEngine.Object.DontDestroyOnLoad(playerMenuGo);
 
             InjectPauseMenu(splitPlayer, playerMenu);
+
+            OnActionUiInjected?.Invoke(splitPlayer);
+
+            _sharedServicesInjector.AddSharedServices(splitPlayer, splitPlayer.AssignedCharacter);
 
         }
 

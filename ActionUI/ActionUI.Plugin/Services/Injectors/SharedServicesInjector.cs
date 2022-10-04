@@ -21,10 +21,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
         public SharedServicesInjector(ServicesProvider services, Func<IModifLogger> getLogger)
         {
             (_services, _getLogger) = (services, getLogger);
-            SplitPlayerPatches.SetCharacterAfter += AddSharedServices;
+            //SplitPlayerPatches.SetCharacterAfter += AddSharedServices;
         }
 
-        private void AddSharedServices(SplitPlayer splitPlayer, Character character)
+        public void AddSharedServices(SplitPlayer splitPlayer, Character character)
         {
 
             var usp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);

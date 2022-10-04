@@ -31,6 +31,16 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _getLogger = getLogger;
 
             CharacterUIPatches.BeforeReleaseUI += ResetUIs;
+            LobbySystemPatches.BeforeClearPlayerSystems += LobbySystemPatches_BeforeClearPlayerSystems;
+        }
+
+        private void LobbySystemPatches_BeforeClearPlayerSystems(LobbySystem lobbySystem)
+        {
+            var players = lobbySystem.PlayersInLobby.FindAll(p => p.IsLocalPlayer);
+            foreach (var p in players)
+            {
+                ResetUIs(p.ControlledCharacter.CharacterUI, p.PlayerID);
+            }
         }
 
         private void ResetUIs(CharacterUI characterUI, int rewiredId)

@@ -1,4 +1,4 @@
-# ![Action UI](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/Banner.png?raw=true)
+# ![Action UI](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/Banner.png?raw=true)
 
 ## ⚡ Equipment Sets, Additional Quickslots, UI Positioning, Durability Display ⚡
 
@@ -15,39 +15,39 @@
 
 ## Highly Configurabe Hotbars and Action Slots
 
-![Hotbar Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/HotbarSettingsView_small.png?raw=true)
+![Hotbar Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/HotbarSettingsView_small.png?raw=true)
 
-![Hotbars](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/Hotbar.png?raw=true)
+![Hotbars](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/Hotbar.png?raw=true)
 
 ### Drag Actions to Slots right from Inventory!
 
-[ ![Assign Actions YouTube Video](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/AssignActionSlotVideo.png?raw=true) ](https://youtu.be/nJT76DLFIqw)
+[ ![Assign Actions YouTube Video](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/AssignActionSlotVideo.png?raw=true) ](https://youtu.be/nJT76DLFIqw)
 
 ***
 
 ## Equipment Sets and Quickslotable Skills
 
-![Equipment Sets Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/EquipmentSetSettingsView_small.png?raw=true)
+![Equipment Sets Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/EquipmentSetSettingsView_small.png?raw=true)
 
 ### Create and Customize Equipment Sets
 
-![Equipment Sets](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/EquipmentSetsMenu_small.png?raw=true)
+![Equipment Sets](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/EquipmentSetsMenu_small.png?raw=true)
 
 ### New Equipment Set Skills, slottable in Outward's Quickslots or ActionUI's Action Slots.
 
-![Equipment Set Skills](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/EquipmentSetSkills_small.png?raw=true)
+![Equipment Set Skills](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/EquipmentSetSkills_small.png?raw=true)
 
 ***
 
 ## Reposition UI Elements
 
-[ ![UI Positioning YouTube Video](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/UIPositioningVideo.png?raw=true) ](https://youtu.be/zoY1qEdeATg)
+[ ![UI Positioning YouTube Video](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/UIPositioningVideo.png?raw=true) ](https://youtu.be/zoY1qEdeATg)
 
 ***
 
 ## Equipment Durability UI
 
-![Durability Display](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/DurabilityDisplay.png?raw=true)
+![Durability Display](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/DurabilityDisplay.png?raw=true)
 
 ***
 
