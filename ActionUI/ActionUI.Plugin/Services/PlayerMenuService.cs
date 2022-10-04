@@ -42,8 +42,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public Button ActionMenusButton => _actionUiGo;
 
-        public event Action<SplitPlayer> OnActionUiInjected;
-
         public delegate void PlayerActionMenusConfigured(PlayerActionMenus actionMenus, SplitPlayer splitPlayer);
         public event PlayerActionMenusConfigured OnPlayerActionMenusConfigured;
 
@@ -66,11 +64,27 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _getLogger = getLogger;
 
 
-            //SplitPlayerPatches.InitAfter += InjectMenus;
-            SplitPlayerPatches.SetCharacterAfter += (p, c) => InjectMenus(p);
-            _sharedServicesInjector.OnSharedServicesInjected += SetPlayerMenuCharacter;
+            SplitPlayerPatches.SetCharacterAfter += InitActionUI;
             SplitScreenManagerPatches.RemoveLocalPlayerAfter += RemovePlayerMenu;
             PauseMenuPatches.AfterRefreshDisplay += (pauseMenu) => _coroutine.StartRoutine(ResizePauseMenu(pauseMenu));
+        }
+
+        private void InitActionUI(SplitPlayer splitPlayer, Character character)
+        {
+            InjectMenus(splitPlayer);
+            _sharedServicesInjector.AddSharedServices(splitPlayer);
+            ConfigureCharacterUI(splitPlayer);
+
+            try
+            {
+                var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
+                var playerMenu = psp.GetService<PlayerActionMenus>();
+                OnPlayerActionMenusConfigured?.Invoke(playerMenu, splitPlayer);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex);
+            }
         }
 
         private void InjectMenus(SplitPlayer splitPlayer)
@@ -99,14 +113,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (!CharacterUIPatches.GetIsMenuFocused.ContainsKey(splitPlayer.RewiredID))
                 CharacterUIPatches.GetIsMenuFocused.Add(splitPlayer.RewiredID, (playerId) => GetAnyMenuShowing(playerMenu, playerId));
 
-            //UnityEngine.Object.DontDestroyOnLoad(playerMenuGo);
-
             InjectPauseMenu(splitPlayer, playerMenu);
-
-            OnActionUiInjected?.Invoke(splitPlayer);
-
-            _sharedServicesInjector.AddSharedServices(splitPlayer, splitPlayer.AssignedCharacter);
-
         }
 
         private bool GetAnyMenuShowing(PlayerActionMenus actionMenus, int playerId)
@@ -120,7 +127,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private bool ShouldQuickslotItemBeDestroyed(bool actionSlotsActive, int playerID, int requestingPlayerID) => !actionSlotsActive || playerID != requestingPlayerID;
 
-        private void SetPlayerMenuCharacter(SplitPlayer splitPlayer)
+        private void ConfigureCharacterUI(SplitPlayer splitPlayer)
         {
             var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
             var playerMenu = psp.GetService<PlayerActionMenus>();
@@ -128,7 +135,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             var character = splitPlayer.AssignedCharacter;
 
             playerMenuGo.name = "PlayerActionMenus_" + character.UID;
-            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(SetPlayerMenuCharacter)}(): Activating {playerMenuGo.name} for rewired ID {splitPlayer.RewiredID}.");
+            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(ConfigureCharacterUI)}(): Activating {playerMenuGo.name} for rewired ID {splitPlayer.RewiredID}.");
             playerMenuGo.SetActive(true);
 
             var profile = GetActiveProfile(playerMenu.ProfileManager);
@@ -141,7 +148,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             playerMenu.ConfigureNavigation(GetNavigationActions(player));
 
-            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(SetPlayerMenuCharacter)}(): Adding SplitScreenScaler component to Action UIs.");
+            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(ConfigureCharacterUI)}(): Adding SplitScreenScaler component to Action UIs.");
             AddSplitScreenScaler(playerMenu, character.CharacterUI);
 
             _positionsService.StartKeepPostionablesVisible(playerMenu, character.CharacterUI);
@@ -156,7 +163,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 _coroutine.DoNextFrame(() => {
                     dropCanvas.overrideSorting = true;
                     dropCanvas.sortingOrder = 0;
-                    Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(SetPlayerMenuCharacter)}(): Changed '{dropCanvas.gameObject.GetPath()}' sortingOrder to {dropCanvas.sortingOrder}.");
+                    Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(ConfigureCharacterUI)}(): Changed '{dropCanvas.gameObject.GetPath()}' sortingOrder to {dropCanvas.sortingOrder}.");
                 });
                 
             }
@@ -169,15 +176,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                         splitPlayer.RewiredID,
                         requestingPlayerId)
                     );
-
-            try
-            {
-                OnPlayerActionMenusConfigured?.Invoke(playerMenu, splitPlayer);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException(ex);
-            }
         }
 
         private MenuNavigationActions GetNavigationActions(Player player)
@@ -209,7 +207,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             yield return null;
 
             var mainCanvas = actionMenus.transform.Find("MenuCanvas").gameObject.GetComponent<Canvas>();
-            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(SetPlayerMenuCharacter)}(): Setting overrideSorting to true for Canvas {mainCanvas?.name}.");
+            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(ConfigureCharacterUI)}(): Setting overrideSorting to true for Canvas {mainCanvas?.name}.");
             mainCanvas.overrideSorting = true;
             mainCanvas.sortingOrder = 2;
         }
@@ -289,9 +287,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 if (disposing)
                 {
-                    SplitPlayerPatches.InitAfter -= InjectMenus;
-                    if (_sharedServicesInjector != null)
-                        _sharedServicesInjector.OnSharedServicesInjected -= SetPlayerMenuCharacter;
+                    SplitPlayerPatches.SetCharacterAfter -= InitActionUI;
                     SplitScreenManagerPatches.RemoveLocalPlayerAfter -= RemovePlayerMenu;
                     PauseMenuPatches.AfterRefreshDisplay -= (pauseMenu) => _coroutine.StartRoutine(ResizePauseMenu(pauseMenu));
                 }

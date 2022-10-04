@@ -16,7 +16,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
         private IModifLogger Logger => _getLogger.Invoke();
 
         public delegate void SharedServicesInjectedDelegate(SplitPlayer splitPlayer);
-        public event SharedServicesInjectedDelegate OnSharedServicesInjected;
+        //public event SharedServicesInjectedDelegate OnSharedServicesInjected;
 
         public SharedServicesInjector(ServicesProvider services, Func<IModifLogger> getLogger)
         {
@@ -24,21 +24,21 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
             //SplitPlayerPatches.SetCharacterAfter += AddSharedServices;
         }
 
-        public void AddSharedServices(SplitPlayer splitPlayer, Character character)
+        public void AddSharedServices(SplitPlayer splitPlayer)
         {
 
             var usp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
 
 
             usp.AddSingleton<IActionUIProfileService>(new ProfileService(
-                                Path.Combine(ActionUISettings.CharactersProfilesPath, character.UID), 
+                                Path.Combine(ActionUISettings.CharactersProfilesPath, splitPlayer.AssignedCharacter.UID), 
                                 _services.GetService<GlobalProfileService>(),
                                 _getLogger));
 
             if (!usp.ContainsService<ProfileManager>())
                 usp.AddSingleton(new ProfileManager(splitPlayer.RewiredID));
 
-            OnSharedServicesInjected?.Invoke(splitPlayer);
+            //OnSharedServicesInjected?.Invoke(splitPlayer);
 
         }
 

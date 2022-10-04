@@ -11,34 +11,34 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
     {
         private static IModifLogger Logger => LoggerFactory.GetLogger(ModInfo.ModId);
 
-        [HarmonyPatch(nameof(LobbySystem.PlayerSystemHasBeenDestroyed), MethodType.Normal)]
-        [HarmonyPostfix]
-        private static void PlayerSystemHasBeenDestroyedPostfix(LobbySystem __instance, string _uid)
-        {
-            try
-            {
-                var playerSystem = __instance.GetPlayerSystem(_uid);
-                Logger.LogDebug($"{nameof(LobbySystemPatches)}::{nameof(PlayerSystemHasBeenDestroyedPostfix)}: PlayerUID: {_uid}, PlayerID == {playerSystem?.PlayerID}, IsLocalPlayer == {playerSystem?.IsLocalPlayer}.");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException($"{nameof(LobbySystemPatches)}::{nameof(PlayerSystemHasBeenDestroyedPostfix)} Exception PlayerUID: {_uid}.", ex);
-            }
-        }
+        //[HarmonyPatch(nameof(LobbySystem.PlayerSystemHasBeenDestroyed), MethodType.Normal)]
+        //[HarmonyPostfix]
+        //private static void PlayerSystemHasBeenDestroyedPostfix(LobbySystem __instance, string _uid)
+        //{
+        //    try
+        //    {
+        //        var playerSystem = __instance.GetPlayerSystem(_uid);
+        //        Logger.LogDebug($"{nameof(LobbySystemPatches)}::{nameof(PlayerSystemHasBeenDestroyedPostfix)}: PlayerUID: {_uid}, PlayerID == {playerSystem?.PlayerID}, IsLocalPlayer == {playerSystem?.IsLocalPlayer}.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.LogException($"{nameof(LobbySystemPatches)}::{nameof(PlayerSystemHasBeenDestroyedPostfix)} Exception PlayerUID: {_uid}.", ex);
+        //    }
+        //}
 
-        [HarmonyPatch(nameof(LobbySystem.OnLeftRoom), MethodType.Normal)]
-        [HarmonyPostfix]
-        private static void OnLeftRoom()
-        {
-            try
-            {
-                Logger.LogDebug($"{nameof(LobbySystemPatches)}::{nameof(OnLeftRoom)}:");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException($"{nameof(LobbySystemPatches)}::{nameof(OnLeftRoom)}", ex);
-            }
-        }
+        //[HarmonyPatch(nameof(LobbySystem.OnLeftRoom), MethodType.Normal)]
+        //[HarmonyPostfix]
+        //private static void OnLeftRoom()
+        //{
+        //    try
+        //    {
+        //        Logger.LogDebug($"{nameof(LobbySystemPatches)}::{nameof(OnLeftRoom)}:");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.LogException($"{nameof(LobbySystemPatches)}::{nameof(OnLeftRoom)}", ex);
+        //    }
+        //}
 
         public static event Action<LobbySystem> BeforeClearPlayerSystems;
 
