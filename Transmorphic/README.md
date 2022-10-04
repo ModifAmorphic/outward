@@ -76,6 +76,9 @@ Transmorphic adds a new crafting system focused on customizing your equipment's 
 # Change Logs
 
 ## Release ${PACKAGE_VERSION}
+  - Enchanting menu fixes. Fix for items spawning at origin (0, 0, 0).
+
+## Release 1.0.7
   - Compatibility patch for ActionUI Equipment Sets
 
 ## Release 1.0.6
