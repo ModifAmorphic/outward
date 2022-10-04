@@ -17,14 +17,9 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
     internal class EnchantPrefabs
     {
         /// <summary>
-        /// RecipeID, <ItemID, ResultID>
+        /// RecipeID, <SourceItemID, ResultItemID>
         /// </summary>
-        private readonly ConcurrentDictionary<int, Dictionary<int, int>> _recipeResultItemIDs = new ConcurrentDictionary<int, Dictionary<int, int>>();
-
-        /// <summary>
-        /// RecipeID, HashSet of Result ItemIDs
-        /// </summary>
-        private readonly ConcurrentDictionary<int, HashSet<int>> _tempRecipeResultItemIDs = new ConcurrentDictionary<int, HashSet<int>>();
+        private readonly ConcurrentDictionary<int, Dictionary<int, int>> _tempRecipeResultItemIDs = new ConcurrentDictionary<int, Dictionary<int, int>>();
 
         private readonly EnchantingSettings _settings;
 
@@ -46,9 +41,9 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
         {
             foreach (var recipeResults in _tempRecipeResultItemIDs.Values)
             {
-                foreach (var resultId in recipeResults)
+                foreach (var result in recipeResults)
                 {
-                    _preFabricator.RemovePrefab(resultId);
+                    _preFabricator.RemovePrefab(result.Value);
                 }
             }
             _tempRecipeResultItemIDs.Clear();
@@ -119,21 +114,13 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
         {
             (var resultName, var sourceItemId, var equipType) = GetPlaceholderResult(recipeSource, enchantment);
 
-            return CreateRecipeResultEquipment(recipeSource, sourceItemId, isTemporary);
+            return CreateRecipeResultPrefab(recipeSource, sourceItemId, isTemporary);
         }
 
-        public Equipment CreateRecipeResultEquipment(EnchantmentRecipe recipeSource, bool isTemporary = false)
+        public Equipment CreateRecipeResultPrefab(EnchantmentRecipe recipeSource, int sourceItemID, bool isTemporary = false)
         {
             var enchantment = ResourcesPrefabManager.Instance.GetEnchantmentPrefab(recipeSource.ResultID);
-            (var resultName, var sourceItemId, var equipType) = GetPlaceholderResult(recipeSource, enchantment);
-
-            return CreateRecipeResultEquipment(recipeSource, sourceItemId, isTemporary);
-        }
-
-        public Equipment CreateRecipeResultEquipment(EnchantmentRecipe recipeSource, int sourceItemID, bool isTemporary = false)
-        {
-            var enchantment = ResourcesPrefabManager.Instance.GetEnchantmentPrefab(recipeSource.ResultID);
-            (var resultName, var sourceItemId, var equipType) = GetPlaceholderResult(recipeSource, enchantment);
+            (var resultName, var placeholderItemId, var equipType) = GetPlaceholderResult(recipeSource, enchantment);
 
             //Equipment resultPreFab = null;
 
@@ -145,33 +132,72 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
                     resultPreFab = _preFabricator.CreatePrefab<Armor>(sourceItemID,
                                                                     resultItemID,
                                                                     resultName,
-                                                                    enchantment.Description, false);
+                                                                    enchantment.Description, false, true);
                 else if (equipType == typeof(Weapon))
                     resultPreFab = _preFabricator.CreatePrefab<Weapon>(sourceItemID,
                                                                     resultItemID,
                                                                     resultName,
-                                                                    enchantment.Description, false);
+                                                                    enchantment.Description, false, true);
                 else
                     resultPreFab = _preFabricator.CreatePrefab<Equipment>(sourceItemID,
                                                                     resultItemID,
                                                                     resultName,
-                                                                    enchantment.Description, false);
+                                                                    enchantment.Description, false, true);
+
+
+
+                var activeEnchant = ResourcesPrefabManager.Instance.GenerateEnchantment(enchantment.PresetID, resultPreFab.transform);
+
+                if (resultPreFab is Weapon weapon)
+                {
+                    if (!resultPreFab.ActiveEnchantmentIDs.Contains(enchantment.PresetID))
+                    {
+                        //resultPreFab.ProcessInit();
+                        coroutine.DoNextFrame(() =>
+                        {
+                            resultPreFab.AddEnchantment(enchantment.PresetID);
+                            resultPreFab.SetPrivateField<Equipment, bool>("m_enchantmentsHaveChanged", true);
+                        });
+                    }
+
+                    var baseDamage = weapon.GetPrivateField<Weapon, DamageList>("m_baseDamage");
+                    if (baseDamage == null)
+                    {
+                        
+                        var weaponStats = weapon.GetPrivateField<Weapon, WeaponBaseData>("m_weaponStats");
+                        Logger.LogDebug($"Setting weapon stats for weapon {weapon.name}. weapon.Stats == null == {weapon.Stats == null}. weaponStats == null == {weaponStats == null}");
+                        baseDamage = weapon.Stats == null ? new DamageList(DamageType.Types.Physical, weapon.GetPrivateField<Weapon, WeaponBaseData>("m_weaponStats").Damage) : weapon.Stats.BaseDamage.Clone();
+                        baseDamage.IgnoreHalfResistances = weapon.IgnoreHalfResistances;
+                        weapon.SetPrivateField<Weapon, DamageList>("m_baseDamage", baseDamage);
+                        weapon.SetPrivateField<Weapon, DamageList>("m_activeBaseDamage", baseDamage.Clone());
+                    }
+                }
+                else if (!resultPreFab.ActiveEnchantmentIDs.Contains(enchantment.PresetID))
+                {
+                    activeEnchant.AppliedIncenses = recipeSource.Incenses;
+                    resultPreFab.ActiveEnchantmentIDs.Add(enchantment.PresetID);
+                    resultPreFab.ActiveEnchantments.Add(activeEnchant);
+                    resultPreFab.SetPrivateField<Equipment, bool>("m_enchantmentsHaveChanged", true);
+                }
 
                 Logger.LogDebug($"Created Enchantment placeholder prefab {resultPreFab.name}: {resultPreFab.ItemID} - {resultPreFab.DisplayName}. " +
                     $"Source ItemID was {sourceItemID}. Applying Enchantment {enchantment.PresetID} - {enchantment.Name}. Item is active? {resultPreFab.gameObject.activeSelf}");
             }
 
             resultPreFab.hideFlags = HideFlags.HideAndDontSave;
+            //resultPreFab.IsPrefab = true;
 
             if (isTemporary)
             {
-                var tempItems = _tempRecipeResultItemIDs.GetOrAdd(recipeSource.RecipeID, new HashSet<int>());
-                if (!tempItems.Contains(resultPreFab.ItemID))
-                    tempItems.Add(resultPreFab.ItemID);
+                var tempItems = _tempRecipeResultItemIDs.GetOrAdd(recipeSource.RecipeID, new Dictionary<int, int>());
+                if (!tempItems.ContainsKey(sourceItemID))
+                {
+                    tempItems.Add(sourceItemID, resultPreFab.ItemID);
+                }
             }
             else
             {
-                resultPreFab.gameObject.SetActive(true);
+                //resultPreFab.gameObject.SetActive(true);
 
                 //Some items (Weapons) have a couple transforms with the base item's name added that should be removed.
                 var transforms = new List<Transform>();
@@ -188,6 +214,8 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
                     if (transforms[i].name == basePrefab.transform.name)
                         transforms[i].gameObject.Destroy();
                 }
+
+                //coroutine.DoNextFrame(() => resultPreFab.gameObject.SetActive(true));
             }
 
             return resultPreFab;
@@ -197,13 +225,14 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
         {
             var enchantment = ResourcesPrefabManager.Instance.GetEnchantmentPrefab(recipeSource.ResultID);
 
-            if (_tempRecipeResultItemIDs.TryGetValue(recipeSource.RecipeID, out var itemIds) && itemIds.Contains(sourceItemID))
+            Logger.LogDebug($"Looking for recipe {recipeSource.RecipeID} and sourceItemID {sourceItemID}, ResultID {recipeSource.ResultID} in temporary results cache.");
+            if (_tempRecipeResultItemIDs.TryGetValue(recipeSource.RecipeID, out var itemIds) && itemIds.TryGetValue(sourceItemID, out int resultId))
             {
-                if (_preFabricator.TryGetPrefab<Equipment>(sourceItemID, out var cachedEquipment))
+                if (_preFabricator.TryGetPrefab<Equipment>(resultId, out var cachedEquipment))
                     return cachedEquipment;
             }
 
-            var tempEquip = CreateRecipeResultEquipment(recipeSource, sourceItemID, true);
+            var tempEquip = CreateRecipeResultPrefab(recipeSource, sourceItemID, true);
 
             tempEquip.hideFlags = UnityEngine.HideFlags.HideAndDontSave;
             tempEquip.IsPrefab = false;
@@ -221,20 +250,21 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
             }
 
             tempEquip.AddEnchantment(enchantment.PresetID);
-
+            coroutine.DoNextFrame(() => tempEquip.gameObject.gameObject.SetActive(false));
             return tempEquip;
         }
 
-        public Equipment GenerateEnchantRecipeResult(EnchantmentRecipe recipeSource)
+        public Equipment GeneratePlaceholderEnchantRecipeResult(EnchantmentRecipe recipeSource)
         {
+            Logger.LogDebug($"GeneratePlaceholderEnchantRecipeResult got invoked for {recipeSource?.name}");
             var enchantment = ResourcesPrefabManager.Instance.GetEnchantmentPrefab(recipeSource.ResultID);
             (var resultName, var sourceItemId, var equipType) = GetPlaceholderResult(recipeSource, enchantment);
 
             if (_tempRecipeResultItemIDs.TryGetValue(recipeSource.RecipeID, out var itemIds) && itemIds.Count > 0)
-                if (_preFabricator.TryGetPrefab<Equipment>(itemIds.First(), out var cachedEquipment))
+                if (_preFabricator.TryGetPrefab<Equipment>(itemIds.First().Value, out var cachedEquipment))
                     return cachedEquipment;
 
-            var tempEquip = CreateRecipeResultEquipment(recipeSource, sourceItemId, true);
+            var tempEquip = CreateRecipeResultPrefab(recipeSource, sourceItemId, true);
 
             tempEquip.hideFlags = UnityEngine.HideFlags.HideAndDontSave;
             tempEquip.IsPrefab = false;
@@ -265,7 +295,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
                     weapon.SetPrivateField<Weapon, DamageList>("m_activeBaseDamage", baseDamage.Clone());
                 }
             }
-
+            coroutine.DoNextFrame(() => tempEquip.gameObject.gameObject.SetActive(false));
             return tempEquip;
         }
     }
