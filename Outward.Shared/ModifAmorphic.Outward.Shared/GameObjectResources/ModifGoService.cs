@@ -1,5 +1,6 @@
 ﻿using ModifAmorphic.Outward.Logging;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.GameObjectResources
@@ -14,6 +15,7 @@ namespace ModifAmorphic.Outward.GameObjectResources
         const string RootPath = "ModifShared";
         const string ActivablePath = "Activable";
         const string InactivablePath = "Inactivable";
+        const string ItemPrefabsPath = "ItemPrefabs";
 
         private readonly GameObject _modifRoot;
         public GameObject ModifRoot => _modifRoot;
@@ -23,6 +25,8 @@ namespace ModifAmorphic.Outward.GameObjectResources
 
         private readonly GameObject _inactivable;
         public GameObject Inactivable => _inactivable;
+
+        private Dictionary<string, ModifItemPrefabs> _cachedItemPrefabs = new Dictionary<string, ModifItemPrefabs>();
 
         public ModifGoService(Func<IModifLogger> loggerFactory)
         {
@@ -38,11 +42,26 @@ namespace ModifAmorphic.Outward.GameObjectResources
             return activable ? GetOrAddActivableModGo(modName) : GetOrAddInactivableModGo(modName);
         }
 
-        public ModifItemPrefabs GetItemPrefabs(string modId)
+        public ModifItemPrefabs GetModItemPrefabs(string modId)
         {
-            var modGo = GetModResources(modId, true);
+            if (_cachedItemPrefabs.TryGetValue(modId, out var modItemPrefabs))
+                return modItemPrefabs;
 
-            return modGo.GetOrAddComponent<ModifItemPrefabs>();
+            var modGo = GetModResources(modId, true);
+            var itemPrefabsGo = modGo.transform.Find(ItemPrefabsPath)?.gameObject;
+            if (!itemPrefabsGo)
+            {
+                itemPrefabsGo = new GameObject(ItemPrefabsPath);
+                itemPrefabsGo.transform.SetParent(modGo.transform);
+                itemPrefabsGo.SetActive(true);
+                itemPrefabsGo.hideFlags = HideFlags.HideAndDontSave;
+                itemPrefabsGo.AddComponent<ModifItemPrefabs>();
+                //UnityEngine.Object.DontDestroyOnLoad(activable);
+            }
+
+            _cachedItemPrefabs.Add(modId, itemPrefabsGo.GetComponent<ModifItemPrefabs>());
+
+            return _cachedItemPrefabs[modId];
         }
 
         private GameObject GetOrAddModifRoot()
@@ -59,7 +78,7 @@ namespace ModifAmorphic.Outward.GameObjectResources
         }
         private GameObject GetOrAddActivable()
         {
-            var activable = ModifRoot.transform.Find("Activable")?.gameObject;
+            var activable = ModifRoot.transform.Find(ActivablePath)?.gameObject;
             if (!activable)
             {
                 activable = new GameObject(ActivablePath);
