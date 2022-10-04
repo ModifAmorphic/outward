@@ -57,11 +57,13 @@ public class ActionImages : MonoBehaviour
     {
         foreach (var image in _bottomImages.Values)
         {
-            image.gameObject.Destroy();
+            if (image?.gameObject != null)
+                image.gameObject.Destroy();
         }
         foreach (var image in _topImages.Values)
         {
-            image.gameObject.Destroy();
+            if (image?.gameObject != null)
+                image.gameObject.Destroy();
         }
 
         _bottomImages.Clear();

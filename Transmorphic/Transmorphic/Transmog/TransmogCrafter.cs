@@ -4,10 +4,12 @@ using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Modules.Items;
 using ModifAmorphic.Outward.Transmorphic.Extensions;
+using ModifAmorphic.Outward.Transmorphic.Menu;
 using ModifAmorphic.Outward.Transmorphic.Settings;
 using ModifAmorphic.Outward.Transmorphic.Transmog.Models;
 using ModifAmorphic.Outward.Transmorphic.Transmog.Recipes;
 using System;
+using System.Linq;
 
 namespace ModifAmorphic.Outward.Transmorphic.Transmog
 {
@@ -18,9 +20,24 @@ namespace ModifAmorphic.Outward.Transmorphic.Transmog
 
         private readonly ItemVisualizer _itemVisualizer;
         private readonly ModifCoroutine _coroutine;
+        private readonly CraftingMenuEvents _craftingMenuEvents;
 
-        public TransmogCrafter(ItemVisualizer itemVisualizer, ModifCoroutine coroutine, Func<IModifLogger> loggerFactory) =>
-            (_itemVisualizer, _coroutine, _loggerFactory) = (itemVisualizer, coroutine, loggerFactory);
+        public TransmogCrafter(ItemVisualizer itemVisualizer, ModifCoroutine coroutine, CraftingMenuEvents craftingMenuEvents, Func<IModifLogger> loggerFactory)
+        {
+            (_itemVisualizer, _coroutine, _craftingMenuEvents, _loggerFactory) = (itemVisualizer, coroutine, craftingMenuEvents, loggerFactory);
+            _craftingMenuEvents.DynamicCraftComplete += OnDynamicCraftComplete;
+        }
+
+        private void OnDynamicCraftComplete(DynamicCraftingResult result, int resultMultiplier, CustomCraftingMenu menu)
+        {
+            if (!(menu is TransmogrifyMenu transmogrifyMenu && (transmogrifyMenu.GetSelectedRecipe() is TransmogRecipe || transmogrifyMenu.GetSelectedRecipe() is TransmogRemoverRecipe)))
+                return;
+
+            if (!result.IngredientCraftData.ConsumedItems.TryGetValue(result.ResultItem.ItemID, out var consumedItems) || consumedItems.Count > 1)
+                return;
+
+            TransmorphicEvents.RaiseOnTransmogrified(consumedItems.Values.First(), consumedItems.Keys.First(), result.ResultItem.ItemID, result.ResultItem.UID);
+        }
 
         public bool TryCraftItem(Recipe recipe, ItemReferenceQuantity recipeResult, out Item item, out bool tryEquipItem)
         {

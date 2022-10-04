@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <RootNamespace>ModifAmorphic.Outward.GreaterRunicBladePotion</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BepInEx.BaseLib" Version="5.4.21" />
+    <PackageReference Include="Outward.GameLibs" Version="2022.5.18-r.0" />
+    <PackageReference Include="Outward.SideLoader" Version="3.7.14" />
+  </ItemGroup>
+
+</Project>

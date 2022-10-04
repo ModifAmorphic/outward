@@ -16,6 +16,7 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Data
         T GetEquipmentSet(string name);
         void RenameEquipmentSet(string setName, string newName);
         void SaveEquipmentSet(T set);
+        void SaveNew(EquipmentSetsProfile<T> profile);
         void DeleteEquipmentSet(string setName);
         //void LearnEquipmentSetSkill(IEquipmentSet equipmentSet);
         //void ForgetEquipmentSetSkill(int SetID);

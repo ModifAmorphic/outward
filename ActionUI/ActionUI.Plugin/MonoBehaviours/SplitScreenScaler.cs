@@ -23,7 +23,14 @@ namespace ModifAmorphic.Outward.ActionUI.Monobehaviours
         private void Start()
         {
             Scale();
-            InvokeRepeating("Scale", 1.0f, 1.0f);
+            InvokeRepeating(nameof(Scale), 1.0f, 1.0f);
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+        private void OnDisable()
+        {
+            CancelInvoke(nameof(Scale));
+            SplitScreenManager.Instance.onSplitScreenRefresh -= Scale;
         }
 
         private void Scale()

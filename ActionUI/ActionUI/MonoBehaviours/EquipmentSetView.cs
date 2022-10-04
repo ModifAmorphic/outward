@@ -85,8 +85,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 EquipmentIconDropdown.onValueChanged.AddListener((index) => UpdateSetIcon<ArmorSet>());
                 SaveSetButton.onClick.AddListener(SaveEquipmentSet<ArmorSet>);
                 DeleteSetButton.onClick.AddListener(ConfirmDeleteEquipmentSet<ArmorSet>);
-                GetEquipmentService<ArmorSet>().OnNewSet += (set) => Refresh();
-                GetEquipmentService<ArmorSet>().OnRenamedSet += SetRenamed;
             }
             else
             {
@@ -94,8 +92,34 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 EquipmentIconDropdown.onValueChanged.AddListener((index) => UpdateSetIcon<WeaponSet>());
                 SaveSetButton.onClick.AddListener(SaveEquipmentSet<WeaponSet>);
                 DeleteSetButton.onClick.AddListener(ConfirmDeleteEquipmentSet<WeaponSet>);
+            }
+            SubscribeEvents();
+        }
+
+        private void SubscribeEvents()
+        {
+            if (EquipmentSetType == EquipmentSetTypes.Armor)
+            {
+                GetEquipmentService<ArmorSet>().OnNewSet += (set) => Refresh();
+                GetEquipmentService<ArmorSet>().OnRenamedSet += SetRenamed;
+            }
+            else
+            {
                 GetEquipmentService<WeaponSet>().OnNewSet += (set) => Refresh();
                 GetEquipmentService<WeaponSet>().OnRenamedSet += SetRenamed;
+            }
+        }
+        private void UnsubscribeEvents()
+        {
+            if (EquipmentSetType == EquipmentSetTypes.Armor && GetEquipmentService<ArmorSet>() != null)
+            {
+                GetEquipmentService<ArmorSet>().OnNewSet -= (set) => Refresh();
+                GetEquipmentService<ArmorSet>().OnRenamedSet -= SetRenamed;
+            }
+            else if (GetEquipmentService<WeaponSet>() != null)
+            {
+                GetEquipmentService<WeaponSet>().OnNewSet -= (set) => Refresh();
+                GetEquipmentService<WeaponSet>().OnRenamedSet -= SetRenamed;
             }
         }
 
@@ -116,7 +140,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public void Show()
         {
             gameObject.SetActive(true);
-
+            SetEquipmentIconOptions();
             Refresh();
         }
 
@@ -134,15 +158,16 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public void Refresh()
         {
-            SetEquipmentIconOptions();
             if (EquipmentSetType == EquipmentSetTypes.Armor)
             {
+                DebugLogger.Log($"Refreshing {EquipmentSetTypes.Armor} Set Dropdown.");
                 SetEquipmentSetOptions<ArmorSet>();
                 SelectEquippedSet<ArmorSet>();
                 UpdateSetIcon<ArmorSet>();
             }
             else if (EquipmentSetType == EquipmentSetTypes.Weapon)
             {
+                DebugLogger.Log($"Refreshing {EquipmentSetTypes.Weapon} Set Dropdown.");
                 SetEquipmentSetOptions<WeaponSet>();
                 SelectEquippedSet<WeaponSet>();
                 UpdateSetIcon<WeaponSet>();

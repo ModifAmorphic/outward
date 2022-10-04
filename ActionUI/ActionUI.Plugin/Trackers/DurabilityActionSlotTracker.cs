@@ -35,9 +35,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public float GetProgress()
         {
-            if (_equipment.CurrentDurability != _lastDurability && !string.IsNullOrEmpty(_equipment.UID))
+            if (!string.IsNullOrEmpty(_equipment.UID))
             {
-                if (!string.IsNullOrEmpty(_equipment.UID))
+                if (_equipment.CurrentDurability != _lastDurability)
                 {
                     _lastDurability = _equipment.CurrentDurability;
                     _equipSlotAction.DurabilityChanged(_equipment.CurrentDurability);

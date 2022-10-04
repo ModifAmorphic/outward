@@ -19,5 +19,16 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         }
 
         public UnityServicesProvider GetServicesProvider(int playerId) => services.GetOrAdd(playerId, new UnityServicesProvider());
+
+        public bool TryGetServicesProvider(int playerId, out UnityServicesProvider usp) => services.TryGetValue(playerId, out usp);
+
+        public bool TryDisposeServicesProvider(int playerId)
+        {
+            if (services.TryGetValue(playerId, out var disposing))
+            {
+                disposing.Dispose();
+            }
+            return services.TryRemove(playerId, out var removed);
+        }
     }
 }

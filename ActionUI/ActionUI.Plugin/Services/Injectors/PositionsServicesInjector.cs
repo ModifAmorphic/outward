@@ -13,7 +13,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
         private readonly ServicesProvider _services;
         private readonly ModifGoService _modifGoService;
         private readonly ModifCoroutine _coroutines;
-        private bool _isInjected;
+        //private bool _isInjected;
 
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
@@ -26,17 +26,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
 
         private void AddPositionsServices(PlayerActionMenus actionMenus, SplitPlayer splitPlayer)
         {
-            if (_isInjected)
-                return;
             var usp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
             var profileService = (ProfileService)usp.GetService<IActionUIProfileService>();
 
-            usp.TryDispose<IPositionsProfileService>();
             usp
                 .AddSingleton<IPositionsProfileService>(
                     new PositionsProfileJsonService(_services.GetService<GlobalProfileService>(), profileService, splitPlayer.AssignedCharacter.UID, _getLogger));
-
-            _isInjected = true;
         }
     }
 }

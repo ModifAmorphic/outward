@@ -81,6 +81,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             var profileFile = Path.Combine(activeProfile.Path, FileName);
             Logger.LogDebug($"Saving {typeof(T)} for profile {activeProfile.Name}");
             File.WriteAllText(profileFile, json);
+            CachedProfile = default;
         }
 
         protected virtual void Dispose(bool disposing)

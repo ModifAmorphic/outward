@@ -41,6 +41,14 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
             ActionSlot.ActionImages.ClearImages();
             DisableCooldownService();
             DisableStackService();
+            StopEnableToggleService();
+            foreach (var kvp in ActionSlot.ProgressBars)
+            {
+                DisableBarService(kvp.Key);
+            }
+
+            
+
             ActionSlot.StackText.enabled = false;
 
             foreach (var bar in ActionSlot.ProgressBars.Values)
@@ -450,6 +458,14 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
                 _toggleService = new EnableToggleService(this);
 
             _toggleService.TrackEnableToggle(getEnabled);
+        }
+
+        private void StopEnableToggleService()
+        {
+            if (_toggleService != null)
+            {
+                _toggleService.StopTracking();
+            }
         }
 
         private void AssignDynamicIcon(Func<ActionSlotIcon[]> getIcon)

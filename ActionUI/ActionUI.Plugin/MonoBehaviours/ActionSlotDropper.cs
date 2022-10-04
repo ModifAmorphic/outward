@@ -12,7 +12,6 @@ namespace ModifAmorphic.Outward.ActionUI.Monobehaviours
         ItemDisplay _draggedItemDisplay;
         ActionSlot _actionSlot;
 
-        SlotDataService _slotDataService;
 
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger?.Invoke() ?? NullLogger.Instance;
@@ -66,14 +65,10 @@ namespace ModifAmorphic.Outward.ActionUI.Monobehaviours
 
         private SlotDataService GetSlotDataService()
         {
-            if (_slotDataService != null)
-                return _slotDataService;
-
             var playerId = _actionSlot.HotbarsContainer.PlayerActionMenus.PlayerID;
             var psp = Psp.Instance.GetServicesProvider(playerId);
-            _slotDataService = psp.GetService<SlotDataService>();
 
-            return _slotDataService;
+            return psp.GetService<SlotDataService>();
         }
     }
 }
