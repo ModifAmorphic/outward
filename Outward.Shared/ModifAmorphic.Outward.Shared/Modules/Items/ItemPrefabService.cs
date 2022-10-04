@@ -35,7 +35,7 @@ namespace ModifAmorphic.Outward.Modules.Items
             this._modId = modId;
             this._loggerFactory = loggerFactory;
             this._modifGoService = modifGoService;
-            this._modifItemPrefabs = modifGoService.GetModResources(modId, true).GetOrAddComponent<ModifItemPrefabs>();
+            this._modifItemPrefabs = modifGoService.GetModItemPrefabs(modId);
             this._prefabManagerFactory = prefabManagerFactory;
 
             LocalizationManagerPatches.LoadItemLocalizationAfter += RegisterItemLocalizations;
