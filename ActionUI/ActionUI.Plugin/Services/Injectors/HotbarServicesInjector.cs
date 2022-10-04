@@ -40,22 +40,17 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
             var player = ReInput.players.GetPlayer(splitPlayer.RewiredID);
 
             if (!usp.ContainsService<HotbarsContainer>())
-                usp.TryRemove<HotbarsContainer>();
-            usp.AddSingleton(hotbars);
+                usp.AddSingleton(hotbars);
 
-            usp.TryDispose<IHotbarProfileService>();
             usp.AddSingleton<IHotbarProfileService>(new HotbarProfileJsonService(profileService
                                               , _getLogger));
 
             //if (!psp.ContainsService<SlotDataService>())
-            usp.TryDispose<SlotDataService>();
             usp.AddSingleton(new SlotDataService(player
                                         , splitPlayer.AssignedCharacter
                                         , (HotbarProfileJsonService)usp.GetService<IHotbarProfileService>()
                                         , _getLogger));
 
-            usp.TryDispose<HotbarService>();
-            usp.TryDispose<ControllerMapService>();
             usp
                 .AddSingleton(new HotbarService(hotbars
                                         , player
@@ -71,14 +66,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                                         , _levelCoroutines
                                         , _getLogger));
 
-            usp.TryDispose<IActionViewData>();
             usp.AddSingleton<IActionViewData>(new SlotActionViewData(player
                                         , splitPlayer.AssignedCharacter
                                         , usp.GetService<SlotDataService>()
                                         , (HotbarProfileJsonService)usp.GetService<IHotbarProfileService>()
                                         , _getLogger));
 
-            usp.TryDispose<IHotbarNavActions>();
             usp.AddSingleton<IHotbarNavActions>(new HotbarKeyListener(player));
 
             usp.GetService<ControllerMapService>().LoadConfigMaps();

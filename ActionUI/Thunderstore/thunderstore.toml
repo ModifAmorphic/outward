@@ -5,7 +5,7 @@ schemaVersion = "0.0.1"
 namespace = "ModifAmorphic"
 name = "ActionUI"
 versionNumber = "${PACKAGE_VERSION}"
-description = "⚡ Additional Keyboard Quickslots, Quickslottable Equipment Sets, UI Positioning, Durability Display ⚡"
+description = "⚡ Equipment Sets, Additional Keyboard Quickslots, UI Positioning, Durability Display ⚡"
 websiteUrl = "https://github.com/ModifAmorphic/outward/wiki/Action-UI"
 containsNsfwContent = false
 

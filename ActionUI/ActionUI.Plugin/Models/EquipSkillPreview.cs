@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace ModifAmorphic.Outward.ActionUI.Models
 {
-    public class EquipSkillPreview : ISlotAction
+    public class EquipSkillPreview : ISlotAction, IDisposable
     {
         public string DisplayName { get; internal set; }
 
@@ -29,6 +29,7 @@ namespace ModifAmorphic.Outward.ActionUI.Models
         public event Action<ActionSlotIcon[]> OnIconsChanged;
 
         private EquipmentSlot _equipmentSlot;
+        private bool disposedValue;
 
         public EquipSkillPreview(EquipmentSlot equipmentSlot)
         {
@@ -82,6 +83,36 @@ namespace ModifAmorphic.Outward.ActionUI.Models
         public void SlotActionUnassigned()
         {
             throw new NotImplementedException();
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    
+                    EquipmentPatches.AfterOnEquip -= EquipmentChanged;
+                    EquipmentPatches.AfterOnUnequip -= EquipmentChanged;
+                }
+
+                _equipmentSlot = null;
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~EquipSkillPreview()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

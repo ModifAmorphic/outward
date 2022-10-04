@@ -41,6 +41,7 @@ namespace ModifAmorphic.Outward.ActionUI
             _harmony.PatchAll(typeof(CharacterQuickSlotManagerPatches));
             //_harmony.PatchAll(typeof(CharacterManagerPatches));
             _harmony.PatchAll(typeof(SkillMenuPatches));
+            _harmony.PatchAll(typeof(ItemDisplayDropGroundPatches));
 
             _services.AddSingleton(new HotbarServicesInjector(_services,
                                                     _playerMenuService,

@@ -137,9 +137,27 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             var hotbarService = MainSettingsMenu.PlayerMenu.ProfileManager.HotbarProfileService;
             var hotbarProfile = hotbarService.GetProfile();
 
+            var posProfileService = MainSettingsMenu.PlayerMenu.ProfileManager.PositionsProfileService;
+            var posProfile = posProfileService.GetProfile();
+            var armorService = MainSettingsMenu.PlayerMenu.ProfileManager.ArmorSetService;
+            var armorSetsProfile = armorService.GetEquipmentSetsProfile();
+            var weaponService = MainSettingsMenu.PlayerMenu.ProfileManager.WeaponSetService;
+            var weaponSetsProfile = weaponService.GetEquipmentSetsProfile();
+
             _profileService.SaveNew(activeProfile);
             if (hotbarProfile != null)
                 hotbarService.SaveNew(hotbarProfile);
+
+            if (posProfileService != null)
+                posProfileService.SaveNew(posProfile);
+
+            if (armorService != null)
+                armorService.SaveNew(armorSetsProfile);
+
+            if (weaponService != null)
+                weaponService.SaveNew(weaponSetsProfile);
+
+
 
             Hide();
         }

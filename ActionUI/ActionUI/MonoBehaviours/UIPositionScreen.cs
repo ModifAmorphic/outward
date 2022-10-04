@@ -52,6 +52,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private void Hide(bool raiseEvent)
         {
             DebugLogger.Log("UIPositionScreen::Hide");
+            //if (!IsShowing)
+            //    return;
+
             gameObject.SetActive(false);
             BackPanel.gameObject.SetActive(false);
             ExitScreenText.gameObject.SetActive(false);

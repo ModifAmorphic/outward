@@ -41,6 +41,8 @@ namespace ModifAmorphic.Outward.ActionUI
                                                   services.GetService<IModifLogger>))
                 .AddSingleton(new LevelCoroutines(services.GetService<BaseUnityPlugin>(),
                                                   services.GetService<IModifLogger>))
+                .AddSingleton(new ResetActionUIsService(services.GetService<LevelCoroutines>(),
+                                                   services.GetService<IModifLogger>))
                 .AddSingleton(new ModifGoService(services.GetService<IModifLogger>))
                 .AddSingleton(new RewiredListener(services.GetService<BaseUnityPlugin>(),
                                                    services.GetService<LevelCoroutines>(),
@@ -78,12 +80,6 @@ namespace ModifAmorphic.Outward.ActionUI
                                 services.GetService<IModifLogger>));
 
             services
-                .AddSingleton(new HotbarsStartup(
-                    services
-                    , services.GetService<PlayerMenuService>()
-                    , services.GetService<ModifGoService>()
-                    , services.GetService<LevelCoroutines>()
-                    , _loggerFactory))
                 .AddSingleton(new DurabilityDisplayStartup(
                     services
                     , services.GetService<ModifGoService>()
@@ -92,7 +88,12 @@ namespace ModifAmorphic.Outward.ActionUI
                 .AddSingleton(new InventoryStartup(
                     services
                     , services.GetService<PlayerMenuService>()
-                    , services.GetService<CustomCraftingModule>().CraftingMenuEvents
+                    , services.GetService<ModifGoService>()
+                    , services.GetService<LevelCoroutines>()
+                    , _loggerFactory))
+                .AddSingleton(new HotbarsStartup(
+                    services
+                    , services.GetService<PlayerMenuService>()
                     , services.GetService<ModifGoService>()
                     , services.GetService<LevelCoroutines>()
                     , _loggerFactory));

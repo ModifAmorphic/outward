@@ -92,8 +92,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             }
             else
                 ArmorSetView.Hide();
-
-
         }
 
     }

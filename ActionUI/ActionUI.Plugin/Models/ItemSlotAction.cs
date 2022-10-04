@@ -168,7 +168,7 @@ namespace ModifAmorphic.Outward.ActionUI.Models
             {
                 item = foundItem;
                 itemUid = foundItem.UID;
-                item.SetQuickSlot(slotIndex + 1);
+                item.SetQuickSlot(0);
                 return true;
             }
 
@@ -179,7 +179,7 @@ namespace ModifAmorphic.Outward.ActionUI.Models
         {
             hotbarIndex = assignedSlot.HotbarIndex;
             slotIndex = assignedSlot.SlotIndex;
-            item.SetQuickSlot(slotIndex + 1);
+            item.SetQuickSlot(0);
             actionConfig = (ActionConfig)assignedSlot.Config;
         }
         public void SlotActionUnassigned()

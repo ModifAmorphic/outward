@@ -5,6 +5,7 @@ using ModifAmorphic.Outward.ActionUI.Patches;
 using ModifAmorphic.Outward.ActionUI.Services.Injectors;
 using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Coroutines;
+using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
@@ -20,7 +21,7 @@ using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
-    internal class PlayerMenuService
+    internal class PlayerMenuService : IDisposable
     {
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
@@ -37,6 +38,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private const int _baseActivePauseButtons = 7;
 
         private Button _actionUiGo;
+        private bool disposedValue;
+
         public Button ActionMenusButton => _actionUiGo;
 
         public delegate void PlayerActionMenusConfigured(PlayerActionMenus actionMenus, SplitPlayer splitPlayer);
@@ -141,14 +144,21 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 //Add canvas with 0 sort order to drop panel to allow drag and drop to the hotbar.
                 var dropPanel = splitPlayer.CharUI.transform.Find("Canvas/GameplayPanels/Menus/DropPanel");
                 var dropCanvas = dropPanel.GetOrAddComponent<Canvas>();
-                dropCanvas.overrideSorting = true;
-                dropCanvas.sortingOrder = 0;
+                dropPanel.GetOrAddComponent<GraphicRaycaster>();
+               
+                _coroutine.DoNextFrame(() => {
+                    dropCanvas.overrideSorting = true;
+                    dropCanvas.sortingOrder = 0;
+                    Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(SetPlayerMenuCharacter)}(): Changed '{dropCanvas.gameObject.GetPath()}' sortingOrder to {dropCanvas.sortingOrder}.");
+                });
+                
             }
 
+            var isActionSlotsEnabled = playerMenu.ProfileManager.ProfileService.GetActiveProfile().ActionSlotsEnabled;
             if (!CharacterQuickSlotManagerPatches.AllowItemDestroyed.ContainsKey(splitPlayer.RewiredID))
                 CharacterQuickSlotManagerPatches.AllowItemDestroyed.Add(splitPlayer.RewiredID,
                     (requestingPlayerId) => ShouldQuickslotItemBeDestroyed(
-                        playerMenu.ProfileManager.ProfileService.GetActiveProfile().ActionSlotsEnabled,
+                        isActionSlotsEnabled,
                         splitPlayer.RewiredID,
                         requestingPlayerId)
                     );
@@ -214,23 +224,29 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(InjectPauseMenu)}(): Adding 'Action UI' button to pause menu.");
             //Get the main
             var hideOnPauseGo = splitPlayer.CharUI.transform.Find("Canvas/PauseMenu/Buttons/Content/HideOnPause/").gameObject;
-            var settingsBtn = hideOnPauseGo.GetComponentsInChildren<Button>().First(b => b.name.Equals("btnOptions", StringComparison.InvariantCultureIgnoreCase));
+            var buttons = hideOnPauseGo.GetComponentsInChildren<Button>();
+            var actionUiButton = buttons.FirstOrDefault(b => b.name == "btnActionUiSettings");
 
-            _actionUiGo = UnityEngine.Object.Instantiate(settingsBtn);
-            _actionUiGo.name = "btnActionUiSettings";
-            var localScale = _actionUiGo.transform.localScale;
-            _actionUiGo.transform.SetParent(settingsBtn.transform.parent, false);
-            _actionUiGo.transform.localScale = localScale;
-            _actionUiGo.transform.SetSiblingIndex(settingsBtn.transform.GetSiblingIndex() + 1);
+            if (actionUiButton == null)
+            {
+                var settingsBtn = buttons.First(b => b.name.Equals("btnOptions", StringComparison.InvariantCultureIgnoreCase));
 
-            var actionUiButton = _actionUiGo.GetComponent<Button>();
+                _actionUiGo = UnityEngine.Object.Instantiate(settingsBtn);
+                _actionUiGo.name = "btnActionUiSettings";
+                var localScale = _actionUiGo.transform.localScale;
+                _actionUiGo.transform.SetParent(settingsBtn.transform.parent, false);
+                _actionUiGo.transform.localScale = localScale;
+                _actionUiGo.transform.SetSiblingIndex(settingsBtn.transform.GetSiblingIndex() + 1);
 
-            var menuText = _actionUiGo.GetComponentInChildren<Text>();
-            UnityEngine.Object.Destroy(menuText.GetComponent<UILocalize>());
-            menuText.text = "Action UI";
+                actionUiButton = _actionUiGo.GetComponent<Button>();
 
+                var menuText = _actionUiGo.GetComponentInChildren<Text>();
+                UnityEngine.Object.Destroy(menuText.GetComponent<UILocalize>());
+                menuText.text = "Action UI";
+            }
             //get the PauseMenu component so the PauseMenu UI can be hidden later
             var pauseMenu = splitPlayer.CharUI.transform.Find("Canvas/PauseMenu").GetComponent<PauseMenu>();
+            _actionUiGo.onClick.RemoveAllListeners();
             //This removes any persistent (set in Unity Editor) onClick listeners.
             _actionUiGo.onClick = new Button.ButtonClickedEvent();
             //Add a new listener to hide the pause menu and show the Action Setting Menu
@@ -258,6 +274,39 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             float increaseHeight = (vertLayout.spacing + btnHeight) * (buttons.Length - _baseActivePauseButtons);
             Logger.LogDebug($"Resizing Pause Menu height from {parentRect.rect.height} to {_initialPauseMenuHeight + increaseHeight}.");
             parentRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, _initialPauseMenuHeight + increaseHeight);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    SplitPlayerPatches.InitAfter -= InjectMenus;
+                    if (_sharedServicesInjector != null)
+                        _sharedServicesInjector.OnSharedServicesInjected -= SetPlayerMenuCharacter;
+                    SplitScreenManagerPatches.RemoveLocalPlayerAfter -= RemovePlayerMenu;
+                    PauseMenuPatches.AfterRefreshDisplay -= (pauseMenu) => _coroutine.StartRoutine(ResizePauseMenu(pauseMenu));
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~PlayerMenuService()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

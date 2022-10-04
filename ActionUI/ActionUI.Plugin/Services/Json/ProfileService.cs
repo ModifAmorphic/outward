@@ -17,8 +17,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
 
-        ActionUIProfile _activeProfile;
+        private ActionUIProfile _activeProfile;
+        private bool _versionEvaluated = false;
         private bool disposedValue;
+
 
         public string ProfilesPath { get; private set; }
         public string ProfilesFile => Path.Combine(ProfilesPath, "profile.json");
@@ -35,6 +37,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public ActionUIProfile GetActiveActionUIProfile()
         {
+
             if (_activeProfile != null)
                 return _activeProfile;
 
@@ -52,7 +55,28 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (_activeProfile != null && _activeProfile.EquipmentSetsSettingsProfile == null)
                 _activeProfile.EquipmentSetsSettingsProfile = CreateDefaultEquipmentSetsSettingsProfile();
 
+            if (!_versionEvaluated)
+                SetVersionedSettings();
+
             return _activeProfile;
+        }
+
+        private void SetVersionedSettings()
+        {
+            if (_activeProfile != null && _activeProfile.LastLoadedModVersion != ModInfo.ModVersion)
+            {
+                var currentVersion = new Version(ModInfo.ModVersion);
+                if (string.IsNullOrWhiteSpace(_activeProfile.LastLoadedModVersion) || (new Version(_activeProfile.LastLoadedModVersion)).CompareTo(currentVersion) == -1)
+                {
+                    if (ModInfo.ModVersion == "1.0.2" || ModInfo.ModVersion == "1.0.3" || ModInfo.ModVersion == "1.0.4")
+                        _activeProfile.EquipmentSetsEnabled = true;
+
+                    _activeProfile.LastLoadedModVersion = ModInfo.ModVersion;
+                    SaveProfile(_activeProfile, false);
+                    _versionEvaluated = true;
+                    _ = GetActiveActionUIProfile();
+                }
+            }
         }
 
         public IEnumerable<string> GetProfileNames()

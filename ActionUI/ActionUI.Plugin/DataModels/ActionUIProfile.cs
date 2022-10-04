@@ -14,6 +14,7 @@ namespace ModifAmorphic.Outward.ActionUI.DataModels
         public bool StashCraftingEnabled { get; set; }
         public bool CraftingOutsideTownEnabled { get; set; }
         public EquipmentSetsSettingsProfile EquipmentSetsSettingsProfile { get; set; }
+        public string LastLoadedModVersion { get; set; }
 
         [JsonIgnore]
         public string Path { get; set; }

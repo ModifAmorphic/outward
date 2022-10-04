@@ -214,9 +214,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 if (disposing)
                 {
                     UnsubscribeToPatchEvents();
-                    _profileManager.ProfileService.OnActiveProfileChanged.RemoveListener(SetEnableState);
-                    _profileManager.ProfileService.OnActiveProfileSwitched.RemoveListener(SetEnableState);
-                    _profileManager.ProfileService.OnNewProfile.RemoveListener(SetEnableState);
+                    _profileManager?.ProfileService?.OnActiveProfileChanged?.RemoveListener(SetEnableState);
+                    _profileManager?.ProfileService?.OnActiveProfileSwitched?.RemoveListener(SetEnableState);
+                    _profileManager?.ProfileService?.OnNewProfile?.RemoveListener(SetEnableState);
                 }
 
                 _character = null;

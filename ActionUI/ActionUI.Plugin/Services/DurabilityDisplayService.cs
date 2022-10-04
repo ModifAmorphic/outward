@@ -123,6 +123,11 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             TrackEquipmentSlot(character, EquipmentSlot.EquipmentSlotIDs.LeftHand);
         }
 
+        public void UntrackAllEquipment()
+        {
+
+        }
+
         private void TrackEquipmentSlot(Character character, EquipmentSlot.EquipmentSlotIDs slot)
         {
             if (!(character.Inventory.Equipment.IsEquipmentSlotEmpty(slot)))
@@ -151,6 +156,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             if (!_equipTracked)
                 return;
+            var display = GetDurabilityDisplay(character.OwnerPlayerSys.PlayerID);
+            if (display == null)
+                return;
 
             var durableSlot = equipment.CurrentEquipmentSlot.SlotType.ToDurableEquipmentSlot();
 
@@ -160,7 +168,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (!_unequipedAdded)
                 AddUnequippedTrackers(character.OwnerPlayerSys.PlayerID);
 
-            var display = GetDurabilityDisplay(character.OwnerPlayerSys.PlayerID);
+            
 
             if (equipment.IsIndestructible || !character.Inventory.Equipment.HasItemEquipped(equipment.CurrentEquipmentSlot.SlotType))
             {
@@ -182,6 +190,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (!_equipTracked)
                 return;
 
+            var display = GetDurabilityDisplay(character.OwnerPlayerSys.PlayerID);
+            if (display == null)
+                return;
+
             var durableSlot = equipment.CurrentEquipmentSlot.SlotType.ToDurableEquipmentSlot();
 
             if (durableSlot == EquipSlots.None)
@@ -192,8 +204,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             if (!character.Inventory.Equipment.IsEquipmentSlotEmpty(equipment.EquipSlot))
                 return;
-
-            var display = GetDurabilityDisplay(character.OwnerPlayerSys.PlayerID);
 
             if (!character.Inventory.Equipment.HasItemEquipped(equipment.CurrentEquipmentSlot.SlotType))
             {
@@ -210,9 +220,14 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         }
         private DurabilityDisplay GetDurabilityDisplay(int playerId)
         {
-            var psp = Psp.Instance.GetServicesProvider(playerId);
-            var actionMenus = psp.GetService<PlayerActionMenus>();
-            return actionMenus.DurabilityDisplay;
+            if (Psp.Instance.TryGetServicesProvider(playerId, out var usp))
+            {
+                if (usp.TryGetService<PlayerActionMenus>(out var actionMenus))
+                {
+                    return actionMenus.DurabilityDisplay;
+                }
+            }
+            return null;
         }
     }
 }
