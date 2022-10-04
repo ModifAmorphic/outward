@@ -52,6 +52,11 @@
 ***
 
 ## Latest Release ${PACKAGE_VERSION}
+  - Multiplayer Fixes
+    - ActionUI should function in multiplayer games.
+  - Equiping a set with a 2h Weapon will now only play the unequip/equip animation once. Was previously playing twice, once for each hand.
+
+## Release 1.0.4
   - Bug fix for "floating" backpacks.
     - Backpacks or items could remain stuck floating in the air if the item was slotted one of the action slots higher than Outwards base quickslots. Outward technically has 11 quickslots, so any amount of action slots higher than 11 could cause this issue if an item was slotted to it.
 

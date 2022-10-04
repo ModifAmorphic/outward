@@ -110,7 +110,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void ShowEquipmentSetMenu(EquipmentMenu equipMenu)
         {
-
             if (equipMenu.LocalCharacter.UID != _character.UID || !_profileManager.ProfileService.GetActiveProfile().EquipmentSetsEnabled)
                 return;
 
@@ -141,7 +140,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void ProfileChanged(IActionUIProfile profile)
         {
-            Logger.LogDebug($"{nameof(InventoryService)}::{nameof(ProfileChanged)}: Profile changed or switched. Profile is '{profile.Name}'. EquipmentSetsEnabled == {profile.EquipmentSetsEnabled}.");
+            Logger.LogDebug($"{nameof(InventoryService)}::{nameof(ProfileChanged)}: Profile '{profile.Name}' changed. EquipmentSetsEnabled == {profile.EquipmentSetsEnabled}.");
 
             if (_equipmentSetsEnabled != profile.EquipmentSetsEnabled)
             {
@@ -163,6 +162,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void ProfileSwitched(IActionUIProfile profile)
         {
+            Logger.LogDebug($"{nameof(InventoryService)}::{nameof(ProfileChanged)}: Profile switched to '{profile.Name}'. EquipmentSetsEnabled == {profile.EquipmentSetsEnabled}.");
             _equipmentSetsEnabled = profile.EquipmentSetsEnabled;
 
             ClearSkillPreviewCache();
@@ -396,17 +396,32 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             var equippedSlots = _characterEquipment.EquipmentSlots.Where(s => s != null && s.HasItemEquipped).ToList();
             var equipFromStash = GetIsStashEquipEnabled();
             var unequipToStash = GetIsStashUnequipEnabled();
-            bool isRightEquipped;
-            bool isLeftEquipped;
-            if (weaponSet == null)
+            bool isRightEquipped = false;
+            bool isLeftEquipped = false;
+            if (weaponSet == null || weaponSet.RightHand == null && weaponSet.LeftHand == null)
             {
                 isRightEquipped = TryEquipSlot(null, EquipSlots.RightHand, equipFromStash, unequipToStash);
                 isLeftEquipped = TryEquipSlot(null, EquipSlots.LeftHand, equipFromStash, unequipToStash);
             }
-            else
+            else if (weaponSet.RightHand.UID != weaponSet.LeftHand.UID)
             {
+                
                 isRightEquipped = TryEquipSlot(weaponSet.RightHand, EquipSlots.RightHand, equipFromStash, unequipToStash);
                 isLeftEquipped = TryEquipSlot(weaponSet.LeftHand, EquipSlots.LeftHand, equipFromStash, unequipToStash);
+            }
+            else
+            {
+                var equipment = (Equipment)ResourcesPrefabManager.Instance.GetItemPrefab(weaponSet.RightHand.ItemID);
+                if (equipment.TwoHandedLeft)
+                {
+                    isLeftEquipped = TryEquipSlot(weaponSet.LeftHand, EquipSlots.RightHand, equipFromStash, unequipToStash);
+                    isRightEquipped = true;
+                }
+                else
+                {
+                    isLeftEquipped = true;
+                    isRightEquipped = TryEquipSlot(weaponSet.RightHand, EquipSlots.RightHand, equipFromStash, unequipToStash);
+                }
             }
 
             bool isEquipped = isRightEquipped && isLeftEquipped;
@@ -415,7 +430,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             ProcessEquipQueues();
             return isEquipped;
-
         }
 
         public bool TryEquipArmorSet(ArmorSet armorSet)

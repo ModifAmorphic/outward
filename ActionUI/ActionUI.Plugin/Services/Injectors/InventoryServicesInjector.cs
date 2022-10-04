@@ -37,7 +37,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                 .AddSingleton(new EquipService(
                                                     splitPlayer.AssignedCharacter,
                                                     profileManager,
-                                                    usp.GetService<EquipmentSetMenu>(),
+                                                    actionMenus.EquipmentSetMenus,
                                                     usp.GetService<InventoryService>(),
                                                     _coroutines,
                                                     _getLogger))
@@ -64,6 +64,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                     ));
 
             usp.GetService<InventoryService>().Start();
+            usp.GetService<EquipService>().Start();
         }
     }
 }
