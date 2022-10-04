@@ -2,13 +2,10 @@
 schemaVersion = "0.0.1"
 
 [package]
-author = "ModifAmorphic"
 namespace = "ModifAmorphic"
 name = "ActionUI"
 versionNumber = "${PACKAGE_VERSION}"
-description = "⚡ Multiplayer Fixes ⚡ Adds UIs for creating Hotkeyable Equipment Sets, highly Configurable Keyboard Quickslots, Equipment Durability Display. Plus, customize placements of Outward's HUD with a new UI Positioning mode."
-communities = ["Outward"]
-catagories = ["UI", "Items"]
+description = "⚡ Multiplayer Fixes ⚡ Adds UIs for creating hotkeyable Equipment Sets, highly configurable Keyboard Quickslots, an equipment Durability Display. Plus, customize placements of Outward's HUD with a new UI Positioning Mode."
 websiteUrl = "https://github.com/ModifAmorphic/outward/wiki/Action-UI"
 containsNsfwContent = false
 
@@ -34,3 +31,5 @@ target = "files/plugins/Profiles"
 
 [publish]
 repository = "https://outward.thunderstore.io"
+communities = ["Outward"]
+categories = ["UI", "Items", "Utility"]
