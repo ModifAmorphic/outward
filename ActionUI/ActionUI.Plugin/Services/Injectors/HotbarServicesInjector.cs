@@ -1,5 +1,4 @@
-﻿using ModifAmorphic.Outward.ActionUI.Patches;
-using ModifAmorphic.Outward.Coroutines;
+﻿using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI;
@@ -26,8 +25,15 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
 
         private void AddHotbarServices(PlayerActionMenus actionMenus, SplitPlayer splitPlayer)
         {
-            Logger.LogDebug($"{nameof(HotbarServicesInjector)}::{nameof(AddHotbarServices)} Beginning Hotbar Services Injection.");
+            Logger.LogDebug($"{nameof(HotbarServicesInjector)}::{nameof(AddHotbarServices)} Beginning Hotbar Services Injection for player {splitPlayer.RewiredID}.");
             var usp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
+
+            if (usp.ContainsService<HotbarsContainer>())
+            {
+                Logger.LogDebug($"{nameof(HotbarServicesInjector)}::{nameof(AddHotbarServices)} Hotbars already injected for player {splitPlayer.RewiredID}.");
+                return;
+            }
+
             var profileService = usp.GetService<IActionUIProfileService>() as ProfileService;
             var activeProfile = profileService.GetActiveActionUIProfile();
 
@@ -39,19 +45,14 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
             var hotbars = actionMenus.gameObject.GetComponentInChildren<HotbarsContainer>(true);
             var player = ReInput.players.GetPlayer(splitPlayer.RewiredID);
 
-            if (!usp.ContainsService<HotbarsContainer>())
-                usp.AddSingleton(hotbars);
-
-            usp.AddSingleton<IHotbarProfileService>(new HotbarProfileJsonService(profileService
-                                              , _getLogger));
-
-            //if (!psp.ContainsService<SlotDataService>())
-            usp.AddSingleton(new SlotDataService(player
+            usp
+                .AddSingleton(hotbars)
+                .AddSingleton<IHotbarProfileService>(new HotbarProfileJsonService(profileService
+                                              , _getLogger))
+                .AddSingleton(new SlotDataService(player
                                         , splitPlayer.AssignedCharacter
                                         , (HotbarProfileJsonService)usp.GetService<IHotbarProfileService>()
-                                        , _getLogger));
-
-            usp
+                                        , _getLogger))
                 .AddSingleton(new HotbarService(hotbars
                                         , player
                                         , splitPlayer.AssignedCharacter
@@ -64,20 +65,15 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                                         , usp.GetService<HotbarService>()
                                         , player
                                         , _levelCoroutines
-                                        , _getLogger));
-
-            usp.AddSingleton<IActionViewData>(new SlotActionViewData(player
+                                        , _getLogger))
+                .AddSingleton<IActionViewData>(new SlotActionViewData(player
                                         , splitPlayer.AssignedCharacter
                                         , usp.GetService<SlotDataService>()
                                         , (HotbarProfileJsonService)usp.GetService<IHotbarProfileService>()
-                                        , _getLogger));
-
-            usp.AddSingleton<IHotbarNavActions>(new HotbarKeyListener(player));
+                                        , _getLogger))
+                .AddSingleton<IHotbarNavActions>(new HotbarKeyListener(player));
 
             usp.GetService<ControllerMapService>().LoadConfigMaps();
-
-            hotbars.OnAwake += () => _levelCoroutines.DoNextFrame(() =>
-                usp.GetService<HotbarService>().Start());
 
             //_isInjected = true;
             Logger.LogDebug($"{nameof(HotbarServicesInjector)}::{nameof(AddHotbarServices)} Completed Hotbar Services Injection.");

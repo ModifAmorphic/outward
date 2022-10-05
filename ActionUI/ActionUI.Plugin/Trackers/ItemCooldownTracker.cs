@@ -5,7 +5,7 @@ namespace ModifAmorphic.Outward.ActionUI.Models
 {
     internal class ItemCooldownTracker : ICooldown
     {
-        private readonly Skill skill;
+        private Skill skill;
 
         public bool HasCooldown => skill != null;
 
@@ -21,6 +21,8 @@ namespace ModifAmorphic.Outward.ActionUI.Models
 
         public float GetSecondsRemaining() => skill.RealCooldown * (1f - skill.CoolDownProgress);
 
-        public ItemCooldownTracker(Item item) => skill = item as Skill;
+        public ItemCooldownTracker(Skill skill) => this.skill = skill;
+
+        internal void SetSkill(Skill skill) => this.skill = skill;
     }
 }

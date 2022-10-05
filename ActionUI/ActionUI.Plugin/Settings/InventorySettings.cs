@@ -4,8 +4,8 @@ namespace ModifAmorphic.Outward.ActionUI.Settings
 {
     internal class InventorySettings
     {
-        public const int StartingSetItemID = -1310000000;
-
+        public const int MaxSetItemID = -1310000000;
+        public const int MinSetItemID = -1319999999;
         public static readonly HashSet<AreaManager.AreaEnum> StashAreas = new HashSet<AreaManager.AreaEnum>()
         {
             AreaManager.AreaEnum.CierzoVillage,

@@ -47,8 +47,6 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
                 DisableBarService(kvp.Key);
             }
 
-            
-
             ActionSlot.StackText.enabled = false;
 
             foreach (var bar in ActionSlot.ProgressBars.Values)
@@ -70,7 +68,7 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
             }
             else if (ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Hidden)
             {
-                ActionSlot.EmptyImage.gameObject.SetActive(false);
+                ActionSlot.EmptyImage.gameObject.SetActive(true);
                 ActionSlot.CanvasGroup.alpha = 0;
             }
 
@@ -169,14 +167,14 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
 
             foreach (var progressTracker in _progressBarServices.Values)
                 progressTracker.StopTracking();
-            
+
             _stackService?.StopTracking();
             _toggleService?.StopTracking();
             if (_iconCoroutine != null)
                 ActionSlot.StopCoroutine(_iconCoroutine);
         }
 
-    private void OnActionButtonClicked()
+        private void OnActionButtonClicked()
         {
             if (ActionSlot.HotbarsContainer.IsInActionSlotEditMode)
             {
@@ -251,6 +249,14 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
                 ActionSlot.CanvasGroup.alpha = 0;
 
             ActionSlot.ActionButton.enabled = !toggle;
+        }
+
+        public void ToggleEditMode(bool toggle)
+        {
+            if (toggle && ActionSlot.CanvasGroup.alpha == 0f)
+                ActionSlot.CanvasGroup.alpha = 1;
+            else if (!toggle && ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Hidden && ActionSlot.SlotAction == null)
+                ActionSlot.CanvasGroup.alpha = 0;
         }
 
         private void OnActionRequested()

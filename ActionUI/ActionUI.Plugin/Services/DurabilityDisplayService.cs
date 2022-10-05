@@ -168,7 +168,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (!_unequipedAdded)
                 AddUnequippedTrackers(character.OwnerPlayerSys.PlayerID);
 
-            
+
 
             if (equipment.IsIndestructible || !character.Inventory.Equipment.HasItemEquipped(equipment.CurrentEquipmentSlot.SlotType))
             {

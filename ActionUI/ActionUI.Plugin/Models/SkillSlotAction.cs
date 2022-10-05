@@ -6,6 +6,7 @@ using ModifAmorphic.Outward.Unity.ActionUI;
 using Rewired;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.ActionUI.Models
@@ -66,8 +67,9 @@ namespace ModifAmorphic.Outward.ActionUI.Models
             this.inventory = character.Inventory;
             this.ActionIcons = GetSkillSprites(false);
             this.DisplayName = skill.DisplayName;
-            this.HasDynamicIcon = skill.HasDynamicQuickSlotIcon;
+            this.HasDynamicIcon = skill.HasDynamicQuickSlotIcon || skill is EquipmentSetSkill;
             this.IsCombatModeEnabled = combatModeEnabled;
+            this.Cooldown = new ItemCooldownTracker(skill);
 
             itemId = skill.ItemID;
             itemUid = skill.UID;
@@ -151,6 +153,17 @@ namespace ModifAmorphic.Outward.ActionUI.Models
 
             if (skill.IsChildToCharacter && skill.GetIsQuickSlotReq())
                 return true;
+
+            if (!skill.IsChildToCharacter)
+            {
+                var foundSkill = (Skill)inventory.SkillKnowledge.GetLearnedItems().FirstOrDefault(i => i.ItemID == skill.ItemID);
+                if (foundSkill != null)
+                {
+                    skill = foundSkill;
+                    skill.SetQuickSlot(0);
+                    ((ItemCooldownTracker)Cooldown).SetSkill(skill);
+                }
+            }
 
             return false;
         }

@@ -31,6 +31,7 @@ namespace ModifAmorphic.Outward.ActionUI
 
                 harmony.PatchAll(typeof(PauseMenuPatches));
                 harmony.PatchAll(typeof(SplitPlayerPatches));
+                harmony.PatchAll(typeof(LobbySystemPatches));
 
                 var startup = new Startup();
                 logger.LogInfo($"Starting {ModInfo.ModName} {ModInfo.ModVersion}...");

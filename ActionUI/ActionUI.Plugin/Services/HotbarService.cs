@@ -10,6 +10,7 @@ using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using Rewired;
 using System;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 
@@ -60,15 +61,44 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             QuickSlotPanelPatches.StartInitAfter += DisableKeyboardQuickslots;
             QuickSlotControllerSwitcherPatches.StartInitAfter += SwapCanvasGroup;
-            NetworkLevelLoader.Instance.onOverallLoadingDone += AssignSlotActions;
             SkillMenuPatches.AfterOnSectionSelected += SetSkillsMovable;
             ItemDisplayDropGroundPatches.TryGetIsDropValids.Add(_player.id, TryGetIsDropValid);
             _hotbars.OnAwake += StartNextFrame;
             if (_hotbars.IsAwake)
                 StartNextFrame();
 
+            //WaitForCharacterInitialization();
+
         }
 
+        private void WaitForCharacterInitialization()
+        {
+            //Logger.LogDebug($"Waiting for Character Init before assigning Action Slots. IsLateInitDone == {_character.IsLateInitDone}");
+            //bool characterLoaded() => NetworkLevelLoader.Instance.IsOverallLoadingDone && _character.Inventory != null && _character.Inventory.SkillKnowledge != null && _hotbars.IsAwake
+            //    && NetworkLevelLoader.Instance.AllPlayerDoneLoading;
+
+            //Action assignSlots = () =>
+            //{
+            //    DateTime executeTime = DateTime.Now.AddSeconds(15);
+            //    _levelCoroutines.DoWhen(() => DateTime.Now > executeTime, AssignSlotActions, 20);
+            //};
+            //_levelCoroutines.DoWhen(characterLoaded, AssignSlotActions, 180, .1f);
+            _levelCoroutines.StartRoutine(WaitAssignActionSlots());
+        }
+        private IEnumerator WaitAssignActionSlots()
+        {
+            bool hotbarReady() => NetworkLevelLoader.Instance.IsOverallLoadingDone && _character.Inventory != null && _character.Inventory.SkillKnowledge != null && _character.Initialized;
+
+            while (!hotbarReady())
+            {
+                //Logger.LogDebug($"WaitAssignActionSlots: _hotbars.gameObject.activeSelf=={_hotbars.gameObject.activeSelf}");
+                yield return null;
+            }
+
+            //yield return new WaitForSeconds(2f);
+
+            AssignSlotActions();
+        }
         private void SetSkillsMovable(ItemListDisplay itemListDisplay)
         {
             if (!_profileManager?.ProfileService?.GetActiveProfile()?.ActionSlotsEnabled ?? false)
@@ -102,6 +132,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _hotbars.ClearChanges();
             _profileManager.HotbarProfileService.OnProfileChanged += ConfigureHotbars;
             _hotbars.OnHasChanges.AddListener(Save);
+
+            //WaitForCharacterInitialization();
+            AssignSlotActions();
         }
 
         public void ConfigureHotbars(IHotbarProfile profile)
@@ -260,34 +293,26 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 if (disposing)
                 {
                     Logger.LogDebug($"Disposing of {nameof(HotbarService)} instance '{InstanceID}'. Unsubscribing to events.");
+
                     QuickSlotPanelPatches.StartInitAfter -= DisableKeyboardQuickslots;
                     QuickSlotControllerSwitcherPatches.StartInitAfter -= SwapCanvasGroup;
-                    NetworkLevelLoader.Instance.onOverallLoadingDone -= AssignSlotActions;
                     SkillMenuPatches.AfterOnSectionSelected -= SetSkillsMovable;
-                    
+
                     if (ItemDisplayDropGroundPatches.TryGetIsDropValids.ContainsKey(_player.id))
                         ItemDisplayDropGroundPatches.TryGetIsDropValids.Remove(_player.id);
 
                     if (_hotbars != null)
-                        _hotbars.OnAwake -= StartNextFrame;
-                    if (_profileManager?.HotbarProfileService != null)
-                        _profileManager.HotbarProfileService.OnProfileChanged += ConfigureHotbars;
-                    if (_hotbars != null)
+                    {
                         _hotbars.OnHasChanges.RemoveListener(Save);
+                        _hotbars.OnAwake -= StartNextFrame;
+                    }
+                    if (_profileManager?.HotbarProfileService != null)
+                        _profileManager.HotbarProfileService.OnProfileChanged -= ConfigureHotbars;
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
                 disposedValue = true;
             }
         }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~HotbarService()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
 
         public void Dispose()
         {

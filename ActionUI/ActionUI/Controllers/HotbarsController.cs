@@ -207,6 +207,10 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
         {
             _hbc.IsInActionSlotEditMode = editMode;
             _hbc.LeftHotbarNav.ToggleActionSlotEditMode(editMode);
+            foreach (var slot in _hbc.ActionSlots.Values)
+            {
+                slot.Controller.ToggleEditMode(editMode);
+            }
         }
 
         public void ToggleHotkeyEdits(bool editMode)

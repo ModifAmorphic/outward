@@ -5,7 +5,6 @@ using ModifAmorphic.Outward.ActionUI.Services.Injectors;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Modules.Crafting;
 using System;
 
 namespace ModifAmorphic.Outward.ActionUI
@@ -36,9 +35,11 @@ namespace ModifAmorphic.Outward.ActionUI
             _harmony.PatchAll(typeof(InventoryContentDisplayPatches));
             _harmony.PatchAll(typeof(ItemDisplayPatches));
             _harmony.PatchAll(typeof(NetworkLevelLoaderPatches));
+            _harmony.PatchAll(typeof(NetworkInstantiateManagerPatches));
 
             _services
-                     .AddSingleton(new InventoryServicesInjector(_services, _playerMenuService, _coroutines, _loggerFactory));
+                     .AddSingleton(new InventoryServicesInjector(_services, _playerMenuService, _coroutines, _loggerFactory))
+                     .AddSingleton(new EquipSetPrefabService(_services.GetService<InventoryServicesInjector>(), _coroutines, _loggerFactory));
 
         }
     }

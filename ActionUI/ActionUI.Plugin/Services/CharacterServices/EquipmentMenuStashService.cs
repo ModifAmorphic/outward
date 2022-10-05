@@ -21,7 +21,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private readonly ProfileManager _profileManager;
         private IActionUIProfile _profile => _profileManager.ProfileService.GetActiveProfile();
         private EquipmentSetsSettingsProfile _equipSetsProfile => _profileManager.ProfileService.GetActiveProfile().EquipmentSetsSettingsProfile;
-        private InventoryService _inventoryService;
+        private EquipService _equipService;
         private readonly ModifCoroutine _coroutines;
         private ContainerDisplay _stashDisplay;
 
@@ -32,24 +32,24 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private bool disposedValue;
 
-        public EquipmentMenuStashService(Character character, ProfileManager profileManager, InventoryService inventoryService, ModifCoroutine coroutines, Func<IModifLogger> getLogger)
+        public EquipmentMenuStashService(Character character, ProfileManager profileManager, EquipService equipService, ModifCoroutine coroutines, Func<IModifLogger> getLogger)
         {
             _character = character;
             _profileManager = profileManager;
-            _inventoryService = inventoryService;
+            _equipService = equipService;
             _coroutines = coroutines;
             _getLogger = getLogger;
 
             _profileManager.ProfileService.OnActiveProfileChanged.AddListener(SetEnableState);
             _profileManager.ProfileService.OnActiveProfileSwitched.AddListener(SetEnableState);
             _profileManager.ProfileService.OnNewProfile.AddListener(SetEnableState);
-            if (_inventoryService.GetIsStashEquipEnabled())
+            if (_equipService.GetIsStashEquipEnabled())
                 SubscribeToPatchEvents();
         }
 
         private void SetEnableState(IActionUIProfile profile)
         {
-            if (!_inventoryService.GetIsStashEquipEnabled())
+            if (!_equipService.GetIsStashEquipEnabled())
             {
                 RemoveStashDisplay();
                 UnsubscribeToPatchEvents();
@@ -65,7 +65,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private bool ShouldInvoke(InventoryContentDisplay inventoryContentDisplay) =>
             inventoryContentDisplay.LocalCharacter.UID == _character.UID
                     && inventoryContentDisplay.transform.GetGameObjectPath().EndsWith(inventoryDisplayPath) //only the equipment -> inventory menu
-                    && _inventoryService.GetIsStashEquipEnabled();
+                    && _equipService.GetIsStashEquipEnabled();
 
         private void SubscribeToPatchEvents()
         {
@@ -191,7 +191,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void RefreshContainerDisplays(InventoryContentDisplay inventoryContentDisplay, bool clearAssignedDisplay)
         {
-            if (!_stashDisplay.IsDisplayed || !ShouldInvoke(inventoryContentDisplay) || _stashDisplay == null)
+            if (_stashDisplay == null || !_stashDisplay.IsDisplayed || !ShouldInvoke(inventoryContentDisplay))
                 return;
 
             if (clearAssignedDisplay)
@@ -220,7 +220,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 }
 
                 _character = null;
-                _inventoryService = null;
+                _equipService = null;
                 _stashDisplay = null;
 
                 disposedValue = true;

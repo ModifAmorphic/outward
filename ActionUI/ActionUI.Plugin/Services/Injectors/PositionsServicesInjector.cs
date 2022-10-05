@@ -1,5 +1,4 @@
-﻿using ModifAmorphic.Outward.ActionUI.Patches;
-using ModifAmorphic.Outward.Coroutines;
+﻿using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;

@@ -8,7 +8,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
     internal class DurabilityActionSlotTracker : IBarProgress
     {
         private readonly EquipmentSlotAction _equipSlotAction;
-        private readonly Equipment _equipment;
 
         private readonly BarPositions _barPosition;
         public BarPositions BarPosition => _barPosition;
@@ -31,23 +30,25 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         };
         public List<ColorRange> ColorRanges => colorRanges;
 
-        public DurabilityActionSlotTracker(EquipmentSlotAction equipSlotAction, BarPositions barPosition) => (_equipSlotAction, _equipment, _barPosition, IsEnabled) = (equipSlotAction, equipSlotAction.ActionEquipment, barPosition, true);
+        public DurabilityActionSlotTracker(EquipmentSlotAction equipSlotAction, BarPositions barPosition) => (_equipSlotAction, _barPosition, IsEnabled) = (equipSlotAction, barPosition, true);
 
         public float GetProgress()
         {
-            if (!string.IsNullOrEmpty(_equipment.UID))
+            if (!string.IsNullOrEmpty(_equipSlotAction.ActionEquipment.UID))
             {
-                if (_equipment.CurrentDurability != _lastDurability)
+                if (_equipSlotAction.ActionEquipment.CurrentDurability != _lastDurability)
                 {
-                    _lastDurability = _equipment.CurrentDurability;
-                    _equipSlotAction.DurabilityChanged(_equipment.CurrentDurability);
+                    _lastDurability = _equipSlotAction.ActionEquipment.CurrentDurability;
+                    _equipSlotAction.DurabilityChanged(_equipSlotAction.ActionEquipment.CurrentDurability);
                 }
-                return IsEnabled ? _equipment.DurabilityRatio : 0f;
+                return IsEnabled ? _equipSlotAction.ActionEquipment.DurabilityRatio : 0f;
             }
             else //If prefab, always return full durability
             {
                 return IsEnabled ? 1f : 0f;
             }
         }
+
+
     }
 }

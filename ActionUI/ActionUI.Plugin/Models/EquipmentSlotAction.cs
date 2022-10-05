@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.ActionUI.Services;
+﻿using ModifAmorphic.Outward.ActionUI.Extensions;
+using ModifAmorphic.Outward.ActionUI.Services;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
@@ -73,6 +74,7 @@ namespace ModifAmorphic.Outward.ActionUI.Models
             this.DisplayName = equipment.DisplayName;
             this.HasDynamicIcon = equipment.HasDynamicQuickSlotIcon;
             this.IsCombatModeEnabled = combatModeEnabled;
+            this.Stack = equipment.IsStackable() ? new StackTracker(this, character.Inventory) : null;
             if (!equipment.IsIndestructible)
                 this._activeBars.Add(BarPositions.Right, new DurabilityActionSlotTracker(this, BarPositions.Right));
             //this._activeBars.Add(BarPositions.Right, new DurabilityTracker(equipment, BarPositions.Right));

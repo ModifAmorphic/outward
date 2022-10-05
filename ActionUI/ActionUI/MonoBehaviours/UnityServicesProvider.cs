@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
@@ -20,7 +21,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public UnityServicesProvider AddSingleton<T>(T serviceInstance)
         {
-            DebugLogger.Log($"Adding {typeof(T)} singleton with UnityServicesProvider.");
+            DebugLogger.Log($"Adding {typeof(T)} singleton to UnityServicesProvider.");
             _serviceFactories.TryAdd(typeof(T), (Func<T>)(() => serviceInstance));
             return this;
         }
@@ -41,12 +42,20 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             bool isDisposed = false;
             if (_serviceFactories.TryGetValue(typeKey, out var factory))
             {
-                var service = factory.DynamicInvoke();
-
-                if (service is IDisposable disposable)
+                try
                 {
-                    disposable.Dispose();
-                    isDisposed = true;
+                    var service = factory.DynamicInvoke();
+
+                    if (service is IDisposable disposable)
+                    {
+                        disposable.Dispose();
+                        isDisposed = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"ActionUI: Dispose of {typeKey} failed.");
+                    Debug.LogException(ex);
                 }
             }
 

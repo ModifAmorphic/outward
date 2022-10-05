@@ -1,16 +1,9 @@
-﻿using BepInEx;
-using ModifAmorphic.Outward.ActionUI.Monobehaviours;
-using ModifAmorphic.Outward.ActionUI.Patches;
-using ModifAmorphic.Outward.ActionUI.Services.Injectors;
+﻿using ModifAmorphic.Outward.ActionUI.Patches;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
-using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
@@ -31,6 +24,16 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _getLogger = getLogger;
 
             CharacterUIPatches.BeforeReleaseUI += ResetUIs;
+            LobbySystemPatches.BeforeClearPlayerSystems += ResetAllPlayerUIs;
+        }
+
+        private void ResetAllPlayerUIs(LobbySystem lobbySystem)
+        {
+            var players = lobbySystem.PlayersInLobby.FindAll(p => p.IsLocalPlayer);
+            foreach (var p in players)
+            {
+                ResetUIs(p.ControlledCharacter.CharacterUI, p.PlayerID);
+            }
         }
 
         private void ResetUIs(CharacterUI characterUI, int rewiredId)
@@ -38,15 +41,36 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             Logger.LogDebug($"Destroying Action UIs for player {rewiredId}");
             if (Psp.Instance.TryGetServicesProvider(rewiredId, out var usp) && usp.TryGetService<PositionsService>(out var posService))
             {
-                posService.DestroyPositionableUIs(characterUI);
+                try
+                {
+                    posService.DestroyPositionableUIs(characterUI);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogException("Dispose of PositionableUIs failed.", ex);
+                }
             }
 
             Psp.Instance.TryDisposeServicesProvider(rewiredId);
             CharacterUIPatches.GetIsMenuFocused.TryRemove(rewiredId, out _);
-            //var actionUI = characterUI.GetComponentInChildren<PlayerActionMenus>(true).gameObject;
-            //actionUI.GetComponentsInChildren<SplitScreenScaler>()
-            characterUI.GetComponentInChildren<EquipmentSetMenu>(true).gameObject.Destroy();
-            characterUI.GetComponentInChildren<PlayerActionMenus>(true).gameObject.Destroy();
+            
+            try
+            {
+                characterUI.GetComponentInChildren<EquipmentSetMenu>(true).gameObject.Destroy();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Dispose of {nameof(EquipmentSetMenu)} gameobject failed.", ex);
+            }
+            
+            try
+            {
+                characterUI.GetComponentInChildren<PlayerActionMenus>(true).gameObject.Destroy();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Dispose of {nameof(PlayerActionMenus)} gameobject failed.", ex);
+            }
         }
     }
 }

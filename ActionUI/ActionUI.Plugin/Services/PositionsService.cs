@@ -14,16 +14,13 @@ using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
-    internal class PositionsService
+    public class PositionsService
     {
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
-        //private readonly PlayerActionMenus _actionMenus;
         private readonly ModifCoroutine _coroutine;
-        //private readonly CharacterUI _characterUI;
         private readonly GameObject _modInactivableGo;
-        //private readonly ProfileManager _profileManager;
 
         private static readonly HashSet<string> _positionBlocklist = new HashSet<string>()
         {
@@ -31,18 +28,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         };
 
         public PositionsService(
-                                //PlayerActionMenus playerActionMenus,
                                 ModifCoroutine coroutine,
-                                //CharacterUI characterUI,
                                 ModifGoService modifGoService,
-                                //ProfileManager profileManager,
                                 Func<IModifLogger> getLogger)
         {
-            //_actionMenus = playerActionMenus;
             _coroutine = coroutine;
-            //_characterUI = characterUI;
             _modInactivableGo = modifGoService.GetModResources(ModInfo.ModId, false);
-            //_profileManager = profileManager;
             _getLogger = getLogger;
         }
 
@@ -113,31 +104,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     positonableGo.gameObject.Destroy();
                 }
             }
-        }
-
-        private void ToggleQuickslotPositonable(CharacterUI characterUI, PositionsProfile positionsProfile, bool enabled)
-        {
-
-            var keyboard = characterUI.transform.Find("Canvas/GameplayPanels/HUD/QuickSlot/Keyboard");
-            var positionable = keyboard.GetComponent<PositionableUI>();
-            if (enabled)
-            {
-                var slotsGroup = keyboard.GetComponent<HorizontalLayoutGroup>();
-                var slots = slotsGroup.GetComponentsInChildren<EditorQuickSlotDisplayPlacer>();
-                var slotRect = slots.First().GetComponent<RectTransform>().rect;
-                var width = (slotRect.width + slotsGroup.spacing) * 8 + slotsGroup.padding.horizontal * 2 - slotsGroup.spacing;
-                var height = slotRect.height + slotsGroup.padding.horizontal * 2;
-                Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(ToggleQuickslotPositonable)}(): {slots.Length} QuickSlots found. Setting PositionableBg rect dimensions to ({width}, {height}).  Slot size ({slotRect.width}, {slotRect.height})");
-                var rectTranform = positionable.BackgroundImage.GetComponent<RectTransform>();
-                rectTranform.anchorMin = new Vector2(1f, 0f);
-                rectTranform.anchorMax = new Vector2(1f, 1f);
-                rectTranform.pivot = new Vector2(1f, .5f);
-                rectTranform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width * 1.2f);
-
-                positionable.SetPositionFromProfile(positionsProfile);
-            }
-
-            positionable.enabled = enabled;
         }
 
         private bool _isKeepPositionablesListening = false;
