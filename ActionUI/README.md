@@ -55,9 +55,11 @@
   - Multiplayer Fixes
     - ActionUI should function in multiplayer games.
     - Splitscreen should now work when player 2 is assigned the keyboard.
-  - Equiping a set with a 2h Weapon will now only play the unequip/equip animation once. Was previously playing twice, once for each hand.
+  - Equipping a set with a 2h Weapon will now only play the unequip/equip animation once. Was previously playing twice, once for each hand.
+  - Fixes for sets erroring when a set slot was empty.
   - Items with stack amounts (arrows, potions, etc) should now display the quantity when added to an action slot without requiring a scene change / reload.
   - Hidden Action Slots are now visible and assignable when the character menu is open.
+  - Fixed dropdown menus.
 
 ## Release 1.0.4
   - Bug fix for "floating" backpacks.

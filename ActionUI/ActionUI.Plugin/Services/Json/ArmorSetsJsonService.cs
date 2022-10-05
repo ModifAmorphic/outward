@@ -136,7 +136,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             var set = GetEquippedAsSet(name);
             set.IconSlot = iconSlot;
-            set.SetID = GlobalProfileService.GetMinEquipmentSetID() - 1;
+            set.SetID = GlobalProfileService.GetNextEquipmentSetID();
 
             GetProfile().EquipmentSets.Add(set);
             Save(set);

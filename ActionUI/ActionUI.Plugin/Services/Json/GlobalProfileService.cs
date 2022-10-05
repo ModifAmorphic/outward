@@ -17,14 +17,19 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
 
-        GlobalProfile _cachedProfile;
+        private GlobalProfile _cachedProfile;
+        private Random _random;
         private bool disposedValue;
 
         public string GlobalPath { get; private set; }
         public string ProfilesPath { get; private set; }
         public string GlobalFile => Path.Combine(GlobalPath, "global.json");
 
-        public GlobalProfileService(string globalPath, string profilesPath, Func<IModifLogger> getLogger) => (GlobalPath, ProfilesPath, _getLogger) = (globalPath, profilesPath, getLogger);
+        public GlobalProfileService(string globalPath, string profilesPath, Func<IModifLogger> getLogger)
+        {
+            (GlobalPath, ProfilesPath, _getLogger) = (globalPath, profilesPath, getLogger);
+            _random = new Random();
+        }
 
         public GlobalProfile GetGlobalProfile() => GetOrCreateGlobalProfile();
 
@@ -53,7 +58,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return set;
         }
 
-        public int GetMinEquipmentSetID() => GetGlobalProfile().CharacterEquipmentSets.Any() ? GetGlobalProfile().CharacterEquipmentSets.Keys.Min() : InventorySettings.StartingSetItemID;
+        public int GetNextEquipmentSetID() 
+        { 
+            int nextId = _random.Next(InventorySettings.MinSetItemID, InventorySettings.MaxSetItemID);
+            int attempt = 0;
+            int maxAttempts = 1000;
+            while (GetGlobalProfile().CharacterEquipmentSets.ContainsKey(nextId) && attempt < maxAttempts)
+            {
+                nextId = _random.Next(InventorySettings.MinSetItemID, InventorySettings.MaxSetItemID);
+                attempt++;
+            }
+            return nextId;
+        }
 
         private string GetOrAddGlobalDir()
         {

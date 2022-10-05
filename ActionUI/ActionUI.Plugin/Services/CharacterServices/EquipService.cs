@@ -368,17 +368,19 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             var unequipToStash = GetIsStashUnequipEnabled();
             bool isRightEquipped = false;
             bool isLeftEquipped = false;
+            //Empty weapon set. Unequip both weapons.
             if (weaponSet == null || weaponSet.RightHand == null && weaponSet.LeftHand == null)
             {
                 isRightEquipped = TryEquipSlot(null, EquipSlots.RightHand, equipFromStash, unequipToStash);
                 isLeftEquipped = TryEquipSlot(null, EquipSlots.LeftHand, equipFromStash, unequipToStash);
             }
-            else if (weaponSet.RightHand.UID != weaponSet.LeftHand.UID)
+            //Set contains an item for each hand.
+            else if (weaponSet.RightHand?.UID != weaponSet.LeftHand?.UID)
             {
-                
                 isRightEquipped = TryEquipSlot(weaponSet.RightHand, EquipSlots.RightHand, equipFromStash, unequipToStash);
                 isLeftEquipped = TryEquipSlot(weaponSet.LeftHand, EquipSlots.LeftHand, equipFromStash, unequipToStash);
             }
+            //Set is a 2h weapon.
             else
             {
                 var equipment = (Equipment)ResourcesPrefabManager.Instance.GetItemPrefab(weaponSet.RightHand.ItemID);
@@ -470,7 +472,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 {
                     unequipAction = () =>
                     {
-                        Logger.LogDebug($"Unequipping item UID {equipSlot.UID} from slot {slotID} to stash.");
+                        Logger.LogDebug($"Unequipping item UID {equipSlot?.UID} from slot {slotID} to stash.");
                         _characterInventory.UnequipItem(slot.EquippedItem, performAnimation, _character.Stash);
                     };
                 }
@@ -478,7 +480,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 {
                     unequipAction = () =>
                     {
-                        Logger.LogDebug($"Unequipping item UID {equipSlot.UID} from slot {slotID}.");
+                        Logger.LogDebug($"Unequipping item UID {equipSlot?.UID} from slot {slotID}.");
                         _characterInventory.UnequipItem(slot.EquippedItem, performAnimation);
                     };
                 }
