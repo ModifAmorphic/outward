@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.ActionUI.Services;
+﻿using ModifAmorphic.Outward.ActionUI.Extensions;
+using ModifAmorphic.Outward.ActionUI.Services;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
@@ -68,6 +69,7 @@ namespace ModifAmorphic.Outward.ActionUI.Models
             this.DisplayName = item.DisplayName;
             this.HasDynamicIcon = item.HasDynamicQuickSlotIcon;
             this.IsCombatModeEnabled = combatModeEnabled;
+            this.Stack = item.IsStackable() ? new StackTracker(this, character.Inventory) : null;
 
             itemId = item.ItemID;
             itemUid = item.UID;

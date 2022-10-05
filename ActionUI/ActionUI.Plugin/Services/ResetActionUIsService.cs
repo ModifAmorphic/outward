@@ -24,10 +24,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _getLogger = getLogger;
 
             CharacterUIPatches.BeforeReleaseUI += ResetUIs;
-            LobbySystemPatches.BeforeClearPlayerSystems += LobbySystemPatches_BeforeClearPlayerSystems;
+            LobbySystemPatches.BeforeClearPlayerSystems += ResetAllPlayerUIs;
         }
 
-        private void LobbySystemPatches_BeforeClearPlayerSystems(LobbySystem lobbySystem)
+        private void ResetAllPlayerUIs(LobbySystem lobbySystem)
         {
             var players = lobbySystem.PlayersInLobby.FindAll(p => p.IsLocalPlayer);
             foreach (var p in players)
@@ -41,13 +41,36 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             Logger.LogDebug($"Destroying Action UIs for player {rewiredId}");
             if (Psp.Instance.TryGetServicesProvider(rewiredId, out var usp) && usp.TryGetService<PositionsService>(out var posService))
             {
-                posService.DestroyPositionableUIs(characterUI);
+                try
+                {
+                    posService.DestroyPositionableUIs(characterUI);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogException("Dispose of PositionableUIs failed.", ex);
+                }
             }
 
             Psp.Instance.TryDisposeServicesProvider(rewiredId);
             CharacterUIPatches.GetIsMenuFocused.TryRemove(rewiredId, out _);
-            characterUI.GetComponentInChildren<EquipmentSetMenu>(true).gameObject.Destroy();
-            characterUI.GetComponentInChildren<PlayerActionMenus>(true).gameObject.Destroy();
+            
+            try
+            {
+                characterUI.GetComponentInChildren<EquipmentSetMenu>(true).gameObject.Destroy();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Dispose of {nameof(EquipmentSetMenu)} gameobject failed.", ex);
+            }
+            
+            try
+            {
+                characterUI.GetComponentInChildren<PlayerActionMenus>(true).gameObject.Destroy();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Dispose of {nameof(PlayerActionMenus)} gameobject failed.", ex);
+            }
         }
     }
 }

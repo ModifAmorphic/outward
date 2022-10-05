@@ -5,23 +5,24 @@ namespace ModifAmorphic.Outward.ActionUI.Models
 {
     internal class StackTracker : IStackable
     {
-        private readonly Item _item;
+        private IOutwardItem _outwardItem;
         private readonly CharacterInventory _inventory;
         public bool IsStackable => true;
 
-        public StackTracker(Item item, CharacterInventory inventory)
+        public StackTracker(IOutwardItem item, CharacterInventory inventory)
         {
-            if (item == null)
+            if (item == null || item.ActionItem == null)
                 throw new ArgumentNullException(nameof(item));
             if (inventory == null)
                 throw new ArgumentNullException(nameof(inventory));
 
-            _item = item;
+            _outwardItem = item;
             _inventory = inventory;
         }
         public int GetAmount()
         {
-            return _item.GroupItemInDisplay || _item.IsStackable ? _inventory.ItemCount(_item.ItemID) : _item.QuickSlotCountDisplay;
+            return _outwardItem.ActionItem.GroupItemInDisplay || _outwardItem.ActionItem.IsStackable ? _inventory.ItemCount(_outwardItem.ActionItem.ItemID) : _outwardItem.ActionItem.QuickSlotCountDisplay;
         }
+
     }
 }

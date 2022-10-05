@@ -48,17 +48,11 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             }
             else if (item is Equipment equipment)
             {
-                slotAction = new EquipmentSlotAction(equipment, _rewiredPlayer, _character, this, combatModeEnabled, _getLogger)
-                {
-                    Stack = item.IsStackable() ? item.ToStackable(_character.Inventory) : null,
-                };
+                slotAction = new EquipmentSlotAction(equipment, _rewiredPlayer, _character, this, combatModeEnabled, _getLogger);
             }
             else
             {
-                slotAction = new ItemSlotAction(item, _rewiredPlayer, _character, this, combatModeEnabled, _getLogger)
-                {
-                    Stack = item.IsStackable() ? item.ToStackable(_character.Inventory) : null,
-                };
+                slotAction = new ItemSlotAction(item, _rewiredPlayer, _character, this, combatModeEnabled, _getLogger);
             }
 
             return slotAction != null;
@@ -120,10 +114,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             }
             else
             {
-                return new ItemSlotAction(item, _rewiredPlayer, _character, this, _profileService.GetProfile()?.CombatMode ?? true, _getLogger)
-                {
-                    Stack = item.IsStackable() ? item.ToStackable(_character.Inventory) : null
-                };
+                return new ItemSlotAction(item, _rewiredPlayer, _character, this, _profileService.GetProfile()?.CombatMode ?? true, _getLogger);
             }
         }
 
