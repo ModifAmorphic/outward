@@ -35,7 +35,7 @@ namespace ModifAmorphic.Outward.Modules.Items
             this._modId = modId;
             this._loggerFactory = loggerFactory;
             this._modifGoService = modifGoService;
-            this._modifItemPrefabs = modifGoService.GetModResources(modId, true).GetOrAddComponent<ModifItemPrefabs>();
+            this._modifItemPrefabs = modifGoService.GetModItemPrefabs(modId);
             this._prefabManagerFactory = prefabManagerFactory;
 
             LocalizationManagerPatches.LoadItemLocalizationAfter += RegisterItemLocalizations;
@@ -70,7 +70,7 @@ namespace ModifAmorphic.Outward.Modules.Items
             var baseActiveStatus = basePrefab.gameObject.activeSelf;
             basePrefab.gameObject.SetActive(false);
             var prefab = (T)GameObject.Instantiate(basePrefab, _modifItemPrefabs.transform, false).GetComponent<Item>();
-            prefab.gameObject.DeCloneNames();
+            //prefab.gameObject.DeCloneNames();
             prefab.transform.ResetLocal();
             basePrefab.gameObject.SetActive(baseActiveStatus);
 
@@ -87,7 +87,7 @@ namespace ModifAmorphic.Outward.Modules.Items
                 {
                     var prefabStats = UnityEngine.Object.Instantiate(basePrefab.Stats, prefab.transform);
                     //prefabStats.hideFlags = HideFlags.HideAndDontSave;
-                    prefabStats.gameObject.DeCloneNames();
+                    //prefabStats.gameObject.DeCloneNames();
                     prefab.SetPrivateField<Item, ItemStats>("m_stats", prefabStats);
 
                 }
