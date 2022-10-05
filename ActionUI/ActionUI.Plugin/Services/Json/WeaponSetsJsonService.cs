@@ -16,15 +16,16 @@ namespace ModifAmorphic.Outward.ActionUI.Services
     {
 
         protected override string FileName => "WeaponSets.json";
-        private EquipService _equipService;
+        private EquipService _equipService => _getEquipService.Invoke();
+        private Func<EquipService> _getEquipService;
 
         public WeaponSetsJsonService(GlobalProfileService globalProfileService,
                                      ProfileService profileService,
-                                     EquipService equipService,
+                                     Func<EquipService> getEquipService,
                                      string characterUID,
                                      Func<IModifLogger> getLogger) : base(globalProfileService, profileService, characterUID, getLogger)
         {
-            _equipService = equipService;
+            _getEquipService = getEquipService;
             TransmorphicEventsEx.TryHookOnTransmogrified(this, OnTransmogrified);
         }
 
@@ -159,8 +160,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void LearnEquipmentSetSkill(IEquipmentSet equipmentSet)
         {
-            var prefab = _equipService.AddOrGetEquipmentSetSkillPrefab<WeaponSetSkill>(equipmentSet);
-            _equipService.AddOrUpdateEquipmentSetSkill(prefab, equipmentSet);
+            _equipService.AddOrUpdateEquipmentSetSkill<WeaponSetSkill>(equipmentSet);
         }
 
         private void ForgetEquipmentSetSkill(int SetID) => _equipService.RemoveEquipmentSet(SetID);
@@ -199,7 +199,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            _equipService = null;
         }
     }
 }

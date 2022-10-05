@@ -20,7 +20,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public UnityServicesProvider AddSingleton<T>(T serviceInstance)
         {
-            DebugLogger.Log($"Adding {typeof(T)} singleton with UnityServicesProvider.");
+            DebugLogger.Log($"Adding {typeof(T)} singleton to UnityServicesProvider.");
             _serviceFactories.TryAdd(typeof(T), (Func<T>)(() => serviceInstance));
             return this;
         }

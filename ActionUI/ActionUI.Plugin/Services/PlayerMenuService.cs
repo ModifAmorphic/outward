@@ -20,7 +20,7 @@ using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
-    internal class PlayerMenuService : IDisposable
+    public class PlayerMenuService : IDisposable
     {
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
@@ -70,8 +70,16 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void InitActionUI(SplitPlayer splitPlayer, Character character)
         {
-            InjectMenus(splitPlayer);
-            _sharedServicesInjector.AddSharedServices(splitPlayer);
+            if (!character.IsLocalPlayer)
+            {
+                Logger.LogDebug($"Character {character.name} is not a local character. Ending ActionUI init.");
+                return;
+            }
+            if (!TryInjectMenus(splitPlayer))
+            {
+                Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(InitActionUI)}(): PlayerActionMenus already injected for player rewiredId {splitPlayer.RewiredID}. Ending ActionUI init.");
+                return;
+            }
             ConfigureCharacterUI(splitPlayer);
 
             try
@@ -86,25 +94,27 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             }
         }
 
-        private void InjectMenus(SplitPlayer splitPlayer)
+        private bool TryInjectMenus(SplitPlayer splitPlayer)
         {
-            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(InjectMenus)}(): Injecting PlayerActionMenus for player rewiredId {splitPlayer.RewiredID}.");
-            var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
+            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(TryInjectMenus)}(): Injecting PlayerActionMenus for player rewiredId {splitPlayer.RewiredID}.");
+            var usp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
 
-            if (psp.TryGetService<PlayerActionMenus>(out var _))
-                return;
+            if (usp.TryGetService<PlayerActionMenus>(out var _))
+            {
+                return false;
+            }
 
             var playerMenuPrefab = _playerMenuPrefab.gameObject;
             var gamePanels = splitPlayer.CharUI.transform.Find("Canvas/GameplayPanels");
-            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(InjectMenus)}(): Creating PlayerActionMenus instance for player rewiredId {splitPlayer.RewiredID}.");
+            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(TryInjectMenus)}(): Creating PlayerActionMenus instance for player rewiredId {splitPlayer.RewiredID}.");
             var playerMenuGo = UnityEngine.Object.Instantiate(playerMenuPrefab, gamePanels);
 
-            psp.AddSingleton(playerMenuGo.GetComponentInChildren<HotkeyCaptureMenu>(true));
+            usp.AddSingleton(playerMenuGo.GetComponentInChildren<HotkeyCaptureMenu>(true));
             playerMenuGo.SetActive(false);
             var playerMenu = playerMenuGo.GetComponent<PlayerActionMenus>();
-            psp.AddSingleton(playerMenu);
+            usp.AddSingleton(playerMenu);
 
-            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(InjectMenus)}(): Injecting Positionable UI component.");
+            Logger.LogDebug($"{nameof(PlayerMenuService)}::{nameof(TryInjectMenus)}(): Injecting Positionable UI component.");
             _positionsService.InjectPositionableUIs(splitPlayer.CharUI);
 
             playerMenu.SetIDs(splitPlayer.RewiredID);
@@ -113,6 +123,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 CharacterUIPatches.GetIsMenuFocused.Add(splitPlayer.RewiredID, (playerId) => GetAnyMenuShowing(playerMenu, playerId));
 
             InjectPauseMenu(splitPlayer, playerMenu);
+
+            return true;
         }
 
         private bool GetAnyMenuShowing(PlayerActionMenus actionMenus, int playerId)
@@ -292,18 +304,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     PauseMenuPatches.AfterRefreshDisplay -= (pauseMenu) => _coroutine.StartRoutine(ResizePauseMenu(pauseMenu));
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
                 disposedValue = true;
             }
         }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~PlayerMenuService()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
 
         public void Dispose()
         {

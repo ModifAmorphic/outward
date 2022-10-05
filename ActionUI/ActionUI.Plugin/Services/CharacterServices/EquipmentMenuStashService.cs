@@ -191,7 +191,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void RefreshContainerDisplays(InventoryContentDisplay inventoryContentDisplay, bool clearAssignedDisplay)
         {
-            if (!_stashDisplay.IsDisplayed || !ShouldInvoke(inventoryContentDisplay) || _stashDisplay == null)
+            if (_stashDisplay == null || !_stashDisplay.IsDisplayed || !ShouldInvoke(inventoryContentDisplay))
                 return;
 
             if (clearAssignedDisplay)

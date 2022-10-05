@@ -51,7 +51,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             inventoryIngredients.Invoke(characterInventory, new object[] { craftingStationTag, sortedIngredients, stashItems });
         }
 
-        public Dictionary<string, Item> GetItemPrefabs()
+        public static Dictionary<string, Item> GetItemPrefabs()
         {
             var field = typeof(ResourcesPrefabManager).GetField("ITEM_PREFABS", BindingFlags.NonPublic | BindingFlags.Static);
             return (Dictionary<string, Item>)field.GetValue(null);

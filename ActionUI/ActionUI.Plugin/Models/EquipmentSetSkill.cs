@@ -43,7 +43,7 @@ namespace ModifAmorphic.Outward.ActionUI.Models
             SetIcon();
         }
 
-        public void SetEquipmentSet(IEquipmentSet set, Character character)
+        public void SetEquipmentSet(IEquipmentSet set)
         {
             _setName = set.Name;
             m_name = set.Name;

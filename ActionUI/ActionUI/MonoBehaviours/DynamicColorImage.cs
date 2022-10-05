@@ -67,7 +67,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public virtual void SetValue(float value)
         {
             if (value < 0 || value > 1f)
-                throw new ArgumentOutOfRangeException("value");
+                return;
             //DebugLogger.Log($"SetValue({value}).  Current _value == {_value}");
             var rounded = (int)(value * 1000);
 

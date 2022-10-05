@@ -46,8 +46,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             Psp.Instance.TryDisposeServicesProvider(rewiredId);
             CharacterUIPatches.GetIsMenuFocused.TryRemove(rewiredId, out _);
-            //var actionUI = characterUI.GetComponentInChildren<PlayerActionMenus>(true).gameObject;
-            //actionUI.GetComponentsInChildren<SplitScreenScaler>()
             characterUI.GetComponentInChildren<EquipmentSetMenu>(true).gameObject.Destroy();
             characterUI.GetComponentInChildren<PlayerActionMenus>(true).gameObject.Destroy();
         }

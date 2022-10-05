@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.ActionUI.Settings;
+﻿using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
@@ -7,37 +8,38 @@ using System.IO;
 
 namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
 {
-    internal class SharedServicesInjector
+    public class SharedServicesInjector
     {
         private readonly ServicesProvider _services;
 
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
 
-        public delegate void SharedServicesInjectedDelegate(SplitPlayer splitPlayer);
-        //public event SharedServicesInjectedDelegate OnSharedServicesInjected;
+        public delegate void SharedServicesInjectedDelegate(int playerID, string characterUID);
+        public event SharedServicesInjectedDelegate OnSharedServicesInjected;
 
         public SharedServicesInjector(ServicesProvider services, Func<IModifLogger> getLogger)
         {
             (_services, _getLogger) = (services, getLogger);
-            //SplitPlayerPatches.SetCharacterAfter += AddSharedServices;
+
+            NetworkInstantiateManagerPatches.BeforeAddLocalPlayer += (manager, playerId, save) => AddSharedServices(playerId, save.CharacterUID);
         }
 
-        public void AddSharedServices(SplitPlayer splitPlayer)
+        public void AddSharedServices(int rewiredID, string characterUID)
         {
 
-            var usp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
+            var usp = Psp.Instance.GetServicesProvider(rewiredID);
 
 
             usp.AddSingleton<IActionUIProfileService>(new ProfileService(
-                                Path.Combine(ActionUISettings.CharactersProfilesPath, splitPlayer.AssignedCharacter.UID),
+                                Path.Combine(ActionUISettings.CharactersProfilesPath, characterUID),
                                 _services.GetService<GlobalProfileService>(),
                                 _getLogger));
 
             if (!usp.ContainsService<ProfileManager>())
-                usp.AddSingleton(new ProfileManager(splitPlayer.RewiredID));
+                usp.AddSingleton(new ProfileManager(rewiredID));
 
-            //OnSharedServicesInjected?.Invoke(splitPlayer);
+            OnSharedServicesInjected?.Invoke(rewiredID, characterUID);
 
         }
 

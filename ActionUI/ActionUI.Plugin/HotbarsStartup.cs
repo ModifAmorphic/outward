@@ -39,7 +39,6 @@ namespace ModifAmorphic.Outward.ActionUI
             _harmony.PatchAll(typeof(QuickSlotPanelPatches));
             _harmony.PatchAll(typeof(ControlsInputPatches));
             _harmony.PatchAll(typeof(CharacterQuickSlotManagerPatches));
-            //_harmony.PatchAll(typeof(CharacterManagerPatches));
             _harmony.PatchAll(typeof(SkillMenuPatches));
             _harmony.PatchAll(typeof(ItemDisplayDropGroundPatches));
 
