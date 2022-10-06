@@ -27,9 +27,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public GlobalProfileService GlobalProfileService { get; private set; }
 
-        public UnityEvent<IActionUIProfile> OnNewProfile { get; } = new UnityEvent<IActionUIProfile>();
-        public UnityEvent<IActionUIProfile> OnActiveProfileChanged { get; } = new UnityEvent<IActionUIProfile>();
-        public UnityEvent<IActionUIProfile> OnActiveProfileSwitched { get; } = new UnityEvent<IActionUIProfile>();
+        public event Action<IActionUIProfile> OnNewProfile;
+        public event Action<IActionUIProfile> OnActiveProfileChanged;
+        public event Action<IActionUIProfile> OnActiveProfileSwitched;
 
         public ProfileService(string characterProfilesPath, GlobalProfileService globalProfileService, Func<IModifLogger> getLogger) => (ProfilesPath, GlobalProfileService, _getLogger) = (characterProfilesPath, globalProfileService, getLogger);
 
@@ -302,9 +302,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 if (disposing)
                 {
-                    OnNewProfile.RemoveAllListeners();
-                    OnActiveProfileChanged.RemoveAllListeners();
-                    OnActiveProfileSwitched.RemoveAllListeners();
                 }
 
                 _activeProfile = null;

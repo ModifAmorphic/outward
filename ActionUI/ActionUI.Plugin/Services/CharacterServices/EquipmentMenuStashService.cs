@@ -40,11 +40,23 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _coroutines = coroutines;
             _getLogger = getLogger;
 
-            _profileManager.ProfileService.OnActiveProfileChanged.AddListener(SetEnableState);
-            _profileManager.ProfileService.OnActiveProfileSwitched.AddListener(SetEnableState);
-            _profileManager.ProfileService.OnNewProfile.AddListener(SetEnableState);
+            _profileManager.ProfileService.OnActiveProfileChanged += TrySetEnableState;
+            _profileManager.ProfileService.OnActiveProfileSwitched += TrySetEnableState;
+            _profileManager.ProfileService.OnNewProfile += TrySetEnableState;
             if (_equipService.GetIsStashEquipEnabled())
                 SubscribeToPatchEvents();
+        }
+
+        private void TrySetEnableState(IActionUIProfile profile)
+        {
+            try
+            {
+                SetEnableState(profile);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to set equipment stash enable state for profile {profile?.Name}.", ex);
+            }
         }
 
         private void SetEnableState(IActionUIProfile profile)
@@ -214,9 +226,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 if (disposing)
                 {
                     UnsubscribeToPatchEvents();
-                    _profileManager?.ProfileService?.OnActiveProfileChanged?.RemoveListener(SetEnableState);
-                    _profileManager?.ProfileService?.OnActiveProfileSwitched?.RemoveListener(SetEnableState);
-                    _profileManager?.ProfileService?.OnNewProfile?.RemoveListener(SetEnableState);
+                    if (_profileManager?.ProfileService != null)
+                    {
+                        _profileManager.ProfileService.OnActiveProfileChanged -= SetEnableState;
+                        _profileManager.ProfileService.OnActiveProfileSwitched -= SetEnableState;
+                        _profileManager.ProfileService.OnNewProfile -= SetEnableState;
+                    }
                 }
 
                 _character = null;

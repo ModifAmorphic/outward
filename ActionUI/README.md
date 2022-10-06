@@ -52,6 +52,11 @@
 ***
 
 ## Latest Release ${PACKAGE_VERSION}
+  - Action Slots hotbar should now be hidden when a controller is used.
+  - Refactored startup routines so that if one sub module fails others will still attempt to start.
+  - Equipment will no longer be equipped from stash if the "Unequip Sets to Stash" option is enabled but the "Equip Sets from Stash" is not.
+
+## Release 1.0.5
   - Multiplayer Fixes
     - ActionUI should function in multiplayer games.
     - Splitscreen should now work when player 2 is assigned the keyboard.

@@ -136,7 +136,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private void SaveProfile(GlobalProfile profile)
         {
             _ = GetOrAddGlobalDir();
-
+            Logger.LogInfo($"Saving {nameof(GlobalProfile)} to '{GlobalFile}'.");
             var newJson = JsonConvert.SerializeObject(profile, Formatting.Indented);
             File.WriteAllText(GlobalFile, newJson);
             _cachedProfile = null;

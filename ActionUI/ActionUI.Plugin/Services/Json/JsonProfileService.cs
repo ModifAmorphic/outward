@@ -29,10 +29,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         public JsonProfileService(GlobalProfileService globalProfileService, ProfileService profileService, string characterUID, Func<IModifLogger> getLogger)
         {
             (GlobalProfileService, ProfileService, CharacterUID, _getLogger) = (globalProfileService, profileService, characterUID, getLogger);
-            profileService.OnActiveProfileSwitched.AddListener((profile) => RefreshCachedProfile(profile, true));
+            profileService.OnActiveProfileSwitched += TryRefreshCachedProfile;
         }
-
-
 
         public virtual T GetProfile()
         {
@@ -67,6 +65,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return JsonConvert.DeserializeObject<T>(json);
         }
 
+        private void TryRefreshCachedProfile(IActionUIProfile profile)
+        {
+            try
+            {
+                RefreshCachedProfile(profile, true);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{this.GetType()} failed refresh cached profile {profile?.Name}.", ex);
+            }
+        }
+
         protected virtual void RefreshCachedProfile(IActionUIProfile actionMenusProfile, bool suppressChangeEvent = false)
         {
             Logger.LogDebug($"{typeof(T).Name}::RefreshCachedProfile Called for action menu profile {actionMenusProfile.Name}.");
@@ -75,11 +85,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         protected virtual void SaveProfile(T profile)
         {
-            //RemoveOriginPositions(profile);
-            var json = JsonConvert.SerializeObject(profile, Formatting.Indented);
             var activeProfile = ProfileService.GetActiveActionUIProfile();
             var profileFile = Path.Combine(activeProfile.Path, FileName);
-            Logger.LogDebug($"Saving {typeof(T)} for profile {activeProfile.Name}");
+            Logger.LogInfo($"Saving {typeof(T)} for profile {activeProfile.Name} to '{profileFile}'.");
+            var json = JsonConvert.SerializeObject(profile, Formatting.Indented);
             File.WriteAllText(profileFile, json);
             CachedProfile = default;
         }
@@ -90,8 +99,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 if (disposing)
                 {
-                    //_profileService.OnActiveProfileChanged.RemoveListener((profile) => RefreshCachedProfile(profile));
-                    ProfileService.OnActiveProfileSwitched.RemoveListener((profile) => RefreshCachedProfile(profile, true));
+                    if (ProfileService != null)
+                        ProfileService.OnActiveProfileSwitched -= TryRefreshCachedProfile;
                 }
                 CachedProfile = default;
                 disposedValue = true;

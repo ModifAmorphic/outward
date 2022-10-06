@@ -20,9 +20,20 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
         public HotbarServicesInjector(ServicesProvider provider, PlayerMenuService playerMenuService, LevelCoroutines levelCoroutines, Func<IModifLogger> getLogger)
         {
             (_provider, _playerMenuService, _levelCoroutines, _getLogger) = (provider, playerMenuService, levelCoroutines, getLogger);
-            _playerMenuService.OnPlayerActionMenusConfigured += AddHotbarServices;
+            _playerMenuService.OnPlayerActionMenusConfigured += TryAddHotbarServices;
         }
 
+        private void TryAddHotbarServices(PlayerActionMenus actionMenus, SplitPlayer splitPlayer)
+        {
+            try
+            {
+                AddHotbarServices(actionMenus, splitPlayer);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to enable Action Slots for player {splitPlayer.RewiredID}.", ex);
+            }
+        }
         private void AddHotbarServices(PlayerActionMenus actionMenus, SplitPlayer splitPlayer)
         {
             Logger.LogDebug($"{nameof(HotbarServicesInjector)}::{nameof(AddHotbarServices)} Beginning Hotbar Services Injection for player {splitPlayer.RewiredID}.");

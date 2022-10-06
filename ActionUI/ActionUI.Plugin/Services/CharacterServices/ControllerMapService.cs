@@ -97,7 +97,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             RewiredInputsPatches.BeforeExportXmlData += RemoveActionUIMaps;
             RewiredInputsPatches.AfterExportXmlData += RewiredInputsPatches_AfterExportXmlData;
-            _profileService.OnActiveProfileSwitched.AddListener(LoadConfigMaps);
+            _profileService.OnActiveProfileSwitched += TryLoadConfigMaps;
             _hotbarProfileService.OnProfileChanged += SlotAmountChanged;
 
             _captureDialog.OnKeysSelected += CaptureDialog_OnKeysSelected;
@@ -132,7 +132,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         }
 
-        private void LoadConfigMaps(IActionUIProfile actionUIProfile) => _ = LoadConfigMaps(true);
+        private void TryLoadConfigMaps(IActionUIProfile profile)
+        {
+            try
+            {
+                _ = LoadConfigMaps(true);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{this.GetType()} failed load rewired config maps for profile {profile?.Name}.", ex);
+            }
+        }
+
         public (KeyboardMap keyboardMap, MouseMap mouseMap) LoadConfigMaps(bool forceRefresh = false)
         {
             var maps = (
@@ -563,7 +574,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     RewiredInputsPatches.BeforeExportXmlData -= RemoveActionUIMaps;
                     RewiredInputsPatches.AfterExportXmlData -= RewiredInputsPatches_AfterExportXmlData;
                     if (_profileService != null)
-                        _profileService.OnActiveProfileSwitched.RemoveListener(LoadConfigMaps);
+                        _profileService.OnActiveProfileSwitched -= TryLoadConfigMaps;
                     if (_hotbarProfileService != null)
                         _hotbarProfileService.OnProfileChanged -= SlotAmountChanged;
                     if (_captureDialog != null)

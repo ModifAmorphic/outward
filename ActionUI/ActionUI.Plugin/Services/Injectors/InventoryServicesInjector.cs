@@ -22,8 +22,20 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
         public InventoryServicesInjector(ServicesProvider services, PlayerMenuService playerMenuService, LevelCoroutines coroutines, Func<IModifLogger> getLogger)
         {
             (_services, _coroutines, _getLogger) = (services, coroutines, getLogger);
-            _services.GetService<SharedServicesInjector>().OnSharedServicesInjected += AddServiceProfiles;
-            playerMenuService.OnPlayerActionMenusConfigured += AddInventoryServices;
+            _services.GetService<SharedServicesInjector>().OnSharedServicesInjected += TryAddServiceProfiles;
+            playerMenuService.OnPlayerActionMenusConfigured += TryAddInventoryServices;
+        }
+
+        private void TryAddServiceProfiles(int playerID, string characterUID)
+        {
+            try
+            {
+                AddServiceProfiles(playerID, characterUID);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to load equipment set profiles for player {playerID}.", ex);
+            }
         }
 
         private void AddServiceProfiles(int playerID, string characterUID)
@@ -52,6 +64,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                 characterUID,
                 (ArmorSetsJsonService)usp.GetService<IEquipmentSetService<ArmorSet>>(),
                 (WeaponSetsJsonService)usp.GetService<IEquipmentSetService<WeaponSet>>());
+        }
+
+        private void TryAddInventoryServices(PlayerActionMenus actionMenus, SplitPlayer splitPlayer)
+        {
+            try
+            {
+                AddInventoryServices(actionMenus, splitPlayer);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to enable Inventory UIs for player {splitPlayer.RewiredID}.", ex);
+            }
         }
 
         private void AddInventoryServices(PlayerActionMenus actionMenus, SplitPlayer splitPlayer)

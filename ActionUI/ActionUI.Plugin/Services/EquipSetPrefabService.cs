@@ -26,13 +26,20 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         public EquipSetPrefabService(InventoryServicesInjector inventoryServicesInjector, ModifCoroutine coroutines, Func<IModifLogger> getLogger)
         {
             (_inventoryServicesInjector, _coroutines, _getLogger) = (inventoryServicesInjector, coroutines, getLogger);
-            _inventoryServicesInjector.EquipmentSetProfilesLoaded += _inventoryServicesInjector_EquipmentSetProfilesLoaded;
+            _inventoryServicesInjector.EquipmentSetProfilesLoaded += TryAddEquipmentSets;
         }
 
-        private void _inventoryServicesInjector_EquipmentSetProfilesLoaded(int playerID, string characterUID, ArmorSetsJsonService armorService, WeaponSetsJsonService weaponService)
+        private void TryAddEquipmentSets(int playerID, string characterUID, ArmorSetsJsonService armorService, WeaponSetsJsonService weaponService)
         {
-            AddEquipmentSets<ArmorSetSkill>(armorService.GetEquipmentSetsProfile().EquipmentSets, characterUID);
-            AddEquipmentSets<WeaponSetSkill>(weaponService.GetEquipmentSetsProfile().EquipmentSets, characterUID);
+            try
+            {
+                AddEquipmentSets<ArmorSetSkill>(armorService.GetEquipmentSetsProfile().EquipmentSets, characterUID);
+                AddEquipmentSets<WeaponSetSkill>(weaponService.GetEquipmentSetsProfile().EquipmentSets, characterUID);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to add equipmentSets for player {playerID}, character {characterUID}", ex);
+            }
         }
 
         private void AddEquipmentSets<T>(IEnumerable<IEquipmentSet> sets, string characterUID) where T : EquipmentSetSkill
