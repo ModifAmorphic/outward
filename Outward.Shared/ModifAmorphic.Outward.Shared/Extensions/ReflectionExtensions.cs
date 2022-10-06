@@ -43,6 +43,16 @@ namespace ModifAmorphic.Outward.Extensions
             var field = typeof(T).GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
             field.SetValue(parent, value);
         }
+        public static V GetPrivateProperty<T, V>(this T parent, string propertyName)
+        {
+            var property = typeof(T).GetProperty(propertyName, BindingFlags.NonPublic | BindingFlags.Instance);
+            return (V)property.GetValue(parent);
+        }
+        public static void SetPrivateProperty<T, V>(this T parent, string propertyName, V value)
+        {
+            var property = typeof(T).GetProperty(propertyName, BindingFlags.NonPublic | BindingFlags.Instance);
+            property.SetValue(parent, value);
+        }
         public static T InvokePrivateMethod<T>(this object parent, string methodName)
         {
             var method = parent.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
