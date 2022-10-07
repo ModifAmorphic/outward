@@ -101,7 +101,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                 .AddSingleton(new EquipmentMenuStashService(
                     splitPlayer.AssignedCharacter,
                     profileManager,
-                    usp.GetService<EquipService>(),
+                    usp.GetService<InventoryService>(),
                     _coroutines,
                     _getLogger
                     ));

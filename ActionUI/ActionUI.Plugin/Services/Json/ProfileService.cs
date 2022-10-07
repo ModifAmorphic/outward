@@ -54,6 +54,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             if (_activeProfile != null && _activeProfile.EquipmentSetsSettingsProfile == null)
                 _activeProfile.EquipmentSetsSettingsProfile = CreateDefaultEquipmentSetsSettingsProfile();
+            if (_activeProfile != null && _activeProfile.StashSettingsProfile == null)
+                _activeProfile.StashSettingsProfile = CreateDefaultStashSettingsProfile();
 
             if (!_versionEvaluated)
                 SetVersionedSettings();
@@ -214,9 +216,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 ActionSlotsEnabled = ActionUISettings.DefaultProfile.ActionSlotsEnabled,
                 DurabilityDisplayEnabled = ActionUISettings.DefaultProfile.DurabilityDisplayEnabled,
                 EquipmentSetsEnabled = ActionUISettings.DefaultProfile.EquipmentSetsEnabled,
-                StashCraftingEnabled = ActionUISettings.DefaultProfile.StashCraftingEnabled,
-                CraftingOutsideTownEnabled = ActionUISettings.DefaultProfile.CraftingOutsideTownEnabled,
                 EquipmentSetsSettingsProfile = CreateDefaultEquipmentSetsSettingsProfile(),
+                StashSettingsProfile = CreateDefaultStashSettingsProfile(),
                 Name = name,
             };
         }
@@ -234,6 +235,20 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             };
         }
 
+        private StashSettingsProfile CreateDefaultStashSettingsProfile()
+        {
+            return new StashSettingsProfile()
+            {
+                CharInventoryEnabled = ActionUISettings.DefaultProfile.StashSettingsProfile.CharInventoryEnabled,
+                CharInventoryAnywhereEnabled = ActionUISettings.DefaultProfile.StashSettingsProfile.CharInventoryAnywhereEnabled,
+                MerchantEnabled = ActionUISettings.DefaultProfile.StashSettingsProfile.MerchantEnabled,
+                MerchantAnywhereEnabled = ActionUISettings.DefaultProfile.StashSettingsProfile.MerchantAnywhereEnabled,
+                CraftingInventoryEnabled = ActionUISettings.DefaultProfile.StashSettingsProfile.CraftingInventoryEnabled,
+                CraftingInventoryAnywhereEnabled = ActionUISettings.DefaultProfile.StashSettingsProfile.CraftingInventoryAnywhereEnabled,
+                PreservesFoodEnabled = ActionUISettings.DefaultProfile.StashSettingsProfile.PreservesFoodEnabled,
+                PreservesFoodAmount = ActionUISettings.DefaultProfile.StashSettingsProfile.PreservesFoodAmount,
+            };
+        }
 
         private ActionUIProfiles GetOrCreateProfiles()
         {
@@ -245,17 +260,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 var json = File.ReadAllText(ProfilesFile);
                 profiles = JsonConvert.DeserializeObject<ActionUIProfiles>(json);
-                var removeProfiles = new List<int>();
-                for (int i = 0; i < profiles.Profiles.Count; i++)
-                {
-                    if (!profileNames.Any(n => n.Equals(profiles.Profiles[i].Name, StringComparison.InvariantCultureIgnoreCase)))
-                    {
-                        removeProfiles.Add(i);
-                        saveNeeded = true;
-                    }
-                }
-                foreach (var i in removeProfiles)
-                    profiles.Profiles.RemoveAt(i);
+                saveNeeded = TryRemoveMissingProfiles(profiles, profileNames);
             }
             else
             {
@@ -284,6 +289,32 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 SaveProfiles(profiles);
 
             return profiles;
+        }
+
+        private bool TryRemoveMissingProfiles(ActionUIProfiles profiles, IEnumerable<string> profileNames)
+        {
+            try
+            {
+                var removeProfiles = new List<int>();
+                var profileRemoved = false;
+                for (int i = 0; i < profiles.Profiles.Count; i++)
+                {
+                    if (!profileNames.Any(n => n.Equals(profiles.Profiles[i].Name, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        removeProfiles.Add(i);
+                        profileRemoved = true;
+                    }
+                }
+                for (int i = removeProfiles.Count - 1; i >= 0; i--)
+                    profiles.Profiles.RemoveAt(i);
+
+                return profileRemoved;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException("Failed to remove missing profiles.", ex);
+            }
+            return false;
         }
 
         private void SaveProfiles(ActionUIProfiles profiles)

@@ -170,17 +170,23 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void SwapCanvasGroup()
         {
-            var controllerSwitcher = _characterUI.GetComponentsInChildren<QuickSlotControllerSwitcher>().FirstOrDefault(q => q.name == "QuickSlot");
-            var canvasGroup = controllerSwitcher.GetPrivateField<QuickSlotControllerSwitcher, CanvasGroup>("m_keyboardQuickSlots");
-
-            var hotbarCanvasGroup = _hotbars.GetComponent<CanvasGroup>();
-            controllerSwitcher.SetPrivateField("m_keyboardQuickSlots", hotbarCanvasGroup);
-            Logger.LogDebug($"{nameof(HotbarService)}_{InstanceID}: Set keyboard quickslot canvasgroup '{canvasGroup?.name}' to hotbars canvas group {hotbarCanvasGroup?.name} for rewired ID {_characterUI.RewiredID}.");
-
-            var keyboard = controllerSwitcher.GetComponentInChildren<KeyboardQuickSlotPanel>(true);
-            if (keyboard != null)
+            try
             {
-               DisableKeyboardQuickslots(keyboard);
+                var controllerSwitcher = _characterUI.GetComponentsInChildren<QuickSlotControllerSwitcher>().FirstOrDefault(q => q.name == "QuickSlot");
+                var canvasGroup = controllerSwitcher.GetPrivateField<QuickSlotControllerSwitcher, CanvasGroup>("m_keyboardQuickSlots");
+
+                var hotbarCanvasGroup = _hotbars.GetComponent<CanvasGroup>();
+                controllerSwitcher.SetPrivateField("m_keyboardQuickSlots", hotbarCanvasGroup);
+
+                var keyboard = controllerSwitcher.GetComponentInChildren<KeyboardQuickSlotPanel>(true);
+                if (keyboard != null)
+                {
+                    DisableKeyboardQuickslots(keyboard);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException("Failed to swap in Hotbar canvas group. Action Slots will likely not automaticaly hide when a controller is used.", ex);
             }
 
         }
