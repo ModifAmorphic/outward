@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
-    public class GlobalProfileService : IDisposable
+    public class GlobalProfileService : IDisposable, ISavableProfile
     {
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();

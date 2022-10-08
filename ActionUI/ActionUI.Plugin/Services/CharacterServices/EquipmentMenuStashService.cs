@@ -35,6 +35,13 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private readonly LevelCoroutines _coroutines;
         //private ContainerDisplay _stashDisplay;
         private Dictionary<StashDisplayTypes, ContainerDisplay> _stashDisplays = new Dictionary<StashDisplayTypes, ContainerDisplay>();
+        private Dictionary<StashDisplayTypes, bool?> _lastToggle = new Dictionary<StashDisplayTypes, bool?>()
+        {
+            { StashDisplayTypes.Disabled, null },
+            { StashDisplayTypes.Inventory, null },
+            { StashDisplayTypes.Equipment, null },
+            { StashDisplayTypes.Merchant, null },
+        };
 
         private const string _equipmentDisplayPath = "Canvas/GameplayPanels/Menus/CharacterMenus/MainPanel/Content/MiddlePanel/Equipment/Content/SectionContent";
         private const string _inventoryDisplayPath = "Canvas/GameplayPanels/Menus/CharacterMenus/MainPanel/Content/MiddlePanel/Inventory/Content/SectionContent";
@@ -84,19 +91,23 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 UnsubscribeToPatchEvents();
         }
 
-        private void ToggleStash(StashDisplayTypes stashType, string contentDisplayPath, bool enabled)
+        private void ToggleStash(StashDisplayTypes stashType, string contentDisplayPath, bool isEnabled)
         {
-            if (!enabled)
+            if (_lastToggle[stashType] != null && _lastToggle[stashType] == isEnabled)
+                return;
+
+            if (!isEnabled)
             {
                 RemoveStashDisplay(stashType);
-                Logger.LogDebug($"Disabled {stashType} Stash use for character {_character.name}.");
+                Logger.LogInfo($"Disabled {stashType} Stash use for character '{_character.UID}'.");
             }
             else
             {
                 var inventoryContentDisplay = _characterUI.transform.Find(contentDisplayPath).GetComponent<InventoryContentDisplay>();
                 AddConfigureStashDisplay(inventoryContentDisplay);
-                Logger.LogDebug($"Enabled {stashType} Stash use for character {_character.name}.");
+                Logger.LogInfo($"Enabled {stashType} Stash use for character '{_character.UID}'.");
             }
+            _lastToggle[stashType] = isEnabled;
         }
 
         private bool ShouldInvoke(StashDisplayTypes stashType, InventoryContentDisplay inventoryContentDisplay)
@@ -228,7 +239,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void RemoveStashDisplays()
         {
-            foreach(var stashDisplay in _stashDisplays.Values)
+            Logger.LogDebug($"Removing stash displays for character '{_character.UID}'.");
+            foreach (var stashDisplay in _stashDisplays.Values)
             {
                 if (stashDisplay != null)
                 {
@@ -348,6 +360,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 _character = null;
                 _inventoryService = null;
                 _stashDisplays = null;
+                _lastToggle = null;
 
                 disposedValue = true;
             }

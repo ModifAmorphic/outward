@@ -88,7 +88,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     Tag = new TagSourceSelector(TagSourceManager.Food)
                 });
                 stash.AddItemExtension(preserver);
-                Logger.LogInfo($"Stash preservation amount set to {stashSettings.PreservesFoodAmount}%");
+                Logger.LogInfo($"Stash preservation amount set to {stashSettings.PreservesFoodAmount}% for character '{_character.UID}'");
             }
             else
             {
@@ -135,7 +135,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         public bool GetCraftFromStashEnabled() =>
             _profile.StashSettingsProfile.CraftingInventoryEnabled && (GetAreaContainsStash() || _profile.StashSettingsProfile.CraftingInventoryAnywhereEnabled);
 
-        private bool TryGetCurrentAreaEnum(out AreaManager.AreaEnum area)
+        public static bool TryGetCurrentAreaEnum(out AreaManager.AreaEnum area)
         {
             area = default;
             var sceneName = AreaManager.Instance?.CurrentArea?.SceneName;

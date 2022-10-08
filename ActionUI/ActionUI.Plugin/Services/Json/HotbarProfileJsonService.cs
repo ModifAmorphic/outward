@@ -16,7 +16,7 @@ using System.Linq;
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
 
-    public class HotbarProfileJsonService : IHotbarProfileService, IDisposable
+    public class HotbarProfileJsonService : IHotbarProfileService, IDisposable, ISavableProfile
     {
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();

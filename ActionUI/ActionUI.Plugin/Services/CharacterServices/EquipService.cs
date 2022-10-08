@@ -141,14 +141,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             }
             catch (Exception ex)
             {
-                Logger.LogException($"Failed adjust equipment sets after profile change.", ex);
+                Logger.LogException($"Failed to adjust equipment sets after profile change.", ex);
             }
         }
 
         private void ProfileChanged(IActionUIProfile profile)
         {
-            Logger.LogDebug($"{nameof(InventoryService)}::{nameof(ProfileChanged)}: Profile '{profile.Name}' changed. EquipmentSetsEnabled == {profile.EquipmentSetsEnabled}.");
-
             if (_equipmentSetsEnabled != profile.EquipmentSetsEnabled)
             {
                 _equipmentSetsEnabled = profile.EquipmentSetsEnabled;
@@ -175,13 +173,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             }
             catch (Exception ex)
             {
-                Logger.LogException($"Failed adjust equipment sets after profile switch.", ex);
+                Logger.LogException($"Failed to adjust equipment sets after profile switch.", ex);
             }
         }
 
         private void ProfileSwitched(IActionUIProfile profile)
         {
-            Logger.LogDebug($"{nameof(InventoryService)}::{nameof(ProfileChanged)}: Profile switched to '{profile.Name}'. EquipmentSetsEnabled == {profile.EquipmentSetsEnabled}.");
             _equipmentSetsEnabled = profile.EquipmentSetsEnabled;
 
             ClearSkillPreviewCache();

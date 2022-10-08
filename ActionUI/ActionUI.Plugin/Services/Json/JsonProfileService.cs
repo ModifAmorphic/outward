@@ -7,7 +7,7 @@ using System.IO;
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
 
-    public abstract class JsonProfileService<T> : IDisposable where T : new()
+    public abstract class JsonProfileService<T> : IDisposable, ISavableProfile where T : new()
     {
 
         Func<IModifLogger> _getLogger;

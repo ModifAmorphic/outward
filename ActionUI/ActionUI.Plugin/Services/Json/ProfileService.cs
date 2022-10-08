@@ -12,7 +12,7 @@ using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
-    public class ProfileService : IActionUIProfileService, IDisposable
+    public class ProfileService : IActionUIProfileService, IDisposable, ISavableProfile
     {
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
@@ -321,7 +321,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             if (!Directory.Exists(ProfilesPath))
                 Directory.CreateDirectory(ProfilesPath);
-
+            
+            Logger.LogInfo($"Saving Action UI Profile to '{ProfilesFile}'.");
+            
             var newJson = JsonConvert.SerializeObject(profiles, Formatting.Indented);
             File.WriteAllText(ProfilesFile, newJson);
             _activeProfile = null;

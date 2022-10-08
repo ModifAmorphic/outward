@@ -18,7 +18,7 @@ using UnityEngine;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
-    internal class ControllerMapService : IDisposable
+    internal class ControllerMapService : IDisposable, ISavableProfile
     {
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
@@ -153,6 +153,14 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (forceRefresh)
                 _hotbarService.ConfigureHotbars(_hotbarProfileService.GetProfile());
             return maps;
+        }
+
+        public void Save()
+        {
+            (KeyboardMap keyboardMap, MouseMap mouseMap) = LoadConfigMaps();
+
+            SaveControllerMap(keyboardMap);
+            SaveControllerMap(mouseMap);
         }
 
         private void CaptureDialog_OnKeysSelected(int slotIndex, HotkeyCategories category, KeyGroup keyGroup)
@@ -459,12 +467,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void SaveControllerMap(ControllerMap controllerMap)
         {
+            var filePath = Path.Combine(GetProfileFolder(), MapFiles[controllerMap.controllerType]);
+            Logger.LogInfo($"Saving Controller Map {controllerMap?.controllerType} to '{filePath}'.");
             var mapXml = controllerMap.ToXmlString();
 
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(mapXml);
-
-            var filePath = Path.Combine(GetProfileFolder(), MapFiles[controllerMap.controllerType]);
             // Save the document to a file and auto-indent the output.
             using (XmlTextWriter writer = new XmlTextWriter(filePath, Encoding.UTF8))
             {
