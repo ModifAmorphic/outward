@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
@@ -70,34 +71,69 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             var stash = _characterInventory.Stash;
             var stashSettings = _profile.StashSettingsProfile;
             var preserver = stash.GetPrivateField<ItemContainer, Preserver>("m_preservationExt");
+            var foodTag = TagSourceManager.Instance.GetPrivateField<TagSourceManager, TagSourceSelector>("m_foodTag");
 
             if (stashSettings.PreservesFoodEnabled)
             {
+                bool addPreserver = false;
                 if (preserver == null)
                 {
                     preserver = stash.gameObject.GetOrAddComponent<Preserver>();
-                    preserver.NullifyPerishing = stashSettings.PreservesFoodAmount == 100;
-                    stash.AddItemExtension(preserver);
+                    addPreserver = true;
                 }
 
                 var preservedElements = preserver.GetPrivateField<Preserver, List<Preserver.PreservedElement>>("m_preservedElements");
-                preservedElements.Clear();
-                preservedElements.Add(new Preserver.PreservedElement()
+                if (!addPreserver)
                 {
-                    Preservation = preserver.NullifyPerishing ? 0f : stashSettings.PreservesFoodAmount,
-                    Tag = new TagSourceSelector(TagSourceManager.Food)
-                });
-                stash.AddItemExtension(preserver);
-                Logger.LogInfo($"Stash preservation amount set to {stashSettings.PreservesFoodAmount}% for character '{_character.UID}'");
+                    if (preservedElements.Count == 0)
+                    {
+                        addPreserver = true;
+                    }
+                    else
+                    {
+                        var existing = preservedElements.FirstOrDefault(p => p.Tag.Tag == foodTag.Tag);
+                        if (existing == null)
+                        {
+                            addPreserver = true;
+                        }
+                        else if (preserver.NullifyPerishing && stashSettings.PreservesFoodAmount != 100)
+                        {
+                            addPreserver = true;
+                        }
+                        else if (!preserver.NullifyPerishing && stashSettings.PreservesFoodAmount == 100)
+                        {
+                            addPreserver = true;
+                        }
+                        else if (!Mathf.Approximately(existing.Preservation, stashSettings.PreservesFoodAmount)
+                            && !(preserver.NullifyPerishing && stashSettings.PreservesFoodAmount == 100))
+                        {
+                            addPreserver = true;
+                        }
+                    }
+                }
+
+                if (addPreserver)
+                {
+                    preserver.NullifyPerishing = stashSettings.PreservesFoodAmount == 100;
+                    preservedElements.RemoveAll(p => p.Tag == foodTag);
+                    preservedElements.Add(new Preserver.PreservedElement()
+                    {
+                        Preservation = preserver.NullifyPerishing ? 0f : stashSettings.PreservesFoodAmount,
+                        Tag = foodTag
+                    });
+
+                    stash.AddItemExtension(preserver);
+                    Logger.LogInfo($"Stash preservation amount set to {stashSettings.PreservesFoodAmount}% for character '{_character.UID}'");
+                }
             }
             else
             {
-                TryRemoveStashPreserver();
-                Logger.LogInfo($"Stash set to not preserve food.");
+                if (TryRemoveStashPreserver())
+                    Logger.LogInfo($"Stash set to not preserve food.");
             }
         }
 
-        private void TryRemoveStashPreserver()
+        private bool TryRemoveStashPreserver()
         {
             try
             {
@@ -109,12 +145,16 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
                 var preserverComponent = stash.gameObject.GetComponent<Preserver>();
                 if (preserverComponent != null)
+                {
                     UnityEngine.Object.Destroy(preserverComponent);
+                    return true;
+                }
             }
             catch (Exception ex)
             {
                 Logger.LogException("Failed to remove stash preserver.", ex);
             }
+            return false;
         }
 
         public static Dictionary<string, Item> GetItemPrefabs()

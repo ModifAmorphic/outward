@@ -97,6 +97,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             RewiredInputsPatches.BeforeExportXmlData += RemoveActionUIMaps;
             RewiredInputsPatches.AfterExportXmlData += RewiredInputsPatches_AfterExportXmlData;
+            _profileService.OnActiveProfileSwitching += TrySaveCurrentProfile;
             _profileService.OnActiveProfileSwitched += TryLoadConfigMaps;
             _hotbarProfileService.OnProfileChanged += SlotAmountChanged;
 
@@ -130,6 +131,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 }
             }
 
+        }
+
+        private void TrySaveCurrentProfile(IActionUIProfile profile)
+        {
+            try
+            {
+                Save();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to save current Keyboard and Mouse Controller Maps to profile '{profile?.Name}'.", ex);
+            }
         }
 
         private void TryLoadConfigMaps(IActionUIProfile profile)
@@ -582,7 +595,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     RewiredInputsPatches.BeforeExportXmlData -= RemoveActionUIMaps;
                     RewiredInputsPatches.AfterExportXmlData -= RewiredInputsPatches_AfterExportXmlData;
                     if (_profileService != null)
+                    {
+                        _profileService.OnActiveProfileSwitching -= TrySaveCurrentProfile;
                         _profileService.OnActiveProfileSwitched -= TryLoadConfigMaps;
+                    }
                     if (_hotbarProfileService != null)
                         _hotbarProfileService.OnProfileChanged -= SlotAmountChanged;
                     if (_captureDialog != null)

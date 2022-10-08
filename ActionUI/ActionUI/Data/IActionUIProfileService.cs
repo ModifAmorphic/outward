@@ -8,9 +8,9 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Data
     {
         IEnumerable<string> GetProfileNames();
         IActionUIProfile GetActiveProfile();
-        event Action<IActionUIProfile> OnNewProfile;
         event Action<IActionUIProfile> OnActiveProfileChanged;
         event Action<IActionUIProfile> OnActiveProfileSwitched;
+        event Action<IActionUIProfile> OnActiveProfileSwitching;
         void SetActiveProfile(string name);
         void Save();
         void SaveNew(IActionUIProfile profile);

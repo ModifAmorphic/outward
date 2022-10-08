@@ -61,7 +61,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             _profileManager.ProfileService.OnActiveProfileChanged += TrySetEnableState;
             _profileManager.ProfileService.OnActiveProfileSwitched += TrySetEnableState;
-            _profileManager.ProfileService.OnNewProfile += TrySetEnableState;
             NetworkLevelLoader.Instance.onOverallLoadingDone += SetEnableState;
             _coroutines.InvokeAfterLevelAndPlayersLoaded(NetworkLevelLoader.Instance, SetEnableState, 300);
             
@@ -352,7 +351,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     {
                         _profileManager.ProfileService.OnActiveProfileChanged -= TrySetEnableState;
                         _profileManager.ProfileService.OnActiveProfileSwitched -= TrySetEnableState;
-                        _profileManager.ProfileService.OnNewProfile -= TrySetEnableState;
                         NetworkLevelLoader.Instance.onOverallLoadingDone -= SetEnableState;
                     }
                 }

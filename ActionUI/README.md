@@ -52,14 +52,20 @@
 ***
 
 ## Latest Release ${PACKAGE_VERSION}
-  - Added new Stash settings menu
-    - Added stash to character and merchant inventory menus.  In town only by default. Additonal option to enable outside towns in Action UI Settings menu.
+  - Added new Stash settings menu that enables the stash in several character menus. In town only by default.
+    - Added stash to the bottom of the inventory menu.
+    - Added stash to the bottom of the equipment menu. Shown when selecting different equipment for an equipment slot.
+    - Added stash to the bottom of the merchant menu.
     - Added option to enable preservation of food in the stash.
     - Removed Crafting from stash option from main settings. It's under the Stash
   - Action Slots hotbar should now be hidden when a controller is used.
   - Equipment will no longer be equipped from stash if the "Unequip Sets to Stash" option is enabled but the "Equip Sets from Stash" is not.
-  - Refactored startup routines so that if one sub module fails others will still attempt to start.
-  - Fix for Hotbars failing to load if more than one profile was manually deleted from the config folder.
+  - Major rework around how modules are applied and profile data is loaded and saved.
+    - Added force save of profile data whenever a new profile is created or a different profile is selected.
+    - Saving all profile data on exiting a save.
+    - Changes to how several modifications to UIs are made to be more resilient and only apply when necessary.
+    - Refactored startup routines so that if one sub module fails others will still attempt to start.
+    - Fix for Hotbars failing to load if more than one profile was manually deleted from the config folder.
 
 ## Release 1.0.5
   - Multiplayer Fixes

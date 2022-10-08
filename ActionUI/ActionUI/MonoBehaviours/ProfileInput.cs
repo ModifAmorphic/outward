@@ -157,8 +157,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             if (weaponService != null)
                 weaponService.SaveNew(weaponSetsProfile);
 
-
-
             Hide();
         }
 

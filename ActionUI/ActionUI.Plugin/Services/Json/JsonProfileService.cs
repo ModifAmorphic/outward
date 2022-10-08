@@ -29,6 +29,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         public JsonProfileService(GlobalProfileService globalProfileService, ProfileService profileService, string characterUID, Func<IModifLogger> getLogger)
         {
             (GlobalProfileService, ProfileService, CharacterUID, _getLogger) = (globalProfileService, profileService, characterUID, getLogger);
+            profileService.OnActiveProfileSwitching += TrySaveCurrentProfile;
             profileService.OnActiveProfileSwitched += TryRefreshCachedProfile;
         }
 
@@ -65,6 +66,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return JsonConvert.DeserializeObject<T>(json);
         }
 
+        private void TrySaveCurrentProfile(IActionUIProfile profile)
+        {
+            try
+            {
+                Save();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to save current {typeof(T).Name} data to profile '{profile?.Name}'.", ex);
+            }
+        }
+
         private void TryRefreshCachedProfile(IActionUIProfile profile)
         {
             try
@@ -73,7 +86,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{this.GetType()} failed refresh cached profile {profile?.Name}.", ex);
+                Logger.LogException($"Failed refresh of current {typeof(T).Name} data for profile '{profile?.Name}'.", ex);
             }
         }
 
@@ -87,7 +100,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             var activeProfile = ProfileService.GetActiveActionUIProfile();
             var profileFile = Path.Combine(activeProfile.Path, FileName);
-            Logger.LogInfo($"Saving {typeof(T)} for profile {activeProfile.Name} to '{profileFile}'.");
+            Logger.LogInfo($"Saving {typeof(T).Name} for profile {activeProfile.Name} to '{profileFile}'.");
             var json = JsonConvert.SerializeObject(profile, Formatting.Indented);
             File.WriteAllText(profileFile, json);
             CachedProfile = default;
@@ -100,7 +113,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 if (disposing)
                 {
                     if (ProfileService != null)
+                    {
+                        ProfileService.OnActiveProfileSwitching -= TrySaveCurrentProfile;
                         ProfileService.OnActiveProfileSwitched -= TryRefreshCachedProfile;
+                    }
                 }
                 CachedProfile = default;
                 disposedValue = true;

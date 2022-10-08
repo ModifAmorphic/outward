@@ -26,10 +26,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         public string ProfilesFile => Path.Combine(ProfilesPath, "profile.json");
 
         public GlobalProfileService GlobalProfileService { get; private set; }
-
-        public event Action<IActionUIProfile> OnNewProfile;
         public event Action<IActionUIProfile> OnActiveProfileChanged;
         public event Action<IActionUIProfile> OnActiveProfileSwitched;
+        public event Action<IActionUIProfile> OnActiveProfileSwitching;
 
         public ProfileService(string characterProfilesPath, GlobalProfileService globalProfileService, Func<IModifLogger> getLogger) => (ProfilesPath, GlobalProfileService, _getLogger) = (characterProfilesPath, globalProfileService, getLogger);
 
@@ -91,8 +90,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             if (_activeProfile != null && _activeProfile.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                 return;
-
+            
             Logger.LogInfo($"Setting active profile to profile '{name}'.");
+            Logger.LogInfo($"Saving active profile '{_activeProfile.Name}' before changing profiles.");
+            Save();
+            OnActiveProfileSwitching?.TryInvoke(GetActiveActionUIProfile());
+
             var profiles = GetOrCreateProfiles();
             if (profiles.ActiveProfile.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                 return;
@@ -121,10 +124,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             SaveProfiles(profiles);
 
-            if (isNewProfile)
-                OnActiveProfileChanged.TryInvoke(GetActiveActionUIProfile());
-            else
-                OnActiveProfileSwitched.TryInvoke(GetActiveActionUIProfile());
+            OnActiveProfileSwitched.TryInvoke(GetActiveActionUIProfile());
         }
 
         public string GetOrAddProfileDir(string profileName)
@@ -143,8 +143,14 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public void SaveNew(IActionUIProfile profile)
         {
+            Logger.LogInfo($"Saving new active profile '{profile.Name}'.");
+            Logger.LogInfo($"Saving current active profile '{GetActiveActionUIProfile().Name}' before changing profiles.");
+            //Save the current profiles before switching to a new one.
+            Save();
+            OnActiveProfileSwitching.TryInvoke(GetActiveActionUIProfile());
+            
             SaveProfile(profile, false);
-            OnNewProfile.TryInvoke(profile);
+            OnActiveProfileSwitched.TryInvoke(profile);
         }
 
         public void SaveProfile(IActionUIProfile profile, bool raiseEvent = true)
@@ -173,7 +179,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             if (string.IsNullOrWhiteSpace(newName))
                 throw new ArgumentNullException(nameof(newName));
-
 
             var profile = GetActiveActionUIProfile();
 

@@ -33,7 +33,20 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         public HotbarProfileJsonService(ProfileService profileService, Func<IModifLogger> getLogger)
         {
             (_profileService, _getLogger) = (profileService, getLogger);
+            profileService.OnActiveProfileSwitching += TrySaveCurrentProfile;
             profileService.OnActiveProfileSwitched += TryRefreshCachedProfile;
+        }
+
+        private void TrySaveCurrentProfile(IActionUIProfile profile)
+        {
+            try
+            {
+                Save();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to save current Hotbar data to profile '{profile?.Name}'.", ex);
+            }
         }
 
         private void TryRefreshCachedProfile(IActionUIProfile profile)
@@ -44,7 +57,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             }
             catch (Exception ex)
             {
-                Logger.LogException($"Failed refresh cached profile {profile?.Name}.", ex);
+                Logger.LogException($"Failed refresh of current Hotbar data for profile '{profile?.Name}'.", ex);
             }
         }
 
@@ -335,7 +348,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 if (disposing)
                 {
                     if (_profileService != null)
+                    {
+                        _profileService.OnActiveProfileSwitching -= TrySaveCurrentProfile;
                         _profileService.OnActiveProfileSwitched -= TryRefreshCachedProfile;
+                    }
                 }
                 _hotbarProfile = null;
                 _profileService = null;
