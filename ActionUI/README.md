@@ -11,6 +11,7 @@
 - New Durability UI Displays Equipment
 - Use stash while crafting, selling, equiping gear or in the character inventory menu
 - See the [Action UI Wiki](https://github.com/ModifAmorphic/outward/wiki/Action-UI) for more details
+- For Manual Installations, download the latest "ModifAmorphic-ActionUI-*.Standalone-BepInEx.zip" version under [ModifAmorphic Releases](https://github.com/ModifAmorphic/outward/releases)
 
 ***
 
