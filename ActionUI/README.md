@@ -1,6 +1,6 @@
 # ![Action UI](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/Banner.png?raw=true)
 
-## ⚡ Equipment Sets, Additional Quickslots, UI Positioning, Durability Display ⚡
+## ⚡ Additional Quickslots, Equipment Sets, Durability Display, UI Positioning, Stash Improments ⚡
 
 ***
 
@@ -9,6 +9,7 @@
 - Create Weapon and Armor Sets. Equip entire sets with a single hotkey.
 - Reposition UI Elements with Drag and Drop
 - New Durability UI Displays Equipment
+- Use stash while crafting, selling, equiping gear or in the character inventory menu
 - See the [Action UI Wiki](https://github.com/ModifAmorphic/outward/wiki/Action-UI) for more details
 
 ***
@@ -48,6 +49,12 @@
 ## Equipment Durability UI
 
 ![Durability Display](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/DurabilityDisplay.png?raw=true)
+
+***
+
+## Stash Improvements
+
+![Stash Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/StashSettingsView.png?raw=true)
 
 ***
 
