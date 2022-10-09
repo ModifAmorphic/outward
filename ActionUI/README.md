@@ -1,6 +1,6 @@
 # ![Action UI](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/Banner.png?raw=true)
 
-## ⚡ Additional Quickslots, Equipment Sets, Durability Display, UI Positioning, Stash Improments ⚡
+## ⚡ Additional Quickslots, Equipment Sets, Durability Display, UI Positioning, Stash Improvements ⚡
 
 ***
 
