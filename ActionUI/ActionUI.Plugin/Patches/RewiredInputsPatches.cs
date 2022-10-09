@@ -10,21 +10,38 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
     {
         private static IModifLogger Logger => LoggerFactory.GetLogger(ModInfo.ModId);
 
-        public delegate void BeforeExportXmlDataDelegate(int playerId, ref Dictionary<string, string> mappingData);
-        public static event BeforeExportXmlDataDelegate BeforeExportXmlData;
+        //public static event Action<RewiredInputs> BeforeExportXmlData;
 
-        [HarmonyPatch(nameof(RewiredInputs.ExportXmlData))]
-        [HarmonyPrefix]
-        private static void ExportXmlDataPrefix(RewiredInputs __instance, ref Dictionary<string, string> ___m_mappingData)
+        //[HarmonyPatch(nameof(RewiredInputs.ExportXmlData))]
+        //[HarmonyPrefix]
+        //private static void ExportXmlDataPrefix(RewiredInputs __instance)
+        //{
+        //    try
+        //    {
+        //        Logger.LogTrace($"{nameof(RewiredInputsPatches)}::{nameof(ExportXmlDataPrefix)}(): Invoked. Invoking {BeforeExportXmlData} for player {__instance.PlayerID}.");
+        //        BeforeExportXmlData?.Invoke(__instance);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.LogException($"{nameof(RewiredInputsPatches)}::{nameof(ExportXmlDataPrefix)}(): Exception invoking {BeforeExportXmlData} for player {__instance.PlayerID}.", ex);
+        //    }
+        //}
+
+
+        public static event Action<RewiredInputs> AfterSaveAllMaps;
+
+        [HarmonyPatch(nameof(RewiredInputs.SaveAllMaps))]
+        [HarmonyPostfix]
+        private static void SaveAllMapsPostfix(RewiredInputs __instance)
         {
             try
             {
-                Logger.LogTrace($"{nameof(RewiredInputsPatches)}::{nameof(ExportXmlDataPrefix)}(): Invoked. Invoking {BeforeExportXmlData} for player {__instance.PlayerID}.");
-                BeforeExportXmlData?.Invoke(__instance.PlayerID, ref ___m_mappingData);
+                Logger.LogTrace($"{nameof(RewiredInputsPatches)}::{nameof(SaveAllMapsPostfix)}(): Invoked. Invoking {AfterSaveAllMaps} for player {__instance.PlayerID}.");
+                AfterSaveAllMaps?.Invoke(__instance);
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(RewiredInputsPatches)}::{nameof(ExportXmlDataPrefix)}(): Exception invoking {BeforeExportXmlData} for player {__instance.PlayerID}.", ex);
+                Logger.LogException($"{nameof(RewiredInputsPatches)}::{nameof(SaveAllMapsPostfix)}(): Exception invoking {AfterSaveAllMaps} for player {__instance.PlayerID}.", ex);
             }
         }
 
@@ -37,12 +54,12 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
-                Logger.LogTrace($"{nameof(RewiredInputsPatches)}::{nameof(ExportXmlDataPrefix)}(): Invoked. Invoking {AfterExportXmlData} for player {__instance.PlayerID}.");
+                Logger.LogTrace($"{nameof(RewiredInputsPatches)}::{nameof(ExportXmlDataPostfix)}(): Invoked. Invoking {AfterExportXmlData} for player {__instance.PlayerID}.");
                 AfterExportXmlData?.Invoke(__instance.PlayerID);
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(RewiredInputsPatches)}::{nameof(ExportXmlDataPrefix)}(): Exception invoking {AfterExportXmlData} for player {__instance.PlayerID}.", ex);
+                Logger.LogException($"{nameof(RewiredInputsPatches)}::{nameof(ExportXmlDataPostfix)}(): Exception invoking {AfterExportXmlData} for player {__instance.PlayerID}.", ex);
             }
         }
     }

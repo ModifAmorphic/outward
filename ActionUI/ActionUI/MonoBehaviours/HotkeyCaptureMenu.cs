@@ -174,7 +174,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 case KeyCode.Alpha8:
                 case KeyCode.Alpha9:
                     _keyGroup.KeyCode = key;
-                    _text.text += (key - 48).ToString();
+                    _text.text += ((int)key - 48).ToString();
                     break;
                 case KeyCode.Mouse0:
                 case KeyCode.Mouse1:

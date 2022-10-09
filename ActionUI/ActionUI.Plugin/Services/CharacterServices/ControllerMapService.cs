@@ -3,6 +3,7 @@ using ModifAmorphic.Outward.ActionUI.Models;
 using ModifAmorphic.Outward.ActionUI.Patches;
 using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Coroutines;
+using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI;
@@ -30,13 +31,13 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private readonly Player _player;
         private readonly ModifCoroutine _coroutine;
 
-        private readonly static HashSet<string> ActionUIMapKeys = new HashSet<string>()
-        {
-            "RewiredData&playerName=Player0&dataType=ControllerMap&controllerMapType=KeyboardMap&categoryId=131000&layoutId=0&hardwareIdentifier=Keyboard",
-            "RewiredData&playerName=Player0&dataType=ControllerMap&controllerMapType=MouseMap&categoryId=131000&layoutId=0&hardwareIdentifier=Mouse",
-            "RewiredData&playerName=Player1&dataType=ControllerMap&controllerMapType=KeyboardMap&categoryId=131000&layoutId=0&hardwareIdentifier=Keyboard",
-            "RewiredData&playerName=Player1&dataType=ControllerMap&controllerMapType=MouseMap&categoryId=131000&layoutId=0&hardwareIdentifier=Mouse",
-        };
+        //private readonly static HashSet<string> ActionUIMapKeys = new HashSet<string>()
+        //{
+        //    "RewiredData&playerName=Player0&dataType=ControllerMap&controllerMapType=KeyboardMap&categoryId=131000&layoutId=0&hardwareIdentifier=Keyboard",
+        //    "RewiredData&playerName=Player0&dataType=ControllerMap&controllerMapType=MouseMap&categoryId=131000&layoutId=0&hardwareIdentifier=Mouse",
+        //    "RewiredData&playerName=Player1&dataType=ControllerMap&controllerMapType=KeyboardMap&categoryId=131000&layoutId=0&hardwareIdentifier=Keyboard",
+        //    "RewiredData&playerName=Player1&dataType=ControllerMap&controllerMapType=MouseMap&categoryId=131000&layoutId=0&hardwareIdentifier=Mouse",
+        //};
 
 
         private const string KeyboardMapFile = "KeyboardMap_ActionSlots.xml";
@@ -95,7 +96,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _profileService = (ProfileService)profileManager.ProfileService;
             _hotbarProfileService = (HotbarProfileJsonService)profileManager.HotbarProfileService;
 
-            RewiredInputsPatches.BeforeExportXmlData += RemoveActionUIMaps;
+            RewiredInputsPatches.AfterSaveAllMaps += TryRemoveActionUIMaps;
             RewiredInputsPatches.AfterExportXmlData += RewiredInputsPatches_AfterExportXmlData;
             _profileService.OnActiveProfileSwitching += TrySaveCurrentProfile;
             _profileService.OnActiveProfileSwitched += TryLoadConfigMaps;
@@ -109,26 +110,44 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             if (playerId == _player.id)
             {
-                LoadConfigMaps();
+                LoadConfigMaps(true);
             }
         }
 
-        private void RemoveActionUIMaps(int playerId, ref Dictionary<string, string> mappingData)
+        private void TryRemoveActionUIMaps(RewiredInputs rewiredInputs)
         {
-            if (playerId != _player.id)
-                return;
-
-            foreach (string mapKey in ActionUIMapKeys)
+            try
             {
-                try
+                if (rewiredInputs.PlayerID != _player.id)
+                    return;
+
+                var outwardMappings = rewiredInputs.GetPrivateField<RewiredInputs, Dictionary<string, string>>("m_mappingData");
+
+                var actionUIKeys = outwardMappings.Keys.Where(k => k.Contains("categoryId=131000", StringComparison.InvariantCultureIgnoreCase)).ToList();
+
+                foreach (string mapKey in actionUIKeys)
                 {
-                    Logger.LogDebug($"Removing ControllerMap '{mapKey}'");
-                    mappingData.Remove(mapKey);
+                    try
+                    {
+                        
+                        if (outwardMappings.Remove(mapKey))
+                        {
+                            Logger.LogDebug($"Removed ControllerMap '{mapKey}'.");
+                        }
+                        else
+                        {
+                            Logger.LogWarning($"Failed to remove ControllerMap '{mapKey}'.");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogException($"Exception removing ControllerMap '{mapKey}'", ex);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Logger.LogException($"Exception removing ControllerMap '{mapKey}'", ex);
-                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to remove ActionUI Controller maps for player ID {rewiredInputs.PlayerID}.", ex);
             }
 
         }
@@ -174,6 +193,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             SaveControllerMap(keyboardMap);
             SaveControllerMap(mouseMap);
+
+            ControlsInput.ExportXmlData(_player.id);
         }
 
         private void CaptureDialog_OnKeysSelected(int slotIndex, HotkeyCategories category, KeyGroup keyGroup)
@@ -496,7 +517,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 writer.Close();
             }
 
-
             //File.WriteAllText(filePath, mapXml);
         }
 
@@ -592,7 +612,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 if (disposing)
                 {
-                    RewiredInputsPatches.BeforeExportXmlData -= RemoveActionUIMaps;
+                    RewiredInputsPatches.AfterSaveAllMaps -= TryRemoveActionUIMaps;
                     RewiredInputsPatches.AfterExportXmlData -= RewiredInputsPatches_AfterExportXmlData;
                     if (_profileService != null)
                     {

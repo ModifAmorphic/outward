@@ -59,6 +59,10 @@
 ***
 
 ## Latest Release ${PACKAGE_VERSION}
+  - Fix for Action Slot hotkeys not saving across play sessions.
+    - Technically, they were saving but Outward was overriding them with an older copy on load. Fix ensures Outward no longer stores it's own copy in the "Player{0}_Keymappings.xml" file. Existing older mappings should automatically be removed on the next game exit.
+  - Corrected display issue with Hotkey Capture. Capture text was displaying "Backspace" and "Tab" when keys "8" or "9" were pressed.
+## Release 1.1.0
   - Added new Stash settings menu that enables the stash in several character menus. In town only by default.
     - Added stash to the bottom of the inventory menu.
     - Added stash to the bottom of the equipment menu. Shown when selecting different equipment for an equipment slot.
