@@ -12,7 +12,7 @@ using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
-    public class ProfileService : IActionUIProfileService, IDisposable
+    public class ProfileService : IActionUIProfileService, IDisposable, ISavableProfile
     {
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
@@ -26,10 +26,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         public string ProfilesFile => Path.Combine(ProfilesPath, "profile.json");
 
         public GlobalProfileService GlobalProfileService { get; private set; }
-
-        public UnityEvent<IActionUIProfile> OnNewProfile { get; } = new UnityEvent<IActionUIProfile>();
-        public UnityEvent<IActionUIProfile> OnActiveProfileChanged { get; } = new UnityEvent<IActionUIProfile>();
-        public UnityEvent<IActionUIProfile> OnActiveProfileSwitched { get; } = new UnityEvent<IActionUIProfile>();
+        public event Action<IActionUIProfile> OnActiveProfileChanged;
+        public event Action<IActionUIProfile> OnActiveProfileSwitched;
+        public event Action<IActionUIProfile> OnActiveProfileSwitching;
 
         public ProfileService(string characterProfilesPath, GlobalProfileService globalProfileService, Func<IModifLogger> getLogger) => (ProfilesPath, GlobalProfileService, _getLogger) = (characterProfilesPath, globalProfileService, getLogger);
 
@@ -54,6 +53,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             if (_activeProfile != null && _activeProfile.EquipmentSetsSettingsProfile == null)
                 _activeProfile.EquipmentSetsSettingsProfile = CreateDefaultEquipmentSetsSettingsProfile();
+            if (_activeProfile != null && _activeProfile.StashSettingsProfile == null)
+                _activeProfile.StashSettingsProfile = CreateDefaultStashSettingsProfile();
 
             if (!_versionEvaluated)
                 SetVersionedSettings();
@@ -72,7 +73,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                         _activeProfile.EquipmentSetsEnabled = true;
 
                     _activeProfile.LastLoadedModVersion = ModInfo.ModVersion;
-                    SaveProfile(_activeProfile, false);
+                    SaveProfile(_activeProfile, true);
                     _versionEvaluated = true;
                     _ = GetActiveActionUIProfile();
                 }
@@ -89,8 +90,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             if (_activeProfile != null && _activeProfile.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                 return;
-
+            
             Logger.LogInfo($"Setting active profile to profile '{name}'.");
+            Logger.LogInfo($"Saving active profile '{_activeProfile.Name}' before changing profiles.");
+            Save();
+            OnActiveProfileSwitching?.TryInvoke(GetActiveActionUIProfile());
+
             var profiles = GetOrCreateProfiles();
             if (profiles.ActiveProfile.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                 return;
@@ -119,10 +124,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             SaveProfiles(profiles);
 
-            if (isNewProfile)
-                OnActiveProfileChanged.TryInvoke(GetActiveActionUIProfile());
-            else
-                OnActiveProfileSwitched.TryInvoke(GetActiveActionUIProfile());
+            OnActiveProfileSwitched.TryInvoke(GetActiveActionUIProfile());
         }
 
         public string GetOrAddProfileDir(string profileName)
@@ -141,11 +143,17 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public void SaveNew(IActionUIProfile profile)
         {
+            Logger.LogInfo($"Saving new active profile '{profile.Name}'.");
+            Logger.LogInfo($"Saving current active profile '{GetActiveActionUIProfile().Name}' before changing profiles.");
+            //Save the current profiles before switching to a new one.
+            Save();
+            OnActiveProfileSwitching.TryInvoke(GetActiveActionUIProfile());
+            
             SaveProfile(profile, false);
-            OnNewProfile.TryInvoke(profile);
+            OnActiveProfileSwitched.TryInvoke(profile);
         }
 
-        public void SaveProfile(IActionUIProfile profile, bool raiseEvent = true)
+        public void SaveProfile(IActionUIProfile profile, bool suppressEvent = false)
         {
             var profiles = GetOrCreateProfiles();
             _ = GetOrAddProfileDir(profile.Name);
@@ -163,7 +171,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             Logger.LogDebug($"Saved profile '{profile.Name}'.");
             _activeProfile = null;
 
-            if (raiseEvent)
+            if (!suppressEvent)
                 OnActiveProfileChanged.TryInvoke(GetActiveActionUIProfile());
         }
 
@@ -171,7 +179,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             if (string.IsNullOrWhiteSpace(newName))
                 throw new ArgumentNullException(nameof(newName));
-
 
             var profile = GetActiveActionUIProfile();
 
@@ -214,9 +221,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 ActionSlotsEnabled = ActionUISettings.DefaultProfile.ActionSlotsEnabled,
                 DurabilityDisplayEnabled = ActionUISettings.DefaultProfile.DurabilityDisplayEnabled,
                 EquipmentSetsEnabled = ActionUISettings.DefaultProfile.EquipmentSetsEnabled,
-                StashCraftingEnabled = ActionUISettings.DefaultProfile.StashCraftingEnabled,
-                CraftingOutsideTownEnabled = ActionUISettings.DefaultProfile.CraftingOutsideTownEnabled,
                 EquipmentSetsSettingsProfile = CreateDefaultEquipmentSetsSettingsProfile(),
+                StashSettingsProfile = CreateDefaultStashSettingsProfile(),
                 Name = name,
             };
         }
@@ -234,6 +240,20 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             };
         }
 
+        private StashSettingsProfile CreateDefaultStashSettingsProfile()
+        {
+            return new StashSettingsProfile()
+            {
+                CharInventoryEnabled = ActionUISettings.DefaultProfile.StashSettingsProfile.CharInventoryEnabled,
+                CharInventoryAnywhereEnabled = ActionUISettings.DefaultProfile.StashSettingsProfile.CharInventoryAnywhereEnabled,
+                MerchantEnabled = ActionUISettings.DefaultProfile.StashSettingsProfile.MerchantEnabled,
+                MerchantAnywhereEnabled = ActionUISettings.DefaultProfile.StashSettingsProfile.MerchantAnywhereEnabled,
+                CraftingInventoryEnabled = ActionUISettings.DefaultProfile.StashSettingsProfile.CraftingInventoryEnabled,
+                CraftingInventoryAnywhereEnabled = ActionUISettings.DefaultProfile.StashSettingsProfile.CraftingInventoryAnywhereEnabled,
+                PreservesFoodEnabled = ActionUISettings.DefaultProfile.StashSettingsProfile.PreservesFoodEnabled,
+                PreservesFoodAmount = ActionUISettings.DefaultProfile.StashSettingsProfile.PreservesFoodAmount,
+            };
+        }
 
         private ActionUIProfiles GetOrCreateProfiles()
         {
@@ -245,17 +265,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 var json = File.ReadAllText(ProfilesFile);
                 profiles = JsonConvert.DeserializeObject<ActionUIProfiles>(json);
-                var removeProfiles = new List<int>();
-                for (int i = 0; i < profiles.Profiles.Count; i++)
-                {
-                    if (!profileNames.Any(n => n.Equals(profiles.Profiles[i].Name, StringComparison.InvariantCultureIgnoreCase)))
-                    {
-                        removeProfiles.Add(i);
-                        saveNeeded = true;
-                    }
-                }
-                foreach (var i in removeProfiles)
-                    profiles.Profiles.RemoveAt(i);
+                saveNeeded = TryRemoveMissingProfiles(profiles, profileNames);
             }
             else
             {
@@ -286,11 +296,39 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return profiles;
         }
 
+        private bool TryRemoveMissingProfiles(ActionUIProfiles profiles, IEnumerable<string> profileNames)
+        {
+            try
+            {
+                var removeProfiles = new List<int>();
+                var profileRemoved = false;
+                for (int i = 0; i < profiles.Profiles.Count; i++)
+                {
+                    if (!profileNames.Any(n => n.Equals(profiles.Profiles[i].Name, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        removeProfiles.Add(i);
+                        profileRemoved = true;
+                    }
+                }
+                for (int i = removeProfiles.Count - 1; i >= 0; i--)
+                    profiles.Profiles.RemoveAt(i);
+
+                return profileRemoved;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException("Failed to remove missing profiles.", ex);
+            }
+            return false;
+        }
+
         private void SaveProfiles(ActionUIProfiles profiles)
         {
             if (!Directory.Exists(ProfilesPath))
                 Directory.CreateDirectory(ProfilesPath);
-
+            
+            Logger.LogInfo($"Saving Action UI Profile to '{ProfilesFile}'.");
+            
             var newJson = JsonConvert.SerializeObject(profiles, Formatting.Indented);
             File.WriteAllText(ProfilesFile, newJson);
             _activeProfile = null;
@@ -302,9 +340,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 if (disposing)
                 {
-                    OnNewProfile.RemoveAllListeners();
-                    OnActiveProfileChanged.RemoveAllListeners();
-                    OnActiveProfileSwitched.RemoveAllListeners();
                 }
 
                 _activeProfile = null;

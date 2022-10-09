@@ -21,8 +21,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public Toggle ActionSlotsToggle;
         public Toggle DurabilityToggle;
         public Toggle EquipmentSetsToggle;
-        public Toggle StashCraftingToggle;
-        public Toggle CraftingOutsideTownsToggle;
 
         public Button MoveUIButton;
         public Button ResetUIButton;
@@ -50,8 +48,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 _selectables[i].OnSelected += SettingSelected;
                 _selectables[i].OnDeselected += SettingDeselected;
             }
-
-            Hide();
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
@@ -98,11 +94,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         {
             SetProfiles();
 
-            ActionSlotsToggle.SetIsOn(_profile?.ActionSlotsEnabled ?? false);
-            DurabilityToggle.SetIsOn(_profile?.DurabilityDisplayEnabled ?? false);
-            EquipmentSetsToggle.SetIsOn(_profile?.EquipmentSetsEnabled ?? false);
-            StashCraftingToggle.SetIsOn(_profile?.StashCraftingEnabled ?? false);
-            CraftingOutsideTownsToggle.SetIsOn(_profile?.CraftingOutsideTownEnabled ?? false);
+            ActionSlotsToggle.SetIsOnWithoutNotify(_profile?.ActionSlotsEnabled ?? false);
+            DurabilityToggle.SetIsOnWithoutNotify(_profile?.DurabilityDisplayEnabled ?? false);
+            EquipmentSetsToggle.SetIsOnWithoutNotify(_profile?.EquipmentSetsEnabled ?? false);
         }
         private void HookControls()
         {
@@ -135,20 +129,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             {
                 DebugLogger.Log($"EquipmentSetsToggle changed from {!isOn} to {isOn}. Saving profile.");
                 _profile.EquipmentSetsEnabled = isOn;
-                _profileService.Save();
-            });
-
-            StashCraftingToggle.onValueChanged.AddListener(isOn =>
-            {
-                DebugLogger.Log($"StashCraftingToggle changed from {!isOn} to {isOn}. Saving profile.");
-                _profile.StashCraftingEnabled = isOn;
-                _profileService.Save();
-            });
-
-            CraftingOutsideTownsToggle.onValueChanged.AddListener(isOn =>
-            {
-                DebugLogger.Log($"CraftingOutsideTownsToggle changed from {!isOn} to {isOn}. Saving profile.");
-                _profile.CraftingOutsideTownEnabled = isOn;
                 _profileService.Save();
             });
 

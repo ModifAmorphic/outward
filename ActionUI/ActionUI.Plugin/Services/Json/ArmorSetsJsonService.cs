@@ -101,6 +101,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public void SaveEquipmentSet(ArmorSet armorSet)
         {
+            Logger.LogInfo($"Saving equipment set '{armorSet.Name}'.");
             var sets = GetProfile().EquipmentSets;
 
             var removed = sets.RemoveAll(s => s.Name.Equals(armorSet.Name, StringComparison.InvariantCultureIgnoreCase));
@@ -149,6 +150,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void LearnEquipmentSetSkill(IEquipmentSet equipmentSet)
         {
+            Logger.LogDebug($"Learning Armor Set Skill for set '{equipmentSet.Name}'");
             _equipService.AddOrUpdateEquipmentSetSkill<ArmorSetSkill>(equipmentSet);
         }
 

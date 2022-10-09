@@ -1,6 +1,6 @@
 # ![Action UI](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/Banner.png?raw=true)
 
-## ⚡ Equipment Sets, Additional Quickslots, UI Positioning, Durability Display ⚡
+## ⚡ Additional Quickslots, Equipment Sets, Durability Display, UI Positioning, Stash Improments ⚡
 
 ***
 
@@ -9,6 +9,7 @@
 - Create Weapon and Armor Sets. Equip entire sets with a single hotkey.
 - Reposition UI Elements with Drag and Drop
 - New Durability UI Displays Equipment
+- Use stash while crafting, selling, equiping gear or in the character inventory menu
 - See the [Action UI Wiki](https://github.com/ModifAmorphic/outward/wiki/Action-UI) for more details
 
 ***
@@ -51,7 +52,31 @@
 
 ***
 
+## Stash Improvements
+
+![Stash Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/StashSettingsView.png?raw=true)
+
+***
+
 ## Latest Release ${PACKAGE_VERSION}
+  - Added new Stash settings menu that enables the stash in several character menus. In town only by default.
+    - Added stash to the bottom of the inventory menu.
+    - Added stash to the bottom of the equipment menu. Shown when selecting different equipment for an equipment slot.
+    - Added stash to the bottom of the merchant menu.
+    - Added option to enable preservation of food in the stash.
+    - Removed Crafting from stash option from main settings. It's under the Stash
+  - Action Slots hotbar should now be hidden when a controller is used.
+  - Equipment will no longer be equipped from stash if the "Unequip Sets to Stash" option is enabled but the "Equip Sets from Stash" is not.
+  - Equipment Set fixes for multiplayer
+    - Equipment set skills should now be added to the character when a new equipment set is created by a non host player.
+  - Major rework around how modules are applied and profile data is loaded and saved.
+    - Added force save of profile data whenever a new profile is created or a different profile is selected.
+    - Saving all profile data on exiting a save.
+    - Changes to how several modifications to UIs are made to be more resilient and only apply when necessary.
+    - Refactored startup routines so that if one sub module fails others will still attempt to start.
+    - Fix for Hotbars failing to load if more than one profile was manually deleted from the config folder.
+
+## Release 1.0.5
   - Multiplayer Fixes
     - ActionUI should function in multiplayer games.
     - Splitscreen should now work when player 2 is assigned the keyboard.

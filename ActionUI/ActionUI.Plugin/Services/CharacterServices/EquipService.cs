@@ -71,16 +71,23 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public void Start()
         {
-            _equipmentSetsEnabled = _profile.EquipmentSetsEnabled;
-            EquipmentMenuPatches.AfterShow += ShowEquipmentSetMenu;
-            EquipmentMenuPatches.AfterOnHide += HideEquipmentSetMenu;
-            ItemDisplayPatches.AfterSetReferencedItem += _equipSetPrefabService.AddEquipmentSetIcon;
-            NetworkLevelLoader.Instance.onOverallLoadingDone += ShowHideSkillsMenu;
-            _profileManager.ProfileService.OnActiveProfileChanged.AddListener(ProfileChanged);
-            _profileManager.ProfileService.OnActiveProfileSwitched.AddListener(ProfileSwitched);
+            try
+            {
+                _equipmentSetsEnabled = _profile.EquipmentSetsEnabled;
+                EquipmentMenuPatches.AfterShow += ShowEquipmentSetMenu;
+                EquipmentMenuPatches.AfterOnHide += HideEquipmentSetMenu;
+                ItemDisplayPatches.AfterSetReferencedItem += _equipSetPrefabService.AddEquipmentSetIcon;
+                NetworkLevelLoader.Instance.onOverallLoadingDone += ShowHideSkillsMenu;
+                _profileManager.ProfileService.OnActiveProfileChanged += TryProfileChanged;
+                _profileManager.ProfileService.OnActiveProfileSwitched += TryProfileSwitched;
 
-            var armorService = (ArmorSetsJsonService)_profileManager.ArmorSetService;
-            var weaponService = (WeaponSetsJsonService)_profileManager.WeaponSetService;
+                var armorService = (ArmorSetsJsonService)_profileManager.ArmorSetService;
+                var weaponService = (WeaponSetsJsonService)_profileManager.WeaponSetService;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to start {nameof(EquipService)}.", ex);
+            }
         }
 
         private void ShowHideSkillsMenu()
@@ -133,10 +140,20 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             });
         }
 
+        private void TryProfileChanged(IActionUIProfile profile)
+        {
+            try
+            {
+                ProfileChanged(profile);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to adjust equipment sets after profile change.", ex);
+            }
+        }
+
         private void ProfileChanged(IActionUIProfile profile)
         {
-            Logger.LogDebug($"{nameof(InventoryService)}::{nameof(ProfileChanged)}: Profile '{profile.Name}' changed. EquipmentSetsEnabled == {profile.EquipmentSetsEnabled}.");
-
             if (_equipmentSetsEnabled != profile.EquipmentSetsEnabled)
             {
                 _equipmentSetsEnabled = profile.EquipmentSetsEnabled;
@@ -155,9 +172,20 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             }
         }
 
+        private void TryProfileSwitched(IActionUIProfile profile)
+        {
+            try
+            {
+                ProfileSwitched(profile);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to adjust equipment sets after profile switch.", ex);
+            }
+        }
+
         private void ProfileSwitched(IActionUIProfile profile)
         {
-            Logger.LogDebug($"{nameof(InventoryService)}::{nameof(ProfileChanged)}: Profile switched to '{profile.Name}'. EquipmentSetsEnabled == {profile.EquipmentSetsEnabled}.");
             _equipmentSetsEnabled = profile.EquipmentSetsEnabled;
 
             ClearSkillPreviewCache();
@@ -205,11 +233,11 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (!_characterInventory.SkillKnowledge.IsItemLearned(skillPrefab) && existingSkill == null)
             {
                 //var skill = (EquipmentSetSkill)ResourcesPrefabManager.Instance.GenerateItem(skillPrefab.ItemIDString);
-                var skill = UnityEngine.Object.Instantiate(skillPrefab, _characterInventory.SkillKnowledge.transform);
-                skill.IsPrefab = false;
-                if (!skill.gameObject.activeSelf)
-                    skill.gameObject.SetActive(true);
-
+                //var skill = UnityEngine.Object.Instantiate(skillPrefab, _characterInventory.SkillKnowledge.transform);
+                //skill.IsPrefab = false;
+                //if (!skill.gameObject.activeSelf)
+                //    skill.gameObject.SetActive(true);
+                _characterInventory.TryUnlockSkill(skillPrefab);
                 Logger.LogDebug($"AddOrUpdateEquipmentSetSkill: Added skill {skillPrefab.name} to character {_character.name}.");
             }
             else
@@ -493,22 +521,17 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 return true;
             }
 
-
-            var stashEquipEnabled = equipFromStash && !_characterInventory.OwnsItem(equipSlot.UID) && slot.HasItemEquipped;
-            var stashUnequipEnabled = !disableStashUnequip && unequipToStash && slot.HasItemEquipped;
+            var isEquipInCharInventory = _characterInventory.OwnsItem(equipSlot.UID);
+            var shouldEquipFromStash = equipFromStash && !isEquipInCharInventory && _character.Stash.GetContainedItemUIDs(equipSlot.ItemID).Any();
+            var shouldUnequipToStash = !disableStashUnequip && unequipToStash;
 
             //If item being equipped is coming from the stash or equipment is being unequipped to the stash, do a stash equip
-            if (stashEquipEnabled || stashUnequipEnabled)
+            if (shouldEquipFromStash || shouldUnequipToStash)
             {
                 var charEquipSlot = _characterEquipment.GetMatchingSlot(slotID);
 
-                var equipFoundInStash = (_equipSetsProfile.StashEquipEnabled && _inventoryService.GetAreaContainsStash() && _character.Stash.GetContainedItemUIDs(equipSlot.ItemID).Any())
-                        || (_equipSetsProfile.StashEquipEnabled && _equipSetsProfile.StashEquipAnywhereEnabled && _character.Stash.GetContainedItemUIDs(equipSlot.ItemID).Any());
-                var equipFoundInInventory = _characterInventory.OwnsItem(equipSlot.UID);
-
-                if (!equipFoundInStash && !equipFoundInInventory)
+                if (!shouldEquipFromStash && !isEquipInCharInventory)
                     return false;
-
 
                 var moveItem = slot.EquippedItem;
 
@@ -517,7 +540,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 else
                     _characterInventory.EquipItem(equipSlot.UID, performAnimation);
 
-                if (stashUnequipEnabled)
+                if (shouldUnequipToStash && moveItem != null)
                     _queuedMovesToStash.Enqueue(moveItem);
             }
             //No stash involved. Perform standard equip.
@@ -647,10 +670,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     EquipmentMenuPatches.AfterOnHide -= HideEquipmentSetMenu;
                     ItemDisplayPatches.AfterSetReferencedItem -= _equipSetPrefabService.AddEquipmentSetIcon;
                     NetworkLevelLoader.Instance.onOverallLoadingDone -= ShowHideSkillsMenu;
-                    if (_profileManager?.ProfileService?.OnActiveProfileChanged != null)
-                        _profileManager.ProfileService.OnActiveProfileChanged.RemoveListener(ProfileChanged);
-                    if (_profileManager?.ProfileService?.OnActiveProfileSwitched != null)
-                        _profileManager.ProfileService.OnActiveProfileSwitched.RemoveListener(ProfileSwitched);
+                    if (_profileManager?.ProfileService != null)
+                    {
+                        _profileManager.ProfileService.OnActiveProfileChanged -= TryProfileChanged;
+                     
+                        _profileManager.ProfileService.OnActiveProfileSwitched -= TryProfileSwitched;
+                    }
                     ClearSkillPreviewCache();
                 }
                 _character = null;

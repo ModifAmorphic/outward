@@ -39,7 +39,8 @@ namespace ModifAmorphic.Outward.ActionUI
                                                   services.GetService<IModifLogger>))
                 .AddSingleton(new LevelCoroutines(services.GetService<BaseUnityPlugin>(),
                                                   services.GetService<IModifLogger>))
-                .AddSingleton(new ResetActionUIsService(services.GetService<LevelCoroutines>(),
+                .AddSingleton(new ResetActionUIsService(services,
+                                                   services.GetService<LevelCoroutines>(),
                                                    services.GetService<IModifLogger>))
                 .AddSingleton(new ModifGoService(services.GetService<IModifLogger>))
                 .AddSingleton(new RewiredListener(services.GetService<BaseUnityPlugin>(),

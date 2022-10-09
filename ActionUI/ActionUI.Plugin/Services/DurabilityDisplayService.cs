@@ -52,8 +52,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (_configured)
                 return;
 
-            profileService.OnActiveProfileChanged.AddListener((profile) => ShowHide(splitPlayer.RewiredID, profile.DurabilityDisplayEnabled));
-            profileService.OnActiveProfileSwitched.AddListener((profile) => ShowHide(splitPlayer.RewiredID, profile.DurabilityDisplayEnabled));
+            profileService.OnActiveProfileChanged += (profile) => ShowHide(splitPlayer.RewiredID, profile.DurabilityDisplayEnabled);
+            profileService.OnActiveProfileSwitched += (profile) => ShowHide(splitPlayer.RewiredID, profile.DurabilityDisplayEnabled);
 
             if (actionMenus.DurabilityDisplay.IsAwake)
                 ShowHide(splitPlayer.RewiredID, profileService.GetActiveProfile().DurabilityDisplayEnabled);

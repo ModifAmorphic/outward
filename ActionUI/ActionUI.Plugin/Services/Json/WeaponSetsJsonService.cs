@@ -149,6 +149,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void Save(WeaponSet weaponSet)
         {
+            Logger.LogInfo($"Saving equipment set '{weaponSet.Name}'.");
             GlobalProfileService.AddOrUpdateEquipmentSet(weaponSet, CharacterUID);
             Save();
             LearnEquipmentSetSkill(weaponSet);
@@ -160,6 +161,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void LearnEquipmentSetSkill(IEquipmentSet equipmentSet)
         {
+            Logger.LogDebug($"Learning Weapon Set Skill for set '{equipmentSet.Name}'");
             _equipService.AddOrUpdateEquipmentSetSkill<WeaponSetSkill>(equipmentSet);
         }
 

@@ -11,13 +11,11 @@ namespace ModifAmorphic.Outward.ActionUI.DataModels
 
         public bool DurabilityDisplayEnabled { get; set; }
         public bool EquipmentSetsEnabled { get; set; }
-        public bool StashCraftingEnabled { get; set; }
-        public bool CraftingOutsideTownEnabled { get; set; }
         public EquipmentSetsSettingsProfile EquipmentSetsSettingsProfile { get; set; }
+        public StashSettingsProfile StashSettingsProfile { get; set; }
         public string LastLoadedModVersion { get; set; }
 
         [JsonIgnore]
         public string Path { get; set; }
-
     }
 }

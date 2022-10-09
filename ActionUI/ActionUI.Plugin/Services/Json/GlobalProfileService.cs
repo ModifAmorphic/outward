@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
-    public class GlobalProfileService : IDisposable
+    public class GlobalProfileService : IDisposable, ISavableProfile
     {
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
@@ -33,7 +33,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public GlobalProfile GetGlobalProfile() => GetOrCreateGlobalProfile();
 
-        public void Save() => SaveProfile(_cachedProfile);
+        public void Save() => SaveProfile(GetGlobalProfile());
 
         public void AddOrUpdateEquipmentSet(IEquipmentSet set, string characterUID)
         {
@@ -136,7 +136,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private void SaveProfile(GlobalProfile profile)
         {
             _ = GetOrAddGlobalDir();
-
+            Logger.LogInfo($"Saving {nameof(GlobalProfile)} to '{GlobalFile}'.");
             var newJson = JsonConvert.SerializeObject(profile, Formatting.Indented);
             File.WriteAllText(GlobalFile, newJson);
             _cachedProfile = null;
