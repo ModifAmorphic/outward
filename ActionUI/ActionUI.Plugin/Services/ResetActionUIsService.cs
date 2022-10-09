@@ -77,7 +77,16 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 Logger.LogWarning($"Could not find Weapon Sets Profile to save for character {charUID}. Profile will not be saved.");
 
             if (usp.TryGetService<IActionUIProfileService>(out var profileService))
-                SaveProfile((ProfileService)profileService, charUID);
+            {
+                try
+                {
+                    ((ProfileService)profileService).SaveProfile(profileService.GetActiveProfile(), true);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogException($"Failed to save active profile for character {charUID}.", ex);
+                }
+            }
             else
                 Logger.LogWarning($"Could not find Action UI Profile to save for character {charUID}. Profile will not be saved.");
 

@@ -71,16 +71,23 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public void Start()
         {
-            _equipmentSetsEnabled = _profile.EquipmentSetsEnabled;
-            EquipmentMenuPatches.AfterShow += ShowEquipmentSetMenu;
-            EquipmentMenuPatches.AfterOnHide += HideEquipmentSetMenu;
-            ItemDisplayPatches.AfterSetReferencedItem += _equipSetPrefabService.AddEquipmentSetIcon;
-            NetworkLevelLoader.Instance.onOverallLoadingDone += ShowHideSkillsMenu;
-            _profileManager.ProfileService.OnActiveProfileChanged += TryProfileChanged;
-            _profileManager.ProfileService.OnActiveProfileSwitched += TryProfileSwitched;
+            try
+            {
+                _equipmentSetsEnabled = _profile.EquipmentSetsEnabled;
+                EquipmentMenuPatches.AfterShow += ShowEquipmentSetMenu;
+                EquipmentMenuPatches.AfterOnHide += HideEquipmentSetMenu;
+                ItemDisplayPatches.AfterSetReferencedItem += _equipSetPrefabService.AddEquipmentSetIcon;
+                NetworkLevelLoader.Instance.onOverallLoadingDone += ShowHideSkillsMenu;
+                _profileManager.ProfileService.OnActiveProfileChanged += TryProfileChanged;
+                _profileManager.ProfileService.OnActiveProfileSwitched += TryProfileSwitched;
 
-            var armorService = (ArmorSetsJsonService)_profileManager.ArmorSetService;
-            var weaponService = (WeaponSetsJsonService)_profileManager.WeaponSetService;
+                var armorService = (ArmorSetsJsonService)_profileManager.ArmorSetService;
+                var weaponService = (WeaponSetsJsonService)_profileManager.WeaponSetService;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to start {nameof(EquipService)}.", ex);
+            }
         }
 
         private void ShowHideSkillsMenu()
@@ -226,11 +233,11 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (!_characterInventory.SkillKnowledge.IsItemLearned(skillPrefab) && existingSkill == null)
             {
                 //var skill = (EquipmentSetSkill)ResourcesPrefabManager.Instance.GenerateItem(skillPrefab.ItemIDString);
-                var skill = UnityEngine.Object.Instantiate(skillPrefab, _characterInventory.SkillKnowledge.transform);
-                skill.IsPrefab = false;
-                if (!skill.gameObject.activeSelf)
-                    skill.gameObject.SetActive(true);
-
+                //var skill = UnityEngine.Object.Instantiate(skillPrefab, _characterInventory.SkillKnowledge.transform);
+                //skill.IsPrefab = false;
+                //if (!skill.gameObject.activeSelf)
+                //    skill.gameObject.SetActive(true);
+                _characterInventory.TryUnlockSkill(skillPrefab);
                 Logger.LogDebug($"AddOrUpdateEquipmentSetSkill: Added skill {skillPrefab.name} to character {_character.name}.");
             }
             else

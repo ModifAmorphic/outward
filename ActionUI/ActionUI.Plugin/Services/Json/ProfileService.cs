@@ -73,7 +73,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                         _activeProfile.EquipmentSetsEnabled = true;
 
                     _activeProfile.LastLoadedModVersion = ModInfo.ModVersion;
-                    SaveProfile(_activeProfile, false);
+                    SaveProfile(_activeProfile, true);
                     _versionEvaluated = true;
                     _ = GetActiveActionUIProfile();
                 }
@@ -153,7 +153,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             OnActiveProfileSwitched.TryInvoke(profile);
         }
 
-        public void SaveProfile(IActionUIProfile profile, bool raiseEvent = true)
+        public void SaveProfile(IActionUIProfile profile, bool suppressEvent = false)
         {
             var profiles = GetOrCreateProfiles();
             _ = GetOrAddProfileDir(profile.Name);
@@ -171,7 +171,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             Logger.LogDebug($"Saved profile '{profile.Name}'.");
             _activeProfile = null;
 
-            if (raiseEvent)
+            if (!suppressEvent)
                 OnActiveProfileChanged.TryInvoke(GetActiveActionUIProfile());
         }
 

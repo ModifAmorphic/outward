@@ -21,6 +21,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private CharacterInventory _characterInventory => _character.Inventory;
         private CharacterEquipment _characterEquipment => _character.Inventory.Equipment;
         private readonly ProfileManager _profileManager;
+        private bool _isRemoved;
         private IActionUIProfile _profile => _profileManager.ProfileService.GetActiveProfile();
         private readonly LevelCoroutines _coroutines;
 
@@ -36,10 +37,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public void Start()
         {
-            CharacterInventoryPatches.AfterInventoryIngredients += AddStashIngredients;
-            _profileManager.ProfileService.OnActiveProfileChanged += TryConfigureStashPreserver;
-            _profileManager.ProfileService.OnActiveProfileSwitched += TryConfigureStashPreserver;
-            ConfigureStashPreserver();
+            try
+            {
+                CharacterInventoryPatches.AfterInventoryIngredients += AddStashIngredients;
+                _profileManager.ProfileService.OnActiveProfileChanged += TryConfigureStashPreserver;
+                _profileManager.ProfileService.OnActiveProfileSwitched += TryConfigureStashPreserver;
+
+                _coroutines.DoWhen(() => _characterInventory.Stash != null, ConfigureStashPreserver, 180);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to start {nameof(InventoryService)}.", ex);
+            }
         }
 
         private void AddStashIngredients(CharacterInventory characterInventory, Character character, Tag craftingStationTag, ref DictionaryExt<int, CompatibleIngredient> sortedIngredients)
@@ -59,6 +68,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             try
             {
+                Logger.LogDebug($"Trying to Configure Stash Preserver for profile '{profile?.Name}'.");
                 ConfigureStashPreserver();
             }
             catch (Exception ex)
@@ -138,6 +148,11 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             try
             {
                 var stash = _characterInventory.Stash;
+                if (stash?.gameObject == null)
+                {
+                    Logger.LogInfo($"Stash was null. Exiting TryRemoveStashPreserver.");
+                    return false;
+                }
                 var preserver = stash.GetPrivateField<ItemContainer, Preserver>("m_preservationExt");
 
                 if (preserver != null)
@@ -193,8 +208,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 if (disposing)
                 {
                     CharacterInventoryPatches.AfterInventoryIngredients -= AddStashIngredients;
-                    CharacterInventoryPatches.AfterInventoryIngredients -= AddStashIngredients;
-                    TryRemoveStashPreserver();
+                    //TryRemoveStashPreserver();
                     if (_profileManager?.ProfileService != null)
                     {
                         _profileManager.ProfileService.OnActiveProfileChanged -= TryConfigureStashPreserver;

@@ -26,7 +26,7 @@ namespace ModifAmorphic.Outward.ActionUI.Monobehaviours
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Start()
         {
-            Logger.LogDebug($"{nameof(ActionSlotDropper)}:{nameof(Start)}: ActionSlot SlotId: {_actionSlot.SlotId}");
+            Logger.LogDebug($"{nameof(ActionSlotDropper)}:{nameof(Start)}: ActionSlot SlotId: {_actionSlot?.SlotId}");
         }
 
         public void SetLogger(Func<IModifLogger> getLogger) => _getLogger = getLogger;

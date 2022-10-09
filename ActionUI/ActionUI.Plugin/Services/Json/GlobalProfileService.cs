@@ -33,7 +33,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public GlobalProfile GetGlobalProfile() => GetOrCreateGlobalProfile();
 
-        public void Save() => SaveProfile(_cachedProfile);
+        public void Save() => SaveProfile(GetGlobalProfile());
 
         public void AddOrUpdateEquipmentSet(IEquipmentSet set, string characterUID)
         {

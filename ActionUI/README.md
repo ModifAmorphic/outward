@@ -60,6 +60,8 @@
     - Removed Crafting from stash option from main settings. It's under the Stash
   - Action Slots hotbar should now be hidden when a controller is used.
   - Equipment will no longer be equipped from stash if the "Unequip Sets to Stash" option is enabled but the "Equip Sets from Stash" is not.
+  - Equipment Set fixes for multiplayer
+    - Equipment set skills should now be added to the character when a new equipment set is created by a non host player.
   - Major rework around how modules are applied and profile data is loaded and saved.
     - Added force save of profile data whenever a new profile is created or a different profile is selected.
     - Saving all profile data on exiting a save.
