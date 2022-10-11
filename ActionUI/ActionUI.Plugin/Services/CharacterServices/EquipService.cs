@@ -338,8 +338,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public bool HasItem(EquipSlot equipSlot) => equipSlot == null
                         || _characterInventory.OwnsItem(equipSlot.UID)
-                        || (_equipSetsProfile.StashEquipEnabled && _inventoryService.GetAreaContainsStash() && _character.Stash.GetContainedItemUIDs(equipSlot.ItemID).Any())
-                        || (_equipSetsProfile.StashEquipEnabled && _equipSetsProfile.StashEquipAnywhereEnabled && _character.Stash.GetContainedItemUIDs(equipSlot.ItemID).Any());
+                        || (GetIsStashEquipEnabled() && _character.Stash.GetContainedItemUIDs(equipSlot.ItemID).Any());
 
         public bool IsArmorSetEquipped(ArmorSet armorSet)
             => IsEquipSlotEquipped(armorSet.Head, EquipmentSlot.EquipmentSlotIDs.Helmet) &&

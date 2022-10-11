@@ -18,7 +18,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         Equipment,
         Merchant
     }
-    internal class EquipmentMenuStashService : IDisposable
+    internal class CharacterMenuStashService : IDisposable
     {
         
         private IModifLogger Logger => _getLogger.Invoke();
@@ -51,7 +51,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private bool disposedValue;
 
-        public EquipmentMenuStashService(Character character, ProfileManager profileManager, InventoryService inventoryService, LevelCoroutines coroutines, Func<IModifLogger> getLogger)
+        public CharacterMenuStashService(Character character, ProfileManager profileManager, InventoryService inventoryService, LevelCoroutines coroutines, Func<IModifLogger> getLogger)
         {
             _character = character;
             _profileManager = profileManager;
@@ -115,29 +115,29 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             if (stashType == StashDisplayTypes.Disabled)
             {
-                Logger.LogTrace($"{nameof(EquipmentMenuStashService)}::{nameof(ShouldInvoke)}: false. Stash Type is {stashType} for InventoryContentDisplay '{inventoryPath}'.");
+                Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(ShouldInvoke)}: false. Stash Type is {stashType} for InventoryContentDisplay '{inventoryPath}'.");
                 return false;
             }
             
             if (inventoryContentDisplay.LocalCharacter.UID != _character.UID)
             {
-                Logger.LogTrace($"{nameof(EquipmentMenuStashService)}::{nameof(ShouldInvoke)}: false. inventoryContentDisplay.LocalCharacter.UID '{inventoryContentDisplay.LocalCharacter.UID}' does not" +
+                Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(ShouldInvoke)}: false. inventoryContentDisplay.LocalCharacter.UID '{inventoryContentDisplay.LocalCharacter.UID}' does not" +
                     $"equal character.UID '{_character.UID}' for InventoryContentDisplay {inventoryContentDisplay.name}, path: '{inventoryPath}'.");
                 return false;
             }
             if ((stashType == StashDisplayTypes.Inventory || stashType == StashDisplayTypes.Equipment) && _inventoryService.GetStashInventoryEnabled())
             {
-                Logger.LogTrace($"{nameof(EquipmentMenuStashService)}::{nameof(ShouldInvoke)}: true for Inventory Display '{inventoryPath}'");
+                Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(ShouldInvoke)}: true for Inventory Display '{inventoryPath}'");
                 return true;
             }
 
             if (stashType == StashDisplayTypes.Merchant & _inventoryService.GetMerchantStashEnabled())
             {
-                Logger.LogTrace($"{nameof(EquipmentMenuStashService)}::{nameof(ShouldInvoke)}: true for Merchant Display '{inventoryPath}'");
+                Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(ShouldInvoke)}: true for Merchant Display '{inventoryPath}'");
                 return true;
             }
 
-            Logger.LogTrace($"{nameof(EquipmentMenuStashService)}::{nameof(ShouldInvoke)}: false for InventoryContentDisplay '{inventoryPath}'.");
+            Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(ShouldInvoke)}: false for InventoryContentDisplay '{inventoryPath}'.");
             return false;
         }
 
@@ -332,12 +332,14 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private bool IsStashOwned(string itemUID)
         {
-            var displayedStash = _stashDisplays.Values.FirstOrDefault(s => s.IsDisplayed);
+            var displayedStash = _stashDisplays.Values.FirstOrDefault(s => s.isActiveAndEnabled);
 
             if (displayedStash == null)
                 return false;
-
-            return _character.Stash.Contains(itemUID);
+            bool isFound = _character.Stash.Contains(itemUID);
+            if (isFound)
+                Logger.LogDebug($"Found item with UID '{itemUID}' in stash.");
+            return isFound;
         }
 
         protected virtual void Dispose(bool disposing)

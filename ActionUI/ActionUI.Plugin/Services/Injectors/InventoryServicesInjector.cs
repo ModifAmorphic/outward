@@ -98,7 +98,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                                                     _services.GetService<EquipSetPrefabService>(),
                                                     _coroutines,
                                                     _getLogger))
-                .AddSingleton(new EquipmentMenuStashService(
+                .AddSingleton(new CharacterMenuStashService(
                     splitPlayer.AssignedCharacter,
                     profileManager,
                     usp.GetService<InventoryService>(),

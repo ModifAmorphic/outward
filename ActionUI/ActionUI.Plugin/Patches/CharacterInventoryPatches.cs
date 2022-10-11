@@ -48,8 +48,11 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
                 if (OwnsItemDelegates.TryGetValue(playerId, out var ownsItem))
                 {
                     //Called on Update. Spams logs
-                    //Logger.LogTrace($"{nameof(CharacterInventoryPatches)}::{nameof(OwnsItemPostFix)}(): Invoked for PlayerID {playerId}. Invoking {nameof(OwnsItemDelegates)} delegate.");
+                    Logger.LogDebug($"{nameof(CharacterInventoryPatches)}::{nameof(OwnsItemPostFix)}(): Invoked for PlayerID {playerId}. Invoking {nameof(OwnsItemDelegates)} delegate.");
+
                     __result = ownsItem(_itemUID);
+                    if (__result)
+                        Logger.LogDebug($"Found item with UID '{_itemUID}' in stash.");
                 }
             }
             catch (Exception ex)
