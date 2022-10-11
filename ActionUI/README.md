@@ -64,7 +64,7 @@
   - Equipment Sets equip from stash fix. Set items could be equipped from stash even with the option disabled if the character or merchant stash options where enabled.
   - Action UI settings menu should now open correctly after a split screen session.
   - Fixed bug where user would be prompted to move items from stash to the stash when using the Stash Chest.
-  - Fixed bug that caused weapon set to be unusable if a 2h item was saved in 1h mode using the Mixed Grip mod.
+  - Fixed issue where a 2h weapon set would be unusable if the set was saved in 1h mode using the Mixed Grip mod.
 
 ## Release 1.1.1
   - Fix for Action Slot hotkeys not saving across play sessions.
