@@ -1,7 +1,7 @@
-﻿using HarmonyLib;
+﻿#if DEBUG
+using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
 using System;
-using System.Collections.Generic;
 
 namespace ModifAmorphic.Outward.ActionUI.Patches
 {
@@ -14,7 +14,7 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         public static event Action<Character> AfterApplyQuicklots;
 
         [HarmonyPatch(nameof(Character.ApplyQuicklots), MethodType.Normal)]
-        [HarmonyPatch(new Type[] { typeof(PlayerSaveData) }) ]
+        [HarmonyPatch(new Type[] { typeof(PlayerSaveData) })]
         [HarmonyPostfix]
         private static void ApplyQuicklotsPostFix(Character __instance, PlayerSaveData _save)
         {
@@ -30,3 +30,4 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         }
     }
 }
+#endif

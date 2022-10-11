@@ -58,8 +58,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return set;
         }
 
-        public int GetNextEquipmentSetID() 
-        { 
+        public int GetNextEquipmentSetID()
+        {
             int nextId = _random.Next(InventorySettings.MinSetItemID, InventorySettings.MaxSetItemID);
             int attempt = 0;
             int maxAttempts = 1000;

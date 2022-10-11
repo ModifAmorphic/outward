@@ -9,22 +9,65 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
     {
         private static IModifLogger Logger => LoggerFactory.GetLogger(ModInfo.ModId);
 
-        public static event Action<InventoryContentDisplay> AfterStartInit;
+        //public static event Action<InventoryContentDisplay> BeforeShow;
 
-        [HarmonyPatch("StartInit")]
-        [HarmonyPostfix]
-        private static void StartInitPostfix(InventoryContentDisplay __instance)
-        {
-            try
-            {
-                Logger.LogTrace($"{nameof(InventoryContentDisplay)}::{nameof(StartInitPostfix)}(): Invoking {nameof(AfterStartInit)}.");
-                AfterStartInit?.Invoke(__instance);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException($"{nameof(InventoryContentDisplay)}::{nameof(StartInitPostfix)}(): Exception invoking {nameof(AfterStartInit)}.", ex);
-            }
-        }
+        //[HarmonyPatch(nameof(InventoryContentDisplay.Show))]
+        //[HarmonyPrefix]
+        //private static void ShowPrefix(InventoryContentDisplay __instance)
+        //{
+        //    try
+        //    {
+        //        if (__instance.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer)
+        //            return;
+
+        //        Logger.LogDebug($"{nameof(InventoryContentDisplay)}::{nameof(ShowPrefix)}(): Invoking {nameof(BeforeShow)}.");
+        //        BeforeShow?.Invoke(__instance);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.LogException($"{nameof(InventoryContentDisplay)}::{nameof(ShowPrefix)}(): Exception invoking {nameof(BeforeShow)}.", ex);
+        //    }
+        //}
+
+        //public static event Action<InventoryContentDisplay> AfterDelayedFocus;
+
+        //[HarmonyPatch("DelayedFocus")]
+        //[HarmonyPostfix]
+        //private static void DelayedFocusPostfix(InventoryContentDisplay __instance)
+        //{
+        //    try
+        //    {
+        //        if (__instance.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer)
+        //            return;
+
+        //        Logger.LogDebug($"{nameof(InventoryContentDisplay)}::{nameof(DelayedFocusPostfix)}(): Invoking {nameof(AfterDelayedFocus)}.");
+        //        AfterDelayedFocus?.Invoke(__instance);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.LogException($"{nameof(InventoryContentDisplay)}::{nameof(DelayedFocusPostfix)}(): Exception invoking {nameof(AfterDelayedFocus)}.", ex);
+        //    }
+        //}
+
+        //public static event Action<InventoryContentDisplay> AfterStartInit;
+
+        //[HarmonyPatch("StartInit")]
+        //[HarmonyPostfix]
+        //private static void StartInitPostfix(InventoryContentDisplay __instance)
+        //{
+        //    try
+        //    {
+        //        if (__instance.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer)
+        //            return;
+
+        //        Logger.LogDebug($"{nameof(InventoryContentDisplay)}::{nameof(StartInitPostfix)}(): Invoking {nameof(AfterStartInit)}.");
+        //        AfterStartInit?.Invoke(__instance);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.LogException($"{nameof(InventoryContentDisplay)}::{nameof(StartInitPostfix)}(): Exception invoking {nameof(AfterStartInit)}.", ex);
+        //    }
+        //}
 
         public static event Action<InventoryContentDisplay> AfterOnHide;
 
@@ -34,7 +77,10 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
-                Logger.LogTrace($"{nameof(InventoryContentDisplay)}::{nameof(OnHidePostfix)}(): Invoking {nameof(AfterOnHide)}.");
+                if (__instance.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer)
+                    return;
+
+                Logger.LogDebug($"{nameof(InventoryContentDisplay)}::{nameof(OnHidePostfix)}(): Invoking {nameof(AfterOnHide)}.");
                 AfterOnHide?.Invoke(__instance);
             }
             catch (Exception ex)
@@ -72,7 +118,7 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
-                Logger.LogTrace($"{nameof(InventoryContentDisplay)}::{nameof(SetContainersVisibilityPostfix)}(): Invoking {nameof(AfterSetContainersVisibility)}.");
+                Logger.LogDebug($"{nameof(InventoryContentDisplay)}::{nameof(SetContainersVisibilityPostfix)}(): Invoking {nameof(AfterSetContainersVisibility)}.");
                 AfterSetContainersVisibility?.Invoke(__instance, _showPouch, _showBag, _showEquipment);
             }
             catch (Exception ex)
@@ -91,7 +137,7 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
-                Logger.LogTrace($"{nameof(InventoryContentDisplay)}::{nameof(RefreshReferencesPostfix)}(): Invoking {nameof(AfterRefreshReferences)}.");
+                Logger.LogDebug($"{nameof(InventoryContentDisplay)}::{nameof(RefreshReferencesPostfix)}(): Invoking {nameof(AfterRefreshReferences)}.");
                 AfterRefreshReferences?.Invoke(__instance, _forceRefresh);
             }
             catch (Exception ex)
@@ -111,7 +157,7 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
-                Logger.LogTrace($"{nameof(InventoryContentDisplay)}::{nameof(RefreshContainerDisplaysPostfix)}(): Invoking {nameof(AfterRefreshContainerDisplays)}.");
+                Logger.LogDebug($"{nameof(InventoryContentDisplay)}::{nameof(RefreshContainerDisplaysPostfix)}(): Invoking {nameof(AfterRefreshContainerDisplays)}.");
                 AfterRefreshContainerDisplays?.Invoke(__instance, _clearAssignedDisplay);
             }
             catch (Exception ex)

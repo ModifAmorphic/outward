@@ -20,7 +20,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
     }
     internal class CharacterMenuStashService : IDisposable
     {
-        
+
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
 
@@ -61,28 +61,78 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             _profileManager.ProfileService.OnActiveProfileChanged += TrySetEnableState;
             _profileManager.ProfileService.OnActiveProfileSwitched += TrySetEnableState;
-            NetworkLevelLoader.Instance.onOverallLoadingDone += SetEnableState;
-            _coroutines.InvokeAfterLevelAndPlayersLoaded(NetworkLevelLoader.Instance, SetEnableState, 300);
-            
+            //NetworkLevelLoader.Instance.onOverallLoadingDone += SetEnableState;
+            //_coroutines.InvokeAfterLevelAndPlayersLoaded(NetworkLevelLoader.Instance, SetEnableState, 300);
+            //_coroutines.InvokeAfterLevelAndPlayersLoaded(NetworkLevelLoader.Instance, TrySubscribe, 300);
+
+        }
+
+        public void Start()
+        {
+            CharacterUIPatches.BeforeShowMenu += CharacterUIPatches_BeforeShowMenu;
+        }
+
+        private void CharacterUIPatches_BeforeShowMenu(CharacterUI characterUI, CharacterUI.MenuScreens menu, Item item)
+        {
+            if (menu != CharacterUI.MenuScreens.Inventory && menu != CharacterUI.MenuScreens.Equipment
+                && menu != CharacterUI.MenuScreens.Shop)
+                return;
+
+            TrySetEnableState();
+        }
+
+        private void TrySetEnableState()
+        {
+            try
+            {
+                ToggleStashes();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"TrySetEnableState failed for character '{_character?.UID}'.", ex);
+            }
         }
 
         private void TrySetEnableState(IActionUIProfile profile)
         {
             try
             {
-                SetEnableState();
+                ToggleStashes();
             }
             catch (Exception ex)
             {
-                Logger.LogException($"Failed to set equipment stash enable state for profile {profile?.Name}.", ex);
+                Logger.LogException($"TrySetEnableState to set equipment stash enable state for profile '{profile?.Name}' and character '{_character?.UID}'.", ex);
             }
         }
 
-        private void SetEnableState()
+        private void ToggleStashes()
         {
-            ToggleStash(StashDisplayTypes.Inventory, _inventoryDisplayPath, _inventoryService.GetStashInventoryEnabled());
-            ToggleStash(StashDisplayTypes.Equipment, _equipmentDisplayPath, _inventoryService.GetStashInventoryEnabled());
-            ToggleStash(StashDisplayTypes.Merchant, _merchantDisplayPath, _inventoryService.GetMerchantStashEnabled());
+
+            try
+            {
+                Logger.LogDebug($"CharacterMenuStashService_{this.GetHashCode()}: Toggling Stashes for character '{_character?.UID}'.");
+                ToggleStash(StashDisplayTypes.Inventory, _inventoryDisplayPath, _inventoryService.GetStashInventoryEnabled());
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"CharacterMenuStashService_{this.GetHashCode()}: ToggleStash failed for Inventory stash.", ex);
+            }
+            try
+            {
+                ToggleStash(StashDisplayTypes.Equipment, _equipmentDisplayPath, _inventoryService.GetStashInventoryEnabled());
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"CharacterMenuStashService_{this.GetHashCode()}: ToggleStash failed for Equipment stash.", ex);
+            }
+            try
+            {
+                ToggleStash(StashDisplayTypes.Merchant, _merchantDisplayPath, _inventoryService.GetMerchantStashEnabled());
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"CharacterMenuStashService_{this.GetHashCode()}: ToggleStash failed for Merchant stash.", ex);
+            }
 
             if (_inventoryService.GetStashInventoryEnabled() || _inventoryService.GetMerchantStashEnabled())
                 SubscribeToPatchEvents();
@@ -92,52 +142,61 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void ToggleStash(StashDisplayTypes stashType, string contentDisplayPath, bool isEnabled)
         {
+            Logger.LogInfo($"{(isEnabled ? "Enabling" : "Disabling")} {stashType} Stash use for character '{_character.UID}'.");
+
             if (_lastToggle[stashType] != null && _lastToggle[stashType] == isEnabled)
                 return;
 
             if (!isEnabled)
             {
                 RemoveStashDisplay(stashType);
-                Logger.LogInfo($"Disabled {stashType} Stash use for character '{_character.UID}'.");
             }
             else
             {
                 var inventoryContentDisplay = _characterUI.transform.Find(contentDisplayPath).GetComponent<InventoryContentDisplay>();
                 AddConfigureStashDisplay(inventoryContentDisplay);
-                Logger.LogInfo($"Enabled {stashType} Stash use for character '{_character.UID}'.");
             }
             _lastToggle[stashType] = isEnabled;
         }
 
-        private bool ShouldInvoke(StashDisplayTypes stashType, InventoryContentDisplay inventoryContentDisplay)
+
+        private bool GetIsStashDisplayToggled(StashDisplayTypes stashType, InventoryContentDisplay inventoryContentDisplay)
+        {
+            if (_stashDisplays == null || !_stashDisplays.ContainsKey(stashType))
+                return false;
+
+            return GetIsDisplayEnabled(stashType, inventoryContentDisplay);
+        }
+
+        private bool GetIsDisplayEnabled(StashDisplayTypes stashType, InventoryContentDisplay inventoryContentDisplay)
         {
             var inventoryPath = inventoryContentDisplay.transform.GetGameObjectPath();
 
             if (stashType == StashDisplayTypes.Disabled)
             {
-                Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(ShouldInvoke)}: false. Stash Type is {stashType} for InventoryContentDisplay '{inventoryPath}'.");
+                Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(GetIsDisplayEnabled)}: false. Stash Type is {stashType} for InventoryContentDisplay '{inventoryPath}'.");
                 return false;
             }
-            
+
             if (inventoryContentDisplay.LocalCharacter.UID != _character.UID)
             {
-                Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(ShouldInvoke)}: false. inventoryContentDisplay.LocalCharacter.UID '{inventoryContentDisplay.LocalCharacter.UID}' does not" +
+                Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(GetIsDisplayEnabled)}: false. inventoryContentDisplay.LocalCharacter.UID '{inventoryContentDisplay.LocalCharacter.UID}' does not" +
                     $"equal character.UID '{_character.UID}' for InventoryContentDisplay {inventoryContentDisplay.name}, path: '{inventoryPath}'.");
                 return false;
             }
             if ((stashType == StashDisplayTypes.Inventory || stashType == StashDisplayTypes.Equipment) && _inventoryService.GetStashInventoryEnabled())
             {
-                Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(ShouldInvoke)}: true for Inventory Display '{inventoryPath}'");
+                Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(GetIsDisplayEnabled)}: true for Inventory Display '{inventoryPath}'");
                 return true;
             }
 
             if (stashType == StashDisplayTypes.Merchant & _inventoryService.GetMerchantStashEnabled())
             {
-                Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(ShouldInvoke)}: true for Merchant Display '{inventoryPath}'");
+                Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(GetIsDisplayEnabled)}: true for Merchant Display '{inventoryPath}'");
                 return true;
             }
 
-            Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(ShouldInvoke)}: false for InventoryContentDisplay '{inventoryPath}'.");
+            Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(GetIsDisplayEnabled)}: false for InventoryContentDisplay '{inventoryPath}'.");
             return false;
         }
 
@@ -146,7 +205,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (_hasPatchEvents)
                 return;
 
-            InventoryContentDisplayPatches.AfterStartInit += AddConfigureStashDisplay;
+            Logger.LogDebug("Subscribing to Stash Container events");
+
             InventoryContentDisplayPatches.AfterOnHide += HideStashDisplay;
             InventoryContentDisplayPatches.AfterFocusMostRelevantItem += FocusMostRelevantItem;
             InventoryContentDisplayPatches.AfterSetContainersVisibility += SetContainersVisibility;
@@ -162,7 +222,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (!_hasPatchEvents)
                 return;
 
-            InventoryContentDisplayPatches.AfterStartInit -= AddConfigureStashDisplay;
+            Logger.LogDebug("Unsubscribing from Stash Container events");
+
             InventoryContentDisplayPatches.AfterOnHide -= HideStashDisplay;
             InventoryContentDisplayPatches.AfterFocusMostRelevantItem -= FocusMostRelevantItem;
             InventoryContentDisplayPatches.AfterSetContainersVisibility -= SetContainersVisibility;
@@ -200,7 +261,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         }
         private void AddStashDisplay(StashDisplayTypes stashType, InventoryContentDisplay inventoryContentDisplay)
         {
-            if (!ShouldInvoke(stashType, inventoryContentDisplay))
+            if (!GetIsDisplayEnabled(stashType, inventoryContentDisplay))
                 return;
 
             if (!_stashDisplays.ContainsKey(stashType))
@@ -214,7 +275,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 stashDisplay.transform.SetParent(parentTransform);
                 stashDisplay.transform.ResetLocal();
                 stashDisplay.name = "StashDisplay";
-                
+
                 var lblWeight = stashDisplay.transform.Find("lblWeight");
                 if (lblWeight != null)
                     UnityEngine.Object.Destroy(lblWeight);
@@ -257,8 +318,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (!_stashDisplays.TryGetValue(stashType, out var stashDisplay))
                 return;
 
-            Logger.LogDebug($"Attempting to configure filters for stash display {stashDisplay?.name} - '{stashDisplay?.transform.GetGameObjectPath()}'. ShouldInvoke(inventoryContentDisplay) == {ShouldInvoke(stashType, inventoryContentDisplay)}.");
-            if (!ShouldInvoke(stashType, inventoryContentDisplay))
+            Logger.LogDebug($"Attempting to configure filters for stash display {stashDisplay?.name} - '{stashDisplay?.transform.GetGameObjectPath()}'. ShouldInvoke(inventoryContentDisplay) == {GetIsStashDisplayToggled(stashType, inventoryContentDisplay)}.");
+            if (!GetIsStashDisplayToggled(stashType, inventoryContentDisplay))
                 return;
 
             var filter = inventoryContentDisplay.GetPrivateField<InventoryContentDisplay, ItemFilter>("m_filter");
@@ -273,7 +334,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             var stashType = GetStashType(inventoryContentDisplay);
 
-            if (!ShouldInvoke(stashType, inventoryContentDisplay))
+            if (!GetIsStashDisplayToggled(stashType, inventoryContentDisplay))
                 return;
 
             if (_stashDisplays.TryGetValue(stashType, out var stashDisplay))
@@ -283,10 +344,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private void FocusMostRelevantItem(InventoryContentDisplay inventoryContentDisplay, ItemListDisplay excludedList, bool result)
         {
             var stashType = GetStashType(inventoryContentDisplay);
-            if (result || !ShouldInvoke(stashType, inventoryContentDisplay) || _stashDisplays == null)
+            if (result || !GetIsStashDisplayToggled(stashType, inventoryContentDisplay) || _stashDisplays == null)
                 return;
 
-            if (_stashDisplays.TryGetValue(stashType, out var stashDisplay) && stashDisplay.IsDisplayed && excludedList != stashDisplay)
+            if (_stashDisplays.TryGetValue(stashType, out var stashDisplay) && stashDisplay.isActiveAndEnabled && excludedList != stashDisplay)
                 stashDisplay.Focus();
 
         }
@@ -294,7 +355,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private void SetContainersVisibility(InventoryContentDisplay inventoryContentDisplay, bool showPouch, bool showBag, bool showEquipment)
         {
             var stashType = GetStashType(inventoryContentDisplay);
-            if (!ShouldInvoke(stashType, inventoryContentDisplay) || _stashDisplays == null)
+            if (!GetIsStashDisplayToggled(stashType, inventoryContentDisplay) || _stashDisplays == null)
                 return;
 
             if (showPouch && _stashDisplays.TryGetValue(stashType, out var stashDisplay))
@@ -305,7 +366,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             var stashType = GetStashType(inventoryContentDisplay);
 
-            if (!ShouldInvoke(stashType, inventoryContentDisplay) || _stashDisplays == null)
+            if (!GetIsStashDisplayToggled(stashType, inventoryContentDisplay) || _stashDisplays == null)
                 return;
 
             if (!(inventoryContentDisplay.GetPrivateField<InventoryContentDisplay, bool>("m_startDone") | forceRefresh))
@@ -322,7 +383,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             var stashType = GetStashType(inventoryContentDisplay);
 
-            if (!_stashDisplays.TryGetValue(stashType, out var stashDisplay) || !stashDisplay.IsDisplayed || !ShouldInvoke(stashType, inventoryContentDisplay))
+            if (!_stashDisplays.TryGetValue(stashType, out var stashDisplay) || !stashDisplay.isActiveAndEnabled || !GetIsStashDisplayToggled(stashType, inventoryContentDisplay))
                 return;
 
             if (clearAssignedDisplay)
@@ -336,14 +397,13 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             if (displayedStash == null)
                 return false;
-            bool isFound = _character.Stash.Contains(itemUID);
-            if (isFound)
-                Logger.LogDebug($"Found item with UID '{itemUID}' in stash.");
-            return isFound;
+
+            return _character.Stash.Contains(itemUID);
         }
 
         protected virtual void Dispose(bool disposing)
         {
+            Logger.LogDebug($"Disposing of CharacterMenuStashService_{this.GetHashCode()}");
             if (!disposedValue)
             {
                 if (disposing)
@@ -353,8 +413,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     {
                         _profileManager.ProfileService.OnActiveProfileChanged -= TrySetEnableState;
                         _profileManager.ProfileService.OnActiveProfileSwitched -= TrySetEnableState;
-                        NetworkLevelLoader.Instance.onOverallLoadingDone -= SetEnableState;
+
                     }
+                    //NetworkLevelLoader.Instance.onOverallLoadingDone -= ToggleStashes;
+                    CharacterUIPatches.BeforeShowMenu -= CharacterUIPatches_BeforeShowMenu;
                 }
                 RemoveStashDisplays();
                 _character = null;

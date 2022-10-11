@@ -97,8 +97,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             //Creates ItemDisplays for equipment set skills.
 
-            _character.CharacterUI.ShowMenu(CharacterUI.MenuScreens.Skills);
-            _character.CharacterUI.HideMenu(CharacterUI.MenuScreens.Skills);
+            //_character.CharacterUI.ShowMenu(CharacterUI.MenuScreens.Skills);
+            //_character.CharacterUI.HideMenu(CharacterUI.MenuScreens.Skills);
 
         }
 
@@ -196,7 +196,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 AddEquipmentSets<ArmorSetSkill>(_profileManager.ArmorSetService.GetEquipmentSetsProfile().EquipmentSets, true);
                 AddEquipmentSets<WeaponSetSkill>(_profileManager.WeaponSetService.GetEquipmentSetsProfile().EquipmentSets, true);
-                
+
             }
             else
             {
@@ -672,7 +672,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     if (_profileManager?.ProfileService != null)
                     {
                         _profileManager.ProfileService.OnActiveProfileChanged -= TryProfileChanged;
-                     
+
                         _profileManager.ProfileService.OnActiveProfileSwitched -= TryProfileSwitched;
                     }
                     ClearSkillPreviewCache();
@@ -682,13 +682,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 disposedValue = true;
             }
         }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~InventoryService()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
 
         public void Dispose()
         {

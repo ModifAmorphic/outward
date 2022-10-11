@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿#if DEBUG
+using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
 using System;
 
@@ -27,7 +28,7 @@ namespace ModifAmorphic.Outward.ActionUI.Patches.Sandbox
 
         //public delegate bool GetIsApplicationFocused(MenuManager __instance);
         //public static GetIsApplicationFocused GetIsApplicationFocusedCallback;
-        public static Func<bool> GetIsApplicationFocused;
+        public static event Func<bool> GetIsApplicationFocused;
         //public static event GetIsApplicationFocused OnIsApplicationFocused;
         [HarmonyPatch("IsApplicationFocused", MethodType.Getter)]
         [HarmonyPostfix]
@@ -45,3 +46,4 @@ namespace ModifAmorphic.Outward.ActionUI.Patches.Sandbox
         }
     }
 }
+#endif

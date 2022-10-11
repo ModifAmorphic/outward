@@ -80,6 +80,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
 
         private void AddInventoryServices(PlayerActionMenus actionMenus, SplitPlayer splitPlayer)
         {
+            Logger.LogDebug($"Adding Inventory Services for player {splitPlayer.RewiredID}");
 
             var usp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
             var profileManager = usp.GetService<ProfileManager>();
@@ -108,6 +109,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
 
             usp.GetService<InventoryService>().Start();
             usp.GetService<EquipService>().Start();
+            usp.GetService<CharacterMenuStashService>().Start();
         }
     }
 }

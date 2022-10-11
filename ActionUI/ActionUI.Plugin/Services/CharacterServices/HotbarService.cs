@@ -10,7 +10,6 @@ using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using Rewired;
 using System;
-using System.Collections;
 using System.Linq;
 using UnityEngine;
 
@@ -32,6 +31,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private readonly LevelCoroutines _levelCoroutines;
         private bool _saveDisabled;
         private bool _isProfileInit;
+        private bool _isStarted = false;
 
         private bool disposedValue;
 
@@ -57,14 +57,11 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _getLogger = getLogger;
 
             QuickSlotPanelPatches.StartInitAfter += DisableKeyboardQuickslots;
-            //QuickSlotControllerSwitcherPatches.StartInitAfter += SwapCanvasGroup;
             SkillMenuPatches.AfterOnSectionSelected += SetSkillsMovable;
             ItemDisplayDropGroundPatches.TryGetIsDropValids.Add(_player.id, TryGetIsDropValid);
             _hotbars.OnAwake += StartNextFrame;
             if (_hotbars.IsAwake)
                 StartNextFrame();
-
-            //WaitForCharacterInitialization();
 
         }
 
@@ -83,6 +80,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             try
             {
+                _isStarted = true;
                 _saveDisabled = true;
 
                 SwapCanvasGroup();
@@ -123,25 +121,35 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return true;
         }
 
-        public void ConfigureHotbars(IHotbarProfile profile)
+        public void TryConfigureHotbars(IHotbarProfile profile)
         {
-            _saveDisabled = true;
-
-            SetProfileHotkeys(profile);
-
-            _hotbars.Controller.ConfigureHotbars(profile);
-
-            if (_isProfileInit)
+            try
             {
-                AssignSlotActions(profile);
-                _saveDisabled = false;
+                if (!_hotbars.IsAwake || !_isStarted || _character?.Inventory == null)
+                    return;
+
+                _saveDisabled = true;
+
+                SetProfileHotkeys(profile);
+
+                _hotbars.Controller.ConfigureHotbars(profile);
+
+                if (_isProfileInit)
+                {
+                    AssignSlotActions(profile);
+                    _saveDisabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to configure Hotbars.", ex);
             }
         }
         private void TryConfigureHotbars(IHotbarProfile profile, HotbarProfileChangeTypes changeType)
         {
             try
             {
-                ConfigureHotbars(profile);
+                TryConfigureHotbars(profile);
             }
             catch (Exception ex)
             {
@@ -162,7 +170,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     _hotbars.ClearChanges();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.LogException($"Failed to Save Hotbar changes.", ex);
             }
@@ -218,12 +226,11 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         public void AssignSlotActions(IHotbarProfile profile)
         {
             Logger.LogDebug($"{nameof(HotbarService)}_{InstanceID}: Assigning Slot Actions.");
-            //refresh item displays
-            _characterUI.ShowMenu(CharacterUI.MenuScreens.Inventory);
-            _characterUI.HideMenu(CharacterUI.MenuScreens.Inventory);
+            
+            //_characterUI.ShowMenu(CharacterUI.MenuScreens.Inventory);
+            //_characterUI.HideMenu(CharacterUI.MenuScreens.Inventory);
 
             _saveDisabled = true;
-            //_characterUI.InventoryPanel.RefreshEquippedBag
             for (int hb = 0; hb < profile.Hotbars.Count; hb++)
             {
                 for (int s = 0; s < profile.Hotbars[hb].Slots.Count; s++)
@@ -236,7 +243,14 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     }
                     else
                     {
-                        actionSlot.Controller.AssignSlotAction(slotAction);
+                        try
+                        {
+                            actionSlot.Controller.AssignSlotAction(slotAction);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogException($"Failed to assign slot action '{slotAction.DisplayName}' to Bar {hb}, Slot Index {s}.", ex);
+                        }
                     }
                     actionSlot.ActionButton.gameObject.GetOrAddComponent<ActionSlotDropper>().SetLogger(_getLogger);
                 }
@@ -300,7 +314,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     Logger.LogDebug($"Disposing of {nameof(HotbarService)} instance '{InstanceID}'. Unsubscribing to events.");
 
                     QuickSlotPanelPatches.StartInitAfter -= DisableKeyboardQuickslots;
-                    //QuickSlotControllerSwitcherPatches.StartInitAfter -= SwapCanvasGroup;
                     SkillMenuPatches.AfterOnSectionSelected -= SetSkillsMovable;
 
                     if (ItemDisplayDropGroundPatches.TryGetIsDropValids.ContainsKey(_player.id))

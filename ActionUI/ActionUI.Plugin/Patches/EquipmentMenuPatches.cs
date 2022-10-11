@@ -17,6 +17,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
+                if (__instance.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer)
+                    return;
+
                 Logger.LogTrace($"{nameof(EquipmentMenuPatches)}::{nameof(ShowPostfix)}(): Invoking {nameof(AfterShow)} for character {__instance.LocalCharacter?.UID}.");
                 AfterShow?.Invoke(__instance);
             }
@@ -34,6 +37,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
+                if (__instance.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer)
+                    return;
+
                 Logger.LogTrace($"{nameof(EquipmentMenuPatches)}::{nameof(OnHidePostfix)}(): Invoking {nameof(AfterOnHide)} for character {__instance.LocalCharacter?.UID}.");
                 AfterOnHide?.Invoke(__instance);
             }

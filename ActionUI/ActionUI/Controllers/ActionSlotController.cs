@@ -116,7 +116,15 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
 
             StartEnableToggleService(slotAction.GetEnabled);
 
-            slotAction.SlotActionAssigned(ActionSlot);
+            try
+            {
+                slotAction.SlotActionAssigned(ActionSlot);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Call to SlotActionAssigned failed for Slot Action '{slotAction.DisplayName}'.");
+                Debug.LogException(ex);
+            }
 
             if (!surpressChangeFlag)
                 ActionSlot.HotbarsContainer.HasChanges = true;

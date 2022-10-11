@@ -208,24 +208,17 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 if (disposing)
                 {
                     CharacterInventoryPatches.AfterInventoryIngredients -= AddStashIngredients;
-                    //TryRemoveStashPreserver();
                     if (_profileManager?.ProfileService != null)
                     {
                         _profileManager.ProfileService.OnActiveProfileChanged -= TryConfigureStashPreserver;
                         _profileManager.ProfileService.OnActiveProfileSwitched -= TryConfigureStashPreserver;
                     }
+
                 }
                 _character = null;
                 disposedValue = true;
             }
         }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~InventoryService()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
 
         public void Dispose()
         {
