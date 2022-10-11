@@ -22,7 +22,7 @@ namespace ModifAmorphic.Outward.ActionUI.Settings
 
         public static ActionUIProfile DefaultProfile = new ActionUIProfile()
         {
-            Name = "Profile 1",
+            Name = "Default",
             ActionSlotsEnabled = true,
             DurabilityDisplayEnabled = true,
             EquipmentSetsEnabled = true,

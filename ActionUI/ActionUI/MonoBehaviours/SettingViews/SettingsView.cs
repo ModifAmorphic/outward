@@ -138,9 +138,13 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private void SetProfiles()
         {
+            const string defaultName = "Default";
             ProfileDropdown.ClearOptions();
             var profiles = MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService.GetProfileNames();
-            var profileOptions = profiles.OrderBy(p => p).Select(p => new Dropdown.OptionData(p)).ToList();
+            var profileOptions = profiles.Where(p => !p.Equals(defaultName, StringComparison.InvariantCultureIgnoreCase)).OrderBy(p => p).Select(p => new Dropdown.OptionData(p)).ToList();
+            if (profiles.Any(p => p.Equals("Default", StringComparison.InvariantCultureIgnoreCase)))
+                profileOptions.Insert(0, new Dropdown.OptionData(defaultName));
+
             profileOptions.Add(new Dropdown.OptionData("[New Profile]"));
             ProfileDropdown.AddOptionSilent(profileOptions);
             ProfileDropdown.SetValue(profileOptions.FindIndex(o => o.text.Equals(_profile.Name, StringComparison.InvariantCultureIgnoreCase)));

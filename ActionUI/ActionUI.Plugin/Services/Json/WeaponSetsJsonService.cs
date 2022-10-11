@@ -84,7 +84,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         public bool IsSetEquipped(WeaponSet weaponSet) => _equipService.IsWeaponSetEquipped(weaponSet);
 
         public bool IsContainedInSet(string itemUID) =>
-            GetEquipmentSetsProfile().EquipmentSets.Any(set => set.GetEquipSlots().Any(slot => slot.UID == itemUID));
+            GetEquipmentSetsProfile().EquipmentSets.Any(set => set.GetEquipSlots().Any(slot => slot != null && slot.UID == itemUID));
 
         public WeaponSet GetEquippedAsSet(string name)
         {
