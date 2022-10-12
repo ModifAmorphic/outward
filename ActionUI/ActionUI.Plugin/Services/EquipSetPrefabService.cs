@@ -8,8 +8,6 @@ using ModifAmorphic.Outward.Unity.ActionUI.Models.EquipmentSets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,10 +21,13 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private readonly InventoryServicesInjector _inventoryServicesInjector;
         private readonly ModifCoroutine _coroutines;
 
+        public static EquipSetPrefabService Instance;
+
         public EquipSetPrefabService(InventoryServicesInjector inventoryServicesInjector, ModifCoroutine coroutines, Func<IModifLogger> getLogger)
         {
             (_inventoryServicesInjector, _coroutines, _getLogger) = (inventoryServicesInjector, coroutines, getLogger);
             _inventoryServicesInjector.EquipmentSetProfilesLoaded += TryAddEquipmentSets;
+            Instance = this;
         }
 
         private void TryAddEquipmentSets(int playerID, string characterUID, ArmorSetsJsonService armorService, WeaponSetsJsonService weaponService)

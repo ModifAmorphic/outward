@@ -16,6 +16,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
+                if (__instance?.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer)
+                    return;
+
                 if (__instance is KeyboardQuickSlotPanel keyboard)
                 {
                     Logger.LogTrace($"{nameof(QuickSlotPanelPatches)}::{nameof(StartInitPostfix)}(): Invoked. Invoking {nameof(StartInitAfter)}({nameof(KeyboardQuickSlotPanel)}).");

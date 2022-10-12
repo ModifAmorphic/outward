@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿#if DEBUG
+using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
 using System;
 using UnityEngine.EventSystems;
@@ -29,3 +30,4 @@ namespace ModifAmorphic.Outward.ActionUI.Patches.Sandbox
         }
     }
 }
+#endif

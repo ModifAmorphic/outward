@@ -21,6 +21,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
+                if (___m_character == null || ___m_character?.OwnerPlayerSys == null || !___m_character.IsLocalPlayer)
+                    return true;
+
                 Logger.LogTrace($"{nameof(CharacterQuickSlotManagerPatches)}::{nameof(ItemDestroyedPrefix)}(): Invoked for PlayerID {___m_character?.OwnerPlayerSys?.PlayerID}.");
                 if (___m_character?.OwnerPlayerSys != null)
                 {

@@ -20,15 +20,17 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
-                if (___m_draggedDisplay?.LocalCharacter?.OwnerPlayerSys != null)
+                if (___m_draggedDisplay?.LocalCharacter == null || ___m_draggedDisplay.LocalCharacter.OwnerPlayerSys == null || !___m_draggedDisplay.LocalCharacter.IsLocalPlayer)
+                    return;
+
+
+                var playerId = ___m_draggedDisplay.LocalCharacter.OwnerPlayerSys.PlayerID;
+                if (TryGetIsDropValids.TryGetValue(playerId, out var tryIsDropValid))
                 {
-                    var playerId = ___m_draggedDisplay.LocalCharacter.OwnerPlayerSys.PlayerID;
-                    if (TryGetIsDropValids.TryGetValue(playerId, out var tryIsDropValid))
-                    {
-                        if (tryIsDropValid(___m_draggedDisplay, ___m_draggedDisplay.LocalCharacter, out var result))
-                            __result = result;
-                    }
+                    if (tryIsDropValid(___m_draggedDisplay, ___m_draggedDisplay.LocalCharacter, out var result))
+                        __result = result;
                 }
+
             }
             catch (Exception ex)
             {

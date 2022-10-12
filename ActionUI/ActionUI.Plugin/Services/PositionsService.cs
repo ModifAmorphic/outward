@@ -4,7 +4,6 @@ using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
-using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -112,12 +111,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (_isKeepPositionablesListening)
                 return;
 
-            var uiPositionScreen = actionMenus.GetComponentInChildren<UIPositionScreen>();
-            var hud = characterUI.transform.Find("Canvas/GameplayPanels/HUD");
-            var positonables = hud.GetComponentsInChildren<PositionableUI>(true).Where(p => p != null);
-            uiPositionScreen.OnShow.AddListener(() => _coroutine.StartRoutine(KeepPositionablesVisible(positonables.ToArray())));
-
-            _isKeepPositionablesListening = true;
+            try
+            {
+                var uiPositionScreen = actionMenus.GetComponentInChildren<UIPositionScreen>(true);
+                var hud = characterUI.transform.Find("Canvas/GameplayPanels/HUD");
+                var positonables = hud.GetComponentsInChildren<PositionableUI>(true).Where(p => p != null);
+                uiPositionScreen.OnShow.AddListener(() => _coroutine.StartRoutine(KeepPositionablesVisible(positonables.ToArray())));
+                _isKeepPositionablesListening = true;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException("Failed to start Keep Postionables Visible coroutine", ex);
+            }
         }
 
         private IEnumerator KeepPositionablesVisible(PositionableUI[] positionables)

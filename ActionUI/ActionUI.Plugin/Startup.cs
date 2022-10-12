@@ -9,7 +9,6 @@ using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Modules;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI;
 using System;

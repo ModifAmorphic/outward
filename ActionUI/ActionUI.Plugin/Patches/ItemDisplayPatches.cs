@@ -22,6 +22,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
                 if (_item == null)
                     return;
 
+                if (__instance?.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer)
+                    return;
+
                 Logger.LogTrace($"{nameof(ItemDisplayPatches)}::{nameof(SetReferencedItemPostfix)}(): Invoking {nameof(AfterSetReferencedItem)} for Item {_item.name}.");
                 AfterSetReferencedItem?.Invoke(__instance, _item);
             }

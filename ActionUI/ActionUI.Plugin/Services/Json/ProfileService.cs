@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
@@ -90,7 +89,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             if (_activeProfile != null && _activeProfile.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                 return;
-            
+
             Logger.LogInfo($"Setting active profile to profile '{name}'.");
             Logger.LogInfo($"Saving active profile '{_activeProfile.Name}' before changing profiles.");
             Save();
@@ -102,7 +101,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             var profile = profiles.Profiles.FirstOrDefault(p => p.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
 
-            bool isNewProfile = false;
             if (profile != null)
             {
                 profile.Name = name;
@@ -117,7 +115,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     Path = Path.Combine(ProfilesPath, name),
                 };
                 profiles.Profiles.Add(profile);
-                isNewProfile = true;
             }
 
             profiles.ActiveProfile = name;
@@ -148,7 +145,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             //Save the current profiles before switching to a new one.
             Save();
             OnActiveProfileSwitching.TryInvoke(GetActiveActionUIProfile());
-            
+
             SaveProfile(profile, false);
             OnActiveProfileSwitched.TryInvoke(profile);
         }
@@ -326,9 +323,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             if (!Directory.Exists(ProfilesPath))
                 Directory.CreateDirectory(ProfilesPath);
-            
+
             Logger.LogInfo($"Saving Action UI Profile to '{ProfilesFile}'.");
-            
+
             var newJson = JsonConvert.SerializeObject(profiles, Formatting.Indented);
             File.WriteAllText(ProfilesFile, newJson);
             _activeProfile = null;

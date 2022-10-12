@@ -97,8 +97,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             //Creates ItemDisplays for equipment set skills.
 
-            _character.CharacterUI.ShowMenu(CharacterUI.MenuScreens.Skills);
-            _character.CharacterUI.HideMenu(CharacterUI.MenuScreens.Skills);
+            //_character.CharacterUI.ShowMenu(CharacterUI.MenuScreens.Skills);
+            //_character.CharacterUI.HideMenu(CharacterUI.MenuScreens.Skills);
 
         }
 
@@ -196,7 +196,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 AddEquipmentSets<ArmorSetSkill>(_profileManager.ArmorSetService.GetEquipmentSetsProfile().EquipmentSets, true);
                 AddEquipmentSets<WeaponSetSkill>(_profileManager.WeaponSetService.GetEquipmentSetsProfile().EquipmentSets, true);
-                
+
             }
             else
             {
@@ -338,8 +338,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public bool HasItem(EquipSlot equipSlot) => equipSlot == null
                         || _characterInventory.OwnsItem(equipSlot.UID)
-                        || (_equipSetsProfile.StashEquipEnabled && _inventoryService.GetAreaContainsStash() && _character.Stash.GetContainedItemUIDs(equipSlot.ItemID).Any())
-                        || (_equipSetsProfile.StashEquipEnabled && _equipSetsProfile.StashEquipAnywhereEnabled && _character.Stash.GetContainedItemUIDs(equipSlot.ItemID).Any());
+                        || (GetIsStashEquipEnabled() && _character.Stash.GetContainedItemUIDs(equipSlot.ItemID).Any());
 
         public bool IsArmorSetEquipped(ArmorSet armorSet)
             => IsEquipSlotEquipped(armorSet.Head, EquipmentSlot.EquipmentSlotIDs.Helmet) &&
@@ -673,7 +672,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     if (_profileManager?.ProfileService != null)
                     {
                         _profileManager.ProfileService.OnActiveProfileChanged -= TryProfileChanged;
-                     
+
                         _profileManager.ProfileService.OnActiveProfileSwitched -= TryProfileSwitched;
                     }
                     ClearSkillPreviewCache();
@@ -683,13 +682,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 disposedValue = true;
             }
         }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~InventoryService()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
 
         public void Dispose()
         {

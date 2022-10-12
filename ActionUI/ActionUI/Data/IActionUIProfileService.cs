@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.Unity.ActionUI.Data
 {

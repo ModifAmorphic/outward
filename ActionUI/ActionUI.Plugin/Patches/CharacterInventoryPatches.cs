@@ -21,6 +21,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
+                if (___m_character == null || ___m_character?.OwnerPlayerSys == null || !___m_character.IsLocalPlayer)
+                    return;
+
                 Logger.LogTrace($"{nameof(CharacterInventoryPatches)}::{nameof(InventoryIngredientsPostFix)}(): Invoking {nameof(AfterInventoryIngredients)}.");
                 AfterInventoryIngredients?.Invoke(__instance, ___m_character, _craftingStationTag, ref _sortedIngredient);
             }
@@ -40,7 +43,7 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
-                if (__result == true || ___m_character?.OwnerPlayerSys == null)
+                if (__result == true || ___m_character?.OwnerPlayerSys == null || !___m_character.IsLocalPlayer)
                     return;
 
                 var playerId = ___m_character.OwnerPlayerSys.PlayerID;
@@ -48,8 +51,11 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
                 if (OwnsItemDelegates.TryGetValue(playerId, out var ownsItem))
                 {
                     //Called on Update. Spams logs
-                    //Logger.LogTrace($"{nameof(CharacterInventoryPatches)}::{nameof(OwnsItemPostFix)}(): Invoked for PlayerID {playerId}. Invoking {nameof(OwnsItemDelegates)} delegate.");
+                    //Logger.LogDebug($"{nameof(CharacterInventoryPatches)}::{nameof(OwnsItemPostFix)}(): Invoked for PlayerID {playerId}. Invoking {nameof(OwnsItemDelegates)} delegate.");
+
                     __result = ownsItem(_itemUID);
+                    //if (__result)
+                    //    Logger.LogDebug($"Found item with UID '{_itemUID}' in stash.");
                 }
             }
             catch (Exception ex)

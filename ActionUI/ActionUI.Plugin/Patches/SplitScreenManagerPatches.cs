@@ -18,6 +18,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
+                if (_player?.AssignedCharacter == null || _player.AssignedCharacter.OwnerPlayerSys == null || !_player.AssignedCharacter.IsLocalPlayer)
+                    return;
+
                 if (__instance.enabled)
                 {
                     Logger.LogTrace($"{nameof(SplitScreenManagerPatches)}::{nameof(RemoveLocalPlayerPostfix)}(): Invoked. Invoking {nameof(RemoveLocalPlayerAfter)}({nameof(SplitScreenManager)}, {nameof(SplitPlayer)}, string).");

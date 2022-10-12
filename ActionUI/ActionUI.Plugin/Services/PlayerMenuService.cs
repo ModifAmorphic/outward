@@ -63,9 +63,17 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _getLogger = getLogger;
 
 
-            SplitPlayerPatches.SetCharacterAfter += InitActionUI;
+            SplitPlayerPatches.SetCharacterAfter += DelayedInit;
             SplitScreenManagerPatches.RemoveLocalPlayerAfter += RemovePlayerMenu;
             PauseMenuPatches.AfterRefreshDisplay += (pauseMenu) => _coroutine.StartRoutine(ResizePauseMenu(pauseMenu));
+        }
+
+        private void DelayedInit(SplitPlayer splitPlayer, Character character)
+        {
+            Logger.LogDebug($"DelayedInit:: Character {character.UID}.");
+            _coroutine.InvokeAfterLevelAndPlayersLoaded(NetworkLevelLoader.Instance,
+                    () => InitActionUI(splitPlayer, character), 300
+                );
         }
 
         private void InitActionUI(SplitPlayer splitPlayer, Character character)
@@ -206,11 +214,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void AddSplitScreenScaler(PlayerActionMenus actionMenus, CharacterUI characterUI)
         {
-            var menus = actionMenus.GetComponentsInChildren<IActionMenu>(true);
-            foreach (var menu in menus)
+            try
             {
-                var screenScaler = ((MonoBehaviour)menu).gameObject.GetOrAddComponent<SplitScreenScaler>();
-                screenScaler.CharacterUI = characterUI;
+                var menus = actionMenus.GetComponentsInChildren<IActionMenu>(true);
+                foreach (var menu in menus)
+                {
+                    var screenScaler = ((MonoBehaviour)menu).gameObject.GetOrAddComponent<SplitScreenScaler>();
+                    screenScaler.CharacterUI = characterUI;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException("Unexpected error adding split screen scaler.", ex);
             }
         }
 
@@ -244,23 +259,25 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             var buttons = hideOnPauseGo.GetComponentsInChildren<Button>();
             var actionUiButton = buttons.FirstOrDefault(b => b.name == "btnActionUiSettings");
 
-            if (actionUiButton == null)
+            if (actionUiButton != null)
             {
-                var settingsBtn = buttons.First(b => b.name.Equals("btnOptions", StringComparison.InvariantCultureIgnoreCase));
-
-                _actionUiGo = UnityEngine.Object.Instantiate(settingsBtn);
-                _actionUiGo.name = "btnActionUiSettings";
-                var localScale = _actionUiGo.transform.localScale;
-                _actionUiGo.transform.SetParent(settingsBtn.transform.parent, false);
-                _actionUiGo.transform.localScale = localScale;
-                _actionUiGo.transform.SetSiblingIndex(settingsBtn.transform.GetSiblingIndex() + 1);
-
-                actionUiButton = _actionUiGo.GetComponent<Button>();
-
-                var menuText = _actionUiGo.GetComponentInChildren<Text>();
-                UnityEngine.Object.Destroy(menuText.GetComponent<UILocalize>());
-                menuText.text = "Action UI";
+                UnityEngine.Object.Destroy(actionUiButton.gameObject);
             }
+            var settingsBtn = buttons.First(b => b.name.Equals("btnOptions", StringComparison.InvariantCultureIgnoreCase));
+
+            _actionUiGo = UnityEngine.Object.Instantiate(settingsBtn);
+            _actionUiGo.name = "btnActionUiSettings";
+            var localScale = _actionUiGo.transform.localScale;
+            _actionUiGo.transform.SetParent(settingsBtn.transform.parent, false);
+            _actionUiGo.transform.localScale = localScale;
+            _actionUiGo.transform.SetSiblingIndex(settingsBtn.transform.GetSiblingIndex() + 1);
+
+            actionUiButton = _actionUiGo.GetComponent<Button>();
+
+            var menuText = _actionUiGo.GetComponentInChildren<Text>();
+            UnityEngine.Object.Destroy(menuText.GetComponent<UILocalize>());
+            menuText.text = "Action UI";
+
             //get the PauseMenu component so the PauseMenu UI can be hidden later
             var pauseMenu = splitPlayer.CharUI.transform.Find("Canvas/PauseMenu").GetComponent<PauseMenu>();
             _actionUiGo.onClick.RemoveAllListeners();

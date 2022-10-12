@@ -134,7 +134,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             Psp.Instance.TryDisposeServicesProvider(rewiredId);
             CharacterUIPatches.GetIsMenuFocused.TryRemove(rewiredId, out _);
-            
+
             try
             {
                 characterUI.GetComponentInChildren<EquipmentSetMenu>(true).gameObject.Destroy();
@@ -143,7 +143,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 Logger.LogException($"Dispose of {nameof(EquipmentSetMenu)} gameobject failed.", ex);
             }
-            
+
             try
             {
                 characterUI.GetComponentInChildren<PlayerActionMenus>(true).gameObject.Destroy();

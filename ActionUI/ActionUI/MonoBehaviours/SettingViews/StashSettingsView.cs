@@ -1,7 +1,5 @@
 using ModifAmorphic.Outward.Unity.ActionUI;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
-using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
-using System;
 using System.Collections;
 using System.Linq;
 using UnityEngine;

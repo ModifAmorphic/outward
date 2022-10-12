@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
 using System;
-using System.Collections.Generic;
 
 namespace ModifAmorphic.Outward.ActionUI.Patches
 {

@@ -31,7 +31,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 {
                     disposing.Dispose();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Debug.LogError($"ActionUI: Dispose of {nameof(UnityServicesProvider)} for playerID {playerId} failed.");
                     Debug.LogException(ex);

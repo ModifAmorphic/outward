@@ -60,9 +60,17 @@
 ***
 
 ## Latest Release ${PACKAGE_VERSION}
+  - Characters should no longer be stuck in a T-pose when joining another game.
+  - Equipment Sets equip from stash fix. Set items could be equipped from stash even with the option disabled if the character or merchant stash options where enabled.
+  - Action UI settings menu should now open correctly after a split screen session.
+  - Fixed bug where user would be prompted to move items from stash to the stash when using the Stash Chest.
+  - Fixed issue where a 2h weapon set would be unusable if the set was saved in 1h mode using the Mixed Grip mod.
+
+## Release 1.1.1
   - Fix for Action Slot hotkeys not saving across play sessions.
     - Technically, they were saving but Outward was overriding them with an older copy on load. Fix ensures Outward no longer stores it's own copy in the "Player{0}_Keymappings.xml" file. Existing older mappings should automatically be removed on the next game exit.
   - Corrected display issue with Hotkey Capture. Capture text was displaying "Backspace" and "Tab" when keys "8" or "9" were pressed.
+
 ## Release 1.1.0
   - Added new Stash settings menu that enables the stash in several character menus. In town only by default.
     - Added stash to the bottom of the inventory menu.

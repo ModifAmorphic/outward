@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿#if DEBUG
+using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
 using System;
 
@@ -17,6 +18,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
+                if (__instance?.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer)
+                    return;
+
                 Logger.LogTrace($"{nameof(QuickSlotControllerSwitcherPatches)}::{nameof(StartInitPostfix)}(): Invoked. Invoking {nameof(StartInitAfter)}({nameof(KeyboardQuickSlotPanel)}).");
                 StartInitAfter?.Invoke(__instance);
             }
@@ -27,3 +31,4 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         }
     }
 }
+#endif

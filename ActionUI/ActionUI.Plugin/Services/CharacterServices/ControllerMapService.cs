@@ -129,7 +129,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 {
                     try
                     {
-                        
+
                         if (outwardMappings.Remove(mapKey))
                         {
                             Logger.LogDebug($"Removed ControllerMap '{mapKey}'.");
@@ -183,7 +183,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 GetActionSlotsMap<MouseMap>(forceRefresh)
             );
             if (forceRefresh)
-                _hotbarService.ConfigureHotbars(_hotbarProfileService.GetProfile());
+                _hotbarService.TryConfigureHotbars(_hotbarProfileService.GetProfile());
             return maps;
         }
 
@@ -378,7 +378,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             }
 
             _hotbarProfileService.Save();
-            _hotbarService.ConfigureHotbars(profile);
+            _hotbarService.TryConfigureHotbars(profile);
         }
 
         private void SetHotbarHotkey(int id, KeyGroup keyGroup, ControllerType controllerType, IEnumerable<ControllerMap> maps)
@@ -393,7 +393,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             hotbar.HotbarHotkey = hotKey;
 
             _hotbarProfileService.Save();
-            _hotbarService.ConfigureHotbars(profile);
+            _hotbarService.TryConfigureHotbars(profile);
         }
 
         private void SetHotbarNavHotkey(HotkeyCategories category, KeyGroup keyGroup, ControllerType controllerType, IEnumerable<ControllerMap> maps)
@@ -416,7 +416,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             }
 
             _hotbarProfileService.Save();
-            _hotbarService.ConfigureHotbars(profile);
+            _hotbarService.TryConfigureHotbars(profile);
         }
 
         private void ConfigureButtonMapping(int rewiredActionId, KeyGroup keyGroup, ControllerType controllerType, IEnumerable<ControllerMap> maps, out string hotkeyText)
@@ -625,18 +625,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                         _captureDialog.OnKeysSelected -= CaptureDialog_OnKeysSelected;
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
                 disposedValue = true;
             }
         }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~ControllerMapService()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
 
         public void Dispose()
         {

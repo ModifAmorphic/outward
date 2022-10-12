@@ -1,6 +1,4 @@
-﻿using UnityEngine.UI;
-
-namespace ModifAmorphic.Outward.Unity.ActionUI.Extensions
+﻿namespace ModifAmorphic.Outward.Unity.ActionUI.Extensions
 {
     public static class ToggleExtensions
     {
