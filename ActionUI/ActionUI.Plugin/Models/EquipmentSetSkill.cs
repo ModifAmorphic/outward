@@ -4,9 +4,7 @@ using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI;
-using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using ModifAmorphic.Outward.Unity.ActionUI.Models.EquipmentSets;
-using System;
 using System.Linq;
 using UnityEngine;
 
@@ -45,7 +43,7 @@ namespace ModifAmorphic.Outward.ActionUI.Models
             SetIcon();
         }
 
-        public void SetEquipmentSet(IEquipmentSet set, Character character)
+        public void SetEquipmentSet(IEquipmentSet set)
         {
             _setName = set.Name;
             m_name = set.Name;
@@ -82,7 +80,7 @@ namespace ModifAmorphic.Outward.ActionUI.Models
 
         protected override bool OwnerHasAllRequiredItems(bool _tryingToActivate)
         {
-            if (TryGetInventoryService(out var inventoryService) && TryGetEquipmentSet(out var equipmentSet))
+            if (TryGetEquipService(out var inventoryService) && TryGetEquipmentSet(out var equipmentSet))
                 return inventoryService.HasItems(equipmentSet.GetEquipSlots());
 
             return false;
@@ -100,12 +98,12 @@ namespace ModifAmorphic.Outward.ActionUI.Models
             return ResourcesPrefabManager.Instance.GetItemPrefab(iconSlot.ItemID);
         }
 
-        protected bool TryGetInventoryService(out InventoryService inventoryService)
+        protected bool TryGetEquipService(out EquipService equipService)
         {
-            inventoryService = null;
+            equipService = null;
             if (Psp.Instance.TryGetServicesProvider(this.m_ownerCharacter.OwnerPlayerSys.PlayerID, out var usp))
-                return usp.TryGetService<InventoryService>(out inventoryService);
-                    
+                return usp.TryGetService<EquipService>(out equipService);
+
             return false;
         }
 

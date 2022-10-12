@@ -60,8 +60,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 _selectables[i].OnSelected += SettingSelected;
                 _selectables[i].OnDeselected += SettingDeselected;
             }
-
-            Hide(false);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]

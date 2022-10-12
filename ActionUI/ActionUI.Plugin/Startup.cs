@@ -9,8 +9,6 @@ using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Modules;
-using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI;
 using System;
@@ -36,20 +34,20 @@ namespace ModifAmorphic.Outward.ActionUI
             services
                 .AddSingleton(confSettings)
                 .AddFactory(() => LoggerFactory.GetLogger(ModInfo.ModId))
-                .AddSingleton(ModifModules.GetCustomCraftingModule(ModInfo.ModId))
                 .AddSingleton(new ModifCoroutine(services.GetService<BaseUnityPlugin>(),
                                                   services.GetService<IModifLogger>))
                 .AddSingleton(new LevelCoroutines(services.GetService<BaseUnityPlugin>(),
                                                   services.GetService<IModifLogger>))
-                .AddSingleton(new ResetActionUIsService(services.GetService<LevelCoroutines>(),
+                .AddSingleton(new ResetActionUIsService(services,
+                                                   services.GetService<LevelCoroutines>(),
                                                    services.GetService<IModifLogger>))
                 .AddSingleton(new ModifGoService(services.GetService<IModifLogger>))
                 .AddSingleton(new RewiredListener(services.GetService<BaseUnityPlugin>(),
                                                    services.GetService<LevelCoroutines>(),
                                                    confSettings,
                                                    services.GetService<IModifLogger>))
-                .AddSingleton(new GlobalProfileService(ActionUISettings.CharactersProfilesPath, 
-                                                    ActionUISettings.CharactersProfilesPath, 
+                .AddSingleton(new GlobalProfileService(ActionUISettings.CharactersProfilesPath,
+                                                    ActionUISettings.CharactersProfilesPath,
                                                     services.GetService<IModifLogger>));
 
 

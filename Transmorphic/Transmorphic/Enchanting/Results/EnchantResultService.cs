@@ -47,9 +47,9 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Results
             }
             else
             {
-                resultEquipment = _enchantPrefabs.GenerateEnchantRecipeResult(enchantRecipe.BaseEnchantmentRecipe);
+                resultEquipment = _enchantPrefabs.GeneratePlaceholderEnchantRecipeResult(enchantRecipe.BaseEnchantmentRecipe);
             }
-
+            
             craftingResult.SetDynamicItemID(lastIngredient.ItemID);
             var dynamicResult = craftingResult.DynamicRefItem;
             craftingResult.ItemID = resultEquipment.ItemID;

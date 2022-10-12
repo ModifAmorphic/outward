@@ -1,4 +1,5 @@
 ﻿using ModifAmorphic.Outward.Unity.ActionUI;
+using System;
 using System.Collections.Concurrent;
 using UnityEngine;
 
@@ -26,7 +27,15 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         {
             if (services.TryGetValue(playerId, out var disposing))
             {
-                disposing.Dispose();
+                try
+                {
+                    disposing.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"ActionUI: Dispose of {nameof(UnityServicesProvider)} for playerID {playerId} failed.");
+                    Debug.LogException(ex);
+                }
             }
             return services.TryRemove(playerId, out var removed);
         }

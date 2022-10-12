@@ -4,6 +4,7 @@ using ModifAmorphic.Outward.Events;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Modules.Crafting;
+using ModifAmorphic.Outward.Modules.Items;
 using ModifAmorphic.Outward.Transmorphic.Enchanting.Results;
 using ModifAmorphic.Outward.Transmorphic.Enchanting.SaveData;
 using ModifAmorphic.Outward.Transmorphic.Menu;
@@ -32,6 +33,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
         private readonly EnchantRecipeData _saveData;
 
         private static Dictionary<string, Recipe> _loadedRecipesRef;
+        private Dictionary<int, EnchantRecipe> _itemEnchantRecipes = new Dictionary<int, EnchantRecipe>();
 
         public EnchantRecipeService(BaseUnityPlugin baseUnityPlugin,
                                 EnchantRecipeGenerator recipeGenerator,
@@ -45,14 +47,19 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
                 (baseUnityPlugin, recipeGenerator, enchantPrefabs, craftingModule, coroutine, saveData, settings, getLogger);
             if (!SideLoaderEx.TryHookOnPacksLoaded(this, RegisterEnchantRecipes))
                 EnchantRecipeManagerPatches.LoadEnchantingRecipeAfter += (r) => RegisterEnchantRecipes();
-            EnchantItemManagerPatches.AfterRequestItemInitialization += RemoveEnchantPrefabs;
+            
+            //EnchantItemManagerPatches.AfterRequestItemInitialization += RemoveEnchantPrefabs;
 
-            TransmorphNetworkLevelLoaderPatches.MidLoadLevelAfter += (n) => _coroutine.InvokeAfterLevelAndPlayersLoaded(n, LearnEnchantRecipes, 300, 1);
-            EnchantCharacterRecipeKnowledgePatches.LearnRecipeBefore += TryLearnRecipeWithoutAchievements;
+            //TransmorphNetworkLevelLoaderPatches.MidLoadLevelAfter += (n) => _coroutine.InvokeAfterLevelAndPlayersLoaded(n, LearnEnchantRecipes, 300, 1);
+            
             craftingModule.CraftingMenuEvents.MenuHiding += RemoveTemporaryItems;
+            //NetworkLevelLoader.Instance.onOverallLoadingDone += LearnEnchantRecipes;
+            NetworkLevelLoader.Instance.onAllPlayersLoadingDone += LearnEnchantRecipes;
+            EnchantCharacterRecipeKnowledgePatches.LearnRecipeBefore += TryLearnRecipeWithoutAchievements;
+            //NetworkLevelLoader.Instance.onGameplayLoadingDone += () => preFabricator.ModifItemPrefabs.gameObject.SetActive(false);
+            //NetworkLevelLoader.Instance.onAllPlayersLoadingDone += () => preFabricator.ModifItemPrefabs.gameObject.SetActive(false);
         }
 
-        private Dictionary<int, EnchantRecipe> _itemEnchantRecipes = new Dictionary<int, EnchantRecipe>();
         private void RemoveEnchantPrefabs(Item item)
         {
             if (item == null || item.ItemID > EnchantingSettings.RecipeResultStartID || item.ItemID < _enchantPrefabs.LastResultID)
@@ -78,8 +85,8 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
             }
             if (removedInit || removeWorldItem)
             {
-                var removeMessage = removedInit ? $"Removed equipment {equipment.name} from initialization. " : string.Empty;
-                removeMessage += removeWorldItem ? $"Removed equipment {equipment.name} from WorldItems." : string.Empty;
+                var removeMessage = removedInit ? $"Removed equipment {equipment.name} from initialization." : string.Empty;
+                removeMessage += removeWorldItem ? $" Removed equipment {equipment.name} from WorldItems." : string.Empty;
                 Logger.LogDebug(removeMessage);
             }
         }
@@ -110,9 +117,11 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
                     _itemEnchantRecipes.Add(enchantRecipe.Results[0].RefItem.ItemID, enchantRecipe);
                 }
             }
-            ApplyPrefabEnchants();
-            
+            //ApplyPrefabEnchants();
+
+            //_coroutine.DoNextFrame(() => _preFabricator.ModifItemPrefabs.gameObject.SetActive(false));
         }
+
         private void ApplyPrefabEnchants()
         {
             _coroutine.DoNextFrame(() =>
@@ -129,7 +138,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
                             equipment.AddEnchantment(recipe.BaseEnchantmentRecipe.ResultID);
                             Logger.LogDebug($"Added enchantment recipe {recipe.BaseEnchantmentRecipe.name} to equipment {equipment.name}.");
                         }
-                        equipment.gameObject.SetActive(false);
+                        //equipment.gameObject.SetActive(false);
                     }
                 });
         }
@@ -180,7 +189,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
                 if ((bool)character && (bool)character.CharacterUI)
                 {
                     string loc = LocalizationManager.Instance.GetLoc("Notification_Item_RecipeLearnt", recipe.Name);
-                    character.CharacterUI.ShowInfoNotification(loc, ItemManager.Instance.RecipeLearntIcon, _itemLayout: true);
+                    //character.CharacterUI.ShowInfoNotification(loc, ItemManager.Instance.RecipeLearntIcon, _itemLayout: true);
                 }
                 //Exclude acheivement tracking since these are so simple to come by
             }

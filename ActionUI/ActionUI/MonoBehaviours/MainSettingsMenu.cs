@@ -15,22 +15,25 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         EquipmentSets,
         ProfileName,
         HotkeyCapture,
-        UIPosition
+        UIPosition,
+        Stash
     }
     [UnityScriptComponent]
     public class MainSettingsMenu : MonoBehaviour, IActionMenu
     {
         public PlayerActionMenus PlayerMenu;
         public SettingsView SettingsView;
-        public EquipmentSetsSettingsView EquipmentSetsSettingsView;
         public ProfileInput ProfileInput;
         public HotbarSettingsView HotbarSettingsView;
         public HotkeyCaptureMenu HotkeyCaptureMenu;
         public UIPositionScreen UIPositionScreen;
+        public EquipmentSetsSettingsView EquipmentSetsSettingsView;
+        public StashSettingsView StashSettingsView;
 
         public Toggle SettingsViewToggle;
         public Toggle HotbarViewToggle;
         public Toggle EquipmentSetViewToggle;
+        public Toggle StashViewToggle;
 
         public bool IsShowing => gameObject.activeSelf || HotkeyCaptureMenu.IsShowing || ProfileInput.IsShowing || UIPositionScreen.IsShowing;
 
@@ -39,6 +42,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public UnityEvent OnHide { get; } = new UnityEvent();
 
         private Dictionary<ActionSettingsMenus, ISettingsView> _menus;
+
+        private Dictionary<ActionSettingsMenus, ISettingsView> _settingsViews;
 
         private SelectableTransitions[] _selectables;
         public bool MenuItemSelected => (_selectables != null && _selectables.Any(s => s.Selected) || ProfileInput.gameObject.activeSelf);
@@ -56,10 +61,20 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _menus.Add(ActionSettingsMenus.ProfileName, ProfileInput);
             _menus.Add(ActionSettingsMenus.HotkeyCapture, HotkeyCaptureMenu);
             _menus.Add(ActionSettingsMenus.UIPosition, UIPositionScreen);
+            _menus.Add(ActionSettingsMenus.Stash, StashSettingsView);
+
+            _settingsViews = new Dictionary<ActionSettingsMenus, ISettingsView>()
+            {
+                { ActionSettingsMenus.Settings, SettingsView },
+                { ActionSettingsMenus.ActionSlots, HotbarSettingsView },
+                { ActionSettingsMenus.EquipmentSets, EquipmentSetsSettingsView },
+                { ActionSettingsMenus.Stash, StashSettingsView },
+            };
 
             SettingsViewToggle.onValueChanged.AddListener(isOn => ShowMenu(ActionSettingsMenus.Settings));
             HotbarViewToggle.onValueChanged.AddListener(isOn => ShowMenu(ActionSettingsMenus.ActionSlots));
             EquipmentSetViewToggle.onValueChanged.AddListener(isOn => ShowMenu(ActionSettingsMenus.EquipmentSets));
+            StashViewToggle.onValueChanged.AddListener(isOn => ShowMenu(ActionSettingsMenus.Stash));
 
             _selectables = GetComponentsInChildren<SelectableTransitions>();
             //_selectables = transform.Find("MenuToggles").GetComponentsInChildren<SelectableTransitions>();
@@ -88,11 +103,13 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             OnShow?.TryInvoke();
 
             if (HotbarViewToggle.isOn)
-                HotbarSettingsView.Show();
+                ShowMenu(ActionSettingsMenus.ActionSlots);
             else if (EquipmentSetViewToggle.isOn)
-                EquipmentSetsSettingsView.Show();
+                ShowMenu(ActionSettingsMenus.EquipmentSets);
+            else if (StashViewToggle.isOn)
+                ShowMenu(ActionSettingsMenus.Stash);
             else
-                SettingsView.Show();
+                ShowMenu(ActionSettingsMenus.Settings);
         }
         public void Hide() => Hide(true);
 
@@ -101,9 +118,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             DebugLogger.Log("MainSettingsMenu::Hide");
 
             var hideMenus = _menus
-                .Where(kvp => kvp.Value.IsShowing && kvp.Key != ActionSettingsMenus.ActionSlots
-                        && kvp.Key != ActionSettingsMenus.Settings
-                        && kvp.Key != ActionSettingsMenus.EquipmentSets)
+                .Where(kvp => kvp.Value.IsShowing && !_settingsViews.ContainsKey(kvp.Key))
                 .Select(kvp => kvp.Value);
 
             bool showMe = false;

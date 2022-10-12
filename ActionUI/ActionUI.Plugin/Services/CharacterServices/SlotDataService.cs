@@ -1,5 +1,4 @@
 ﻿using ModifAmorphic.Outward.ActionUI.DataModels;
-using ModifAmorphic.Outward.ActionUI.Extensions;
 using ModifAmorphic.Outward.ActionUI.Models;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionUI;
@@ -44,26 +43,15 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             if (item is Skill skill)
             {
-                slotAction = new SkillSlotAction(skill, _rewiredPlayer, _character, this, combatModeEnabled, _getLogger)
-                {
-                    Cooldown = new ItemCooldownTracker(skill)
-                };
+                slotAction = new SkillSlotAction(skill, _rewiredPlayer, _character, this, combatModeEnabled, _getLogger);
             }
             else if (item is Equipment equipment)
             {
-                slotAction = new EquipmentSlotAction(equipment, _rewiredPlayer, _character, this, combatModeEnabled, _getLogger)
-                {
-                    Cooldown = new ItemCooldownTracker(equipment),
-                    Stack = item.IsStackable() ? item.ToStackable(_character.Inventory) : null,
-                };
+                slotAction = new EquipmentSlotAction(equipment, _rewiredPlayer, _character, this, combatModeEnabled, _getLogger);
             }
             else
             {
-                slotAction = new ItemSlotAction(item, _rewiredPlayer, _character, this, combatModeEnabled, _getLogger)
-                {
-                    Cooldown = new ItemCooldownTracker(item),
-                    Stack = item.IsStackable() ? item.ToStackable(_character.Inventory) : null,
-                };
+                slotAction = new ItemSlotAction(item, _rewiredPlayer, _character, this, combatModeEnabled, _getLogger);
             }
 
             return slotAction != null;
@@ -117,25 +105,15 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             if (item is Skill skill)
             {
-                return new SkillSlotAction(skill, _rewiredPlayer, _character, this, _profileService.GetProfile()?.CombatMode ?? true, _getLogger)
-                {
-                    Cooldown = new ItemCooldownTracker(item),
-                };
+                return new SkillSlotAction(skill, _rewiredPlayer, _character, this, _profileService.GetProfile()?.CombatMode ?? true, _getLogger);
             }
             else if (item is Equipment equipment)
             {
-                return new EquipmentSlotAction(equipment, _rewiredPlayer, _character, this, _profileService.GetProfile()?.CombatMode ?? true, _getLogger)
-                {
-                    Cooldown = new ItemCooldownTracker(item),
-                };
+                return new EquipmentSlotAction(equipment, _rewiredPlayer, _character, this, _profileService.GetProfile()?.CombatMode ?? true, _getLogger);
             }
             else
             {
-                return new ItemSlotAction(item, _rewiredPlayer, _character, this, _profileService.GetProfile()?.CombatMode ?? true, _getLogger)
-                {
-                    Cooldown = new ItemCooldownTracker(item),
-                    Stack = item.IsStackable() ? item.ToStackable(_character.Inventory) : null
-                };
+                return new ItemSlotAction(item, _rewiredPlayer, _character, this, _profileService.GetProfile()?.CombatMode ?? true, _getLogger);
             }
         }
 

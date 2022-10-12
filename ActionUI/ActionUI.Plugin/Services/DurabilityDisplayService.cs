@@ -13,7 +13,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
     {
         private readonly Func<IModifLogger> _loggerFactory;
         private IModifLogger Logger => _loggerFactory.Invoke();
-
+        private PlayerMenuService _playerMenuService;
         private bool _unequipedAdded;
 
         private bool _equipTracked = false;
@@ -31,20 +31,33 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             { UnequippedBoots.DurableEquipmentSlot, UnequippedBoots }
         };
 
-        public DurabilityDisplayService(Func<IModifLogger> loggerFactory)
+        public DurabilityDisplayService(PlayerMenuService playerMenuService, Func<IModifLogger> loggerFactory)
         {
-            (_loggerFactory) = (loggerFactory);
+            (_playerMenuService, _loggerFactory) = (playerMenuService, loggerFactory);
 
             EquipmentPatches.AfterOnEquip += TrackEquippedItem;
             EquipmentPatches.AfterOnUnequip += UntrackEquippedItem;
-            SplitPlayerPatches.SetCharacterAfter += ConfigureShowHide;
+            //SplitPlayerPatches.SetCharacterAfter += ConfigureShowHide;
+            _playerMenuService.OnPlayerActionMenusConfigured += TryConfigureShowHide;
             SplitScreenManagerPatches.RemoveLocalPlayerAfter += SplitScreenManagerPatches_RemoveLocalPlayerAfter;
         }
 
-        private void ConfigureShowHide(SplitPlayer splitPlayer, Character character)
+        private void TryConfigureShowHide(PlayerActionMenus actionMenus, SplitPlayer splitPlayer)
         {
-            var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
-            var actionMenus = psp.GetService<PlayerActionMenus>();
+            try
+            {
+                ConfigureShowHide(actionMenus, splitPlayer);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException("Failed to configure DurabilityDisplayService.", ex);
+            }
+        }
+
+        private void ConfigureShowHide(PlayerActionMenus actionMenus, SplitPlayer splitPlayer)
+        {
+            //var psp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
+            //var actionMenus = psp.GetService<PlayerActionMenus>();
             var profileService = actionMenus.ProfileManager.ProfileService;
 
             Reset(actionMenus);
@@ -52,8 +65,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (_configured)
                 return;
 
-            profileService.OnActiveProfileChanged.AddListener((profile) => ShowHide(splitPlayer.RewiredID, profile.DurabilityDisplayEnabled));
-            profileService.OnActiveProfileSwitched.AddListener((profile) => ShowHide(splitPlayer.RewiredID, profile.DurabilityDisplayEnabled));
+            profileService.OnActiveProfileChanged += (profile) => ShowHide(splitPlayer.RewiredID, profile.DurabilityDisplayEnabled);
+            profileService.OnActiveProfileSwitched += (profile) => ShowHide(splitPlayer.RewiredID, profile.DurabilityDisplayEnabled);
 
             if (actionMenus.DurabilityDisplay.IsAwake)
                 ShowHide(splitPlayer.RewiredID, profileService.GetActiveProfile().DurabilityDisplayEnabled);
@@ -168,7 +181,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (!_unequipedAdded)
                 AddUnequippedTrackers(character.OwnerPlayerSys.PlayerID);
 
-            
+
 
             if (equipment.IsIndestructible || !character.Inventory.Equipment.HasItemEquipped(equipment.CurrentEquipmentSlot.SlotType))
             {

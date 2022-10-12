@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿#if DEBUG
+using HarmonyLib;
 using ModifAmorphic.Outward.Logging;
 using Rewired;
 using Rewired.Data;
@@ -110,3 +111,4 @@ namespace ModifAmorphic.Outward.ActionUI.Patches.Sandbox
         }
     }
 }
+#endif

@@ -1,6 +1,6 @@
-# ![Action UI](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/Banner.png?raw=true)
+# ![Action UI](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/Banner.png?raw=true)
 
-## ⚡ Equipment Sets, Additional Quickslots, UI Positioning, Durability Display ⚡
+## ⚡ Additional Quickslots, Equipment Sets, Durability Display, UI Positioning, Stash Improvements ⚡
 
 ***
 
@@ -9,49 +9,97 @@
 - Create Weapon and Armor Sets. Equip entire sets with a single hotkey.
 - Reposition UI Elements with Drag and Drop
 - New Durability UI Displays Equipment
+- Use stash while crafting, selling, equiping gear or in the character inventory menu
 - See the [Action UI Wiki](https://github.com/ModifAmorphic/outward/wiki/Action-UI) for more details
+- For Manual Installations, download the latest "ModifAmorphic-ActionUI-*.Standalone-BepInEx.zip" version under [ModifAmorphic Releases](https://github.com/ModifAmorphic/outward/releases)
 
 ***
 
 ## Highly Configurabe Hotbars and Action Slots
 
-![Hotbar Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/HotbarSettingsView_small.png?raw=true)
+![Hotbar Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/HotbarSettingsView_small.png?raw=true)
 
-![Hotbars](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/Hotbar.png?raw=true)
+![Hotbars](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/Hotbar.png?raw=true)
 
 ### Drag Actions to Slots right from Inventory!
 
-[ ![Assign Actions YouTube Video](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/AssignActionSlotVideo.png?raw=true) ](https://youtu.be/nJT76DLFIqw)
+[ ![Assign Actions YouTube Video](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/AssignActionSlotVideo.png?raw=true) ](https://youtu.be/nJT76DLFIqw)
 
 ***
 
 ## Equipment Sets and Quickslotable Skills
 
-![Equipment Sets Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/EquipmentSetSettingsView_small.png?raw=true)
+![Equipment Sets Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/EquipmentSetSettingsView_small.png?raw=true)
 
 ### Create and Customize Equipment Sets
 
-![Equipment Sets](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/EquipmentSetsMenu_small.png?raw=true)
+![Equipment Sets](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/EquipmentSetsMenu_small.png?raw=true)
 
 ### New Equipment Set Skills, slottable in Outward's Quickslots or ActionUI's Action Slots.
 
-![Equipment Set Skills](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/EquipmentSetSkills_small.png?raw=true)
+![Equipment Set Skills](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/EquipmentSetSkills_small.png?raw=true)
 
 ***
 
 ## Reposition UI Elements
 
-[ ![UI Positioning YouTube Video](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/UIPositioningVideo.png?raw=true) ](https://youtu.be/zoY1qEdeATg)
+[ ![UI Positioning YouTube Video](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/UIPositioningVideo.png?raw=true) ](https://youtu.be/zoY1qEdeATg)
 
 ***
 
 ## Equipment Durability UI
 
-![Durability Display](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/Assets/ReadmeAssets/DurabilityDisplay.png?raw=true)
+![Durability Display](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/DurabilityDisplay.png?raw=true)
+
+***
+
+## Stash Improvements
+
+![Stash Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/StashSettingsView.png?raw=true)
 
 ***
 
 ## Latest Release ${PACKAGE_VERSION}
+  - Characters should no longer be stuck in a T-pose when joining another game.
+  - Equipment Sets equip from stash fix. Set items could be equipped from stash even with the option disabled if the character or merchant stash options where enabled.
+  - Action UI settings menu should now open correctly after a split screen session.
+  - Fixed bug where user would be prompted to move items from stash to the stash when using the Stash Chest.
+  - Fixed issue where a 2h weapon set would be unusable if the set was saved in 1h mode using the Mixed Grip mod.
+
+## Release 1.1.1
+  - Fix for Action Slot hotkeys not saving across play sessions.
+    - Technically, they were saving but Outward was overriding them with an older copy on load. Fix ensures Outward no longer stores it's own copy in the "Player{0}_Keymappings.xml" file. Existing older mappings should automatically be removed on the next game exit.
+  - Corrected display issue with Hotkey Capture. Capture text was displaying "Backspace" and "Tab" when keys "8" or "9" were pressed.
+
+## Release 1.1.0
+  - Added new Stash settings menu that enables the stash in several character menus. In town only by default.
+    - Added stash to the bottom of the inventory menu.
+    - Added stash to the bottom of the equipment menu. Shown when selecting different equipment for an equipment slot.
+    - Added stash to the bottom of the merchant menu.
+    - Added option to enable preservation of food in the stash.
+    - Removed Crafting from stash option from main settings. It's under the Stash
+  - Action Slots hotbar should now be hidden when a controller is used.
+  - Equipment will no longer be equipped from stash if the "Unequip Sets to Stash" option is enabled but the "Equip Sets from Stash" is not.
+  - Equipment Set fixes for multiplayer
+    - Equipment set skills should now be added to the character when a new equipment set is created by a non host player.
+  - Major rework around how modules are applied and profile data is loaded and saved.
+    - Added force save of profile data whenever a new profile is created or a different profile is selected.
+    - Saving all profile data on exiting a save.
+    - Changes to how several modifications to UIs are made to be more resilient and only apply when necessary.
+    - Refactored startup routines so that if one sub module fails others will still attempt to start.
+    - Fix for Hotbars failing to load if more than one profile was manually deleted from the config folder.
+
+## Release 1.0.5
+  - Multiplayer Fixes
+    - ActionUI should function in multiplayer games.
+    - Splitscreen should now work when player 2 is assigned the keyboard.
+  - Equipping a set with a 2h Weapon will now only play the unequip/equip animation once. Was previously playing twice, once for each hand.
+  - Fixes for sets erroring when a set slot was empty.
+  - Items with stack amounts (arrows, potions, etc) should now display the quantity when added to an action slot without requiring a scene change / reload.
+  - Hidden Action Slots are now visible and assignable when the character menu is open.
+  - Fixed dropdown menus.
+
+## Release 1.0.4
   - Bug fix for "floating" backpacks.
     - Backpacks or items could remain stuck floating in the air if the item was slotted one of the action slots higher than Outwards base quickslots. Outward technically has 11 quickslots, so any amount of action slots higher than 11 could cause this issue if an item was slotted to it.
 

@@ -7,11 +7,16 @@ public class ToggleChild : MonoBehaviour
     public Color DisabledColor = new Color(Color.gray.r, Color.gray.g, Color.gray.b, .7f);
 
     public InputField InputField;
-    public Toggle ChildToggle;
+    public Selectable ChildToggle;
+    public Selectable[] ChildToggles;
 
     public void Toggle(bool enabled)
     {
         InputField.textComponent.color = enabled ? EnabledColor : DisabledColor;
-        ChildToggle.interactable = enabled;
+
+        if (ChildToggles != null)
+            for (int i = 0; i < ChildToggles.Length; i++)
+                ChildToggles[i].interactable = enabled;
     }
+
 }

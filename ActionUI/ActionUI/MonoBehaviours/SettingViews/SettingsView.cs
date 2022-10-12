@@ -21,8 +21,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public Toggle ActionSlotsToggle;
         public Toggle DurabilityToggle;
         public Toggle EquipmentSetsToggle;
-        public Toggle StashCraftingToggle;
-        public Toggle CraftingOutsideTownsToggle;
 
         public Button MoveUIButton;
         public Button ResetUIButton;
@@ -50,8 +48,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 _selectables[i].OnSelected += SettingSelected;
                 _selectables[i].OnDeselected += SettingDeselected;
             }
-
-            Hide();
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
@@ -98,11 +94,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         {
             SetProfiles();
 
-            ActionSlotsToggle.SetIsOn(_profile?.ActionSlotsEnabled ?? false);
-            DurabilityToggle.SetIsOn(_profile?.DurabilityDisplayEnabled ?? false);
-            EquipmentSetsToggle.SetIsOn(_profile?.EquipmentSetsEnabled ?? false);
-            StashCraftingToggle.SetIsOn(_profile?.StashCraftingEnabled ?? false);
-            CraftingOutsideTownsToggle.SetIsOn(_profile?.CraftingOutsideTownEnabled ?? false);
+            ActionSlotsToggle.SetIsOnWithoutNotify(_profile?.ActionSlotsEnabled ?? false);
+            DurabilityToggle.SetIsOnWithoutNotify(_profile?.DurabilityDisplayEnabled ?? false);
+            EquipmentSetsToggle.SetIsOnWithoutNotify(_profile?.EquipmentSetsEnabled ?? false);
         }
         private void HookControls()
         {
@@ -138,29 +132,19 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 _profileService.Save();
             });
 
-            StashCraftingToggle.onValueChanged.AddListener(isOn =>
-            {
-                DebugLogger.Log($"StashCraftingToggle changed from {!isOn} to {isOn}. Saving profile.");
-                _profile.StashCraftingEnabled = isOn;
-                _profileService.Save();
-            });
-
-            CraftingOutsideTownsToggle.onValueChanged.AddListener(isOn =>
-            {
-                DebugLogger.Log($"CraftingOutsideTownsToggle changed from {!isOn} to {isOn}. Saving profile.");
-                _profile.CraftingOutsideTownEnabled = isOn;
-                _profileService.Save();
-            });
-
             MoveUIButton.onClick.AddListener(ShowPositionScreen);
             ResetUIButton.onClick.AddListener(ResetUIPositions);
         }
 
         private void SetProfiles()
         {
+            const string defaultName = "Default";
             ProfileDropdown.ClearOptions();
             var profiles = MainSettingsMenu.PlayerMenu.ProfileManager.ProfileService.GetProfileNames();
-            var profileOptions = profiles.OrderBy(p => p).Select(p => new Dropdown.OptionData(p)).ToList();
+            var profileOptions = profiles.Where(p => !p.Equals(defaultName, StringComparison.InvariantCultureIgnoreCase)).OrderBy(p => p).Select(p => new Dropdown.OptionData(p)).ToList();
+            if (profiles.Any(p => p.Equals("Default", StringComparison.InvariantCultureIgnoreCase)))
+                profileOptions.Insert(0, new Dropdown.OptionData(defaultName));
+
             profileOptions.Add(new Dropdown.OptionData("[New Profile]"));
             ProfileDropdown.AddOptionSilent(profileOptions);
             ProfileDropdown.SetValue(profileOptions.FindIndex(o => o.text.Equals(_profile.Name, StringComparison.InvariantCultureIgnoreCase)));

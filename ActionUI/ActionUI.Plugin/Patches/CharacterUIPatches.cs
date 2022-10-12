@@ -20,16 +20,17 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
-                if (__instance.TargetCharacter?.OwnerPlayerSys != null)
+                if (__instance.TargetCharacter == null || __instance.TargetCharacter.OwnerPlayerSys == null || !__instance.TargetCharacter.IsLocalPlayer)
+                    return;
+
+                var playerId = __instance.TargetCharacter.OwnerPlayerSys.PlayerID;
+                if (GetIsMenuFocused.TryGetValue(playerId, out var isMenuFocused))
                 {
-                    var playerId = __instance.TargetCharacter.OwnerPlayerSys.PlayerID;
-                    if (GetIsMenuFocused.TryGetValue(playerId, out var isMenuFocused))
-                    {
-                        if (isMenuFocused(playerId))
-                            __result = true;
-                    }
-                    //__result = isFocused;
+                    if (isMenuFocused(playerId))
+                        __result = true;
                 }
+                //__result = isFocused;
+
             }
             catch (Exception ex)
             {
@@ -54,6 +55,29 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
             catch (Exception ex)
             {
                 Logger.LogException($"{nameof(CharacterUIPatches)}::{nameof(ReleaseUIPrefix)}(): Exception Invoking {nameof(BeforeReleaseUI)} for RewiredID {___m_rewiredID}.", ex);
+            }
+        }
+
+        public delegate void ShowMenuDelegate(CharacterUI characterUI, CharacterUI.MenuScreens menu, Item item);
+        public static event ShowMenuDelegate BeforeShowMenu;
+        [HarmonyPatch(nameof(CharacterUI.ShowMenu))]
+        [HarmonyPatch(new Type[] { typeof(CharacterUI.MenuScreens), typeof(Item) })]
+        [HarmonyPrefix]
+        private static void ShowMenuPrefix(CharacterUI __instance, CharacterUI.MenuScreens _menu, Item _item)
+        {
+            try
+            {
+                if (__instance.TargetCharacter == null || __instance.TargetCharacter.OwnerPlayerSys == null || !__instance.TargetCharacter.IsLocalPlayer)
+                    return;
+
+
+                Logger.LogTrace($"{nameof(CharacterUIPatches)}::{nameof(ShowMenuPrefix)}(): Invoking {nameof(BeforeShowMenu)} for character {__instance.TargetCharacter.UID}.");
+                BeforeShowMenu?.Invoke(__instance, _menu, _item);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(CharacterUIPatches)}::{nameof(ShowMenuPrefix)}(): Exception Invoking {nameof(BeforeShowMenu)} for character {__instance.TargetCharacter?.UID}.", ex);
             }
         }
     }

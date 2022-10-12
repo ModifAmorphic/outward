@@ -5,7 +5,7 @@ schemaVersion = "0.0.1"
 namespace = "ModifAmorphic"
 name = "ActionUI"
 versionNumber = "${PACKAGE_VERSION}"
-description = "⚡ Equipment Sets, Additional Keyboard Quickslots, UI Positioning, Durability Display ⚡"
+description = "Adds configurable quickslots, hotkeyable Equipment Sets, a equipment Durability Display and a UI Positioning Mode. Access your stash from character inventory, crafting and merchant menus. Preserve food in the stash again. All changes can be toggled off/on."
 websiteUrl = "https://github.com/ModifAmorphic/outward/wiki/Action-UI"
 containsNsfwContent = false
 
@@ -31,3 +31,5 @@ target = "files/plugins/Profiles"
 
 [publish]
 repository = "https://outward.thunderstore.io"
+communities = ["Outward"]
+categories = ["UI", "Items", "Utility"]

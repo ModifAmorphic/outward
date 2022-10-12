@@ -31,7 +31,7 @@ namespace ModifAmorphic.Outward.ActionUI
             _harmony.PatchAll(typeof(EquipmentPatches));
 
             _services
-                     .AddSingleton(new DurabilityDisplayService(_loggerFactory));
+                     .AddSingleton(new DurabilityDisplayService(_services.GetService<PlayerMenuService>(), _loggerFactory));
 
         }
     }

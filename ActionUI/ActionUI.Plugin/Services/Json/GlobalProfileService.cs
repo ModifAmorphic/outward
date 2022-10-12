@@ -1,48 +1,52 @@
-﻿using ModifAmorphic.Outward.ActionUI.DataModels;
-using ModifAmorphic.Outward.ActionUI.DataModels.Global;
+﻿using ModifAmorphic.Outward.ActionUI.DataModels.Global;
 using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
-using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets;
-using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
 using ModifAmorphic.Outward.Unity.ActionUI.Models.EquipmentSets;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEngine.Events;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
-    public class GlobalProfileService : IDisposable
+    public class GlobalProfileService : IDisposable, ISavableProfile
     {
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
 
-        GlobalProfile _cachedProfile;
+        private GlobalProfile _cachedProfile;
+        private Random _random;
         private bool disposedValue;
 
         public string GlobalPath { get; private set; }
         public string ProfilesPath { get; private set; }
         public string GlobalFile => Path.Combine(GlobalPath, "global.json");
 
-        public GlobalProfileService(string globalPath, string profilesPath, Func<IModifLogger> getLogger) => (GlobalPath, ProfilesPath, _getLogger) = (globalPath, profilesPath, getLogger);
+        public GlobalProfileService(string globalPath, string profilesPath, Func<IModifLogger> getLogger)
+        {
+            (GlobalPath, ProfilesPath, _getLogger) = (globalPath, profilesPath, getLogger);
+            _random = new Random();
+        }
 
         public GlobalProfile GetGlobalProfile() => GetOrCreateGlobalProfile();
 
-        public void Save() => SaveProfile(_cachedProfile);
+        public void Save() => SaveProfile(GetGlobalProfile());
 
         public void AddOrUpdateEquipmentSet(IEquipmentSet set, string characterUID)
         {
             var setType = set is ArmorSet ? EquipmentSetTypes.Armor : EquipmentSetTypes.Weapon;
 
             GetGlobalProfile().CharacterEquipmentSets.AddOrUpdate(
-                set.SetID, 
+                set.SetID,
                 new CharacterEquipmentSet()
-                { 
-                    SetID = set.SetID, CharacterUID = characterUID, EquipmentSetType = setType, Name = set.Name 
+                {
+                    SetID = set.SetID,
+                    CharacterUID = characterUID,
+                    EquipmentSetType = setType,
+                    Name = set.Name
                 });
             Save();
         }
@@ -54,7 +58,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return set;
         }
 
-        public int GetMinEquipmentSetID() => GetGlobalProfile().CharacterEquipmentSets.Any() ? GetGlobalProfile().CharacterEquipmentSets.Keys.Min() : InventorySettings.StartingSetItemID;
+        public int GetNextEquipmentSetID()
+        {
+            int nextId = _random.Next(InventorySettings.MinSetItemID, InventorySettings.MaxSetItemID);
+            int attempt = 0;
+            int maxAttempts = 1000;
+            while (GetGlobalProfile().CharacterEquipmentSets.ContainsKey(nextId) && attempt < maxAttempts)
+            {
+                nextId = _random.Next(InventorySettings.MinSetItemID, InventorySettings.MaxSetItemID);
+                attempt++;
+            }
+            return nextId;
+        }
 
         private string GetOrAddGlobalDir()
         {
@@ -121,7 +136,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private void SaveProfile(GlobalProfile profile)
         {
             _ = GetOrAddGlobalDir();
-
+            Logger.LogInfo($"Saving {nameof(GlobalProfile)} to '{GlobalFile}'.");
             var newJson = JsonConvert.SerializeObject(profile, Formatting.Indented);
             File.WriteAllText(GlobalFile, newJson);
             _cachedProfile = null;
@@ -133,7 +148,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 if (disposing)
                 {
-                    
+
                 }
 
                 _cachedProfile = null;

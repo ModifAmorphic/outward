@@ -32,7 +32,33 @@ namespace ModifAmorphic.Outward.Transmorphic.Patches
 			}
 		}
 
-        public static event Action<Item> AfterRequestItemInitialization;
+		[HarmonyPatch(nameof(ItemManager.DestroyAllItemsOfChar))]
+		[HarmonyPrefix]
+		private static void DestroyAllItemsOfChar(ItemManager __instance, DictionaryExt<string, Item> ___m_worldItems, string _charUID)
+		{
+			try
+			{
+
+				Logger.LogDebug($"{nameof(ItemManagerPatches)}::{nameof(DestroyAllItemsOfChar)}:.");
+				string[] array = new string[___m_worldItems.Keys.Count];
+				___m_worldItems.Keys.CopyTo(array, 0);
+				foreach (string str in array)
+				{
+					Item _outValue;
+					if (___m_worldItems.TryGetValue(str, out _outValue) && _outValue.ItemID != 0 && (_outValue.IsChildToPlayer && _outValue.OwnerCharacter.UID == (UID)_charUID || _outValue.CreationOwner == _charUID))
+					{
+						Logger.LogDebug($"{nameof(ItemManagerPatches)}::{nameof(DestroyAllItemsOfChar)}: Item {_outValue?.name} is about to be destroyed.");
+					}
+				}
+
+			}
+			catch (Exception ex)
+			{
+				Logger.LogException($"{nameof(ItemManagerPatches)}::{nameof(DestroyAllItemsOfChar)}(): Exception.", ex);
+			}
+		}
+
+		public static event Action<Item> AfterRequestItemInitialization;
 
         [HarmonyPatch(nameof(ItemManager.RequestItemInitialization))]
         [HarmonyPostfix]

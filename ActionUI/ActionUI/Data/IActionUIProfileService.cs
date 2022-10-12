@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using UnityEngine.Events;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ModifAmorphic.Outward.Unity.ActionUI.Data
 {
@@ -7,9 +7,9 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Data
     {
         IEnumerable<string> GetProfileNames();
         IActionUIProfile GetActiveProfile();
-        UnityEvent<IActionUIProfile> OnNewProfile { get; }
-        UnityEvent<IActionUIProfile> OnActiveProfileChanged { get; }
-        UnityEvent<IActionUIProfile> OnActiveProfileSwitched { get; }
+        event Action<IActionUIProfile> OnActiveProfileChanged;
+        event Action<IActionUIProfile> OnActiveProfileSwitched;
+        event Action<IActionUIProfile> OnActiveProfileSwitching;
         void SetActiveProfile(string name);
         void Save();
         void SaveNew(IActionUIProfile profile);

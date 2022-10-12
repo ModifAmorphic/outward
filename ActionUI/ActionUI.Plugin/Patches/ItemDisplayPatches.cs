@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using ModifAmorphic.Outward.ActionUI.Models;
 using ModifAmorphic.Outward.Logging;
 using System;
 
@@ -21,6 +20,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
             try
             {
                 if (_item == null)
+                    return;
+
+                if (__instance?.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer)
                     return;
 
                 Logger.LogTrace($"{nameof(ItemDisplayPatches)}::{nameof(SetReferencedItemPostfix)}(): Invoking {nameof(AfterSetReferencedItem)} for Item {_item.name}.");

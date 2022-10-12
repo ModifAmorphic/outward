@@ -22,11 +22,9 @@ namespace ModifAmorphic.Outward.ActionUI.Settings
 
         public static ActionUIProfile DefaultProfile = new ActionUIProfile()
         {
-            Name = "Profile 1",
+            Name = "Default",
             ActionSlotsEnabled = true,
             DurabilityDisplayEnabled = true,
-            StashCraftingEnabled = true,
-            CraftingOutsideTownEnabled = false,
             EquipmentSetsEnabled = true,
             EquipmentSetsSettingsProfile = new EquipmentSetsSettingsProfile()
             {
@@ -36,6 +34,17 @@ namespace ModifAmorphic.Outward.ActionUI.Settings
                 StashEquipAnywhereEnabled = false,
                 StashUnequipEnabled = false,
                 StashUnequipAnywhereEnabled = false,
+            },
+            StashSettingsProfile = new StashSettingsProfile()
+            {
+                CharInventoryEnabled = true,
+                CharInventoryAnywhereEnabled = false,
+                MerchantEnabled = true,
+                MerchantAnywhereEnabled = false,
+                CraftingInventoryEnabled = true,
+                CraftingInventoryAnywhereEnabled = false,
+                PreservesFoodEnabled = true,
+                PreservesFoodAmount = 75,
             }
         };
 

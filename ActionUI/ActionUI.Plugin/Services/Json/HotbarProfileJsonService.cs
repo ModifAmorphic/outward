@@ -16,7 +16,7 @@ using System.Linq;
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
 
-    public class HotbarProfileJsonService : IHotbarProfileService, IDisposable
+    public class HotbarProfileJsonService : IHotbarProfileService, IDisposable, ISavableProfile
     {
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
@@ -33,8 +33,32 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         public HotbarProfileJsonService(ProfileService profileService, Func<IModifLogger> getLogger)
         {
             (_profileService, _getLogger) = (profileService, getLogger);
-            //profileService.OnActiveProfileChanged.AddListener((profile) => RefreshCachedProfile(profile));
-            profileService.OnActiveProfileSwitched.AddListener((profile) => RefreshCachedProfile(profile, true));
+            profileService.OnActiveProfileSwitching += TrySaveCurrentProfile;
+            profileService.OnActiveProfileSwitched += TryRefreshCachedProfile;
+        }
+
+        private void TrySaveCurrentProfile(IActionUIProfile profile)
+        {
+            try
+            {
+                Save();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to save current Hotbar data to profile '{profile?.Name}'.", ex);
+            }
+        }
+
+        private void TryRefreshCachedProfile(IActionUIProfile profile)
+        {
+            try
+            {
+                RefreshCachedProfile(profile, true);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed refresh of current Hotbar data for profile '{profile?.Name}'.", ex);
+            }
         }
 
         private void RefreshCachedProfile(IActionUIProfile obj, bool suppressChangedEvent = false)
@@ -63,11 +87,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void Save(IHotbarProfile hotbarProfile)
         {
-            var json = JsonConvert.SerializeObject(hotbarProfile, Formatting.Indented);
             var profileFile = Path.Combine(_profileService.GetActiveActionUIProfile().Path, HotbarsConfigFile);
+            Logger.LogInfo($"Saving Hotbar profile to file '{profileFile}'.");
 
-            Logger.LogDebug($"Saving Hotbar profile to file '{profileFile}'.");
-
+            var json = JsonConvert.SerializeObject(hotbarProfile, Formatting.Indented);
             File.WriteAllText(profileFile, json);
         }
 
@@ -324,8 +347,11 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 if (disposing)
                 {
-                    _profileService.OnActiveProfileChanged.RemoveListener((profile) => RefreshCachedProfile(profile));
-                    _profileService.OnActiveProfileSwitched.RemoveListener((profile) => RefreshCachedProfile(profile, true));
+                    if (_profileService != null)
+                    {
+                        _profileService.OnActiveProfileSwitching -= TrySaveCurrentProfile;
+                        _profileService.OnActiveProfileSwitched -= TryRefreshCachedProfile;
+                    }
                 }
                 _hotbarProfile = null;
                 _profileService = null;

@@ -31,11 +31,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private readonly LevelCoroutines _levelCoroutines;
         private bool _saveDisabled;
         private bool _isProfileInit;
+        private bool _isStarted = false;
 
-        private ControllerType _activeController;
         private bool disposedValue;
-
-        public ControllerType ActiveController => _activeController;
 
         public HotbarService(HotbarsContainer hotbarsContainer, Player player, Character character, ProfileManager profileManager, SlotDataService slotData, LevelCoroutines levelCoroutines, Func<IModifLogger> getLogger)
         {
@@ -59,14 +57,46 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _getLogger = getLogger;
 
             QuickSlotPanelPatches.StartInitAfter += DisableKeyboardQuickslots;
-            QuickSlotControllerSwitcherPatches.StartInitAfter += SwapCanvasGroup;
-            NetworkLevelLoader.Instance.onOverallLoadingDone += AssignSlotActions;
             SkillMenuPatches.AfterOnSectionSelected += SetSkillsMovable;
             ItemDisplayDropGroundPatches.TryGetIsDropValids.Add(_player.id, TryGetIsDropValid);
             _hotbars.OnAwake += StartNextFrame;
             if (_hotbars.IsAwake)
                 StartNextFrame();
 
+        }
+
+        private void StartNextFrame()
+        {
+            try
+            {
+                _levelCoroutines.DoNextFrame(() => Start());
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to start {nameof(HotbarService)} coroutine {nameof(Start)}.", ex);
+            }
+        }
+        public void Start()
+        {
+            try
+            {
+                _isStarted = true;
+                _saveDisabled = true;
+
+                SwapCanvasGroup();
+
+                var profile = GetOrCreateActiveProfile();
+                TryConfigureHotbars(profile, HotbarProfileChangeTypes.ProfileRefreshed);
+                _hotbars.ClearChanges();
+                _profileManager.HotbarProfileService.OnProfileChanged += TryConfigureHotbars;
+                _hotbars.OnHasChanges.AddListener(Save);
+
+                AssignSlotActions();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to start {nameof(HotbarService)}.", ex);
+            }
         }
 
         private void SetSkillsMovable(ItemListDisplay itemListDisplay)
@@ -91,71 +121,87 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return true;
         }
 
-        private void StartNextFrame() => _levelCoroutines.DoNextFrame(() => Start());
-
-        public void Start()
+        public void TryConfigureHotbars(IHotbarProfile profile)
         {
-            _saveDisabled = true;
-
-            var profile = GetOrCreateActiveProfile();
-            ConfigureHotbars(profile, HotbarProfileChangeTypes.ProfileRefreshed);
-            _hotbars.ClearChanges();
-            _profileManager.HotbarProfileService.OnProfileChanged += ConfigureHotbars;
-            _hotbars.OnHasChanges.AddListener(Save);
-        }
-
-        public void ConfigureHotbars(IHotbarProfile profile)
-        {
-            _saveDisabled = true;
-
-            SetProfileHotkeys(profile);
-
-            _hotbars.Controller.ConfigureHotbars(profile);
-
-            if (_isProfileInit)
+            try
             {
-                AssignSlotActions(profile);
-                _saveDisabled = false;
+                if (!_hotbars.IsAwake || !_isStarted || _character?.Inventory == null)
+                    return;
+
+                _saveDisabled = true;
+
+                SetProfileHotkeys(profile);
+
+                _hotbars.Controller.ConfigureHotbars(profile);
+
+                if (_isProfileInit)
+                {
+                    AssignSlotActions(profile);
+                    _saveDisabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to configure Hotbars.", ex);
             }
         }
-        private void ConfigureHotbars(IHotbarProfile profile, HotbarProfileChangeTypes changeType) => ConfigureHotbars(profile);
+        private void TryConfigureHotbars(IHotbarProfile profile, HotbarProfileChangeTypes changeType)
+        {
+            try
+            {
+                TryConfigureHotbars(profile);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to configure Hotbars.", ex);
+            }
+        }
 
         public Guid InstanceID { get; } = Guid.NewGuid();
         private void Save()
         {
-            if (_hotbars.HasChanges && !_saveDisabled)
+            try
             {
-                var profile = GetOrCreateActiveProfile();
-                Logger.LogDebug($"{nameof(HotbarService)}_{InstanceID}: Hotbar changes detected. Saving.");
-                _profileManager.HotbarProfileService.Update(_hotbars);
-                _hotbars.ClearChanges();
+                if (_hotbars.HasChanges && !_saveDisabled)
+                {
+                    var profile = GetOrCreateActiveProfile();
+                    Logger.LogDebug($"{nameof(HotbarService)}_{InstanceID}: Hotbar changes detected. Saving.");
+                    _profileManager.HotbarProfileService.Update(_hotbars);
+                    _hotbars.ClearChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to Save Hotbar changes.", ex);
             }
         }
 
-        private void SwapCanvasGroup(QuickSlotControllerSwitcher controllerSwitcher)
+        private void SwapCanvasGroup()
         {
-            if (controllerSwitcher.name != "QuickSlot")
-                return;
-            var canvasGroup = controllerSwitcher.GetPrivateField<QuickSlotControllerSwitcher, CanvasGroup>("m_keyboardQuickSlots");
-            var keyboard = canvasGroup.GetComponent<KeyboardQuickSlotPanel>();
-            if (keyboard != null)
+            try
             {
-                if (keyboard.CharacterUI.RewiredID == _characterUI.RewiredID)
+                var controllerSwitcher = _characterUI.GetComponentsInChildren<QuickSlotControllerSwitcher>().FirstOrDefault(q => q.name == "QuickSlot");
+                var canvasGroup = controllerSwitcher.GetPrivateField<QuickSlotControllerSwitcher, CanvasGroup>("m_keyboardQuickSlots");
+
+                var hotbarCanvasGroup = _hotbars.GetComponent<CanvasGroup>();
+                controllerSwitcher.SetPrivateField("m_keyboardQuickSlots", hotbarCanvasGroup);
+
+                var keyboard = controllerSwitcher.GetComponentInChildren<KeyboardQuickSlotPanel>(true);
+                if (keyboard != null)
                 {
-                    _activeController = ControllerType.Keyboard;
-                    var hotbarCanvasGroup = _hotbars.GetComponent<CanvasGroup>();
-                    controllerSwitcher.SetPrivateField("m_keyboardQuickSlots", hotbarCanvasGroup);
                     DisableKeyboardQuickslots(keyboard);
                 }
             }
-            else
-                _activeController = ControllerType.Mouse;
+            catch (Exception ex)
+            {
+                Logger.LogException("Failed to swap in Hotbar canvas group. Action Slots will likely not automaticaly hide when a controller is used.", ex);
+            }
 
         }
 
         public void DisableKeyboardQuickslots(KeyboardQuickSlotPanel keyboard)
         {
-            if (keyboard != null && keyboard.CharacterUI.RewiredID == _characterUI.RewiredID)
+            if (keyboard != null && keyboard.gameObject.activeSelf)
             {
                 Logger.LogDebug($"Disabling Keyboard QuickSlots for RewiredID {keyboard?.CharacterUI?.RewiredID}.");
                 keyboard.gameObject.SetActive(false);
@@ -180,12 +226,11 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         public void AssignSlotActions(IHotbarProfile profile)
         {
             Logger.LogDebug($"{nameof(HotbarService)}_{InstanceID}: Assigning Slot Actions.");
-            //refresh item displays
-            _characterUI.ShowMenu(CharacterUI.MenuScreens.Inventory);
-            _characterUI.HideMenu(CharacterUI.MenuScreens.Inventory);
+            
+            //_characterUI.ShowMenu(CharacterUI.MenuScreens.Inventory);
+            //_characterUI.HideMenu(CharacterUI.MenuScreens.Inventory);
 
             _saveDisabled = true;
-            //_characterUI.InventoryPanel.RefreshEquippedBag
             for (int hb = 0; hb < profile.Hotbars.Count; hb++)
             {
                 for (int s = 0; s < profile.Hotbars[hb].Slots.Count; s++)
@@ -198,7 +243,14 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     }
                     else
                     {
-                        actionSlot.Controller.AssignSlotAction(slotAction);
+                        try
+                        {
+                            actionSlot.Controller.AssignSlotAction(slotAction);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogException($"Failed to assign slot action '{slotAction.DisplayName}' to Bar {hb}, Slot Index {s}.", ex);
+                        }
                     }
                     actionSlot.ActionButton.gameObject.GetOrAddComponent<ActionSlotDropper>().SetLogger(_getLogger);
                 }
@@ -260,34 +312,25 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 if (disposing)
                 {
                     Logger.LogDebug($"Disposing of {nameof(HotbarService)} instance '{InstanceID}'. Unsubscribing to events.");
+
                     QuickSlotPanelPatches.StartInitAfter -= DisableKeyboardQuickslots;
-                    QuickSlotControllerSwitcherPatches.StartInitAfter -= SwapCanvasGroup;
-                    NetworkLevelLoader.Instance.onOverallLoadingDone -= AssignSlotActions;
                     SkillMenuPatches.AfterOnSectionSelected -= SetSkillsMovable;
-                    
+
                     if (ItemDisplayDropGroundPatches.TryGetIsDropValids.ContainsKey(_player.id))
                         ItemDisplayDropGroundPatches.TryGetIsDropValids.Remove(_player.id);
 
                     if (_hotbars != null)
-                        _hotbars.OnAwake -= StartNextFrame;
-                    if (_profileManager?.HotbarProfileService != null)
-                        _profileManager.HotbarProfileService.OnProfileChanged += ConfigureHotbars;
-                    if (_hotbars != null)
+                    {
                         _hotbars.OnHasChanges.RemoveListener(Save);
+                        _hotbars.OnAwake -= StartNextFrame;
+                    }
+                    if (_profileManager?.HotbarProfileService != null)
+                        _profileManager.HotbarProfileService.OnProfileChanged -= TryConfigureHotbars;
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
                 disposedValue = true;
             }
         }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~HotbarService()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
 
         public void Dispose()
         {

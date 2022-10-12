@@ -7,7 +7,7 @@ using System.IO;
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
 
-    public abstract class JsonProfileService<T> : IDisposable where T : new()
+    public abstract class JsonProfileService<T> : IDisposable, ISavableProfile where T : new()
     {
 
         Func<IModifLogger> _getLogger;
@@ -18,7 +18,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         protected GlobalProfileService GlobalProfileService { get; set; }
 
         protected ProfileService ProfileService { get; set; }
-        
+
         protected T CachedProfile { get; set; }
 
         protected string CharacterUID;
@@ -29,10 +29,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         public JsonProfileService(GlobalProfileService globalProfileService, ProfileService profileService, string characterUID, Func<IModifLogger> getLogger)
         {
             (GlobalProfileService, ProfileService, CharacterUID, _getLogger) = (globalProfileService, profileService, characterUID, getLogger);
-            profileService.OnActiveProfileSwitched.AddListener((profile) => RefreshCachedProfile(profile, true));
+            profileService.OnActiveProfileSwitching += TrySaveCurrentProfile;
+            profileService.OnActiveProfileSwitched += TryRefreshCachedProfile;
         }
-
-
 
         public virtual T GetProfile()
         {
@@ -67,6 +66,30 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return JsonConvert.DeserializeObject<T>(json);
         }
 
+        private void TrySaveCurrentProfile(IActionUIProfile profile)
+        {
+            try
+            {
+                Save();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to save current {typeof(T).Name} data to profile '{profile?.Name}'.", ex);
+            }
+        }
+
+        private void TryRefreshCachedProfile(IActionUIProfile profile)
+        {
+            try
+            {
+                RefreshCachedProfile(profile, true);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed refresh of current {typeof(T).Name} data for profile '{profile?.Name}'.", ex);
+            }
+        }
+
         protected virtual void RefreshCachedProfile(IActionUIProfile actionMenusProfile, bool suppressChangeEvent = false)
         {
             Logger.LogDebug($"{typeof(T).Name}::RefreshCachedProfile Called for action menu profile {actionMenusProfile.Name}.");
@@ -75,11 +98,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         protected virtual void SaveProfile(T profile)
         {
-            //RemoveOriginPositions(profile);
-            var json = JsonConvert.SerializeObject(profile, Formatting.Indented);
             var activeProfile = ProfileService.GetActiveActionUIProfile();
             var profileFile = Path.Combine(activeProfile.Path, FileName);
-            Logger.LogDebug($"Saving {typeof(T)} for profile {activeProfile.Name}");
+            Logger.LogInfo($"Saving {typeof(T).Name} for profile {activeProfile.Name} to '{profileFile}'.");
+            var json = JsonConvert.SerializeObject(profile, Formatting.Indented);
             File.WriteAllText(profileFile, json);
             CachedProfile = default;
         }
@@ -90,8 +112,11 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 if (disposing)
                 {
-                    //_profileService.OnActiveProfileChanged.RemoveListener((profile) => RefreshCachedProfile(profile));
-                    ProfileService.OnActiveProfileSwitched.RemoveListener((profile) => RefreshCachedProfile(profile, true));
+                    if (ProfileService != null)
+                    {
+                        ProfileService.OnActiveProfileSwitching -= TrySaveCurrentProfile;
+                        ProfileService.OnActiveProfileSwitched -= TryRefreshCachedProfile;
+                    }
                 }
                 CachedProfile = default;
                 disposedValue = true;

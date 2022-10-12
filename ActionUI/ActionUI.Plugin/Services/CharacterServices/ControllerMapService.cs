@@ -3,6 +3,7 @@ using ModifAmorphic.Outward.ActionUI.Models;
 using ModifAmorphic.Outward.ActionUI.Patches;
 using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Coroutines;
+using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI;
@@ -18,7 +19,7 @@ using UnityEngine;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
-    internal class ControllerMapService : IDisposable
+    internal class ControllerMapService : IDisposable, ISavableProfile
     {
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
@@ -30,13 +31,13 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private readonly Player _player;
         private readonly ModifCoroutine _coroutine;
 
-        private readonly static HashSet<string> ActionUIMapKeys = new HashSet<string>()
-        {
-            "RewiredData&playerName=Player0&dataType=ControllerMap&controllerMapType=KeyboardMap&categoryId=131000&layoutId=0&hardwareIdentifier=Keyboard",
-            "RewiredData&playerName=Player0&dataType=ControllerMap&controllerMapType=MouseMap&categoryId=131000&layoutId=0&hardwareIdentifier=Mouse",
-            "RewiredData&playerName=Player1&dataType=ControllerMap&controllerMapType=KeyboardMap&categoryId=131000&layoutId=0&hardwareIdentifier=Keyboard",
-            "RewiredData&playerName=Player1&dataType=ControllerMap&controllerMapType=MouseMap&categoryId=131000&layoutId=0&hardwareIdentifier=Mouse",
-        };
+        //private readonly static HashSet<string> ActionUIMapKeys = new HashSet<string>()
+        //{
+        //    "RewiredData&playerName=Player0&dataType=ControllerMap&controllerMapType=KeyboardMap&categoryId=131000&layoutId=0&hardwareIdentifier=Keyboard",
+        //    "RewiredData&playerName=Player0&dataType=ControllerMap&controllerMapType=MouseMap&categoryId=131000&layoutId=0&hardwareIdentifier=Mouse",
+        //    "RewiredData&playerName=Player1&dataType=ControllerMap&controllerMapType=KeyboardMap&categoryId=131000&layoutId=0&hardwareIdentifier=Keyboard",
+        //    "RewiredData&playerName=Player1&dataType=ControllerMap&controllerMapType=MouseMap&categoryId=131000&layoutId=0&hardwareIdentifier=Mouse",
+        //};
 
 
         private const string KeyboardMapFile = "KeyboardMap_ActionSlots.xml";
@@ -95,9 +96,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _profileService = (ProfileService)profileManager.ProfileService;
             _hotbarProfileService = (HotbarProfileJsonService)profileManager.HotbarProfileService;
 
-            RewiredInputsPatches.BeforeExportXmlData += RemoveActionUIMaps;
+            RewiredInputsPatches.AfterSaveAllMaps += TryRemoveActionUIMaps;
             RewiredInputsPatches.AfterExportXmlData += RewiredInputsPatches_AfterExportXmlData;
-            _profileService.OnActiveProfileSwitched.AddListener(LoadConfigMaps);
+            _profileService.OnActiveProfileSwitching += TrySaveCurrentProfile;
+            _profileService.OnActiveProfileSwitched += TryLoadConfigMaps;
             _hotbarProfileService.OnProfileChanged += SlotAmountChanged;
 
             _captureDialog.OnKeysSelected += CaptureDialog_OnKeysSelected;
@@ -108,31 +110,72 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             if (playerId == _player.id)
             {
-                LoadConfigMaps();
+                LoadConfigMaps(true);
             }
         }
 
-        private void RemoveActionUIMaps(int playerId, ref Dictionary<string, string> mappingData)
+        private void TryRemoveActionUIMaps(RewiredInputs rewiredInputs)
         {
-            if (playerId != _player.id)
-                return;
-
-            foreach (string mapKey in ActionUIMapKeys)
+            try
             {
-                try
+                if (rewiredInputs.PlayerID != _player.id)
+                    return;
+
+                var outwardMappings = rewiredInputs.GetPrivateField<RewiredInputs, Dictionary<string, string>>("m_mappingData");
+
+                var actionUIKeys = outwardMappings.Keys.Where(k => k.Contains("categoryId=131000", StringComparison.InvariantCultureIgnoreCase)).ToList();
+
+                foreach (string mapKey in actionUIKeys)
                 {
-                    Logger.LogDebug($"Removing ControllerMap '{mapKey}'");
-                    mappingData.Remove(mapKey);
+                    try
+                    {
+
+                        if (outwardMappings.Remove(mapKey))
+                        {
+                            Logger.LogDebug($"Removed ControllerMap '{mapKey}'.");
+                        }
+                        else
+                        {
+                            Logger.LogWarning($"Failed to remove ControllerMap '{mapKey}'.");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogException($"Exception removing ControllerMap '{mapKey}'", ex);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Logger.LogException($"Exception removing ControllerMap '{mapKey}'", ex);
-                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to remove ActionUI Controller maps for player ID {rewiredInputs.PlayerID}.", ex);
             }
 
         }
 
-        private void LoadConfigMaps(IActionUIProfile actionUIProfile) => _ = LoadConfigMaps(true);
+        private void TrySaveCurrentProfile(IActionUIProfile profile)
+        {
+            try
+            {
+                Save();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to save current Keyboard and Mouse Controller Maps to profile '{profile?.Name}'.", ex);
+            }
+        }
+
+        private void TryLoadConfigMaps(IActionUIProfile profile)
+        {
+            try
+            {
+                _ = LoadConfigMaps(true);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{this.GetType()} failed load rewired config maps for profile {profile?.Name}.", ex);
+            }
+        }
+
         public (KeyboardMap keyboardMap, MouseMap mouseMap) LoadConfigMaps(bool forceRefresh = false)
         {
             var maps = (
@@ -140,8 +183,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 GetActionSlotsMap<MouseMap>(forceRefresh)
             );
             if (forceRefresh)
-                _hotbarService.ConfigureHotbars(_hotbarProfileService.GetProfile());
+                _hotbarService.TryConfigureHotbars(_hotbarProfileService.GetProfile());
             return maps;
+        }
+
+        public void Save()
+        {
+            (KeyboardMap keyboardMap, MouseMap mouseMap) = LoadConfigMaps();
+
+            SaveControllerMap(keyboardMap);
+            SaveControllerMap(mouseMap);
+
+            ControlsInput.ExportXmlData(_player.id);
         }
 
         private void CaptureDialog_OnKeysSelected(int slotIndex, HotkeyCategories category, KeyGroup keyGroup)
@@ -325,7 +378,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             }
 
             _hotbarProfileService.Save();
-            _hotbarService.ConfigureHotbars(profile);
+            _hotbarService.TryConfigureHotbars(profile);
         }
 
         private void SetHotbarHotkey(int id, KeyGroup keyGroup, ControllerType controllerType, IEnumerable<ControllerMap> maps)
@@ -340,7 +393,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             hotbar.HotbarHotkey = hotKey;
 
             _hotbarProfileService.Save();
-            _hotbarService.ConfigureHotbars(profile);
+            _hotbarService.TryConfigureHotbars(profile);
         }
 
         private void SetHotbarNavHotkey(HotkeyCategories category, KeyGroup keyGroup, ControllerType controllerType, IEnumerable<ControllerMap> maps)
@@ -363,7 +416,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             }
 
             _hotbarProfileService.Save();
-            _hotbarService.ConfigureHotbars(profile);
+            _hotbarService.TryConfigureHotbars(profile);
         }
 
         private void ConfigureButtonMapping(int rewiredActionId, KeyGroup keyGroup, ControllerType controllerType, IEnumerable<ControllerMap> maps, out string hotkeyText)
@@ -448,12 +501,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void SaveControllerMap(ControllerMap controllerMap)
         {
+            var filePath = Path.Combine(GetProfileFolder(), MapFiles[controllerMap.controllerType]);
+            Logger.LogInfo($"Saving Controller Map {controllerMap?.controllerType} to '{filePath}'.");
             var mapXml = controllerMap.ToXmlString();
 
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(mapXml);
-
-            var filePath = Path.Combine(GetProfileFolder(), MapFiles[controllerMap.controllerType]);
             // Save the document to a file and auto-indent the output.
             using (XmlTextWriter writer = new XmlTextWriter(filePath, Encoding.UTF8))
             {
@@ -463,7 +516,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 doc.Save(writer);
                 writer.Close();
             }
-
 
             //File.WriteAllText(filePath, mapXml);
         }
@@ -560,28 +612,22 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 if (disposing)
                 {
-                    RewiredInputsPatches.BeforeExportXmlData -= RemoveActionUIMaps;
+                    RewiredInputsPatches.AfterSaveAllMaps -= TryRemoveActionUIMaps;
                     RewiredInputsPatches.AfterExportXmlData -= RewiredInputsPatches_AfterExportXmlData;
                     if (_profileService != null)
-                        _profileService.OnActiveProfileSwitched.RemoveListener(LoadConfigMaps);
+                    {
+                        _profileService.OnActiveProfileSwitching -= TrySaveCurrentProfile;
+                        _profileService.OnActiveProfileSwitched -= TryLoadConfigMaps;
+                    }
                     if (_hotbarProfileService != null)
                         _hotbarProfileService.OnProfileChanged -= SlotAmountChanged;
                     if (_captureDialog != null)
                         _captureDialog.OnKeysSelected -= CaptureDialog_OnKeysSelected;
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
                 disposedValue = true;
             }
         }
-
-        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~ControllerMapService()
-        // {
-        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
-        // }
 
         public void Dispose()
         {

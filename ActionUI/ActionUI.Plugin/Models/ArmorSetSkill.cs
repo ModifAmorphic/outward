@@ -2,7 +2,6 @@
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets;
 using ModifAmorphic.Outward.Unity.ActionUI.Models.EquipmentSets;
-using System;
 
 namespace ModifAmorphic.Outward.ActionUI.Models
 {
@@ -28,7 +27,7 @@ namespace ModifAmorphic.Outward.ActionUI.Models
             if (_armorSet == null)
                 return false;
 
-            if (TryGetInventoryService(out var inventoryService) && TryGetEquipmentSet(out var equipmentSet))
+            if (TryGetEquipService(out var inventoryService) && TryGetEquipmentSet(out var equipmentSet))
                 return inventoryService.HasItems(_armorSet.GetEquipSlots()) && !inventoryService.IsArmorSetEquipped(_armorSet);
 
             return false;
@@ -39,7 +38,7 @@ namespace ModifAmorphic.Outward.ActionUI.Models
             if (_armorSet == null)
                 return;
 
-            if (TryGetInventoryService(out var inventoryService))
+            if (TryGetEquipService(out var inventoryService))
                 inventoryService.TryEquipArmorSet(_armorSet);
         }
 

@@ -1,5 +1,4 @@
-﻿using ModifAmorphic.Outward.ActionUI.Patches;
-using ModifAmorphic.Outward.Coroutines;
+﻿using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
@@ -21,9 +20,20 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
         public PositionsServicesInjector(ServicesProvider services, PlayerMenuService playerMenuService, ModifGoService modifGoService, ModifCoroutine coroutines, Func<IModifLogger> getLogger)
         {
             (_services, _modifGoService, _coroutines, _getLogger) = (services, modifGoService, coroutines, getLogger);
-            playerMenuService.OnPlayerActionMenusConfigured += AddPositionsServices;
+            playerMenuService.OnPlayerActionMenusConfigured += TryAddPositionsServices;
         }
 
+        private void TryAddPositionsServices(PlayerActionMenus actionMenus, SplitPlayer splitPlayer)
+        {
+            try
+            {
+                AddPositionsServices(actionMenus, splitPlayer);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to enable Positioning UI for player {splitPlayer.RewiredID}.", ex);
+            }
+        }
         private void AddPositionsServices(PlayerActionMenus actionMenus, SplitPlayer splitPlayer)
         {
             var usp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
