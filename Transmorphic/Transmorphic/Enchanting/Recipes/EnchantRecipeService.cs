@@ -54,7 +54,7 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
             
             craftingModule.CraftingMenuEvents.MenuHiding += RemoveTemporaryItems;
             //NetworkLevelLoader.Instance.onOverallLoadingDone += LearnEnchantRecipes;
-            NetworkLevelLoader.Instance.onAllPlayersLoadingDone += LearnEnchantRecipes;
+            TransmorphNetworkLevelLoaderPatches.MidLoadLevelAfter += (n) => _coroutine.InvokeAfterLevelAndPlayersLoaded(n, LearnEnchantRecipes, 300, 1);
             EnchantCharacterRecipeKnowledgePatches.LearnRecipeBefore += TryLearnRecipeWithoutAchievements;
             //NetworkLevelLoader.Instance.onGameplayLoadingDone += () => preFabricator.ModifItemPrefabs.gameObject.SetActive(false);
             //NetworkLevelLoader.Instance.onAllPlayersLoadingDone += () => preFabricator.ModifItemPrefabs.gameObject.SetActive(false);
@@ -155,22 +155,35 @@ namespace ModifAmorphic.Outward.Transmorphic.Enchanting.Recipes
                 $"{(recipe != default ? "Searched for " + recipeID + ". Found " + recipe.RecipeID + " - " + recipe.Name : recipeID + " - Not Found.")}");
             return recipe != default;
         }
+
+        private void DelayedLearnCharacterRecipes(Character character, List<Recipe> recipes)
+        {
+            bool recipesLoaded() => character.Inventory.RecipeKnowledge.GetPrivateField<CharacterRecipeKnowledge, bool>("m_recipeLoaded");
+            _coroutine.DoWhen(recipesLoaded, () => LearnCharacterRecipes(character, recipes), 300, .25f);
+        }
+        private void LearnCharacterRecipes(Character character, List<Recipe> recipes)
+        {
+            foreach (var r in recipes)
+                TryLearnRecipe(character.Inventory, r);
+        }
         private void LearnEnchantRecipes()
         {
             var characters = SplitScreenManager.Instance.LocalPlayers.Select(p => p.AssignedCharacter);
             var allRecipes = _craftingModule.GetRegisteredRecipes<EnchantingMenu>();
             foreach (var c in characters)
             {
-                foreach(var r in allRecipes)
-                    TryLearnRecipe(c.Inventory, r);
+                DelayedLearnCharacterRecipes(c, allRecipes);
+                //foreach(var r in allRecipes)
+                //    TryLearnRecipe(c.Inventory, r);
             }
         }
         private bool TryLearnRecipe(CharacterInventory inventory, Recipe recipe)
         {
+            Logger.LogDebug($"Trying to learn recipe {recipe.name}.");
             if (!inventory.RecipeKnowledge.IsRecipeLearned(recipe.UID))
             {
                 inventory.RecipeKnowledge.LearnRecipe(recipe);
-                Logger.LogInfo($"Character Learned new Enchanting Recipe {recipe.Name}.");
+                Logger.LogInfo($"Character learned new Enchanting Recipe {recipe.Name}.");
                 return true;
             }
             return false;
