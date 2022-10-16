@@ -99,7 +99,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
+#if DEBUG
                 Logger.LogTrace($"{nameof(InventoryContentDisplay)}::{nameof(FocusMostRelevantItemPostfix)}(): Invoking {nameof(AfterFocusMostRelevantItem)}.");
+#endif
                 AfterFocusMostRelevantItem?.Invoke(__instance, _excludedList, __result);
             }
             catch (Exception ex)

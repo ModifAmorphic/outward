@@ -17,7 +17,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
+#if DEBUG
                 Logger.LogTrace($"{nameof(InputManager_BasePatches)}::{nameof(InitializePrefix)}(): Invoked. Invoking {nameof(BeforeInitialize)}(InputManager_Base).");
+#endif
                 BeforeInitialize?.Invoke(__instance);
             }
             catch (Exception ex)

@@ -20,8 +20,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
             {
                 if (___m_skillList?.LocalCharacter == null || ___m_skillList.LocalCharacter.OwnerPlayerSys == null || !___m_skillList.LocalCharacter.IsLocalPlayer)
                     return;
-
+#if DEBUG
                 Logger.LogTrace($"{nameof(SkillMenuPatches)}::{nameof(OnSectionSelectedPostfix)}(): Invoked. Invoking {nameof(AfterOnSectionSelected)}.");
+#endif
                 AfterOnSectionSelected?.Invoke(___m_skillList);
             }
             catch (Exception ex)

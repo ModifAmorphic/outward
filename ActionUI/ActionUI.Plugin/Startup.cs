@@ -96,9 +96,9 @@ namespace ModifAmorphic.Outward.ActionUI
                     , services.GetService<LevelCoroutines>()
                     , _loggerFactory));
 
-            TryStart(services.GetService<HotbarsStartup>());
-            TryStart(services.GetService<DurabilityDisplayStartup>());
-            TryStart(services.GetService<InventoryStartup>());
+            Starter.TryStart(services.GetService<HotbarsStartup>());
+            Starter.TryStart(services.GetService<DurabilityDisplayStartup>());
+            Starter.TryStart(services.GetService<InventoryStartup>());
         }
         public GameObject ConfigureAssetBundle()
         {
@@ -160,7 +160,9 @@ namespace ModifAmorphic.Outward.ActionUI
 
             foreach (var t in scriptComponentTypes)
             {
+#if DEBUG
                 Logger.LogTrace($"Attaching script {t.FullName}");
+#endif
                 scriptGo.AddComponent(t);
             }
 
@@ -179,21 +181,6 @@ namespace ModifAmorphic.Outward.ActionUI
             {
                 return AssetBundle.LoadFromStream(assetStream);
             }
-        }
-
-        private bool TryStart(IStartable startable)
-        {
-            try
-            {
-                Logger.LogDebug($"Starting {startable.GetType().Name}.");
-                startable.Start();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Logger.LogException($"Failed to start {startable.GetType().Name}.", ex);
-            }
-            return false;
         }
     }
 }

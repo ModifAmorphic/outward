@@ -21,7 +21,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
 
                 if (__instance is KeyboardQuickSlotPanel keyboard)
                 {
+#if DEBUG
                     Logger.LogTrace($"{nameof(QuickSlotPanelPatches)}::{nameof(StartInitPostfix)}(): Invoked. Invoking {nameof(StartInitAfter)}({nameof(KeyboardQuickSlotPanel)}).");
+#endif
                     StartInitAfter?.Invoke(keyboard);
                 }
             }

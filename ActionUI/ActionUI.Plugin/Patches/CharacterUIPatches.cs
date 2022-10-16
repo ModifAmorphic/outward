@@ -48,7 +48,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
             {
                 if (___m_rewiredID != -1)
                 {
+#if DEBUG
                     Logger.LogTrace($"{nameof(CharacterUIPatches)}::{nameof(ReleaseUIPrefix)}(): Invoking {nameof(BeforeReleaseUI)} for RewiredID {___m_rewiredID}.");
+#endif
                     BeforeReleaseUI?.Invoke(__instance, ___m_rewiredID);
                 }
             }
@@ -70,8 +72,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
                 if (__instance.TargetCharacter == null || __instance.TargetCharacter.OwnerPlayerSys == null || !__instance.TargetCharacter.IsLocalPlayer)
                     return;
 
-
+#if DEBUG
                 Logger.LogTrace($"{nameof(CharacterUIPatches)}::{nameof(ShowMenuPrefix)}(): Invoking {nameof(BeforeShowMenu)} for character {__instance.TargetCharacter.UID}.");
+#endif
                 BeforeShowMenu?.Invoke(__instance, _menu, _item);
 
             }

@@ -17,7 +17,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
+#if DEBUG
                 Logger?.LogTrace($"{nameof(NetworkLevelLoaderPatches)}::{nameof(MidLoadLevelPostfix)} called. Invoking {nameof(MidLoadLevelAfter)}.");
+#endif
                 MidLoadLevelAfter?.Invoke(__instance);
             }
             catch (Exception ex)

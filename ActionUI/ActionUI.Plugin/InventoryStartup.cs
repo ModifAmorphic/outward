@@ -35,10 +35,13 @@ namespace ModifAmorphic.Outward.ActionUI
             _harmony.PatchAll(typeof(InventoryContentDisplayPatches));
             _harmony.PatchAll(typeof(ItemDisplayPatches));
             _harmony.PatchAll(typeof(NetworkInstantiateManagerPatches));
+            _harmony.PatchAll(typeof(ItemPatches));
+            _harmony.PatchAll(typeof(CharacterManagerPatches));
 
             _services
                      .AddSingleton(new InventoryServicesInjector(_services, _playerMenuService, _coroutines, _loggerFactory))
-                     .AddSingleton(new EquipSetPrefabService(_services.GetService<InventoryServicesInjector>(), _coroutines, _loggerFactory));
+                     .AddSingleton(new EquipSetPrefabService(_services.GetService<InventoryServicesInjector>(), _coroutines, _loggerFactory))
+                     .AddSingleton(new SkillChainPrefabricator(_services.GetService<InventoryServicesInjector>(), _coroutines, _loggerFactory));
         }
     }
 }

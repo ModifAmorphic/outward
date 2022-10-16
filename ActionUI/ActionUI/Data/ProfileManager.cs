@@ -62,6 +62,17 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Data
             }
         }
 
+        public ISkillChainService SkillChainService
+        {
+            get
+            {
+                if (Psp.Instance.GetServicesProvider(_playerId).TryGetService<ISkillChainService>(out var service))
+                    return service;
+
+                return null;
+            }
+        }
+
         public ProfileManager(int playerId) => _playerId = playerId;
 
 

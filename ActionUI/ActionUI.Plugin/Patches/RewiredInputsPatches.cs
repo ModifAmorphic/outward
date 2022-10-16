@@ -35,7 +35,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
+#if DEBUG
                 Logger.LogTrace($"{nameof(RewiredInputsPatches)}::{nameof(SaveAllMapsPostfix)}(): Invoked. Invoking {AfterSaveAllMaps} for player {__instance.PlayerID}.");
+#endif
                 AfterSaveAllMaps?.Invoke(__instance);
             }
             catch (Exception ex)
@@ -53,7 +55,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
+#if DEBUG
                 Logger.LogTrace($"{nameof(RewiredInputsPatches)}::{nameof(ExportXmlDataPostfix)}(): Invoked. Invoking {AfterExportXmlData} for player {__instance.PlayerID}.");
+#endif
                 AfterExportXmlData?.Invoke(__instance.PlayerID);
             }
             catch (Exception ex)

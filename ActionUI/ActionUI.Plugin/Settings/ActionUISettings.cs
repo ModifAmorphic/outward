@@ -26,6 +26,7 @@ namespace ModifAmorphic.Outward.ActionUI.Settings
             ActionSlotsEnabled = true,
             DurabilityDisplayEnabled = true,
             EquipmentSetsEnabled = true,
+            SkillChainsEnabled = true,
             EquipmentSetsSettingsProfile = new EquipmentSetsSettingsProfile()
             {
                 ArmorSetsInCombatEnabled = false,

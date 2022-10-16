@@ -18,7 +18,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         Equipment,
         Merchant
     }
-    internal class CharacterMenuStashService : IDisposable
+    internal class CharacterMenuStashService : IDisposable, IStartable
     {
 
         private IModifLogger Logger => _getLogger.Invoke();
@@ -174,29 +174,38 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             if (stashType == StashDisplayTypes.Disabled)
             {
+#if DEBUG
                 Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(GetIsDisplayEnabled)}: false. Stash Type is {stashType} for InventoryContentDisplay '{inventoryPath}'.");
+#endif
                 return false;
             }
 
             if (inventoryContentDisplay.LocalCharacter.UID != _character.UID)
             {
+#if DEBUG
                 Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(GetIsDisplayEnabled)}: false. inventoryContentDisplay.LocalCharacter.UID '{inventoryContentDisplay.LocalCharacter.UID}' does not" +
                     $"equal character.UID '{_character.UID}' for InventoryContentDisplay {inventoryContentDisplay.name}, path: '{inventoryPath}'.");
+#endif
                 return false;
             }
             if ((stashType == StashDisplayTypes.Inventory || stashType == StashDisplayTypes.Equipment) && _inventoryService.GetStashInventoryEnabled())
             {
+#if DEBUG
                 Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(GetIsDisplayEnabled)}: true for Inventory Display '{inventoryPath}'");
+#endif
                 return true;
             }
 
             if (stashType == StashDisplayTypes.Merchant & _inventoryService.GetMerchantStashEnabled())
             {
+#if DEBUG
                 Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(GetIsDisplayEnabled)}: true for Merchant Display '{inventoryPath}'");
+#endif
                 return true;
             }
-
+#if DEBUG
             Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(GetIsDisplayEnabled)}: false for InventoryContentDisplay '{inventoryPath}'.");
+#endif
             return false;
         }
 

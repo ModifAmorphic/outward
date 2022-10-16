@@ -13,10 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ModifAmorphic.Outward" Version="0.5.17" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\modifamorphic\GitHub-Outward\outward-shared\outward\Outward.Shared\ModifAmorphic.Outward.Shared\ModifAmorphic.Outward.Shared.csproj" />
     <ProjectReference Include="..\ActionUI\ModifAmorphic.Outward.ActionUI.csproj" />
   </ItemGroup>
 

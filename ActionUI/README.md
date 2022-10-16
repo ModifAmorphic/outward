@@ -60,6 +60,12 @@
 ***
 
 ## Latest Release ${PACKAGE_VERSION}
+  - Durability display should now track equipment when first loading, without needing to unequip and equip.
+  - Fix for Durability Display not displaying after first save is loaded without switching gear.
+  - Equipment sets should now unequip to stash correctly when hosting a game.
+  - Client's in multiplayer games will now have food decay based on the hosts configuration. Previously, food in client stashes was decaying at it's base rate, using neither client nor hosts stash configuration.
+
+## Release 1.1.2
   - Characters should no longer be stuck in a T-pose when joining another game.
   - Equipment Sets equip from stash fix. Set items could be equipped from stash even with the option disabled if the character or merchant stash options where enabled.
   - Action UI settings menu should now open correctly after a split screen session.

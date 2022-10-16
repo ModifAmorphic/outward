@@ -21,8 +21,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
             {
                 if (_char == null || _char.OwnerPlayerSys == null || !_char.IsLocalPlayer)
                     return;
-
+#if DEBUG
                 Logger.LogTrace($"{nameof(EquipmentPatches)}::{nameof(OnEquipPostfix)}(): Invoked. Equipped item '{__instance.name}' to slot '{__instance.CurrentEquipmentSlot?.SlotType}' for character {_char?.name}. Invoking {nameof(AfterOnEquip)}.");
+#endif
                 AfterOnEquip?.Invoke(_char, __instance);
             }
             catch (Exception ex)
@@ -43,8 +44,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
             {
                 if (_char == null || _char.OwnerPlayerSys == null || !_char.IsLocalPlayer)
                     return;
-
+#if DEBUG
                 Logger.LogTrace($"{nameof(EquipmentPatches)}::{nameof(OnUnequipPostfix)}(): Invoked. Unequipped item '{__instance.name}' from slot '{__instance.CurrentEquipmentSlot?.SlotType}' for character {_char?.name}. Invoking {nameof(AfterOnUnequip)}.");
+#endif
                 AfterOnUnequip?.Invoke(_char, __instance);
             }
             catch (Exception ex)

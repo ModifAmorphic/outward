@@ -71,6 +71,32 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return nextId;
         }
 
+        public void AddOrUpdateItemID(int itemID, string characterUID)
+        {
+
+            GetGlobalProfile().CharacterItemIDs.AddOrUpdate(itemID, characterUID);
+            Save();
+        }
+
+        public void RemoveItemID(int setID)
+        {
+            GetGlobalProfile().CharacterItemIDs.TryRemove(setID, out var _);
+            Save();
+        }
+
+        public int GetNextItemID()
+        {
+            int nextId = _random.Next(InventorySettings.MinItemID, InventorySettings.MaxItemID);
+            int attempt = 0;
+            int maxAttempts = 1000;
+            while (GetGlobalProfile().CharacterItemIDs.ContainsKey(nextId) && attempt < maxAttempts)
+            {
+                nextId = _random.Next(InventorySettings.MinItemID, InventorySettings.MaxItemID);
+                attempt++;
+            }
+            return nextId;
+        }
+
         private string GetOrAddGlobalDir()
         {
             if (!Directory.Exists(GlobalPath))

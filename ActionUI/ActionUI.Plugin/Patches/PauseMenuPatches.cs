@@ -17,7 +17,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
+#if DEBUG
                 Logger.LogTrace($"{nameof(PauseMenu)}::{nameof(RefreshDisplayPostfix)}(): Invoked. Invoking {nameof(AfterRefreshDisplay)}.");
+#endif
                 AfterRefreshDisplay?.Invoke(__instance);
             }
             catch (Exception ex)

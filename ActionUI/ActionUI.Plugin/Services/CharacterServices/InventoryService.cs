@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
-    public class InventoryService : IDisposable
+    public class InventoryService : IDisposable, IStartable
     {
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
@@ -40,10 +40,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             try
             {
                 CharacterInventoryPatches.AfterInventoryIngredients += AddStashIngredients;
+                CharacterManagerPatches.AfterAddCharacter += ConfigureStashPreserverDelayed;
                 _profileManager.ProfileService.OnActiveProfileChanged += TryConfigureStashPreserver;
                 _profileManager.ProfileService.OnActiveProfileSwitched += TryConfigureStashPreserver;
+                //ItemPatches.GetAdjustedReduceDurability.Add(_character.OwnerPlayerSys.PlayerID, CalculateDurabilityReduction);
 
-                _coroutines.DoWhen(() => _characterInventory.Stash != null, ConfigureStashPreserver, 180);
+                _coroutines.DoWhen(() => _characterInventory.Stash != null, () => TryConfigureStashPreserver(_profile), 180);
             }
             catch (Exception ex)
             {
@@ -69,16 +71,53 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             try
             {
                 Logger.LogDebug($"Trying to Configure Stash Preserver for profile '{profile?.Name}'.");
-                ConfigureStashPreserver();
+                ConfigureStashPreserver(_character);
+                if (_character.OwnerPlayerSys.IsHostPlayer())
+                {
+                    var allCharacters = CharacterManager.Instance.Characters.Values.Where(c => !c.IsAI);
+                    foreach (var character in allCharacters)
+                    {
+                        ConfigureStashPreserver(character);
+                    }
+                }
+                else if (PhotonNetwork.isNonMasterClientInRoom)
+                    ConfigureStashPreserver(_character);
             }
             catch (Exception ex)
             {
                 Logger.LogException("Failed to configure stash preserver.", ex);
             }
         }
-        private void ConfigureStashPreserver()
+
+        private void ConfigureStashPreserverDelayed(Character character)
         {
-            var stash = _characterInventory.Stash;
+            if (character.InstantiationType != CharacterManager.CharacterInstantiationTypes.Player)
+                return;
+
+            bool stashCreated() => character.Inventory?.Stash != null && character.Inventory.Stash.IsFirstSyncDone;
+            _coroutines.DoWhen(stashCreated, () => ConfigureStashPreserver(character), 120);
+        }
+
+        private float CalculateDurabilityReduction(Item item, Character character, float durabilityReduction)
+        {
+            //var foodTag = TagSourceManager.Instance.GetPrivateField<TagSourceManager, TagSourceSelector>("m_foodTag");
+            var stashSettings = _profile.StashSettingsProfile;
+            
+            if (_character.UID != _character.UID || item.PerishScript == null || !stashSettings.PreservesFoodEnabled || !item.Tags.Contains(TagSourceManager.Food))
+                return durabilityReduction;
+
+            var time = item.PerishScript.GetPrivateProperty<Perishable, float>("DeltaGameTime");
+
+            var adjustedReduction = item.PerishScript.DepletionRate * time;
+            if (!Mathf.Approximately(durabilityReduction, adjustedReduction) && durabilityReduction != adjustedReduction)
+                Logger.LogDebug($"Calculated new durability reduction for character {character.UID} Item {item.name}. Original reduction: {durabilityReduction}. Adjusted reduction: {adjustedReduction}");
+
+            return adjustedReduction;
+        }
+
+        private void ConfigureStashPreserver(Character character)
+        {
+            var stash = character.Stash;
             var stashSettings = _profile.StashSettingsProfile;
             var preserver = stash.GetPrivateField<ItemContainer, Preserver>("m_preservationExt");
             var foodTag = TagSourceManager.Instance.GetPrivateField<TagSourceManager, TagSourceSelector>("m_foodTag");
@@ -128,13 +167,31 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     preservedElements.RemoveAll(p => p.Tag == foodTag);
                     preservedElements.Add(new Preserver.PreservedElement()
                     {
-                        Preservation = preserver.NullifyPerishing ? 0f : stashSettings.PreservesFoodAmount,
+                        Preservation = preserver.NullifyPerishing ? 100f : stashSettings.PreservesFoodAmount,
                         Tag = foodTag
                     });
 
                     stash.AddItemExtension(preserver);
-                    Logger.LogInfo($"Stash preservation amount set to {stashSettings.PreservesFoodAmount}% for character '{_character.UID}'");
+                    var foods = stash.GetItemsFromTag(TagSourceManager.Food);
+                    var perishables = stash.GetComponentsInChildren<Perishable>();
+                    foreach (var perishable in perishables)
+                    {
+                        perishable.ItemParentChanged();
+                    }
+                    Logger.LogInfo($"Stash preservation amount set to {stashSettings.PreservesFoodAmount}% for character '{character?.Name}' '{character?.UID}'");
                 }
+                //if nullify or host character remove perishable from everyone elses stash items.
+                
+                //if (preserver.NullifyPerishing || character.UID != _character.UID)
+                //{
+                //    var foods = stash.GetItemsFromTag(TagSourceManager.Food);
+                //    foreach (var food in foods)
+                //    {
+                //        var perishable = food.GetComponent<Perishable>();
+                //        if (perishable != null)
+                //            UnityEngine.Object.Destroy(perishable);
+                //    }
+                //}
             }
             else
             {
@@ -208,12 +265,13 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 if (disposing)
                 {
                     CharacterInventoryPatches.AfterInventoryIngredients -= AddStashIngredients;
+                    CharacterManagerPatches.AfterAddCharacter -= ConfigureStashPreserverDelayed;
                     if (_profileManager?.ProfileService != null)
                     {
                         _profileManager.ProfileService.OnActiveProfileChanged -= TryConfigureStashPreserver;
                         _profileManager.ProfileService.OnActiveProfileSwitched -= TryConfigureStashPreserver;
                     }
-
+                    ItemPatches.GetAdjustedReduceDurability.TryRemove(_character.OwnerPlayerSys.PlayerID, out _);
                 }
                 _character = null;
                 disposedValue = true;

@@ -17,7 +17,7 @@ using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
-    public class EquipService : IDisposable
+    public class EquipService : IDisposable, IStartable
     {
         private IModifLogger Logger => _getLogger.Invoke();
         private readonly Func<IModifLogger> _getLogger;
@@ -77,29 +77,13 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 EquipmentMenuPatches.AfterShow += ShowEquipmentSetMenu;
                 EquipmentMenuPatches.AfterOnHide += HideEquipmentSetMenu;
                 ItemDisplayPatches.AfterSetReferencedItem += _equipSetPrefabService.AddEquipmentSetIcon;
-                NetworkLevelLoader.Instance.onOverallLoadingDone += ShowHideSkillsMenu;
                 _profileManager.ProfileService.OnActiveProfileChanged += TryProfileChanged;
                 _profileManager.ProfileService.OnActiveProfileSwitched += TryProfileSwitched;
-
-                var armorService = (ArmorSetsJsonService)_profileManager.ArmorSetService;
-                var weaponService = (WeaponSetsJsonService)_profileManager.WeaponSetService;
             }
             catch (Exception ex)
             {
                 Logger.LogException($"Failed to start {nameof(EquipService)}.", ex);
             }
-        }
-
-        private void ShowHideSkillsMenu()
-        {
-            if (_character?.CharacterUI == null)
-                return;
-
-            //Creates ItemDisplays for equipment set skills.
-
-            //_character.CharacterUI.ShowMenu(CharacterUI.MenuScreens.Skills);
-            //_character.CharacterUI.HideMenu(CharacterUI.MenuScreens.Skills);
-
         }
 
         private void HideEquipmentSetMenu(EquipmentMenu obj)
@@ -534,13 +518,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
                 var moveItem = slot.EquippedItem;
 
-                if (performAnimation)
-                    QueueAfterCastingAction(() => _characterInventory.EquipItem(equipSlot.UID, performAnimation));
-                else
-                    _characterInventory.EquipItem(equipSlot.UID, performAnimation);
+                if (isEquipInCharInventory || shouldEquipFromStash)
+                {
+                    if (performAnimation)
+                        QueueAfterCastingAction(() => _characterInventory.EquipItem(equipSlot.UID, performAnimation));
+                    else
+                        _characterInventory.EquipItem(equipSlot.UID, performAnimation);
 
-                if (shouldUnequipToStash && moveItem != null)
-                    _queuedMovesToStash.Enqueue(moveItem);
+                    if (shouldUnequipToStash && moveItem != null)
+                        _queuedMovesToStash.Enqueue(moveItem);
+                }
+                else
+                    return false;
             }
             //No stash involved. Perform standard equip.
             else
@@ -605,19 +594,24 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _stashQueueProcessing = true;
             Logger.LogDebug($"Started processing Stash Items queue. Queue contains {_queuedMovesToStash.Count} actions.");
             yield return null;
-            while (_castQueueProcessing)
+            var weaponTimeoutAt = DateTime.Now.AddSeconds(7);
+            while (_character.IsHandlingWeapon && DateTime.Now < weaponTimeoutAt)
                 yield return null;
 
             while (_queuedMovesToStash.Count > 0)
             {
                 var equipment = _queuedMovesToStash.Dequeue();
                 //wait for parent container to be set / unequip to be finished
-                var timeoutAt = DateTime.Now.AddSeconds(5);
-                while (equipment.ParentContainer == null && timeoutAt > DateTime.Now)
+                var timeoutAt = DateTime.Now.AddSeconds(7);
+
+                while ((!_characterInventory.OwnsItem(equipment.UID) || equipment.IsEquipped || !equipment.IsSynced) && DateTime.Now < timeoutAt)
                     yield return null;
 
-                Logger.LogDebug($"Moving equipment {equipment.name} to stash. ParentContainer {equipment.ParentContainer}.");
-                _character.Stash.TryMoveItemToContainer(equipment);
+                Logger.LogDebug($"Moving equipment {equipment.name} to stash. Current ParentContainer {equipment.ParentContainer.Name}. New Container {_characterInventory.Stash.Name}.");
+                equipment.transform.SetParent(_characterInventory.Stash.transform);
+
+                equipment.ForceUpdateParentChange();
+                //_character.Stash.TryMoveItemToContainer(equipment);
                 yield return null;
             }
 
@@ -668,7 +662,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     EquipmentMenuPatches.AfterShow -= ShowEquipmentSetMenu;
                     EquipmentMenuPatches.AfterOnHide -= HideEquipmentSetMenu;
                     ItemDisplayPatches.AfterSetReferencedItem -= _equipSetPrefabService.AddEquipmentSetIcon;
-                    NetworkLevelLoader.Instance.onOverallLoadingDone -= ShowHideSkillsMenu;
                     if (_profileManager?.ProfileService != null)
                     {
                         _profileManager.ProfileService.OnActiveProfileChanged -= TryProfileChanged;

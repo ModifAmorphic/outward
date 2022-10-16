@@ -19,7 +19,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches.Sandbox
         {
             try
             {
+#if DEBUG
                 Logger.LogTrace($"{nameof(CharacterSavePatches)}::{nameof(ApplyLoadedSaveToCharPrefix)}(): Invoked. Invoking {nameof(BeforeApplyLoadedSaveToCharPrefix)} for character {_char?.name}.");
+#endif
                 BeforeApplyLoadedSaveToCharPrefix?.Invoke(_char);
             }
             catch (Exception ex)

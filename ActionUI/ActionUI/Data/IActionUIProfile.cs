@@ -6,6 +6,7 @@
         bool ActionSlotsEnabled { get; set; }
         bool DurabilityDisplayEnabled { get; set; }
         bool EquipmentSetsEnabled { get; set; }
+        bool SkillChainsEnabled { get; set; }
         EquipmentSetsSettingsProfile EquipmentSetsSettingsProfile { get; set; }
         StashSettingsProfile StashSettingsProfile { get; set; }
 

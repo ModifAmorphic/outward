@@ -22,8 +22,10 @@ namespace ModifAmorphic.Outward.ActionUI.Patches.Sandbox
             {
                 if (!___m_character.IsLocalPlayer)
                     return;
-
+#if DEBUG
                 Logger.LogTrace($"{nameof(CharacterEquipmentPatches)}::{nameof(EquipPostfix)}(): Invoked. Equipment item '{_itemToEquip.name}' equiped to slot '{_itemToEquip.CurrentEquipmentSlot?.SlotType}' for character {___m_character?.name}. Invoking {nameof(AfterEquip)}.");
+#endif
+
                 AfterEquip?.Invoke(___m_character, _itemToEquip);
             }
             catch (Exception ex)
