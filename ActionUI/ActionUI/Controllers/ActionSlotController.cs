@@ -410,11 +410,13 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
             if (getStackAmount == null)
                 throw new ArgumentNullException(nameof(getStackAmount));
 
-            if (_stackService == null)
-                _stackService = new StackService(ActionSlot.StackText, ActionSlot.Config.ShowZeroStackAmount, this);
-            else
-                _stackService.Configure(ActionSlot.Config.ShowZeroStackAmount);
+            if (_stackService != null)
+            {
+                _stackService.StopTracking();
+                _stackService = null;
+            }
 
+            _stackService = new StackService(ActionSlot.StackText, ActionSlot.Config.ShowZeroStackAmount, this);
             _stackService.TrackStackAmount(getStackAmount);
         }
 

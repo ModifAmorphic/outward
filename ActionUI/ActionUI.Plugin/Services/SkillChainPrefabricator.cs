@@ -66,7 +66,13 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             skillGo.SetActive(false);
             var skill = skillGo.AddComponent<ChainedSkill>();
-            skill.SetChain(skillChain.Name, skillChain.ItemID, skillChain.ActionChain.Values);
+            if (!string.IsNullOrWhiteSpace(skillChain.StatusEffectIcon))
+                skill.SetChain(skillChain.Name, skillChain.ItemID, skillChain.StatusEffectIcon, skillChain.ActionChain.Values);
+            else if (skillChain.IconItemID != 0 && skillChain.IconItemID != -1)
+                skill.SetChain(skillChain.Name, skillChain.ItemID, skillChain.IconItemID, skillChain.ActionChain.Values);
+            else
+                throw new ArgumentException($"{nameof(SkillChain.StatusEffectIcon)} and {nameof(SkillChain.IconItemID)} are unset. One must be provided.", nameof(skillChain));
+
             //skill.Character = _character;
             skill.IsPrefab = true;
             //skillGo.SetActive(true);

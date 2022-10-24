@@ -8,6 +8,7 @@ namespace ModifAmorphic.Outward.ActionUI.Settings
         public const int MinSetItemID = -1319999999;
         public const int MaxItemID = -1320000000;
         public const int MinItemID = -1329999999;
+        public const string MoveToStashKey = "Context_Item_MoveToStash";
         public static readonly HashSet<AreaManager.AreaEnum> StashAreas = new HashSet<AreaManager.AreaEnum>()
         {
             AreaManager.AreaEnum.CierzoVillage,

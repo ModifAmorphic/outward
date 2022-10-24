@@ -9,6 +9,49 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
     {
         private static IModifLogger Logger => LoggerFactory.GetLogger(ModInfo.ModId);
 
+
+//        public static event Action<SkillMenu> AfterShow;
+
+//        [HarmonyPatch(nameof(SkillMenu.Show))]
+//        [HarmonyPostfix]
+//        private static void ShowPostfix(SkillMenu __instance)
+//        {
+//            try
+//            {
+//                if (__instance.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer)
+//                    return;
+//#if DEBUG
+//                Logger.LogTrace($"{nameof(SkillMenuPatches)}::{nameof(ShowPostfix)}(): Invoking {nameof(AfterShow)} for character {__instance.LocalCharacter?.UID}.");
+//#endif
+//                AfterShow?.Invoke(__instance);
+//            }
+//            catch (Exception ex)
+//            {
+//                Logger.LogException($"{nameof(SkillMenuPatches)}::{nameof(ShowPostfix)}(): Exception invoking {nameof(AfterShow)} for character {__instance?.LocalCharacter?.UID}.", ex);
+//            }
+//        }
+
+//        public static event Action<SkillMenu> AfterOnHide;
+
+//        [HarmonyPatch("OnHide")]
+//        [HarmonyPostfix]
+//        private static void OnHidePostfix(SkillMenu __instance)
+//        {
+//            try
+//            {
+//                if (__instance.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer)
+//                    return;
+//#if DEBUG
+//                Logger.LogTrace($"{nameof(SkillMenuPatches)}::{nameof(OnHidePostfix)}(): Invoking {nameof(AfterOnHide)} for character {__instance.LocalCharacter?.UID}.");
+//#endif
+//                AfterOnHide?.Invoke(__instance);
+//            }
+//            catch (Exception ex)
+//            {
+//                Logger.LogException($"{nameof(SkillMenuPatches)}::{nameof(OnHidePostfix)}(): Exception invoking {nameof(AfterOnHide)} for character {__instance?.LocalCharacter?.UID}.", ex);
+//            }
+//        }
+
         public static event Action<ItemListDisplay> AfterOnSectionSelected;
 
         [HarmonyPatch(nameof(SkillMenu.OnSectionSelected))]

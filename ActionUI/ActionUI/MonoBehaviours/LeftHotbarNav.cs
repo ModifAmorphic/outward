@@ -121,7 +121,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public void ToggleActionSlotEditMode(bool enableEdits)
         {
-            if (!_awake)
+            if (!_awake || enableEdits == _inEditMode)
                 return;
 
             _inEditMode = enableEdits;
@@ -133,19 +133,19 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         }
         public void ToggleHotkeyEditMode(bool enableEdits)
         {
-            if (!_awake)
+            if (!_awake || enableEdits == _inHotkeyEditMode)
                 return;
 
             _inHotkeyEditMode = enableEdits;
 
-            _nextHotkeyButton.gameObject.SetActive(enableEdits);
-            _previousHotkeyButton.gameObject.SetActive(enableEdits);
-            _hotkeyButton.gameObject.SetActive(enableEdits);
+            _nextHotkeyButton?.gameObject?.SetActive(enableEdits);
+            _previousHotkeyButton?.gameObject?.SetActive(enableEdits);
+            _hotkeyButton?.gameObject?.SetActive(enableEdits);
 
             if (enableEdits)
-                _barHotkeyGo.SetActive(true);
-            else if (!enableEdits && string.IsNullOrWhiteSpace(_hotkeyText.text))
-                _barHotkeyGo.SetActive(false);
+                _barHotkeyGo?.SetActive(true);
+            else if (!enableEdits && string.IsNullOrWhiteSpace(_hotkeyText?.text))
+                _barHotkeyGo?.SetActive(false);
         }
 
         private void HookButtonEvents()

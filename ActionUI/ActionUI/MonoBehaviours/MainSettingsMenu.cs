@@ -1,5 +1,6 @@
 using ModifAmorphic.Outward.Unity.ActionUI;
 using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -147,7 +148,21 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _menus[menuType].Show();
             var hideMenus = _menus.Where(kvp => kvp.Key != menuType).Select(kvp => kvp.Value);
             foreach (var menu in hideMenus)
-                menu.Hide();
+            {
+                try
+                {
+                    menu.Hide();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"Failed to hide menu type {menuType}. Disabling menu.");
+                    Debug.LogException(ex);
+                    if (menu is MonoBehaviour behaviour)
+                    {
+                        behaviour.gameObject.SetActive(false);
+                    }
+                }
+            }
         }
     }
 }

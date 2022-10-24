@@ -60,10 +60,15 @@
 ***
 
 ## Latest Release ${PACKAGE_VERSION}
+  - Added "Move to Stash" button to item context menu.
+  - Fix food decay in multiplayer. Client's will now have food decay based on the hosts configuration. Previously, food in client stashes was decaying at it's base rate, using neither client nor hosts stash configuration.
   - Durability display should now track equipment when first loading, without needing to unequip and equip.
   - Fix for Durability Display not displaying after first save is loaded without switching gear.
+  - Action Slots no longer stop tracking stack counts after switching from keyboard to controller and back to keyboard.
+  - Fix for Action UI settings not displaying correctly when Action Slots are disabled.
   - Equipment sets should now unequip to stash correctly when hosting a game.
-  - Client's in multiplayer games will now have food decay based on the hosts configuration. Previously, food in client stashes was decaying at it's base rate, using neither client nor hosts stash configuration.
+  - Several fixes for swapping between 2h and 1h weapon sets, or sets with empty slots.
+  
 
 ## Release 1.1.2
   - Characters should no longer be stuck in a T-pose when joining another game.

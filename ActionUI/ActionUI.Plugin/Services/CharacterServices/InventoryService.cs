@@ -18,6 +18,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private readonly Func<IModifLogger> _getLogger;
 
         private Character _character;
+        private readonly int _playerID;
         private CharacterInventory _characterInventory => _character.Inventory;
         private CharacterEquipment _characterEquipment => _character.Inventory.Equipment;
         private readonly ProfileManager _profileManager;
@@ -33,6 +34,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _profileManager = profileManager;
             _coroutines = coroutines;
             _getLogger = getLogger;
+
+            _playerID = _character.OwnerPlayerSys.PlayerID;
         }
 
         public void Start()
@@ -41,9 +44,11 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 CharacterInventoryPatches.AfterInventoryIngredients += AddStashIngredients;
                 CharacterManagerPatches.AfterAddCharacter += ConfigureStashPreserverDelayed;
+                ItemDisplayOptionPanelPatches.TryGetActiveActions.Add(_playerID, TryAddStashActionID);
+                ItemDisplayOptionPanelPatches.PlayersPressedAction.Add(_playerID, StashContextButtonPressed);
                 _profileManager.ProfileService.OnActiveProfileChanged += TryConfigureStashPreserver;
                 _profileManager.ProfileService.OnActiveProfileSwitched += TryConfigureStashPreserver;
-                //ItemPatches.GetAdjustedReduceDurability.Add(_character.OwnerPlayerSys.PlayerID, CalculateDurabilityReduction);
+                //ItemPatches.GetAdjustedReduceDurability.Add(_playerID, CalculateDurabilityReduction);
 
                 _coroutines.DoWhen(() => _characterInventory.Stash != null, () => TryConfigureStashPreserver(_profile), 180);
             }
@@ -51,6 +56,50 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 Logger.LogException($"Failed to start {nameof(InventoryService)}.", ex);
             }
+        }
+
+        private bool TryAddStashActionID(int rewiredId, Item item, List<int> baseActiveActions, out List<int> activeActions)
+        {
+            const int moveToPouchID = 7;
+            const int moveToBagID = 8;
+
+            activeActions = null;
+            if (rewiredId != _playerID || !GetStashInventoryEnabled() || item == null)
+                return false;
+
+            if (ItemDisplayOptionPanelPatches.PlayersMoveToStashID == -1)
+                return false;
+
+            var pouchIndex = baseActiveActions.IndexOf(moveToPouchID);
+            var bagIndex = baseActiveActions.IndexOf(moveToBagID);
+            var insertAfterIndex = bagIndex != -1 ? bagIndex : pouchIndex;
+
+            //No Pouch or Back IDs found. Assume can't be place in container.
+            if (insertAfterIndex == -1)
+                return false;
+
+            if (_characterInventory.Stash.Contains(item.UID))
+                return false;
+
+            activeActions = new List<int>();
+            for (int i = 0; i < baseActiveActions.Count(); i++)
+            {
+                activeActions.Add(baseActiveActions[i]);
+                if (i == insertAfterIndex)
+                    activeActions.Add(ItemDisplayOptionPanelPatches.PlayersMoveToStashID);
+            }
+
+            return true;
+        }
+
+        private void StashContextButtonPressed(int actionID, ItemDisplay itemDisplay)
+        {
+            if (ItemDisplayOptionPanelPatches.PlayersMoveToStashID == -1)
+                return;
+            if (ItemDisplayOptionPanelPatches.PlayersMoveToStashID != actionID)
+                return;
+
+            itemDisplay.TryMoveTo(_characterInventory.Stash);
         }
 
         private void AddStashIngredients(CharacterInventory characterInventory, Character character, Tag craftingStationTag, ref DictionaryExt<int, CompatibleIngredient> sortedIngredients)
@@ -176,7 +225,15 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     var perishables = stash.GetComponentsInChildren<Perishable>();
                     foreach (var perishable in perishables)
                     {
-                        perishable.ItemParentChanged();
+                        try
+                        {
+                            if (perishable != null)
+                                perishable.ItemParentChanged();
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogException($"Unable to set preservation for perishable {perishable?.name}.", ex);
+                        }
                     }
                     Logger.LogInfo($"Stash preservation amount set to {stashSettings.PreservesFoodAmount}% for character '{character?.Name}' '{character?.UID}'");
                 }
@@ -271,7 +328,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                         _profileManager.ProfileService.OnActiveProfileChanged -= TryConfigureStashPreserver;
                         _profileManager.ProfileService.OnActiveProfileSwitched -= TryConfigureStashPreserver;
                     }
-                    ItemPatches.GetAdjustedReduceDurability.TryRemove(_character.OwnerPlayerSys.PlayerID, out _);
+                    ItemDisplayOptionPanelPatches.TryGetActiveActions.TryRemove(_playerID, out _);
+                    ItemDisplayOptionPanelPatches.PlayersPressedAction.TryRemove(_playerID, out _);
+                    //ItemPatches.GetAdjustedReduceDurability.TryRemove(_playerID, out _);
                 }
                 _character = null;
                 disposedValue = true;

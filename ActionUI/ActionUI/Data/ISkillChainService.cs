@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ModifAmorphic.Outward.Unity.ActionUI.Data
 {
@@ -13,8 +14,12 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Data
         SkillChain GetSkillChain(string name);
         SkillChain GetSkillChain(int itemID);
         void RenameSkillChain(string existingName, string newName);
+        void CreateSkillChain(string name);
         void SaveSkillChain(SkillChain skillChain);
         void SaveNew(SkillChainProfile profile);
         void DeleteSkillChain(int itemID);
+
+        List<ISlotAction> GetSlotActions(string chainName);
+        ChainAction ConvertToChainAction(ISlotAction slotAction);
     }
 }

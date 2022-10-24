@@ -321,7 +321,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         public bool HasItems(IEnumerable<EquipSlot> slots) => slots.All(e => HasItem(e));
 
         public bool HasItem(EquipSlot equipSlot) => equipSlot == null
-                        || _characterInventory.OwnsItem(equipSlot.UID)
+                        || IsItemInInventory(equipSlot.UID)
                         || (GetIsStashEquipEnabled() && _character.Stash.GetContainedItemUIDs(equipSlot.ItemID).Any());
 
         public bool IsArmorSetEquipped(ArmorSet armorSet)
@@ -397,13 +397,13 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 var equipment = (Equipment)ResourcesPrefabManager.Instance.GetItemPrefab(weaponSet.RightHand.ItemID);
                 if (equipment.TwoHandedLeft)
                 {
-                    isLeftEquipped = TryEquipSlot(weaponSet.LeftHand, EquipSlots.RightHand, equipFromStash, unequipToStash);
+                    isLeftEquipped = TryEquipSlot(weaponSet.LeftHand, EquipSlots.RightHand, equipFromStash, unequipToStash, true);
                     isRightEquipped = true;
                 }
                 else
                 {
                     isLeftEquipped = true;
-                    isRightEquipped = TryEquipSlot(weaponSet.RightHand, EquipSlots.RightHand, equipFromStash, unequipToStash);
+                    isRightEquipped = TryEquipSlot(weaponSet.RightHand, EquipSlots.RightHand, equipFromStash, unequipToStash, true);
                 }
             }
 
@@ -457,7 +457,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return isEquipped;
         }
 
-        private bool TryEquipSlot(EquipSlot equipSlot, EquipSlots slotType, bool equipFromStash, bool unequipToStash)
+        private bool TryEquipSlot(EquipSlot equipSlot, EquipSlots slotType, bool equipFromStash, bool unequipToStash, bool is2HandedItem = false)
         {
             var slotID = ActionUiEquipSlotsXRef[slotType];
             var slot = _characterEquipment.GetMatchingSlot(slotID);
@@ -475,7 +475,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             if (equipSlot == null)
             {
                 //Nothing equipped, nothing to unequip
-                if (!slot.HasItemEquipped)
+                if (slot.EquippedItem == null)
                     return true;
 
                 Action unequipAction;
@@ -483,16 +483,22 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 {
                     unequipAction = () =>
                     {
-                        Logger.LogDebug($"Unequipping item UID {equipSlot?.UID} from slot {slotID} to stash.");
-                        _characterInventory.UnequipItem(slot.EquippedItem, performAnimation, _character.Stash);
+                        if (slot.EquippedItem != null)
+                        {
+                            Logger.LogDebug($"Unequipping item {slot?.name} ({slot?.EquippedItemUID}) from slot {slotID} to stash.");
+                            _characterInventory.UnequipItem(slot.EquippedItem, performAnimation, _character.Stash);
+                        }
                     };
                 }
                 else
                 {
                     unequipAction = () =>
                     {
-                        Logger.LogDebug($"Unequipping item UID {equipSlot?.UID} from slot {slotID}.");
-                        _characterInventory.UnequipItem(slot.EquippedItem, performAnimation);
+                        if (slot.EquippedItem != null)
+                        {
+                            Logger.LogDebug($"Unequipping item {slot?.name} ({slot?.EquippedItemUID}) from slot {slotID}.");
+                            _characterInventory.UnequipItem(slot.EquippedItem, performAnimation);
+                        }
                     };
                 }
 
@@ -518,15 +524,28 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
                 var moveItem = slot.EquippedItem;
 
+                if (shouldUnequipToStash)
+                {
+                    if (is2HandedItem)
+                    {
+                        var leftHand = _characterEquipment.GetMatchingSlot(EquipmentSlot.EquipmentSlotIDs.LeftHand)?.EquippedItem;
+                        var rightHand = _characterEquipment.GetMatchingSlot(EquipmentSlot.EquipmentSlotIDs.RightHand)?.EquippedItem;
+                        if (rightHand != null)
+                            QueueStashMove(rightHand);
+                        if (leftHand != null)
+                            QueueStashMove(leftHand);
+                    }
+                    else
+                        QueueStashMove(moveItem);
+                }
+
                 if (isEquipInCharInventory || shouldEquipFromStash)
                 {
+                    
                     if (performAnimation)
                         QueueAfterCastingAction(() => _characterInventory.EquipItem(equipSlot.UID, performAnimation));
                     else
                         _characterInventory.EquipItem(equipSlot.UID, performAnimation);
-
-                    if (shouldUnequipToStash && moveItem != null)
-                        _queuedMovesToStash.Enqueue(moveItem);
                 }
                 else
                     return false;
@@ -564,59 +583,140 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             Logger.LogDebug($"Started processing Cast Actions queue. Queue contains {_queuedCastActions.Count} actions.");
             while (_queuedCastActions.Count > 0)
             {
-                if (!_character.IsCasting)
+                if (!_character.IsHandlingWeapon)
                 {
-                    _queuedCastActions.Dequeue().Invoke();
+                    var action = _queuedCastActions.Dequeue();
+                    action.Invoke();
                 }
                 yield return null;
             }
             var timeoutAt = DateTime.Now.AddSeconds(5);
             Logger.LogDebug($"All Cast Actions in queue invoked. Awaiting last character casting to complete.");
-            while (_character.IsCasting && timeoutAt > DateTime.Now)
+            while (_character.IsHandlingWeapon && timeoutAt > DateTime.Now)
                 yield return null;
 
             Logger.LogDebug($"Finished processing Cast Actions queue.");
             _castQueueProcessing = false;
         }
 
+        private object _castLock = new object();
+        double _castRunTimeMs = 0;
+        double _castTimeoutMs = 10000;
+
+        private object _stashLock = new object();
+        double _stashRunTimeMs = 0;
+        double _stashTimeoutMs = 10000;
+
         private void ProcessEquipQueues()
         {
-            if (!_castQueueProcessing)
-                _coroutines.StartRoutine(InvokeQueuedCastActions());
-            if (!_stashQueueProcessing)
-                _coroutines.StartRoutine(MoveQueuedItemsToStash());
+            lock (_castLock)
+            {
+                if (!_castQueueProcessing)
+                {
+                    _castQueueProcessing = true;
+                    _coroutines.StopRoutine(CastQueueProcessingFailsafe());
+                    _coroutines.StartRoutine(InvokeQueuedCastActions());
+                    _coroutines.StartRoutine(CastQueueProcessingFailsafe());
+                }
+            }
+
+            lock (_stashLock)
+            {
+                if (!_stashQueueProcessing)
+                {
+                    _stashQueueProcessing = true;
+                    _coroutines.StopRoutine(StashQueueProcessingFailsafe());
+                    _coroutines.StartRoutine(MoveQueuedItemsToStash());
+                    _coroutines.StartRoutine(StashQueueProcessingFailsafe());
+                }
+            }
+        }
+
+        private IEnumerator CastQueueProcessingFailsafe()
+        {
+            while (_castQueueProcessing && _castRunTimeMs < _castTimeoutMs)
+            {
+                yield return new WaitForSeconds(.1f);
+            }
+
+            if (_castRunTimeMs > _castTimeoutMs && _castQueueProcessing)
+            {
+                Logger.LogWarning("Equip Cast Queue Processing Failsafe triggered. Clearing queue and resetting processing status.");
+                _castQueueProcessing = false;
+                _queuedCastActions.Clear();
+            }
+        }
+
+        private IEnumerator StashQueueProcessingFailsafe()
+        {
+            while (_stashQueueProcessing && _stashRunTimeMs < _stashTimeoutMs)
+            {
+                yield return new WaitForSeconds(.1f);
+            }
+
+            if (_stashRunTimeMs > _stashTimeoutMs && _stashQueueProcessing)
+            {
+                Logger.LogWarning("Stash Queue Processing Failsafe triggered. Clearing queue and resetting processing status.");
+                _stashQueueProcessing = false;
+                _queuedMovesToStash.Clear();
+            }
         }
 
         bool _stashQueueProcessing = false;
         Queue<Equipment> _queuedMovesToStash = new Queue<Equipment>();
+        private void QueueStashMove(Equipment equipment)
+        {
+            lock (_stashLock)
+            {
+                if (equipment != null && !_queuedMovesToStash.Any(e => e.UID == equipment.UID))
+                    _queuedMovesToStash.Enqueue(equipment);
+            }
+        }
+
+        
+
         private IEnumerator MoveQueuedItemsToStash()
         {
-            _stashQueueProcessing = true;
+            var startTime = DateTime.UtcNow;
+            _stashRunTimeMs = 0;
             Logger.LogDebug($"Started processing Stash Items queue. Queue contains {_queuedMovesToStash.Count} actions.");
             yield return null;
             var weaponTimeoutAt = DateTime.Now.AddSeconds(7);
             while (_character.IsHandlingWeapon && DateTime.Now < weaponTimeoutAt)
+            {
+                _stashRunTimeMs = DateTime.UtcNow.Subtract(startTime).TotalMilliseconds;
                 yield return null;
+            }
 
             while (_queuedMovesToStash.Count > 0)
             {
+                _stashRunTimeMs = DateTime.UtcNow.Subtract(startTime).TotalMilliseconds;
+                yield return null;
                 var equipment = _queuedMovesToStash.Dequeue();
                 //wait for parent container to be set / unequip to be finished
                 var timeoutAt = DateTime.Now.AddSeconds(7);
 
-                while ((!_characterInventory.OwnsItem(equipment.UID) || equipment.IsEquipped || !equipment.IsSynced) && DateTime.Now < timeoutAt)
-                    yield return null;
+                while (!IsItemInInventory(equipment.UID) && !_characterInventory.Stash.Contains(equipment.UID) && DateTime.Now < timeoutAt)
+                {
+#if DEBUG
+                    Logger.LogTrace($"Waiting on item {equipment.name} ({equipment.UID})");
+#endif
+                    _stashRunTimeMs = DateTime.UtcNow.Subtract(startTime).TotalMilliseconds;
+                    yield return new WaitForSeconds(.1f);
+                }
 
-                Logger.LogDebug($"Moving equipment {equipment.name} to stash. Current ParentContainer {equipment.ParentContainer.Name}. New Container {_characterInventory.Stash.Name}.");
-                equipment.transform.SetParent(_characterInventory.Stash.transform);
-
-                equipment.ForceUpdateParentChange();
-                //_character.Stash.TryMoveItemToContainer(equipment);
-                yield return null;
+                _stashRunTimeMs = DateTime.UtcNow.Subtract(startTime).TotalMilliseconds;
+                if (!_characterInventory.Stash.Contains(equipment.UID))
+                {
+                    if (_character.Stash.TryMoveItemToContainer(equipment))
+                        Logger.LogDebug($"Moved equipment {equipment.name} to stash.");
+                    else
+                        Logger.LogDebug($"Failed to move equipment {equipment.name} to stash.");
+                }
             }
 
-            yield return null;
             Logger.LogDebug($"Finished processing Stash Items queue.");
+            _stashRunTimeMs = 0;
             _stashQueueProcessing = false;
         }
 
@@ -651,6 +751,16 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 UID = slot.EquippedItemUID,
                 Slot = slotType
             };
+        }
+
+        private bool IsItemInInventory(string itemUID)
+        {
+            if (_characterInventory.Pouch.Contains(itemUID)
+                    || (_characterInventory.HasABag && _characterInventory.EquippedBag.Container.Contains(itemUID))
+                    || _characterInventory.Equipment.OwnsItem(itemUID))
+                return true;
+
+            return false;
         }
 
         protected virtual void Dispose(bool disposing)

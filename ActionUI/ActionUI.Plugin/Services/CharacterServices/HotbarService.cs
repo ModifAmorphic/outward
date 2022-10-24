@@ -235,24 +235,31 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 for (int s = 0; s < profile.Hotbars[hb].Slots.Count; s++)
                 {
-                    var slotData = profile.Hotbars[hb].Slots[s] as SlotData;
-                    var actionSlot = _hotbars.Controller.GetActionSlots()[hb][s];
-                    if (!_slotData.TryGetItemSlotAction(slotData, profile.CombatMode, out var slotAction))
+                    try
                     {
-                        actionSlot.Controller.AssignEmptyAction();
+                        var slotData = profile.Hotbars[hb].Slots[s] as SlotData;
+                        var actionSlot = _hotbars.Controller.GetActionSlots()[hb][s];
+                        if (!_slotData.TryGetItemSlotAction(slotData, profile.CombatMode, out var slotAction))
+                        {
+                            actionSlot.Controller.AssignEmptyAction();
+                        }
+                        else
+                        {
+                            try
+                            {
+                                actionSlot.Controller.AssignSlotAction(slotAction);
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.LogException($"Failed to assign slot action '{slotAction.DisplayName}' to Bar {hb}, Slot Index {s}.", ex);
+                            }
+                        }
+                        actionSlot.ActionButton.gameObject.GetOrAddComponent<ActionSlotDropper>().SetLogger(_getLogger);
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            actionSlot.Controller.AssignSlotAction(slotAction);
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.LogException($"Failed to assign slot action '{slotAction.DisplayName}' to Bar {hb}, Slot Index {s}.", ex);
-                        }
+                        Logger.LogException($"Failed to assign action to slot {hb}_{s}.", ex);
                     }
-                    actionSlot.ActionButton.gameObject.GetOrAddComponent<ActionSlotDropper>().SetLogger(_getLogger);
                 }
             }
             SetProfileHotkeys(profile);

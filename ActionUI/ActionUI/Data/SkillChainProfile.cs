@@ -12,12 +12,14 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Data
     {
         public string Name { get; set; }
         public int ItemID { get; set; } = -1;
+        public string StatusEffectIcon { get; set; }
+        public int IconItemID { get; set; } = -1;
         public SortedList<int, ChainAction> ActionChain { get; set; } = new SortedList<int, ChainAction>();
     }
     [Serializable]
     public class ChainAction
     {
-        public int ItemID { get; set; } = -1;
-        public string ItemUID { get; set; }
+        public int ItemID = -1;
+        public string ItemUID;
     }
 }

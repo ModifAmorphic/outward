@@ -64,6 +64,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                     _services.GetService<GlobalProfileService>(),
                     (ProfileService)profileManager.ProfileService,
                     () => usp.GetService<SkillChainsService>(),
+                    () => usp.GetService<SlotDataService>(),
                     characterUID,
                     _getLogger
                     ));
@@ -130,7 +131,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                 .AddSingleton(new SkillChainsService(
                                                     splitPlayer.AssignedCharacter,
                                                     profileManager,
-                                                    //actionMenus.EquipmentSetMenus,
+                                                    actionMenus.SkillChainMenu,
                                                     usp.GetService<InventoryService>(),
                                                     _services.GetService<SkillChainPrefabricator>(),
                                                     _coroutines,

@@ -7,6 +7,7 @@ using ModifAmorphic.Outward.Unity.ActionUI.EquipmentSets;
 using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
 using ModifAmorphic.Outward.Unity.ActionUI.Models.EquipmentSets;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -18,6 +19,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         protected override string FileName => "SkillChains.json";
         private SkillChainsService _skillChainsService => _getSkillChainsService.Invoke();
         private Func<SkillChainsService> _getSkillChainsService;
+        private Func<SlotDataService> _getSlotDataService;
+        private SlotDataService _slotData => _getSlotDataService.Invoke();
 
         private EventInfo _tmogEvent;
         private Delegate _tmogEventHandler;
@@ -30,10 +33,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         internal SkillChainsJsonService(GlobalProfileService globalProfileService,
                                      ProfileService profileService,
                                      Func<SkillChainsService> getSkillChainsService,
+                                     Func<SlotDataService> getSlotDataService,
                                      string characterUID,
                                      Func<IModifLogger> getLogger) : base(globalProfileService, profileService, characterUID, getLogger)
         {
             _getSkillChainsService = getSkillChainsService;
+            _getSlotDataService = getSlotDataService;
             TransmorphicEventsEx.TryHookOnTransmogrified(this, OnTransmogrified, out _tmogEvent, out _tmogEventHandler);
         }
 
@@ -66,6 +71,15 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return skillChain;
         }
 
+        public void CreateSkillChain(string name)
+        {
+            SaveSkillChain(new SkillChain()
+            {
+                ItemID = this.GlobalProfileService.GetNextItemID(),
+                Name = name
+            });
+        }
+
         public void RenameSkillChain(string existingName, string newName)
         {
             var skillChain = GetSkillChain(existingName);
@@ -82,6 +96,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         public void SaveSkillChain(SkillChain skillChain)
         {
             Logger.LogInfo($"Saving skill chain '{skillChain.Name}'.");
+            Logger.LogDebug($"Skill chain '{skillChain.Name}' has {skillChain.ActionChain?.Count()} Actions. {skillChain.ActionChain?.Count(a => a.Value == null)} are null.");
             var chains = GetProfile().SkillChains;
 
             var removed = chains.RemoveAll(sc => sc.ItemID == skillChain.ItemID);
@@ -97,7 +112,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             GlobalProfileService.AddOrUpdateItemID(skillChain.ItemID, CharacterUID);
             Save();
-            //LearnEquipmentSetSkill(armorSet);
+            if (skillChain.ActionChain.Any())
+                LearnSkillChain(skillChain);
         }
 
         public void DeleteSkillChain(int itemID)
@@ -110,7 +126,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 GlobalProfileService.RemoveItemID(itemID);
                 Save();
-                //ForgetEquipmentSetSkill(removedSet.SetID);
+                ForgetSkillChain(itemID);
                 OnDeletedChain?.Invoke(removedChain);
             }
         }
@@ -118,7 +134,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private void LearnSkillChain(SkillChain skillChain)
         {
             Logger.LogDebug($"Learning Skill Chain '{skillChain.Name}'");
-            //_equipService.AddOrUpdateEquipmentSetSkill<ArmorSetSkill>(skillChain);
+            _skillChainsService.AddOrUpdateChainedSkill(skillChain);
         }
 
         private void ForgetSkillChain(int itemID) => _skillChainsService.RemoveSkillChains(itemID);
@@ -148,7 +164,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 if (saveSet)
                 {
                     SaveSkillChain(skillChain);
-                    LearnSkillChain(skillChain);
                 }
             }
         }
@@ -159,11 +174,30 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             base.Dispose(disposing);
         }
 
-        
+        public List<ISlotAction> GetSlotActions(string chainName)
+        {
+            var actions = new List<ISlotAction>();
+            var chain = GetSkillChain(chainName);
 
-        
+            foreach(var action in chain.ActionChain.Values)
+            {
+                if (_slotData.TryGetItemSlotAction(action.ItemID, action.ItemUID, false, out var slotAction))
+                    actions.Add(slotAction);
+            }
 
-       
-        
+            return actions;
+        }
+
+        public ChainAction ConvertToChainAction(ISlotAction slotAction)
+        {
+            if (!(slotAction is IOutwardItem outwardItem))
+                throw new ArgumentException($"Unexpected slot action provided. Expected type {nameof(IOutwardItem)}", nameof(slotAction));
+
+            return new ChainAction()
+            {
+                ItemID = outwardItem.ActionItem.ItemID,
+                ItemUID = outwardItem.ActionItem.UID
+            };
+        }
     }
 }

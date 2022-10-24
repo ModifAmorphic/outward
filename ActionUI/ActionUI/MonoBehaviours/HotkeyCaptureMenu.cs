@@ -211,8 +211,6 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             OnShow?.TryInvoke();
         }
 
-        public void Hide() => Hide(true);
-
         public void ShowDialog(int slotIndex, HotkeyCategories category)
         {
             DebugLogger.Log($"Capturing Hotkey for slot index {slotIndex} in category {category}.");
@@ -233,6 +231,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             Dialog.SetActive(false);
             _monitorKeys = false;
         }
+
+        public void Hide() => Hide(true);
 
         private void Hide(bool raiseEvent)
         {

@@ -19,5 +19,6 @@ namespace ModifAmorphic.Outward.ActionUI.DataModels
         public string PrevHotkey { get; set; }
         public string PrevRewiredActionName { get; set; } = RewiredConstants.ActionSlots.PreviousHotbarAction.name;
         public int PrevRewiredActionId { get; set; } = RewiredConstants.ActionSlots.PreviousHotbarAction.id;
+        public bool HideLeftBarNav { get; set; }
     }
 }

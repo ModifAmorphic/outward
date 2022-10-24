@@ -22,6 +22,7 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
 
         void EnableHotbars();
         void DisableHotbars();
+        void ReassignActionSlots();
         //void ConfigureHotbars(int hotbars, int rows, int slotsPerRow, IActionSlotConfig[,] slotConfigs);
 
         void ToggleActionSlotEdits(bool enabled);

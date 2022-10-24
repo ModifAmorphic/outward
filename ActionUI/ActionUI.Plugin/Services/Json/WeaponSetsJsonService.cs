@@ -194,7 +194,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 if (saveSet)
                 {
                     SaveEquipmentSet(set);
-                    LearnEquipmentSetSkill(set);
                 }
             }
         }

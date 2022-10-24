@@ -13,7 +13,7 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         private static IModifLogger Logger => LoggerFactory.GetLogger(ModInfo.ModId);
 
         /// <summary>
-        /// This gets called on Update() so skip raising an event and trace logging. Set the value in the patch.
+        /// Activates Action Slots Rewired Maps and disables Outwards Quickslot Keyboard Maps
         /// </summary>
         /// <param name="_playerID"></param>
         /// <param name="_active"></param>
