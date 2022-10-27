@@ -46,6 +46,10 @@ namespace ModifAmorphic.Outward.ActionUI.Settings
                 CraftingInventoryAnywhereEnabled = false,
                 PreservesFoodEnabled = true,
                 PreservesFoodAmount = 75,
+            },
+            StorageSettingsProfile = new StorageSettingsProfile()
+            {
+                DisplayCurrencyEnabled = true,
             }
         };
 

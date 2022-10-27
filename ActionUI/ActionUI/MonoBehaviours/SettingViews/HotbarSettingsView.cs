@@ -25,6 +25,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         public Toggle ShowCooldownTimer;
         public Toggle ShowPrecisionTime;
+        public Toggle HideLeftNav;
         public Toggle CombatMode;
 
         public Dropdown EmptySlotDropdown;
@@ -114,6 +115,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             ShowCooldownTimer.isOn = config?.ShowCooldownTime ?? false;
             ShowPrecisionTime.isOn = config?.PreciseCooldownTime ?? false;
+            HideLeftNav.isOn = _hotbarProfile?.HideLeftNav ?? false;
             CombatMode.isOn = _hotbarProfile.CombatMode;
 
             EmptySlotDropdown.ClearOptions();
@@ -155,6 +157,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             ShowPrecisionTime.onValueChanged.AddListener(isOn =>
                 _hotbarService.SetCooldownTimer(ShowCooldownTimer.isOn, ShowPrecisionTime.isOn)
             );
+            HideLeftNav.onValueChanged.AddListener(isOn =>
+                _hotbarService.SetHideLeftNav(HideLeftNav.isOn)
+            );
             CombatMode.onValueChanged.AddListener(isOn =>
                 _hotbarService.SetCombatMode(CombatMode.isOn)
             );
@@ -165,7 +170,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         }
         private void EnableHotkeyEdits()
         {
-            Hotbars.Controller.ToggleActionSlotEdits(true);
+            //Hotbars.Controller.ToggleActionSlotEdits(true);
             HotkeyCaptureMenu.Show();
             MainSettingsMenu.gameObject.SetActive(false);
         }

@@ -125,6 +125,7 @@ namespace ModifAmorphic.Outward.ActionUI.Settings
             Rows = 1,
             SlotsPerRow = hotbarAssignments.First().Slots.Count,
             Hotbars = hotbarAssignments,
+            HideLeftNav = false,
             CombatMode = true,
             NextRewiredActionId = RewiredConstants.ActionSlots.NextHotbarAction.id,
             NextRewiredActionName = RewiredConstants.ActionSlots.NextHotbarAction.name,

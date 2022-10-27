@@ -19,6 +19,7 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Data
         IHotbarProfile SetCooldownTimer(bool showTimer, bool preciseTime);
         IHotbarProfile SetCombatMode(bool combatMode);
         IHotbarProfile SetEmptySlotView(EmptySlotOptions option);
+        IHotbarProfile SetHideLeftNav(bool hideLeftNav);
     }
 
     public enum HotbarProfileChangeTypes
@@ -32,6 +33,7 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Data
         SlotRemoved,
         CooldownTimer,
         CombatMode,
-        EmptySlotView
+        EmptySlotView,
+        HideLeftNav
     }
 }

@@ -90,13 +90,24 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 _hotbars.ClearChanges();
                 _profileManager.HotbarProfileService.OnProfileChanged += TryConfigureHotbars;
                 _hotbars.OnHasChanges.AddListener(Save);
+                CharacterUIPatches.AfterRefreshHUDVisibility += ShowHideHotbars;
 
                 AssignSlotActions();
+                ShowHideHotbars(_characterUI);
             }
             catch (Exception ex)
             {
                 Logger.LogException($"Failed to start {nameof(HotbarService)}.", ex);
             }
+        }
+
+        private void ShowHideHotbars(CharacterUI characterui)
+        {
+            if (characterui.TargetCharacter.UID != _character.UID)
+                return;
+            
+            var hudAlpha = OptionManager.Instance.GetHudVisibility(_character.OwnerPlayerSys.PlayerID).ToInt();
+            _hotbars.ActionBarsCanvas.GetComponent<CanvasGroup>().alpha = hudAlpha;
         }
 
         private void SetSkillsMovable(ItemListDisplay itemListDisplay)
@@ -133,6 +144,11 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 SetProfileHotkeys(profile);
 
                 _hotbars.Controller.ConfigureHotbars(profile);
+
+                if (profile.HideLeftNav)
+                    _hotbars.LeftHotbarNav.Hide();
+                else
+                    _hotbars.LeftHotbarNav.Show();
 
                 if (_isProfileInit)
                 {

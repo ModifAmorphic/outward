@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
@@ -46,6 +47,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 CharacterManagerPatches.AfterAddCharacter += ConfigureStashPreserverDelayed;
                 ItemDisplayOptionPanelPatches.TryGetActiveActions.Add(_playerID, TryAddStashActionID);
                 ItemDisplayOptionPanelPatches.PlayersPressedAction.Add(_playerID, StashContextButtonPressed);
+                ItemDisplayPatches.PlayersUpdateValueDisplay.Add(_playerID, TryAddCurrencyValue);
+                MenuPanelPatches.AfterOnHideInventoryMenu += HideCurrencyValues;
                 _profileManager.ProfileService.OnActiveProfileChanged += TryConfigureStashPreserver;
                 _profileManager.ProfileService.OnActiveProfileSwitched += TryConfigureStashPreserver;
                 //ItemPatches.GetAdjustedReduceDurability.Add(_playerID, CalculateDurabilityReduction);
@@ -57,6 +60,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 Logger.LogException($"Failed to start {nameof(InventoryService)}.", ex);
             }
         }
+
 
         private bool TryAddStashActionID(int rewiredId, Item item, List<int> baseActiveActions, out List<int> activeActions)
         {
@@ -90,6 +94,83 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             }
 
             return true;
+        }
+
+        private bool TryAddCurrencyValue(ItemDisplay itemDisplay)
+        {
+            if (!_profile.StorageSettingsProfile.DisplayCurrencyEnabled)
+                return false;
+
+            var item = itemDisplay.RefItem;
+            if (item == null)
+                return false;
+
+            if (_character?.CharacterUI != null && _characterInventory != null && (_character.CharacterUI.GetIsMenuDisplayed(CharacterUI.MenuScreens.Shop) || !_characterInventory.OwnsItem(item.UID)))
+                return false;
+
+            if (!_character.CharacterUI.GetIsMenuDisplayed(CharacterUI.MenuScreens.Inventory))
+                return false;
+
+            var valueHolder = itemDisplay.GetPrivateField<ItemDisplay, GameObject>("m_valueHolder");
+
+            if (valueHolder == null)
+                    return false;
+
+            //Already set, leave overridden
+            if (valueHolder.activeSelf)
+                return true;
+
+            var lblValue = itemDisplay.GetPrivateField<ItemDisplay, Text>("m_lblValue");
+            if (lblValue == null)
+                return false;
+
+            var sceneMerchants = typeof(Merchant).GetField("m_sceneMerchants", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null) as DictionaryExt<UID, Merchant>;
+            Merchant merchant = null;
+            if (sceneMerchants != null && sceneMerchants.Values.Any())
+                merchant = sceneMerchants.Values.FirstOrDefault();
+
+            int sellAmount;
+            if (merchant != null)
+            {
+                Logger.LogDebug($"Getting merchant {merchant?.ShopName}'s sell to amount for item {item?.name}");
+                sellAmount = item.GetSellValue(_character, merchant);
+                Logger.LogDebug($"Got merchant {merchant.ShopName}'s sell to amount of {sellAmount} for item {item.name}");
+            }
+            else
+            {
+                var overrideSellModifier = item.GetPrivateField<Item, float>("m_overrideSellModifier");
+                var sellRatio = overrideSellModifier != -1.0 ? overrideSellModifier : 0.3f;
+                sellAmount = Mathf.RoundToInt(item.RawCurrentValue * sellRatio);
+                Logger.LogDebug($"Got default sell to amount of {sellAmount} for item {item.name}");
+            }
+            
+            valueHolder.SetActive(true);
+            lblValue.text = sellAmount.ToString();
+            return true;
+        }
+
+        private void HideCurrencyValues(InventoryMenu menu)
+        {
+            Logger.LogDebug($"HideCurrencyValues: Hiding sell to amounts for menu {menu.name}.");
+            var invDisplay = menu.GetComponentInChildren<InventoryContentDisplay>();
+            Logger.LogDebug($"HideCurrencyValues: invDisplay==null=={invDisplay == null}.");
+            if (invDisplay == null)
+                return;
+
+            var itemDisplays = invDisplay.GetComponentsInChildren<ItemDisplay>();
+            Logger.LogDebug($"HideCurrencyValues: itemDisplays.Length=={itemDisplays.Length}.");
+            for (int i = 0; i < itemDisplays.Length; i++)
+            {
+                var valueHolder = itemDisplays[i].GetPrivateField<ItemDisplay, GameObject>("m_valueHolder");
+                if (valueHolder != null && valueHolder.activeSelf)
+                {
+                    valueHolder.SetActive(false);
+                    var lblValue = itemDisplays[i].GetPrivateField<ItemDisplay, Text>("m_lblValue");
+                    if (lblValue != null)
+                        lblValue.text = string.Empty;
+                }
+            }
+
         }
 
         private void StashContextButtonPressed(int actionID, ItemDisplay itemDisplay)
@@ -330,6 +411,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     }
                     ItemDisplayOptionPanelPatches.TryGetActiveActions.TryRemove(_playerID, out _);
                     ItemDisplayOptionPanelPatches.PlayersPressedAction.TryRemove(_playerID, out _);
+                    ItemDisplayPatches.PlayersUpdateValueDisplay.TryRemove(_playerID, out _);
+                    MenuPanelPatches.AfterOnHideInventoryMenu -= HideCurrencyValues;
                     //ItemPatches.GetAdjustedReduceDurability.TryRemove(_playerID, out _);
                 }
                 _character = null;

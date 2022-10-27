@@ -231,23 +231,38 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
             _resizeNeeded = false;
         }
 
-        public void ToggleActionSlotEdits(bool editMode)
+        public void ToggleActionSlotEdits(bool editMode, bool showHidden = false)
         {
-            if (_hbc.IsInActionSlotEditMode == editMode)
+            if (!_hbc.IsAwake)
                 return;
 
-            _hbc.IsInActionSlotEditMode = editMode;
             _hbc.LeftHotbarNav.ToggleActionSlotEditMode(editMode);
+
+            //if (_hbc.IsInActionSlotEditMode == editMode)
+            //    return;
+
+            _hbc.IsInActionSlotEditMode = editMode;
+            
+
             foreach (var slot in _hbc.ActionSlots.Values)
             {
-                slot.Controller.ToggleEditMode(editMode);
+                slot.Controller.ToggleEditMode(editMode, showHidden);
             }
         }
 
         public void ToggleHotkeyEdits(bool editMode)
         {
-            _hbc.IsInHotkeyEditMode = editMode;
+            
+            if (!_hbc.IsAwake && _hbc.IsInActionSlotEditMode == editMode)
+                return;
+
             _hbc.LeftHotbarNav.ToggleHotkeyEditMode(editMode);
+
+            if (_hbc.IsInHotkeyEditMode == editMode)
+                return;
+
+            _hbc.IsInHotkeyEditMode = editMode;
+            
             foreach (var slot in _hbc.ActionSlots.Values)
             {
                 slot.Controller.ToggleHotkeyEditMode(editMode);

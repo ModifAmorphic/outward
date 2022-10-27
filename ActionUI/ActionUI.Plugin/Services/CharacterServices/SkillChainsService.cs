@@ -75,10 +75,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private void HideSkillChainsMenu(MenuPanel menuPanel)
         {
-            Logger.LogDebug($"menuPanel=={(menuPanel == null ? "null" : "not null")}, menuPanel.LocalCharacter=={(menuPanel?.LocalCharacter == null ? "null" : "not null")}, _character=={(_character == null ? "null" : "not null")}" +
-                $", _profileManager=={(_profileManager == null ? "null" : "not null")}" +
-                $", _profileManager.ProfileService=={(_profileManager?.ProfileService == null ? "null" : "not null")}" +
-                $", _profileManager.ProfileService.GetActiveProfile()=={(_profileManager?.ProfileService?.GetActiveProfile() == null ? "null" : "not null")}");
+            //Logger.LogDebug($"menuPanel=={(menuPanel == null ? "null" : "not null")}, menuPanel.LocalCharacter=={(menuPanel?.LocalCharacter == null ? "null" : "not null")}, _character=={(_character == null ? "null" : "not null")}" +
+            //    $", _profileManager=={(_profileManager == null ? "null" : "not null")}" +
+            //    $", _profileManager.ProfileService=={(_profileManager?.ProfileService == null ? "null" : "not null")}" +
+            //    $", _profileManager.ProfileService.GetActiveProfile()=={(_profileManager?.ProfileService?.GetActiveProfile() == null ? "null" : "not null")}");
             if (menuPanel?.LocalCharacter?.UID != _character.UID || (!_profileManager.ProfileService.GetActiveProfile().SkillChainsEnabled))
                 return;
             if (_skillChainMenu.IsShowing)

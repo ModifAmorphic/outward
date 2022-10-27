@@ -14,6 +14,7 @@ namespace ModifAmorphic.Outward.ActionUI.DataModels
         public bool SkillChainsEnabled { get; set; }
         public EquipmentSetsSettingsProfile EquipmentSetsSettingsProfile { get; set; }
         public StashSettingsProfile StashSettingsProfile { get; set; }
+        public StorageSettingsProfile StorageSettingsProfile { get; set; }
         public string LastLoadedModVersion { get; set; }
 
         [JsonIgnore]

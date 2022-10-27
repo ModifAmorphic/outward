@@ -69,6 +69,26 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         //    }
         //}
 
+        public static event Action<InventoryContentDisplay> AfterShow;
+
+        [HarmonyPatch(nameof(InventoryContentDisplay.Show))]
+        [HarmonyPostfix]
+        private static void ShowPostfix(InventoryContentDisplay __instance)
+        {
+            try
+            {
+                if (__instance.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer)
+                    return;
+
+                Logger.LogDebug($"{nameof(InventoryContentDisplay)}::{nameof(ShowPostfix)}(): Invoking {nameof(AfterShow)}.");
+                AfterShow?.Invoke(__instance);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(InventoryContentDisplay)}::{nameof(ShowPostfix)}(): Exception invoking {nameof(AfterShow)}.", ex);
+            }
+        }
+
         public static event Action<InventoryContentDisplay> AfterOnHide;
 
         [HarmonyPatch("OnHide")]

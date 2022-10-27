@@ -132,9 +132,9 @@ namespace ModifAmorphic.Outward.ActionUI
             psp.transform.SetParent(modActiveGo.transform);
             psp.name = "PlayersServicesProvider";
 
-            var positionBgPrefab = actionUiPrefab.transform.Find("PositionableBg").gameObject;
-            var positionBg = UnityEngine.Object.Instantiate(positionBgPrefab, modGo.transform);
-            positionBg.name = "PositionableBg";
+            //var positionBgPrefab = actionUiPrefab.transform.Find("PositionableBg").gameObject;
+            //var positionBg = UnityEngine.Object.Instantiate(positionBgPrefab, modGo.transform);
+            //positionBg.name = "PositionableBg";
 
             var actionSpritesPrefab = actionUiPrefab.transform.Find("ActionSprites").gameObject;
             var actionSprites = UnityEngine.Object.Instantiate(actionSpritesPrefab);
@@ -142,9 +142,14 @@ namespace ModifAmorphic.Outward.ActionUI
             actionSprites.transform.SetParent(modActiveGo.transform);
             actionSprites.name = "ActionSprites";
 
+            var actionUIPrefabsPrefab = actionUiPrefab.transform.Find("Prefabs").gameObject;
+            var actionUIPrefabs = UnityEngine.Object.Instantiate(actionUIPrefabsPrefab, modGo.transform);
+            actionUIPrefabs.name = "Prefabs";
+
             UnityEngine.Object.Destroy(pspPrefab);
-            UnityEngine.Object.Destroy(positionBgPrefab);
+            //UnityEngine.Object.Destroy(positionBgPrefab);
             UnityEngine.Object.Destroy(actionSpritesPrefab);
+            UnityEngine.Object.Destroy(actionUIPrefabsPrefab);
             UnityEngine.Object.Destroy(scriptsGo);
 
             return actionUiPrefab;

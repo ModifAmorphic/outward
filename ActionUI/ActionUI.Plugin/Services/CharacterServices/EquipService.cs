@@ -580,8 +580,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private IEnumerator InvokeQueuedCastActions()
         {
             _castQueueProcessing = true;
+            _forceCastQueueStop = false;
+
             Logger.LogDebug($"Started processing Cast Actions queue. Queue contains {_queuedCastActions.Count} actions.");
-            while (_queuedCastActions.Count > 0)
+            while (_queuedCastActions.Count > 0 && !_forceCastQueueStop)
             {
                 if (!_character.IsHandlingWeapon)
                 {
@@ -592,7 +594,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             }
             var timeoutAt = DateTime.Now.AddSeconds(5);
             Logger.LogDebug($"All Cast Actions in queue invoked. Awaiting last character casting to complete.");
-            while (_character.IsHandlingWeapon && timeoutAt > DateTime.Now)
+            while (_character.IsHandlingWeapon && timeoutAt > DateTime.Now && !_forceCastQueueStop)
                 yield return null;
 
             Logger.LogDebug($"Finished processing Cast Actions queue.");
@@ -606,7 +608,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private object _stashLock = new object();
         double _stashRunTimeMs = 0;
         double _stashTimeoutMs = 10000;
-
+        private bool _forceCastQueueStop = false;
+        private bool _forceStashQueueStop = false;
         private void ProcessEquipQueues()
         {
             lock (_castLock)
@@ -644,6 +647,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 Logger.LogWarning("Equip Cast Queue Processing Failsafe triggered. Clearing queue and resetting processing status.");
                 _castQueueProcessing = false;
                 _queuedCastActions.Clear();
+                _forceCastQueueStop = true;
             }
         }
 
@@ -659,6 +663,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 Logger.LogWarning("Stash Queue Processing Failsafe triggered. Clearing queue and resetting processing status.");
                 _stashQueueProcessing = false;
                 _queuedMovesToStash.Clear();
+                _forceStashQueueStop = true;
             }
         }
 
@@ -678,17 +683,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private IEnumerator MoveQueuedItemsToStash()
         {
             var startTime = DateTime.UtcNow;
+            _forceStashQueueStop = false;
             _stashRunTimeMs = 0;
             Logger.LogDebug($"Started processing Stash Items queue. Queue contains {_queuedMovesToStash.Count} actions.");
             yield return null;
             var weaponTimeoutAt = DateTime.Now.AddSeconds(7);
-            while (_character.IsHandlingWeapon && DateTime.Now < weaponTimeoutAt)
+            while (_character.IsHandlingWeapon && DateTime.Now < weaponTimeoutAt && !_forceStashQueueStop)
             {
                 _stashRunTimeMs = DateTime.UtcNow.Subtract(startTime).TotalMilliseconds;
                 yield return null;
             }
 
-            while (_queuedMovesToStash.Count > 0)
+            while (_queuedMovesToStash.Count > 0 && !_forceStashQueueStop)
             {
                 _stashRunTimeMs = DateTime.UtcNow.Subtract(startTime).TotalMilliseconds;
                 yield return null;
@@ -696,7 +702,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 //wait for parent container to be set / unequip to be finished
                 var timeoutAt = DateTime.Now.AddSeconds(7);
 
-                while (!IsItemInInventory(equipment.UID) && !_characterInventory.Stash.Contains(equipment.UID) && DateTime.Now < timeoutAt)
+                while (!IsItemInInventory(equipment.UID) && equipment.IsEquipped && !_characterInventory.Stash.Contains(equipment.UID) && DateTime.Now < timeoutAt && !_forceStashQueueStop)
                 {
 #if DEBUG
                     Logger.LogTrace($"Waiting on item {equipment.name} ({equipment.UID})");
@@ -706,12 +712,26 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 }
 
                 _stashRunTimeMs = DateTime.UtcNow.Subtract(startTime).TotalMilliseconds;
-                if (!_characterInventory.Stash.Contains(equipment.UID))
+                while (!_characterInventory.Stash.Contains(equipment.UID) && !_forceStashQueueStop)
                 {
+                    //equipment.ChangeParent(_characterInventory.Stash.transform);
+                    //Logger.LogDebug($"Moved equipment {equipment.name} to stash.");
                     if (_character.Stash.TryMoveItemToContainer(equipment))
-                        Logger.LogDebug($"Moved equipment {equipment.name} to stash.");
+                        Logger.LogDebug($"Moving equipment {equipment.name} to stash.");
                     else
                         Logger.LogDebug($"Failed to move equipment {equipment.name} to stash.");
+                    if (!_characterInventory.Stash.Contains(equipment.UID))
+                    {
+                        Logger.LogTrace($"Waiting on item {equipment.name} ({equipment.UID}) to move to stash.");
+                        yield return new WaitForSeconds(.025f);
+                        _stashRunTimeMs = DateTime.UtcNow.Subtract(startTime).TotalMilliseconds;
+                    }
+                }
+                while (_character.OwnerPlayerSys.IsMasterClient && equipment.GetPrivateField<Item, bool>("m_forcePos") && !_forceStashQueueStop)
+                {
+                    Logger.LogTrace($"Waiting on item {equipment.name} ({equipment.UID}) sync.");
+                    yield return new WaitForSeconds(.025f);
+                    _stashRunTimeMs = DateTime.UtcNow.Subtract(startTime).TotalMilliseconds;
                 }
             }
 

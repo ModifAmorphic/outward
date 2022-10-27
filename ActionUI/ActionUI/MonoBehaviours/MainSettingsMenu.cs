@@ -29,7 +29,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public HotkeyCaptureMenu HotkeyCaptureMenu;
         public UIPositionScreen UIPositionScreen;
         public EquipmentSetsSettingsView EquipmentSetsSettingsView;
-        public StashSettingsView StashSettingsView;
+        public StorageSettingsView StorageSettingsView;
 
         public Toggle SettingsViewToggle;
         public Toggle HotbarViewToggle;
@@ -62,14 +62,14 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _menus.Add(ActionSettingsMenus.ProfileName, ProfileInput);
             _menus.Add(ActionSettingsMenus.HotkeyCapture, HotkeyCaptureMenu);
             _menus.Add(ActionSettingsMenus.UIPosition, UIPositionScreen);
-            _menus.Add(ActionSettingsMenus.Stash, StashSettingsView);
+            _menus.Add(ActionSettingsMenus.Stash, StorageSettingsView);
 
             _settingsViews = new Dictionary<ActionSettingsMenus, ISettingsView>()
             {
                 { ActionSettingsMenus.Settings, SettingsView },
                 { ActionSettingsMenus.ActionSlots, HotbarSettingsView },
                 { ActionSettingsMenus.EquipmentSets, EquipmentSetsSettingsView },
-                { ActionSettingsMenus.Stash, StashSettingsView },
+                { ActionSettingsMenus.Stash, StorageSettingsView },
             };
 
             SettingsViewToggle.onValueChanged.AddListener(isOn => ShowMenu(ActionSettingsMenus.Settings));

@@ -2,7 +2,7 @@
 using ModifAmorphic.Outward.Logging;
 using System;
 
-namespace ModifAmorphic.Outward.ActionUI.Patches
+namespace ModifAmorphic.Outward.ActionUI.Patches.Sandbox
 {
     [HarmonyPatch(typeof(EquipmentMenu))]
     internal static class InventoryMenuPatches

@@ -60,15 +60,27 @@
 ***
 
 ## Latest Release ${PACKAGE_VERSION}
-  - Added "Move to Stash" button to item context menu.
-  - Fix food decay in multiplayer. Client's will now have food decay based on the hosts configuration. Previously, food in client stashes was decaying at it's base rate, using neither client nor hosts stash configuration.
+- Stash Updates and Fixes
+  - Renamed section to "Storage" from "Stash".
+  - Added new option to settings to display item currency values in stash and character inventory.
+  - Added "Move to Stash" button to item context menu. Button is only displayed when stash use is enabled.
+  - Added new "Open Stash" button in the character inventory to the right of the "Stash" label. Clicking opens the same Stash Panel that shown when opening a stash in a player home.
+  - Pressing Ctrl and Left Clicking on an item in the character's inventory (backpack or pouch) will now move it to the stash.
+  - Clicking on an item in the stash will now move it to the backpack or pouch.
+  - Fix food decay in multiplayer. Client's will now have food decay based on the hosts configuration.
+    - Previously, food in client stashes was decaying at it's base rate, using neither client nor hosts stash configuration.
+- Durability Display fixes
   - Durability display should now track equipment when first loading, without needing to unequip and equip.
   - Fix for Durability Display not displaying after first save is loaded without switching gear.
+- Action Slots Updates and Fixes
+  - Added new "Hide Left Navigation" option in the Hotkey Settings menu that hides the UI element left of the hotbar which displays the current hotbar number and hotkeys.
+  - Action Slots will now be hidden with the rest of the HUD when "Show HUD" is disabled in Outward's setting menu.
+  - Empty Action Slots without a hotkey bound will now only show when the "Action UI" settings menu is open or Hotkeys are being assigned.
   - Action Slots no longer stop tracking stack counts after switching from keyboard to controller and back to keyboard.
   - Fix for Action UI settings not displaying correctly when Action Slots are disabled.
+- Equipment Set Fixes
   - Equipment sets should now unequip to stash correctly when hosting a game.
   - Several fixes for swapping between 2h and 1h weapon sets, or sets with empty slots.
-  
 
 ## Release 1.1.2
   - Characters should no longer be stuck in a T-pose when joining another game.

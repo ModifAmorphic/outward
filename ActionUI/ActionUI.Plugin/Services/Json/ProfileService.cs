@@ -50,10 +50,16 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 _activeProfile.Path = Path.Combine(ProfilesPath, _activeProfile.Name);
             }
 
-            if (_activeProfile != null && _activeProfile.EquipmentSetsSettingsProfile == null)
-                _activeProfile.EquipmentSetsSettingsProfile = CreateDefaultEquipmentSetsSettingsProfile();
-            if (_activeProfile != null && _activeProfile.StashSettingsProfile == null)
-                _activeProfile.StashSettingsProfile = CreateDefaultStashSettingsProfile();
+            if (_activeProfile != null)
+            {
+                if (_activeProfile.EquipmentSetsSettingsProfile == null)
+                    _activeProfile.EquipmentSetsSettingsProfile = CreateDefaultEquipmentSetsSettingsProfile();
+                if (_activeProfile.StashSettingsProfile == null)
+                    _activeProfile.StashSettingsProfile = CreateDefaultStashSettingsProfile();
+                if (_activeProfile.StorageSettingsProfile == null)
+                    _activeProfile.StorageSettingsProfile = CreateDefaultStorageSettingsProfile();
+                
+            }
 
             if (!_versionEvaluated)
                 SetVersionedSettings();
@@ -72,7 +78,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                         _activeProfile.EquipmentSetsEnabled = true;
 
                     if (ModInfo.ModVersion == "1.1.2")
-                        _activeProfile.SkillChainsEnabled = true;
+                        _activeProfile.StorageSettingsProfile.DisplayCurrencyEnabled = true;
 
                     _activeProfile.LastLoadedModVersion = ModInfo.ModVersion;
                     SaveProfile(_activeProfile, true);
@@ -252,6 +258,14 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 CraftingInventoryAnywhereEnabled = ActionUISettings.DefaultProfile.StashSettingsProfile.CraftingInventoryAnywhereEnabled,
                 PreservesFoodEnabled = ActionUISettings.DefaultProfile.StashSettingsProfile.PreservesFoodEnabled,
                 PreservesFoodAmount = ActionUISettings.DefaultProfile.StashSettingsProfile.PreservesFoodAmount,
+            };
+        }
+
+        private StorageSettingsProfile CreateDefaultStorageSettingsProfile()
+        {
+            return new StorageSettingsProfile()
+            {
+                DisplayCurrencyEnabled = ActionUISettings.DefaultProfile.StorageSettingsProfile.DisplayCurrencyEnabled,
             };
         }
 

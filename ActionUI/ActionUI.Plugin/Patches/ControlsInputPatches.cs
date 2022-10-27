@@ -30,7 +30,11 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
                 if (Psp.Instance.GetServicesProvider(_playerID).TryGetService<HotbarsContainer>(out var hotbars) && hotbars.IsAwake)
                 {
                     ReInput.players.GetPlayer(_playerID).controllers.maps.SetMapsEnabled(_active, ControllerType.Keyboard, RewiredConstants.ActionSlots.CategoryMapId);
-                    hotbars.Controller.ToggleActionSlotEdits(!_active);
+                    if (!_active && Psp.Instance.GetServicesProvider(_playerID).TryGetService<PlayerActionMenus>(out var actionMenus) && actionMenus.MainSettingsMenu.IsShowing)
+                        hotbars.Controller.ToggleActionSlotEdits(!_active, true);
+                    else
+                        hotbars.Controller.ToggleActionSlotEdits(!_active);
+
                     _active = false;
                 }
             }

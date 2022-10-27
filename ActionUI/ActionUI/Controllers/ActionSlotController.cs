@@ -259,11 +259,18 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
             ActionSlot.ActionButton.enabled = !toggle;
         }
 
-        public void ToggleEditMode(bool toggle)
+        public void ToggleEditMode(bool toggle, bool showHidden = false)
         {
-            if (toggle && ActionSlot.CanvasGroup.alpha == 0f)
+            bool isHiddenSlot = ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Hidden && ActionSlot.SlotAction == null;
+            bool overrideHidden = showHidden || (
+                              (ActionSlot.Config.EmptySlotOption != EmptySlotOptions.Hidden && ActionSlot.SlotAction != null) ||
+                              (ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Hidden && !string.IsNullOrWhiteSpace(ActionSlot.KeyText.text)));
+            //DebugLogger.Log($"{ActionSlot.name} ToggleEditMode({toggle}, {showHidden}), overrideHidden=={overrideHidden}.");
+            if (toggle && ActionSlot.CanvasGroup.alpha == 0f && (ActionSlot.Config.EmptySlotOption != EmptySlotOptions.Hidden || overrideHidden))
                 ActionSlot.CanvasGroup.alpha = 1;
-            else if (!toggle && ActionSlot.Config.EmptySlotOption == EmptySlotOptions.Hidden && ActionSlot.SlotAction == null)
+            else if (!toggle && ActionSlot.CanvasGroup.alpha != 0f && isHiddenSlot)
+                ActionSlot.CanvasGroup.alpha = 0;
+            else if (!overrideHidden && isHiddenSlot)
                 ActionSlot.CanvasGroup.alpha = 0;
         }
 

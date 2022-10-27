@@ -83,5 +83,30 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
                 Logger.LogException($"{nameof(CharacterUIPatches)}::{nameof(ShowMenuPrefix)}(): Exception Invoking {nameof(BeforeShowMenu)} for character {__instance.TargetCharacter?.UID}.", ex);
             }
         }
+
+        public static event Action<CharacterUI> AfterRefreshHUDVisibility;
+
+        [HarmonyPatch(nameof(CharacterUI.RefreshHUDVisibility))]
+        [HarmonyPatch(new Type[] { })]
+        [HarmonyPostfix]
+        private static void RefreshHUDVisibilityPostfix(CharacterUI __instance)
+        {
+            try
+            {
+                if (__instance.TargetCharacter == null || __instance.TargetCharacter.OwnerPlayerSys == null || !__instance.TargetCharacter.IsLocalPlayer)
+                    return;
+                
+                var playerId = __instance.TargetCharacter.OwnerPlayerSys.PlayerID;
+#if DEBUG
+                Logger.LogTrace($"{nameof(CharacterUIPatches)}::{nameof(RefreshHUDVisibilityPostfix)}(): Invoking {nameof(AfterRefreshHUDVisibility)} for PlayerID {playerId}.");
+#endif
+                AfterRefreshHUDVisibility?.Invoke(__instance);
+
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(CharacterUIPatches)}::{nameof(RefreshHUDVisibilityPostfix)}(): Exception Invoking {nameof(AfterRefreshHUDVisibility)}.", ex);
+            }
+        }
     }
 }
