@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿#if DEBUG
+using HarmonyLib;
 using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using System;
@@ -56,3 +57,4 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         }
     }
 }
+#endif

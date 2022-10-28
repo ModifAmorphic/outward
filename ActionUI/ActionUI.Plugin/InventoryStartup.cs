@@ -44,7 +44,6 @@ namespace ModifAmorphic.Outward.ActionUI
             _harmony.PatchAll(typeof(ItemDisplayClickPatches));
             _harmony.PatchAll(typeof(CurrencyDisplayClickPatches));
             _harmony.PatchAll(typeof(NetworkInstantiateManagerPatches));
-            _harmony.PatchAll(typeof(ItemPatches));
             _harmony.PatchAll(typeof(CharacterManagerPatches));
             _harmony.PatchAll(typeof(MenuPanelPatches));
             _harmony.PatchAll(typeof(ItemDisplayOptionPanelPatches));
