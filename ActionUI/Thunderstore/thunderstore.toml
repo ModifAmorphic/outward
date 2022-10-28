@@ -5,7 +5,7 @@ schemaVersion = "0.0.1"
 namespace = "ModifAmorphic"
 name = "ActionUI"
 versionNumber = "${PACKAGE_VERSION}"
-description = "Expand QuickSlots with highly configurabe Action Slots. Add hotkeyable Equipment Sets. Durability Display shows when equipment is breaking. Position HUD elements in positioning mode. Access your stash from character inventory, crafting and merchant menus. Preserve food in the stash again. All changes can be toggled off/on."
+description = "Expand QuickSlots with highly configurable Action Slots. Add hotkeyable Equipment Sets. Damaged equipment Durability Display. Reposition HUD elements. Access stash from character inventory, crafting and merchant menus. Preserve food in the stash."
 websiteUrl = "https://github.com/ModifAmorphic/outward/wiki/Action-UI"
 containsNsfwContent = false
 
