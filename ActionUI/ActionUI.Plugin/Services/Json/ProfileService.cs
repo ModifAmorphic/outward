@@ -77,7 +77,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     if (ModInfo.ModVersion == "1.0.2" || ModInfo.ModVersion == "1.0.3" || ModInfo.ModVersion == "1.0.4")
                         _activeProfile.EquipmentSetsEnabled = true;
 
-                    if (ModInfo.ModVersion == "1.1.2")
+                    if (ModInfo.ModVersion == "1.1.2" || ModInfo.ModVersion == "1.1.3")
                         _activeProfile.StorageSettingsProfile.DisplayCurrencyEnabled = true;
 
                     _activeProfile.LastLoadedModVersion = ModInfo.ModVersion;

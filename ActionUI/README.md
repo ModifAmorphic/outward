@@ -88,7 +88,7 @@
 
 ## 1.1.3
 - All changes in 1.1.4.
-- Introduced bug causing severe slowdown in the inventory menu.
+- Introduced bug causing severe slowdown in the inventory menu. (fixed in 1.1.4)
 
 ## Release 1.1.2
   - Characters should no longer be stuck in a T-pose when joining another game.
