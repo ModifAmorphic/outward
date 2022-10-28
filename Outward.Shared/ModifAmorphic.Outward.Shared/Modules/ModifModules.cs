@@ -3,6 +3,7 @@ using ModifAmorphic.Outward.Modules.CharacterMods;
 using ModifAmorphic.Outward.Modules.Crafting;
 using ModifAmorphic.Outward.Modules.Crafting.Services;
 using ModifAmorphic.Outward.Modules.Items;
+using ModifAmorphic.Outward.Modules.Localization;
 using ModifAmorphic.Outward.Modules.Merchants;
 using ModifAmorphic.Outward.Modules.QuickSlots;
 using ModifAmorphic.Outward.Modules.QuickSlots.KeyBindings.Services;
@@ -77,6 +78,12 @@ namespace ModifAmorphic.Outward.Modules
                     new CustomCraftingService(craftingMenuEvents, () => LoggerFactory.GetLogger(modId)),
                     craftingMenuEvents,
                     () => LoggerFactory.GetLogger(modId)));
+        }
+
+        public static LocalizationModule GetLocalizationModule(string modId)
+        {
+            return ModuleService.GetModule<LocalizationModule>(modId, () =>
+                new LocalizationModule(() => LoggerFactory.GetLogger(modId)));
         }
     }
 }

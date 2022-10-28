@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.Extensions;
+﻿using Localizer;
+using ModifAmorphic.Outward.Extensions;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Patches;
 using System.Collections.Concurrent;
@@ -13,25 +14,24 @@ namespace ModifAmorphic.Outward.Localization
         [MultiLogger]
         private static IModifLogger Logger { get; set; } = new NullLogger();
 
-        private static LocalizationManager _localizationManager;
-
         internal static void Init()
         {
-            LocalizationManagerPatches.AwakeAfter += LocalizationManagerPatches_AwakeAfter;
+            LocalizationManagerPatches.AwakeAfter += LoadLocalizations;
+            LocalizationManagerPatches.LoadAfter += LoadLocalizations;
         }
 
-        private static void LocalizationManagerPatches_AwakeAfter(LocalizationManager localizationManager)
+        private static void LoadLocalizations(LocalizationManager localizationManager)
         {
-            _localizationManager = localizationManager;
+            Logger.LogDebug("LocalizationService::LoadLocalizations");
             AddLocalizationsToManager();
         }
 
         public static void RegisterLocalization(string key, string localization)
         {
+            Logger.LogDebug($"LocalizationService::RegisterLocalization (\"{key}\", \"{localization}\")");
             _localizations.AddOrUpdate(key, localization, (k, v) => localization);
 
-            if (_localizationManager != null)
-                AddLocalizationsToManager();
+            AddLocalizationsToManager();
         }
         public static void RegisterLocalizations(IDictionary<string, string> localizations)
         {
@@ -39,12 +39,14 @@ namespace ModifAmorphic.Outward.Localization
             {
                 _localizations.AddOrUpdate(kvp.Key, kvp.Value, (k, v) => kvp.Value);
             }
-            if (_localizationManager != null)
-                AddLocalizationsToManager();
+            AddLocalizationsToManager();
         }
         private static void AddLocalizationsToManager()
         {
-            var generalLocs = _localizationManager.GetGeneralLocalizations();
+            if (!TryGetLocalizationManager(out var localizationManager))
+                return;
+
+            var generalLocs = localizationManager.GetGeneralLocalizations();
             foreach (var kvp in _localizations)
             {
                 (string key, string localization) = (kvp.Key, kvp.Value);
@@ -53,6 +55,13 @@ namespace ModifAmorphic.Outward.Localization
 
             //_localizationManager.SetGeneralLocalizations(generalLocs);
             Logger.LogDebug($"{nameof(LocalizationService)}::{nameof(AddLocalizationsToManager)}(): Added or Updated {_localizations.Count} localizations to the {nameof(LocalizationManager)} instance.");
+        }
+
+        private static bool TryGetLocalizationManager(out LocalizationManager localizationManager)
+        {
+            localizationManager = LocalizationManager.Instance;
+            
+            return localizationManager != null;
         }
     }
 }

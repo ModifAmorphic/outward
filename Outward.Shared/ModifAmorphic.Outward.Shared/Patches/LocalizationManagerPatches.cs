@@ -28,6 +28,22 @@ namespace ModifAmorphic.Outward.Patches
             }
         }
 
+        public static event Action<LocalizationManager> LoadAfter;
+        [HarmonyPatch("Load")]
+        [HarmonyPostfix]
+        private static void LoadPostfix(LocalizationManager __instance)
+        {
+            try
+            {
+                Logger.LogTrace($"{nameof(LocalizationManagerPatches)}::{nameof(LoadPostfix)}(): Invoked. Invoking {nameof(LoadAfter)}({nameof(LocalizationManager)}).");
+                LoadAfter?.Invoke(__instance);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(LocalizationManagerPatches)}::{nameof(LoadPostfix)}(): Exception Invoking {nameof(LoadAfter)}({nameof(LocalizationManager)}).", ex);
+            }
+        }
+
         public delegate void RegisterItemLocalizations(ref Dictionary<int, ItemLocalization> itemLocalizations);
         public static event RegisterItemLocalizations LoadItemLocalizationAfter;
 

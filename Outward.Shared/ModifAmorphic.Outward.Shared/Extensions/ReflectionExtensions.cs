@@ -53,21 +53,38 @@ namespace ModifAmorphic.Outward.Extensions
             var property = typeof(T).GetProperty(propertyName, BindingFlags.NonPublic | BindingFlags.Instance);
             property.SetValue(parent, value);
         }
-        public static T InvokePrivateMethod<T>(this object parent, string methodName)
+        public static T InvokePrivateMethod<T>(this object parent, string methodName) where T : class
         {
             var method = parent.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
             return (T)method.Invoke(parent, null);
         }
-        public static void InvokePrivateMethod<T>(this T parent, string methodName, params object[] args)
+        public static void InvokePrivateMethod<T>(this T parent, string methodName, params object[] args) where T : class
         {
             var method = typeof(T).GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
             method.Invoke(parent, args);
         }
-        public static R InvokePrivateMethod<T, R>(this T parent, string methodName, params object[] args)
+        public static R InvokePrivateMethod<T, R>(this T parent, string methodName, params object[] args) where T : class
         {
             var method = parent.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
             return (R)method.Invoke(parent, args);
         }
+
+        /// <summary>
+        /// Bypasses the override on the derived instance, calling the method on the parent instance directly.
+        /// </summary>
+        /// <typeparam name="T">The derived type.</typeparam>
+        /// <param name="derived">Instance of the derived class</param>
+        /// <param name="parentType">The parent class instance on which to invoke the <paramref name="methodName"/> method.</param>
+        /// <param name="methodName">The name of the method to invoke.</param>
+        public static void InvokePrivateParentMethod<D, P>(this D derived, string methodName) where D : P
+        {
+            var method = typeof(P).GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
+            P parent = (P)derived;
+            var fptr = method.MethodHandle.GetFunctionPointer();
+            var parentFunc = (Action)Activator.CreateInstance(typeof(Action), parent, fptr);
+            parentFunc.Invoke();
+        }
+
         public static void CopyFieldsTo<T>(this T source, T target)
         {
             var sourceFields = typeof(T).GetFields(System.Reflection.BindingFlags.Public

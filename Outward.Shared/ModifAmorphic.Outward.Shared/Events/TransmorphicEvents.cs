@@ -1,6 +1,7 @@
 ﻿using ModifAmorphic.Outward.Logging;
 using System;
 using System.Linq;
+using System.Reflection;
 
 namespace ModifAmorphic.Outward.Events
 {
@@ -11,8 +12,10 @@ namespace ModifAmorphic.Outward.Events
 
         public delegate void TransmogrifyDelegate(int consumedItemID, string consumedItemUID, int transmogItemID, string transmogItemUID);
 
-        public static bool TryHookOnTransmogrified(object subscriber, TransmogrifyDelegate transmogrifyDelegate)
+        public static bool TryHookOnTransmogrified(object subscriber, TransmogrifyDelegate transmogrifyDelegate, out EventInfo onTransmogrified, out Delegate eventHandler)
         {
+            eventHandler = default;
+            onTransmogrified = default;
             try
             {
                 var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -32,16 +35,16 @@ namespace ModifAmorphic.Outward.Events
                     return false;
                 Logger.LogDebug($"{nameof(TryHookOnTransmogrified)}: Got Type {tmorphType}");
 
-                var onTransmogrified = tmorphType.GetEvent("OnTransmogrified", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+                onTransmogrified = tmorphType.GetEvent("OnTransmogrified", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
                 Logger.LogDebug($"{nameof(TryHookOnTransmogrified)}: Got Event {onTransmogrified}");
                 var eventDelegateType = onTransmogrified.EventHandlerType;
                 Logger.LogDebug($"{nameof(TryHookOnTransmogrified)}: Got EventHandlerType {eventDelegateType}");
 
-                var tmorphDelegate = Delegate.CreateDelegate(eventDelegateType, subscriber, transmogrifyDelegate.Method);
-                Logger.LogDebug($"{nameof(TryHookOnTransmogrified)}: Got Delegate {tmorphDelegate}");
+                eventHandler = Delegate.CreateDelegate(eventDelegateType, subscriber, transmogrifyDelegate.Method);
+                Logger.LogDebug($"{nameof(TryHookOnTransmogrified)}: Got Delegate {eventHandler}");
                 onTransmogrified
                     .GetAddMethod()
-                    .Invoke(null, new object[] { tmorphDelegate });
+                    .Invoke(null, new object[] { eventHandler });
                 Logger.LogDebug($"{nameof(TryHookOnTransmogrified)}: Subscribed {subscriber.GetType()} to OnTransmogrified event.");
 
                 return true;
@@ -53,6 +56,26 @@ namespace ModifAmorphic.Outward.Events
                 if (Logger is NullLogger)
                     new BepInExLogger(LogLevel.Error, DefaultLoggerInfo.ModName).LogException($"Exception " +
                         $"attempting to hook subscriber [{subscriber?.GetType()}] action [{transmogrifyDelegate?.GetType()}] to Transmorphic OnTransmogrified event.", ex);
+            }
+            return false;
+        }
+        public static bool TryUnhookTransmogrified(object subscriber, EventInfo onTransmogrified, Delegate eventHandler)
+        {
+            try
+            {
+                if (subscriber == null || onTransmogrified == null || eventHandler == null)
+                    return false;
+
+                onTransmogrified.RemoveEventHandler(subscriber, eventHandler);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Exception " +
+                        $"attempting to unhook subscriber [{subscriber?.GetType()}] from Transmorphic OnTransmogrified event.", ex);
+                if (Logger is NullLogger)
+                    new BepInExLogger(LogLevel.Error, DefaultLoggerInfo.ModName).LogException($"Exception " +
+                        $"attempting to unhook subscriber [{subscriber?.GetType()}] from Transmorphic OnTransmogrified event.", ex);
             }
             return false;
         }
