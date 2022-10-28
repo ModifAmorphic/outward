@@ -318,18 +318,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     }
                     Logger.LogInfo($"Stash preservation amount set to {stashSettings.PreservesFoodAmount}% for character '{character?.Name}' '{character?.UID}'");
                 }
-                //if nullify or host character remove perishable from everyone elses stash items.
-                
-                //if (preserver.NullifyPerishing || character.UID != _character.UID)
-                //{
-                //    var foods = stash.GetItemsFromTag(TagSourceManager.Food);
-                //    foreach (var food in foods)
-                //    {
-                //        var perishable = food.GetComponent<Perishable>();
-                //        if (perishable != null)
-                //            UnityEngine.Object.Destroy(perishable);
-                //    }
-                //}
             }
             else
             {
@@ -413,7 +401,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     ItemDisplayOptionPanelPatches.PlayersPressedAction.TryRemove(_playerID, out _);
                     ItemDisplayPatches.PlayersUpdateValueDisplay.TryRemove(_playerID, out _);
                     MenuPanelPatches.AfterOnHideInventoryMenu -= HideCurrencyValues;
-                    //ItemPatches.GetAdjustedReduceDurability.TryRemove(_playerID, out _);
+                    
                 }
                 _character = null;
                 disposedValue = true;
