@@ -222,6 +222,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             Logger.LogDebug("Subscribing to Stash Container events");
 
+            MenuPanelPatches.AfterShowInventoryMenu += AddStashViewButton;
             InventoryContentDisplayPatches.AfterShow += AddStashViewButton;
             InventoryContentDisplayPatches.AfterOnHide += HideStashDisplay;
             InventoryContentDisplayPatches.AfterFocusMostRelevantItem += FocusMostRelevantItem;
@@ -241,6 +242,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             Logger.LogDebug("Unsubscribing from Stash Container events");
 
+            MenuPanelPatches.AfterShowInventoryMenu -= AddStashViewButton;
             InventoryContentDisplayPatches.AfterShow -= AddStashViewButton;
             InventoryContentDisplayPatches.AfterOnHide -= HideStashDisplay;
             InventoryContentDisplayPatches.AfterFocusMostRelevantItem -= FocusMostRelevantItem;
@@ -316,6 +318,15 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
                 Logger.LogDebug($"Added stash display for character {_character.name}.");
             }
+        }
+
+        private void AddStashViewButton(InventoryMenu inventoryMenu)
+        {
+            var inventoryContentDisplay = inventoryMenu.GetComponentInChildren<InventoryContentDisplay>();
+            if (inventoryContentDisplay == null)
+                return;
+
+            AddStashViewButton(inventoryContentDisplay);
         }
 
         private void AddStashViewButton(InventoryContentDisplay inventoryContentDisplay)
