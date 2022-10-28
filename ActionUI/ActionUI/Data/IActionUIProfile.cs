@@ -6,8 +6,10 @@
         bool ActionSlotsEnabled { get; set; }
         bool DurabilityDisplayEnabled { get; set; }
         bool EquipmentSetsEnabled { get; set; }
+        bool SkillChainsEnabled { get; set; }
         EquipmentSetsSettingsProfile EquipmentSetsSettingsProfile { get; set; }
         StashSettingsProfile StashSettingsProfile { get; set; }
+        StorageSettingsProfile StorageSettingsProfile { get; set; }
 
     }
 
@@ -31,5 +33,10 @@
         public bool CraftingInventoryAnywhereEnabled { get; set; }
         public bool PreservesFoodEnabled { get; set; }
         public int PreservesFoodAmount { get; set; }
+    }
+
+    public class StorageSettingsProfile
+    {
+        public bool DisplayCurrencyEnabled { get; set; }
     }
 }

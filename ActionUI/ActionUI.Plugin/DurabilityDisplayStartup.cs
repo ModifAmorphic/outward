@@ -14,12 +14,12 @@ namespace ModifAmorphic.Outward.ActionUI
         private readonly ServicesProvider _services;
         private readonly Func<IModifLogger> _loggerFactory;
         private readonly ModifGoService _modifGoService;
-        private readonly ModifCoroutine _coroutines;
+        private readonly LevelCoroutines _coroutines;
         private readonly string DurabilityModId = ModInfo.ModId + ".DurabilityDisplay";
 
         private IModifLogger Logger => _loggerFactory.Invoke();
 
-        public DurabilityDisplayStartup(ServicesProvider services, ModifGoService modifGoService, ModifCoroutine coroutines, Func<IModifLogger> loggerFactory)
+        public DurabilityDisplayStartup(ServicesProvider services, ModifGoService modifGoService, LevelCoroutines coroutines, Func<IModifLogger> loggerFactory)
         {
             (_services, _modifGoService, _coroutines, _loggerFactory) = (services, modifGoService, coroutines, loggerFactory);
             _harmony = new Harmony(DurabilityModId);
@@ -31,7 +31,7 @@ namespace ModifAmorphic.Outward.ActionUI
             _harmony.PatchAll(typeof(EquipmentPatches));
 
             _services
-                     .AddSingleton(new DurabilityDisplayService(_services.GetService<PlayerMenuService>(), _loggerFactory));
+                     .AddSingleton(new DurabilityDisplayService(_services.GetService<PlayerMenuService>(), _coroutines, _loggerFactory));
 
         }
     }

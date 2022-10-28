@@ -28,6 +28,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private List<string> _hotbarHotkeys = new List<string>();
 
+        private Canvas _leftNavCanvas;
+        private bool _isHidden;
+
         private bool _awake = false;
         private IHotbarNavActions GetHotbarNavActions()
         {
@@ -97,6 +100,19 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             var barIcon = transform.Find("BarNumber/BarIcon").gameObject;
             _barText = barIcon.GetComponentInChildren<Text>();
+
+            _leftNavCanvas = GetComponent<Canvas>();
+        }
+
+        public void Show()
+        {
+            _isHidden = false;
+            _leftNavCanvas.enabled = true;
+        }
+        public void Hide()
+        {
+            _isHidden = true;
+            _leftNavCanvas.enabled = false;
         }
 
         public void SetBarText(string text) => _barText.text = text;
@@ -130,6 +146,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             _nextButton.gameObject.SetActive(enableEdits);
             _previousButton.gameObject.SetActive(enableEdits);
 
+            ToggleShowHide(enableEdits);
+
         }
         public void ToggleHotkeyEditMode(bool enableEdits)
         {
@@ -138,14 +156,28 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
             _inHotkeyEditMode = enableEdits;
 
-            _nextHotkeyButton.gameObject.SetActive(enableEdits);
-            _previousHotkeyButton.gameObject.SetActive(enableEdits);
-            _hotkeyButton.gameObject.SetActive(enableEdits);
+            _nextHotkeyButton?.gameObject?.SetActive(enableEdits);
+            _previousHotkeyButton?.gameObject?.SetActive(enableEdits);
+            _hotkeyButton?.gameObject?.SetActive(enableEdits);
 
             if (enableEdits)
-                _barHotkeyGo.SetActive(true);
-            else if (!enableEdits && string.IsNullOrWhiteSpace(_hotkeyText.text))
-                _barHotkeyGo.SetActive(false);
+                _barHotkeyGo?.SetActive(true);
+            else if (!enableEdits && string.IsNullOrWhiteSpace(_hotkeyText?.text))
+                _barHotkeyGo?.SetActive(false);
+
+            ToggleShowHide(enableEdits);
+        }
+
+        private void ToggleShowHide(bool editsEnabled)
+        {
+            if (editsEnabled)
+            {
+                _leftNavCanvas.enabled = true;
+            }
+            else if (!editsEnabled && _isHidden)
+            {
+                _leftNavCanvas.enabled = false;
+            }
         }
 
         private void HookButtonEvents()

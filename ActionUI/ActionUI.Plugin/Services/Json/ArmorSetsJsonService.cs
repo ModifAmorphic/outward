@@ -8,6 +8,7 @@ using ModifAmorphic.Outward.Unity.ActionUI.Extensions;
 using ModifAmorphic.Outward.Unity.ActionUI.Models.EquipmentSets;
 using System;
 using System.Linq;
+using System.Reflection;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
@@ -18,6 +19,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private EquipService _equipService => _getEquipService.Invoke();
         private Func<EquipService> _getEquipService;
 
+        private EventInfo _tmogEvent;
+        private Delegate _tmogEventHandler;
+
         public ArmorSetsJsonService(GlobalProfileService globalProfileService,
                                      ProfileService profileService,
                                      Func<EquipService> getEquipService,
@@ -25,7 +29,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                                      Func<IModifLogger> getLogger) : base(globalProfileService, profileService, characterUID, getLogger)
         {
             _getEquipService = getEquipService;
-            TransmorphicEventsEx.TryHookOnTransmogrified(this, OnTransmogrified);
+            TransmorphicEventsEx.TryHookOnTransmogrified(this, OnTransmogrified, out _tmogEvent, out _tmogEventHandler);
         }
 
         public event Action<ArmorSet> OnNewSet;
@@ -190,7 +194,6 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 if (saveSet)
                 {
                     SaveEquipmentSet(set);
-                    LearnEquipmentSetSkill(set);
                 }
             }
         }
@@ -199,6 +202,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         protected override void Dispose(bool disposing)
         {
+            TransmorphicEventsEx.TryUnhookTransmogrified(this, _tmogEvent, _tmogEventHandler);
             base.Dispose(disposing);
         }
     }

@@ -1,4 +1,5 @@
 ﻿using ModifAmorphic.Outward.Coroutines;
+using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
@@ -14,14 +15,17 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
         Func<IModifLogger> _getLogger;
         private IModifLogger Logger => _getLogger.Invoke();
 
+        private readonly ModifGoService _modifGoService;
         private readonly LevelCoroutines _coroutines;
 
         public delegate void EquipmentSetProfilesLoadedDelegate(int playerID, string characterUID, ArmorSetsJsonService armorService, WeaponSetsJsonService weaponService);
         public event EquipmentSetProfilesLoadedDelegate EquipmentSetProfilesLoaded;
+        public delegate void SkillChainsProfilesLoadedDelegate(int playerID, string characterUID, SkillChainsJsonService skillChainsService);
+        public event SkillChainsProfilesLoadedDelegate SkillChainsProfilesLoaded;
 
-        public InventoryServicesInjector(ServicesProvider services, PlayerMenuService playerMenuService, LevelCoroutines coroutines, Func<IModifLogger> getLogger)
+        public InventoryServicesInjector(ServicesProvider services, PlayerMenuService playerMenuService, ModifGoService modifGoService, LevelCoroutines coroutines, Func<IModifLogger> getLogger)
         {
-            (_services, _coroutines, _getLogger) = (services, coroutines, getLogger);
+            (_services, _modifGoService, _coroutines, _getLogger) = (services, modifGoService, coroutines, getLogger);
             _services.GetService<SharedServicesInjector>().OnSharedServicesInjected += TryAddServiceProfiles;
             playerMenuService.OnPlayerActionMenusConfigured += TryAddInventoryServices;
         }
@@ -57,13 +61,40 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                     () => usp.GetService<EquipService>(),
                     characterUID,
                     _getLogger
+                    ))
+                .AddSingleton<ISkillChainService>(new SkillChainsJsonService(
+                    _services.GetService<GlobalProfileService>(),
+                    (ProfileService)profileManager.ProfileService,
+                    () => usp.GetService<SkillChainsService>(),
+                    () => usp.GetService<SlotDataService>(),
+                    characterUID,
+                    _getLogger
                     ));
 
-            EquipmentSetProfilesLoaded?.Invoke(
-                playerID,
-                characterUID,
-                (ArmorSetsJsonService)usp.GetService<IEquipmentSetService<ArmorSet>>(),
-                (WeaponSetsJsonService)usp.GetService<IEquipmentSetService<WeaponSet>>());
+            try
+            {
+                EquipmentSetProfilesLoaded?.Invoke(
+                    playerID,
+                    characterUID,
+                    (ArmorSetsJsonService)usp.GetService<IEquipmentSetService<ArmorSet>>(),
+                    (WeaponSetsJsonService)usp.GetService<IEquipmentSetService<WeaponSet>>());
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Invocation of event {nameof(EquipmentSetProfilesLoaded)} failed.", ex);
+            }
+
+            try
+            {
+                SkillChainsProfilesLoaded?.Invoke(
+                    playerID,
+                    characterUID,
+                    (SkillChainsJsonService)usp.GetService<ISkillChainService>());
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Invocation of event {nameof(SkillChainsProfilesLoaded)} failed.", ex);
+            }
         }
 
         private void TryAddInventoryServices(PlayerActionMenus actionMenus, SplitPlayer splitPlayer)
@@ -99,17 +130,27 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                                                     _services.GetService<EquipSetPrefabService>(),
                                                     _coroutines,
                                                     _getLogger))
+                //.AddSingleton(new SkillChainsService(
+                //                                    splitPlayer.AssignedCharacter,
+                //                                    profileManager,
+                //                                    actionMenus.SkillChainMenu,
+                //                                    usp.GetService<InventoryService>(),
+                //                                    _services.GetService<SkillChainPrefabricator>(),
+                //                                    _coroutines,
+                //                                    _getLogger))
                 .AddSingleton(new CharacterMenuStashService(
                     splitPlayer.AssignedCharacter,
                     profileManager,
                     usp.GetService<InventoryService>(),
+                    _modifGoService,
                     _coroutines,
                     _getLogger
                     ));
 
-            usp.GetService<InventoryService>().Start();
-            usp.GetService<EquipService>().Start();
-            usp.GetService<CharacterMenuStashService>().Start();
+            Starter.TryStart(usp.GetService<InventoryService>());
+            Starter.TryStart(usp.GetService<EquipService>());
+            Starter.TryStart(usp.GetService<CharacterMenuStashService>());
+            //Starter.TryStart(usp.GetService<SkillChainsService>());
         }
     }
 }

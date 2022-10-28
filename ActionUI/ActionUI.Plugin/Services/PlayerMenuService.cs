@@ -316,7 +316,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 if (disposing)
                 {
-                    SplitPlayerPatches.SetCharacterAfter -= InitActionUI;
+                    SplitPlayerPatches.SetCharacterAfter -= DelayedInit;
+                    //SplitPlayerPatches.SetCharacterAfter -= InitActionUI;
                     SplitScreenManagerPatches.RemoveLocalPlayerAfter -= RemovePlayerMenu;
                     PauseMenuPatches.AfterRefreshDisplay -= (pauseMenu) => _coroutine.StartRoutine(ResizePauseMenu(pauseMenu));
                 }

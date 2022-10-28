@@ -106,6 +106,34 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
             }
         }
 
+        public void ReassignActionSlots()
+        {
+            var allCanvases = _hbc.GetComponentsInChildren<Canvas>(true);
+
+            for (int c = 0; c < allCanvases.Length; c++)
+            {
+                var grid = allCanvases[c].GetComponentInChildren<GridLayoutGroup>(true);
+                if (grid != null && grid != _hbc.BaseGrid)
+                {
+                    var actionSlots = grid.GetComponentsInChildren<ActionSlot>(true);
+                    for (int s = 0; s < actionSlots.Length; s++)
+                    {
+                        if (actionSlots[s].Controller != null)
+                        {
+                            if (actionSlots[s].SlotAction != null)
+                            {
+                                actionSlots[s].Controller.AssignSlotAction(actionSlots[s].SlotAction, true);
+                            }
+                            else
+                            {
+                                actionSlots[s].Controller.AssignEmptyAction();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         public void SelectHotbar(int barIndex)
         {
             if (barIndex < 0 || barIndex >= _hbc.HotbarGrid.Length)
@@ -203,20 +231,38 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
             _resizeNeeded = false;
         }
 
-        public void ToggleActionSlotEdits(bool editMode)
+        public void ToggleActionSlotEdits(bool editMode, bool showHidden = false)
         {
-            _hbc.IsInActionSlotEditMode = editMode;
+            if (!_hbc.IsAwake)
+                return;
+
             _hbc.LeftHotbarNav.ToggleActionSlotEditMode(editMode);
+
+            //if (_hbc.IsInActionSlotEditMode == editMode)
+            //    return;
+
+            _hbc.IsInActionSlotEditMode = editMode;
+            
+
             foreach (var slot in _hbc.ActionSlots.Values)
             {
-                slot.Controller.ToggleEditMode(editMode);
+                slot.Controller.ToggleEditMode(editMode, showHidden);
             }
         }
 
         public void ToggleHotkeyEdits(bool editMode)
         {
-            _hbc.IsInHotkeyEditMode = editMode;
+            
+            if (!_hbc.IsAwake && _hbc.IsInActionSlotEditMode == editMode)
+                return;
+
             _hbc.LeftHotbarNav.ToggleHotkeyEditMode(editMode);
+
+            if (_hbc.IsInHotkeyEditMode == editMode)
+                return;
+
+            _hbc.IsInHotkeyEditMode = editMode;
+            
             foreach (var slot in _hbc.ActionSlots.Values)
             {
                 slot.Controller.ToggleHotkeyEditMode(editMode);

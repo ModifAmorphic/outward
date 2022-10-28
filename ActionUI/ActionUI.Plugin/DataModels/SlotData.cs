@@ -2,6 +2,7 @@
 using ModifAmorphic.Outward.Unity.ActionUI;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace ModifAmorphic.Outward.ActionUI.DataModels
 {

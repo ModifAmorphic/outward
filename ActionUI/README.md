@@ -4,12 +4,15 @@
 
 ***
 
-- Add Multiple Hotbars and Action Slots (Quick Slots)
+- Add Highly Configurable Multiple Hotbars and Action Slots (Quick Slots)
   - Combat Mode: Extra Slots without ruining game balance.
+  - Scale size of hotbars.
+  - Add additional action slots, rows of slots and/or new hotbars.
+  - See [wiki](https://github.com/ModifAmorphic/outward/wiki/Action-UI#hotbar-settings) for more.
 - Create Weapon and Armor Sets. Equip entire sets with a single hotkey.
 - Reposition UI Elements with Drag and Drop
-- New Durability UI Displays Equipment
-- Use stash while crafting, selling, equiping gear or in the character inventory menu
+- Equipment Durability UI displays when equipment is damaged.
+- Use stash while crafting, selling, equiping gear or in the character menu.
 - See the [Action UI Wiki](https://github.com/ModifAmorphic/outward/wiki/Action-UI) for more details
 - For Manual Installations, download the latest "ModifAmorphic-ActionUI-*.Standalone-BepInEx.zip" version under [ModifAmorphic Releases](https://github.com/ModifAmorphic/outward/releases)
 
@@ -53,13 +56,37 @@
 
 ***
 
-## Stash Improvements
+## Storage Improvements
 
-![Stash Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/StashSettingsView.png?raw=true)
+![Storage Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/StorageSettingsView_small.png?raw=true)
 
 ***
 
 ## Latest Release ${PACKAGE_VERSION}
+- Stash Updates and Fixes
+  - Renamed section to "Storage" from "Stash".
+  - Added new option to settings to display item currency values in stash and character inventory.
+  - Added "Move to Stash" button to item context menu. Button is only displayed when stash use is enabled.
+  - Added new "Open Stash" button in the character inventory to the right of the "Stash" label. Clicking opens the same Stash Panel that shown when opening a stash in a player home.
+  - Pressing Ctrl and Left Clicking on an item in the character's inventory (backpack or pouch) will now move it to the stash.
+  - Clicking on an item in the stash will now move it to the backpack or pouch.
+  - Fix food decay in multiplayer. Client's will now have food decay based on the hosts configuration.
+    - Previously, food in client stashes was decaying at it's base rate, using neither client nor hosts stash configuration.
+- Durability Display fixes
+  - Durability display should now track equipment when first loading, without needing to unequip and equip.
+  - Fix for Durability Display not displaying after first save is loaded without switching gear.
+- Action Slots Updates and Fixes
+  - Added new "Hide Left Navigation" option in the Hotkey Settings menu that hides the UI element left of the hotbar which displays the current hotbar number and hotkeys.
+  - "Show HUD" in Outward's setting menu will now also hide Hotbars when disabled.
+  - Added "Scale Hotbars %" to adjust size of hotbars.
+  - Empty Action Slots without a hotkey bound will now only show when the "Action UI" settings menu is open or Hotkeys are being assigned.
+  - Action Slots no longer stop tracking stack counts after switching from keyboard to controller and back to keyboard.
+  - Fix for Action UI settings not displaying correctly when Action Slots are disabled.
+- Equipment Set Fixes
+  - Equipment sets should now unequip to stash correctly when hosting a game.
+  - Several fixes for swapping between 2h and 1h weapon sets, or sets with empty slots.
+
+## Release 1.1.2
   - Characters should no longer be stuck in a T-pose when joining another game.
   - Equipment Sets equip from stash fix. Set items could be equipped from stash even with the option disabled if the character or merchant stash options where enabled.
   - Action UI settings menu should now open correctly after a split screen session.

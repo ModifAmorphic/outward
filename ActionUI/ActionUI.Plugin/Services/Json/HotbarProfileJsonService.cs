@@ -259,6 +259,19 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             return GetProfile();
         }
+
+        public IHotbarProfile SetHideLeftNav(bool hideLeftNav)
+        {
+            if (GetProfile().HideLeftNav != hideLeftNav)
+            {
+                GetProfile().HideLeftNav = hideLeftNav;
+                Save();
+                OnProfileChanged?.TryInvoke(GetProfile(), HotbarProfileChangeTypes.HideLeftNav);
+            }
+
+            return GetProfile();
+        }
+
         public IHotbarProfile SetCombatMode(bool combatMode)
         {
             if (GetProfile().CombatMode != combatMode)
@@ -292,6 +305,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 Save();
                 OnProfileChanged?.TryInvoke(GetProfile(), HotbarProfileChangeTypes.EmptySlotView);
             }
+            return GetProfile();
+        }
+
+        public IHotbarProfile SetScale(int scale)
+        {
+            if (GetProfile().Scale != scale)
+            {
+                GetProfile().Scale = scale;
+                Save();
+                OnProfileChanged?.TryInvoke(GetProfile(), HotbarProfileChangeTypes.Scale);
+            }
+
             return GetProfile();
         }
 

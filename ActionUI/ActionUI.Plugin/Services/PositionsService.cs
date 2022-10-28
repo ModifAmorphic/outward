@@ -40,7 +40,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             var hud = characterUI.transform.Find("Canvas/GameplayPanels/HUD");
             //hud.GetOrAddComponent<GraphicRaycaster>();
-            var positionablePrefab = _modInactivableGo.transform.Find("PositionableBg").gameObject;
+            var positionablePrefab = _modInactivableGo.transform.Find("Prefabs/PositionableBg").gameObject;
             for (int i = 0; i < hud.childCount; i++)
             {
                 if (hud.GetChild(i) is RectTransform uiRect)

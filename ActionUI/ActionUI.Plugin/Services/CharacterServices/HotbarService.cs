@@ -90,13 +90,24 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 _hotbars.ClearChanges();
                 _profileManager.HotbarProfileService.OnProfileChanged += TryConfigureHotbars;
                 _hotbars.OnHasChanges.AddListener(Save);
+                CharacterUIPatches.AfterRefreshHUDVisibility += ShowHideHotbars;
 
                 AssignSlotActions();
+                ShowHideHotbars(_characterUI);
             }
             catch (Exception ex)
             {
                 Logger.LogException($"Failed to start {nameof(HotbarService)}.", ex);
             }
+        }
+
+        private void ShowHideHotbars(CharacterUI characterui)
+        {
+            if (characterui.TargetCharacter.UID != _character.UID)
+                return;
+            
+            var hudAlpha = OptionManager.Instance.GetHudVisibility(_character.OwnerPlayerSys.PlayerID).ToInt();
+            _hotbars.ActionBarsCanvas.GetComponent<CanvasGroup>().alpha = hudAlpha;
         }
 
         private void SetSkillsMovable(ItemListDisplay itemListDisplay)
@@ -134,11 +145,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
                 _hotbars.Controller.ConfigureHotbars(profile);
 
+                if (profile.HideLeftNav)
+                    _hotbars.LeftHotbarNav.Hide();
+                else
+                    _hotbars.LeftHotbarNav.Show();
+
                 if (_isProfileInit)
                 {
                     AssignSlotActions(profile);
                     _saveDisabled = false;
                 }
+
+                ScaleHotbars(profile.Scale);
             }
             catch (Exception ex)
             {
@@ -149,7 +167,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             try
             {
-                TryConfigureHotbars(profile);
+                if (changeType == HotbarProfileChangeTypes.Scale)
+                    ScaleHotbars(profile.Scale);
+                else
+                    TryConfigureHotbars(profile);
             }
             catch (Exception ex)
             {
@@ -174,6 +195,15 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 Logger.LogException($"Failed to Save Hotbar changes.", ex);
             }
+        }
+
+        private void ScaleHotbars(int scaleAmount)
+        {
+            if (_hotbars == null)
+                return;
+
+            float scale = (float)scaleAmount / 100f;
+            _hotbars.transform.localScale = new Vector3(scale, scale, 1f);
         }
 
         private void SwapCanvasGroup()
@@ -235,24 +265,31 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 for (int s = 0; s < profile.Hotbars[hb].Slots.Count; s++)
                 {
-                    var slotData = profile.Hotbars[hb].Slots[s] as SlotData;
-                    var actionSlot = _hotbars.Controller.GetActionSlots()[hb][s];
-                    if (!_slotData.TryGetItemSlotAction(slotData, profile.CombatMode, out var slotAction))
+                    try
                     {
-                        actionSlot.Controller.AssignEmptyAction();
+                        var slotData = profile.Hotbars[hb].Slots[s] as SlotData;
+                        var actionSlot = _hotbars.Controller.GetActionSlots()[hb][s];
+                        if (!_slotData.TryGetItemSlotAction(slotData, profile.CombatMode, out var slotAction))
+                        {
+                            actionSlot.Controller.AssignEmptyAction();
+                        }
+                        else
+                        {
+                            try
+                            {
+                                actionSlot.Controller.AssignSlotAction(slotAction);
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.LogException($"Failed to assign slot action '{slotAction.DisplayName}' to Bar {hb}, Slot Index {s}.", ex);
+                            }
+                        }
+                        actionSlot.ActionButton.gameObject.GetOrAddComponent<ActionSlotDropper>().SetLogger(_getLogger);
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            actionSlot.Controller.AssignSlotAction(slotAction);
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.LogException($"Failed to assign slot action '{slotAction.DisplayName}' to Bar {hb}, Slot Index {s}.", ex);
-                        }
+                        Logger.LogException($"Failed to assign action to slot {hb}_{s}.", ex);
                     }
-                    actionSlot.ActionButton.gameObject.GetOrAddComponent<ActionSlotDropper>().SetLogger(_getLogger);
                 }
             }
             SetProfileHotkeys(profile);

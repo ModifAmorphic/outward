@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ModifAmorphic.Outward" Version="0.5.17" />
+    <PackageReference Include="ModifAmorphic.Outward" Version="0.5.18" />
   </ItemGroup>
 
   <ItemGroup>
@@ -66,6 +66,21 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.InputLegacyModule.dll</HintPath>
+	  <Private>false</Private>
+      <CopyLocal>false</CopyLocal>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule">
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.InputModule.dll</HintPath>
+	  <Private>false</Private>
+      <CopyLocal>false</CopyLocal>		
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.TextRenderingModule.dll</HintPath>
+	  <Private>false</Private>
       <CopyLocal>false</CopyLocal>
     </Reference>
     <Reference Include="UnityEngine.UI">

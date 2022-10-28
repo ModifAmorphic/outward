@@ -23,8 +23,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
             {
                 if (___m_character == null || ___m_character?.OwnerPlayerSys == null || !___m_character.IsLocalPlayer)
                     return;
-
+#if DEBUG
                 Logger.LogTrace($"{nameof(CharacterInventoryPatches)}::{nameof(InventoryIngredientsPostFix)}(): Invoking {nameof(AfterInventoryIngredients)}.");
+#endif
                 AfterInventoryIngredients?.Invoke(__instance, ___m_character, _craftingStationTag, ref _sortedIngredient);
             }
             catch (Exception ex)

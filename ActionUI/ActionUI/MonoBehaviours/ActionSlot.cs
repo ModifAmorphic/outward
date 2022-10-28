@@ -119,7 +119,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         //[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         //private void OnDisable()
         //{
-        //    _controller.ActionSlotOnDisable();
+        //    DebugLogger.Log($"ActionSlot::OnDisable: SlotAction {SlotAction?.DisplayName} Disabled");
+        //    //_controller.ActionSlotOnDisable();
         //}
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]

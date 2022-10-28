@@ -23,8 +23,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
             {
                 if (___m_character == null || ___m_character?.OwnerPlayerSys == null || !___m_character.IsLocalPlayer)
                     return true;
-
+#if DEBUG
                 Logger.LogTrace($"{nameof(CharacterQuickSlotManagerPatches)}::{nameof(ItemDestroyedPrefix)}(): Invoked for PlayerID {___m_character?.OwnerPlayerSys?.PlayerID}.");
+#endif
                 if (___m_character?.OwnerPlayerSys != null)
                 {
                     if (___m_quickSlots.Length > _quickSlotID && ___m_quickSlots[_quickSlotID] != null)
@@ -34,7 +35,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
                     if (AllowItemDestroyed.TryGetValue(playerId, out var allowItemDestroyed))
                     {
                         var result = allowItemDestroyed(playerId);
+#if DEBUG
                         Logger.LogTrace($"{nameof(CharacterQuickSlotManagerPatches)}::{nameof(ItemDestroyedPrefix)}(): PlayerID {playerId}: Allow item in quickslot {_quickSlotID} to be destroyed? {result}.");
+#endif
                         return result;
                     }
                 }

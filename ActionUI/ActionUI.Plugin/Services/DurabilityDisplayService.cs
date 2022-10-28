@@ -1,5 +1,6 @@
 ﻿using ModifAmorphic.Outward.ActionUI.Extensions;
 using ModifAmorphic.Outward.ActionUI.Patches;
+using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI;
@@ -14,6 +15,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         private readonly Func<IModifLogger> _loggerFactory;
         private IModifLogger Logger => _loggerFactory.Invoke();
         private PlayerMenuService _playerMenuService;
+        private LevelCoroutines _coroutines;
         private bool _unequipedAdded;
 
         private bool _equipTracked = false;
@@ -31,14 +33,15 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             { UnequippedBoots.DurableEquipmentSlot, UnequippedBoots }
         };
 
-        public DurabilityDisplayService(PlayerMenuService playerMenuService, Func<IModifLogger> loggerFactory)
+        public DurabilityDisplayService(PlayerMenuService playerMenuService, LevelCoroutines coroutines, Func<IModifLogger> loggerFactory)
         {
-            (_playerMenuService, _loggerFactory) = (playerMenuService, loggerFactory);
+            (_playerMenuService, _coroutines, _loggerFactory) = (playerMenuService, coroutines, loggerFactory);
 
             EquipmentPatches.AfterOnEquip += TrackEquippedItem;
             EquipmentPatches.AfterOnUnequip += UntrackEquippedItem;
             //SplitPlayerPatches.SetCharacterAfter += ConfigureShowHide;
             _playerMenuService.OnPlayerActionMenusConfigured += TryConfigureShowHide;
+
             SplitScreenManagerPatches.RemoveLocalPlayerAfter += SplitScreenManagerPatches_RemoveLocalPlayerAfter;
         }
 
@@ -60,10 +63,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             //var actionMenus = psp.GetService<PlayerActionMenus>();
             var profileService = actionMenus.ProfileManager.ProfileService;
 
+            //if (_configured)
+            //    return;
+            
             Reset(actionMenus);
-
-            if (_configured)
-                return;
 
             profileService.OnActiveProfileChanged += (profile) => ShowHide(splitPlayer.RewiredID, profile.DurabilityDisplayEnabled);
             profileService.OnActiveProfileSwitched += (profile) => ShowHide(splitPlayer.RewiredID, profile.DurabilityDisplayEnabled);

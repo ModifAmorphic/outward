@@ -1,7 +1,7 @@
 # ![Action UI](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/Banner.png?raw=true)
-⚡ Additional Quickslots, UI Positioning, Durability Display ⚡
+⚡ Additional Quickslots, UI Positioning, Durability Display, Equipment Sets, Stash Improvements ⚡
 
-Replaces the Outward's built in quickslots with a highly configurable one from this mod. The new Hotbar adds additional slots (referred to as action slots), multiple hotbars and even dividing a hotbar into multiple rows.  In addition, this mod enables moving of many UI elements in the base game and those added by Action UI.  There's also a new durability UI to display worn and broken equipment.
+Replaces the Outward's built in quickslots with a highly configurable one from this mod. The new Hotbar adds additional slots (referred to as action slots), multiple hotbars and even dividing a hotbar into multiple rows.  In addition, this mod enables moving of many UI elements in the base game and those added by Action UI.  There's also a new durability UI to display worn and broken equipment, an equipment UI to organize equipment into sets that can be equipped with a hotkey and stash improvements to the Outward's stash functionality.
 
 ## Configuration Menus
 
@@ -14,19 +14,19 @@ The main Action UI menu contains settings for creating or editing profiles, enab
 
 ![Action UI Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/MainSettingsMenu.png?raw=true)
 
-#### Profile
+#### **Profile**
 Create, select or rename an existing profile with the profile setting options. A Profile contains all of the configuration changes that were made with Action UI.  This includes UI positioning, hotkeys, hotbar configuration and slot assignments in addition to all of the settings listed on the Main and Hotbar settings menus.
 
-##### Default Profile
+##### **Default Profile**
 Action UI automatically creates a default "Profile 1" profile the first time the Action UI mod is ran. This profile can be renamed using the rename button ![Rename Button](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/RenameButton.png?raw=true). For starting out, this single default profile is all you'll need. A new profile can always be created later, which will carry over all the changes made to the first default profile.
 
-##### New Profile
+##### **New Profile**
 A New Profile can be created by selecting the "[New Profile]" option from the profile drop down. Upon selection of "[New Profile]", enter the name of profile you wish to be created. If you are unable to create a new profile, make sure your name meets [Windows File Naming Conventions](https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions). Creating a new profile saves all of the current changes, essentially making a copy of the existing profile as starting point. Any additional changes made will only be saved to the selected profile.
 
-##### Renaming a Profile
+##### **Renaming a Profile**
 Select the profile you wish to rename from the drop down, click the the rename button ![Rename Button](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/RenameButton.png?raw=true) and type in a new name. That's it. Like new profiles, renaming a profile must follow the same [Windows File Naming Conventions](https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions).
 
-#### Component Toggles
+#### **Component Toggles**
 - The "Action Slots (Restart)" option enables or disables Action UI's configurable Hotbars.  A **game restart** is required for this to take effect. Disabling enables Outward's built in Quick Slots.
 - "Durability Display" toggles the durability display on and off. No restart required.
 - "Equipment Sets" toggles Equipment Sets addon menu and skills.
@@ -38,7 +38,7 @@ Add multiple Hotbars, split a Hotbar into rows, add additional Action Slots (Qui
 
 ![Hotbar Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/HotbarSettingsView.png?raw=true)
 
-#### Multiple Hotbars, Rows, Slots
+#### **Multiple Hotbars, Rows, Slots**
 Setting | Description
 --- | ---
 ![Hotbars Setting](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/HotbarsSetting.png?raw=true) | Multiple Hotbar setting. Increasing this value adds additional Hotbars that can be switched to using the next, previous or Hotbar Hotkeys.
@@ -47,11 +47,11 @@ Setting | Description
 
 ![Hotbar Example](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/Hotbar.png?raw=true)
 
-#### Show Cooldown Timer
+#### **Show Cooldown Timer**
 Enables a numeric countdown display for each Action Slot representing the time left before an action becomes available to use.
 - Precision Time shows the tenths decimal place if the time remaining is less than 10.
 
-#### Empty Slots
+#### **Empty Slots**
 Configures how an Action Slot is displayed if no action is assigned to it.
 Option | Image | Description
 --- | --- | ---
@@ -59,10 +59,16 @@ Transparent | ![Transparent Action Slot](https://github.com/ModifAmorphic/outwar
 Image | ![Empty Image Action Slot](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/ActionSlotEmptyImage.png?raw=true) | A solid black image is shown as a placeholder in each empty Action Slot.
 Hidden | N/A | The Action Slot is hidden completely. To assign an action to a hidden slot, change this setting to either the Transparent or Image option and assign the action then switch back to Hidden.
 
-#### Combat Mode
+#### **Combat Mode**
 Combat Mode disables the use of all extra Hotbars and Action Slots beyond the first Hotbar and 8 Action Slots whenever a character enters combat. If you wish to have all Action Slots available in and out of combat at all times, then disable this setting.
 
 Why does Combat mode exist? Outward is balanced around only having 8 actions available in combat, the 8 assignable Quick Slots in the base game.  This mode was created to maintain that balance while still allowing additional actions to be hotkeyed outside of combat.  Basically, this mode exists to alleviate some of the tedium of the digging around in the character menus to set traps, cast boons, deploy tents, campfires, cooking pots, etc outside of combat, which is one of my least favorite parts of Outward.
+
+#### **Scale Hotbars %**
+Scale Hotbars to desired size. Cram more slots on your screen, or make them easier to see.  100% is the default size which roughly matches Outward's Quickslots size. Reduce the value to shrink the Hotbar, increase the value to grow it.
+- <=  99% - Shrink Hotbar Size
+- == 100% - Default Hotbar Size
+- \>= 100% - Increase Hotbar Size
 
 ***
 
@@ -78,44 +84,48 @@ Configure various Equipment Set options, from allowing armor swaps in combat to 
 
 ![Equipment Set Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/EquipmentSetSettingsView.png?raw=true)
 
-#### Use Armor Sets in combat
+#### **Use Armor Sets in combat**
 Allows swapping of equipment sets while in combat.
 
-#### Skip weapon animations on equip
+#### **Skip weapon animations on equip**
 Skips equipping and unequipping of main and off hand equipment.
 
-#### Equip Sets from Stash
+#### **Equip Sets from Stash**
 Armor or Weapon Sets will be equipped directly from the character's stash. Also makes items from the stash available in Outward's Equipment menu. Requires the character be in a town where a stash is present unless the "Stash available anywhere" option is enabled.
 
-##### Stash available anywhere
-"Equip Sets from Stash" enabled outside towns.
+  - **Stash available anywhere** - "Equip Sets from Stash" enabled outside towns.
 
-#### Unequip Sets from Stash
+#### **Unequip Sets from Stash**
 Armor or Weapon Sets will be unequipped directly to the character's stash. Equipment that is not assigned to an Armor or Weapon Set will not be sent to the character's stash however. Instead, it will be sent to the character's inventory. Requires the character be in a town where a stash is present unless the "Stash available anywhere" option is enabled.
 
-##### Stash available anywhere
-"Unequip Sets from Stash" enabled outside towns.
+  - **Stash available anywhere** - "Unequip Sets from Stash" enabled outside towns.
+
 
 ***
 
-### Stash Settings
-Configure stash usage while crafting, selling, equiping gear or in the character inventory menu.
+### Storage Settings
+Configure stash usage while crafting, selling, equiping gear or in the character inventory menu. Show silver value of items in inventory.
 
-![Stash Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/StashSettingsView.png?raw=true)
+![Storage Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/StorageSettingsView.png?raw=true)
 
-#### Character inventory stash
-Stash is added to the bottom of the character inventory menu.  Also, items from the stash are included when selecting different gear in the equipment menu.
+#### **Display item values**
+Stash is added to the bottom of the character inventory menu. Also, items from the stash are included when selecting different gear in the equipment menu.
 
-#### Merchant Stash
+#### **Character inventory stash**
+Stash items are shown at the bottom of the character inventory menu in a new "Stash" section which also includes an "Open Stash" button. The new button opens the Stash as if you were standing in front of it. Also, items from the stash are included when selecting different gear in the equipment menu.
+  - **Available anywhere** - Setting is enabled in areas without stashes (outside towns).
+
+#### **Merchant Stash**
 The stash is made available when selling or buying from a merchant.
 
-#### Craft from Stash
+  - **Available anywhere** - Setting is enabled in areas without stashes (outside towns).
+
+#### **Craft from Stash**
 Adds items from stash as available ingredients when a recipe or ingredient slot is selected.
+  
+  - **Available anywhere** - Setting is enabled in areas without stashes (outside towns).
 
-##### Stash available anywhere
-By default, Character Inventory, Merchant and Craft from Stash options only work inside towns where stashes exist, regardless of whether or not the character owns housing in the town. This option enables the stash from anywhere in the game. It is basically a cheat.
-
-##### Stash preserves food%
+#### **Stash preserves food%**
 Items in the stash have their decay amount reduced by the percentage provided. Valid range is 1-100%, where 100% completely prevent decay. (Food never decayed in the stash in Oldward)
 
 

@@ -15,6 +15,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public MainSettingsMenu MainSettingsMenu;
         public DurabilityDisplay DurabilityDisplay;
         public EquipmentSetMenu EquipmentSetMenus;
+        public SkillChainMenu SkillChainMenu;
         //public SettingsView SettingsView;
         //public HotkeyCaptureMenu HotkeyCaptureMenu;
         //public HotbarSettingsView HotbarSettingsViewer;

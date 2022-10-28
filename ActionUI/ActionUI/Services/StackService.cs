@@ -52,16 +52,24 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Services
         {
             while (true)
             {
-                var remaining = _getAmount();
-                if (remaining > 0 || _showWhenZero)
+                try
                 {
-                    _hideNeeded = true;
-                    _text.text = remaining.ToString();
+                    var remaining = _getAmount();
+                    if (remaining > 0 || _showWhenZero)
+                    {
+                        _hideNeeded = true;
+                        _text.text = remaining.ToString();
+                    }
+                    else if (_hideNeeded)
+                    {
+                        _controller.HideStackAmount();
+                        _hideNeeded = false;
+                    }
                 }
-                else if (_hideNeeded)
+                catch (Exception ex)
                 {
-                    _controller.HideStackAmount();
-                    _hideNeeded = false;
+                    Debug.LogError("ActionUI: Stack tracking coroutine encountered an unexpected exception.");
+                    Debug.LogException(ex);
                 }
 
                 yield return new WaitForSeconds(Timings.StackDelay);

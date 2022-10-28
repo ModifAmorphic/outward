@@ -28,6 +28,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         public GlobalProfileService(string globalPath, string profilesPath, Func<IModifLogger> getLogger)
         {
             (GlobalPath, ProfilesPath, _getLogger) = (globalPath, profilesPath, getLogger);
+            SaveManager.Instance.onSaveRetrieved += () => RemoveDeletedCharacterProfiles(SaveManager.Instance.CharacterSaves.Select(s => s.CharacterUID).ToList());
             _random = new Random();
         }
 
@@ -71,6 +72,32 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return nextId;
         }
 
+        public void AddOrUpdateItemID(int itemID, string characterUID)
+        {
+
+            GetGlobalProfile().CharacterItemIDs.AddOrUpdate(itemID, characterUID);
+            Save();
+        }
+
+        public void RemoveItemID(int setID)
+        {
+            GetGlobalProfile().CharacterItemIDs.TryRemove(setID, out var _);
+            Save();
+        }
+
+        public int GetNextItemID()
+        {
+            int nextId = _random.Next(InventorySettings.MinItemID, InventorySettings.MaxItemID);
+            int attempt = 0;
+            int maxAttempts = 1000;
+            while (GetGlobalProfile().CharacterItemIDs.ContainsKey(nextId) && attempt < maxAttempts)
+            {
+                nextId = _random.Next(InventorySettings.MinItemID, InventorySettings.MaxItemID);
+                attempt++;
+            }
+            return nextId;
+        }
+
         private string GetOrAddGlobalDir()
         {
             if (!Directory.Exists(GlobalPath))
@@ -91,6 +118,32 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 names.Add(new DirectoryInfo(dir).Name);
             }
             return names;
+        }
+
+        public void RemoveDeletedCharacterProfiles(List<string> characterUIDs)
+        {
+            Logger.LogDebug("Attempting removal of delete character profiles.");
+            if (!Directory.Exists(ProfilesPath))
+                return;
+            
+            var dirs = Directory.GetDirectories(ProfilesPath);
+            foreach(var dir in dirs)
+            {
+                var profileUID = new DirectoryInfo(dir).Name;
+                if (!characterUIDs.Any(uid => uid.Equals(profileUID, StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    try
+                    {
+                        Logger.LogInfo($"Deleting profile for nonexistent character {profileUID}.");
+                        Directory.Delete(dir, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogException($"Deleting of nonexistent character profile folder {profileUID} failed.", ex);
+                    }
+                }
+            }
+
         }
 
         private GlobalProfile GetOrCreateGlobalProfile()

@@ -106,6 +106,16 @@ namespace Assets.Testing
             throw new NotImplementedException();
         }
 
+        public IHotbarProfile SetHideLeftNav(bool hideLeftNav)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IHotbarProfile SetScale(int scale)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool TryGetActiveProfileName(out string name)
         {
             throw new NotImplementedException();

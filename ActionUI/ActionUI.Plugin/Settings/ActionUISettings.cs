@@ -13,8 +13,10 @@ namespace ModifAmorphic.Outward.ActionUI.Settings
         public static class ActionViewer
         {
             public const string SkillsTab = "Skills";
+            public const string CosmeticsTab = "Cosmetics";
             public const string ConsumablesTab = "Consumables";
             public const string DeployablesTab = "Deployables";
+            public const string EquipmentSetsTab = "Equipment Sets";
             public const string EquippedTab = "Equipped";
             public const string ArmorTab = "Armor";
             public const string WeaponsTab = "Weapons";
@@ -26,6 +28,7 @@ namespace ModifAmorphic.Outward.ActionUI.Settings
             ActionSlotsEnabled = true,
             DurabilityDisplayEnabled = true,
             EquipmentSetsEnabled = true,
+            SkillChainsEnabled = true,
             EquipmentSetsSettingsProfile = new EquipmentSetsSettingsProfile()
             {
                 ArmorSetsInCombatEnabled = false,
@@ -45,6 +48,10 @@ namespace ModifAmorphic.Outward.ActionUI.Settings
                 CraftingInventoryAnywhereEnabled = false,
                 PreservesFoodEnabled = true,
                 PreservesFoodAmount = 75,
+            },
+            StorageSettingsProfile = new StorageSettingsProfile()
+            {
+                DisplayCurrencyEnabled = true,
             }
         };
 

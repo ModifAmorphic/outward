@@ -34,11 +34,12 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             _getLogger = getLogger;
         }
 
-        public bool TryGetItemSlotAction(SlotData slotData, bool combatModeEnabled, out ISlotAction slotAction)
+        public bool TryGetItemSlotAction(SlotData slotData, bool combatModeEnabled, out ISlotAction slotAction) => TryGetItemSlotAction(slotData.ItemID, slotData.ItemUID, combatModeEnabled, out slotAction);
+        public bool TryGetItemSlotAction(int itemID, string itemUID, bool combatModeEnabled, out ISlotAction slotAction)
         {
             slotAction = null;
-            if (!TryFindOwnedItem(slotData.ItemID, slotData.ItemUID, out var item))
-                if (!TryFindPrefab(slotData.ItemID, out item))
+            if (!TryFindOwnedItem(itemID, itemUID, out var item))
+                if (!TryFindPrefab(itemID, out item))
                     return false;
 
             if (item is Skill skill)

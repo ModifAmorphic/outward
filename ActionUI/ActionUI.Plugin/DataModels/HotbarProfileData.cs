@@ -2,6 +2,7 @@
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace ModifAmorphic.Outward.ActionUI.DataModels
 {
@@ -9,6 +10,7 @@ namespace ModifAmorphic.Outward.ActionUI.DataModels
     {
         public int Rows { get; set; }
         public int SlotsPerRow { get; set; }
+        public bool HideLeftNav { get; set; }
         public bool CombatMode { get; set; } = true;
 
         [JsonProperty(ItemConverterType = typeof(ConcreteTypeConverter<HotbarData>))]
@@ -19,5 +21,9 @@ namespace ModifAmorphic.Outward.ActionUI.DataModels
         public string PrevHotkey { get; set; }
         public string PrevRewiredActionName { get; set; } = RewiredConstants.ActionSlots.PreviousHotbarAction.name;
         public int PrevRewiredActionId { get; set; } = RewiredConstants.ActionSlots.PreviousHotbarAction.id;
+
+        [DefaultValue(100)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public int Scale { get; set; } = 100;
     }
 }

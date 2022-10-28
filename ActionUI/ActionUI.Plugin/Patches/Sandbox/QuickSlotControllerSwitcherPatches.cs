@@ -20,8 +20,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
             {
                 if (__instance?.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer)
                     return;
-
+#if DEBUG
                 Logger.LogTrace($"{nameof(QuickSlotControllerSwitcherPatches)}::{nameof(StartInitPostfix)}(): Invoked. Invoking {nameof(StartInitAfter)}({nameof(KeyboardQuickSlotPanel)}).");
+#endif
                 StartInitAfter?.Invoke(__instance);
             }
             catch (Exception ex)

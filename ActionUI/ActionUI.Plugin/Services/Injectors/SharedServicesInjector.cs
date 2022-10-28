@@ -3,6 +3,7 @@ using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionMenus;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
+using Rewired;
 using System;
 using System.IO;
 
@@ -22,25 +23,40 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
         {
             (_services, _getLogger) = (services, getLogger);
 
-            NetworkInstantiateManagerPatches.BeforeAddLocalPlayer += (manager, playerId, save) => AddSharedServices(playerId, save.CharacterUID);
+            NetworkInstantiateManagerPatches.BeforeAddLocalPlayer += (manager, playerId, save) => AddProfileManager(playerId, save.CharacterUID);
+            SplitPlayerPatches.SetCharacterAfter += AddSharedServices;
         }
 
-        public void AddSharedServices(int rewiredID, string characterUID)
+        public void AddProfileManager(int rewiredID, string characterUID)
         {
 
             var usp = Psp.Instance.GetServicesProvider(rewiredID);
 
-
-            usp.AddSingleton<IActionUIProfileService>(new ProfileService(
+            var profileService = new ProfileService(
                                 Path.Combine(ActionUISettings.CharactersProfilesPath, characterUID),
                                 _services.GetService<GlobalProfileService>(),
-                                _getLogger));
+                                _getLogger);
+            usp.AddSingleton<IActionUIProfileService>(profileService)
+                .AddSingleton<IHotbarProfileService>(new HotbarProfileJsonService(profileService, _getLogger));
 
             if (!usp.ContainsService<ProfileManager>())
                 usp.AddSingleton(new ProfileManager(rewiredID));
 
             OnSharedServicesInjected?.Invoke(rewiredID, characterUID);
 
+        }
+
+        private void AddSharedServices(SplitPlayer splitPlayer, Character character)
+        {
+            var usp = Psp.Instance.GetServicesProvider(splitPlayer.RewiredID);
+            var player = ReInput.players.GetPlayer(splitPlayer.RewiredID);
+            var profileService = usp.GetService<IActionUIProfileService>() as ProfileService;
+
+            usp
+                .AddSingleton(new SlotDataService(player
+                                        , splitPlayer.AssignedCharacter
+                                        , (HotbarProfileJsonService)usp.GetService<IHotbarProfileService>()
+                                        , _getLogger));
         }
 
     }

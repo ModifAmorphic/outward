@@ -39,8 +39,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
             {
                 if (__instance?.AssignedCharacter == null || __instance.AssignedCharacter.OwnerPlayerSys == null || !__instance.AssignedCharacter.IsLocalPlayer)
                     return;
-
+#if DEBUG
                 Logger.LogTrace($"{nameof(SplitPlayerPatches)}::{nameof(SetCharacterPostfix)}(): Invoked. Invoking {nameof(SetCharacterAfter)}({nameof(SplitPlayer)}, {nameof(Character)}).");
+#endif
                 SetCharacterAfter?.Invoke(__instance, _character);
             }
             catch (Exception ex)

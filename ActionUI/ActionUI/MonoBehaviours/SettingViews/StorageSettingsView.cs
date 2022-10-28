@@ -9,9 +9,11 @@ using UnityEngine.UI;
 namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
     [UnityScriptComponent]
-    public class StashSettingsView : MonoBehaviour, ISettingsView
+    public class StorageSettingsView : MonoBehaviour, ISettingsView
     {
         public MainSettingsMenu MainSettingsMenu;
+
+        public Toggle DisplayCurrencyToggle;
 
         public Toggle StashInventoryToggle;
         public Toggle StashInventoryAnywhereToggle;
@@ -85,6 +87,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         }
         private void SetControls()
         {
+            DisplayCurrencyToggle.SetIsOnWithoutNotify(_profile?.StorageSettingsProfile?.DisplayCurrencyEnabled ?? false);
+
             StashInventoryToggle.SetIsOnWithoutNotify(_profile?.StashSettingsProfile?.CharInventoryEnabled ?? false);
             StashInventoryAnywhereToggle.SetIsOnWithoutNotify(_profile?.StashSettingsProfile?.CharInventoryAnywhereEnabled ?? false);
 
@@ -101,6 +105,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
 
         private void HookControls()
         {
+            DisplayCurrencyToggle.onValueChanged.AddListener((v) => SaveStashSettings());
             StashInventoryToggle.onValueChanged.AddListener((v) => SaveStashSettings());
             StashInventoryAnywhereToggle.onValueChanged.AddListener((v) => SaveStashSettings());
             MerchantStashToggle.onValueChanged.AddListener((v) => SaveStashSettings());
@@ -117,6 +122,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             if (_profile.StashSettingsProfile == null)
                 _profile.StashSettingsProfile = new StashSettingsProfile();
 
+            _profile.StorageSettingsProfile.DisplayCurrencyEnabled = DisplayCurrencyToggle.isOn;
             _profile.StashSettingsProfile.CharInventoryEnabled = StashInventoryToggle.isOn;
             _profile.StashSettingsProfile.CharInventoryAnywhereEnabled = StashInventoryAnywhereToggle.isOn;
             _profile.StashSettingsProfile.MerchantEnabled = MerchantStashToggle.isOn;

@@ -18,7 +18,9 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
+#if DEBUG
                 Logger?.LogTrace($"{nameof(NetworkInstantiateManagerPatches)}::{nameof(AddLocalPlayerPrefix)} called. Invoking {nameof(BeforeAddLocalPlayer)}.");
+#endif
                 BeforeAddLocalPlayer?.Invoke(__instance, _playerID, _save);
             }
             catch (Exception ex)

@@ -1,6 +1,7 @@
 ﻿using ModifAmorphic.Outward.ActionUI.Patches;
 using ModifAmorphic.Outward.Coroutines;
 using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.GameObjectResources;
 using ModifAmorphic.Outward.Logging;
 using ModifAmorphic.Outward.Unity.ActionUI.Data;
 using System;
@@ -18,7 +19,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         Equipment,
         Merchant
     }
-    internal class CharacterMenuStashService : IDisposable
+    internal class CharacterMenuStashService : IDisposable, IStartable
     {
 
         private IModifLogger Logger => _getLogger.Invoke();
@@ -45,13 +46,16 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private const string _equipmentDisplayPath = "Canvas/GameplayPanels/Menus/CharacterMenus/MainPanel/Content/MiddlePanel/Equipment/Content/SectionContent";
         private const string _inventoryDisplayPath = "Canvas/GameplayPanels/Menus/CharacterMenus/MainPanel/Content/MiddlePanel/Inventory/Content/SectionContent";
+        private const string _stashHeaderPath = "Scroll View/Viewport/Content/StashDisplay/Header";
         private const string _merchantDisplayPath = "Canvas/GameplayPanels/Menus/ModalMenus/ShopMenu/MiddlePanel/PlayerInventory/SectionContent";
 
         private bool _hasPatchEvents;
 
+        private GameObject _buttonPrefab;
+
         private bool disposedValue;
 
-        public CharacterMenuStashService(Character character, ProfileManager profileManager, InventoryService inventoryService, LevelCoroutines coroutines, Func<IModifLogger> getLogger)
+        public CharacterMenuStashService(Character character, ProfileManager profileManager, InventoryService inventoryService, ModifGoService modifGoService, LevelCoroutines coroutines, Func<IModifLogger> getLogger)
         {
             _character = character;
             _profileManager = profileManager;
@@ -61,6 +65,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             _profileManager.ProfileService.OnActiveProfileChanged += TrySetEnableState;
             _profileManager.ProfileService.OnActiveProfileSwitched += TrySetEnableState;
+            var modInactivableGo = modifGoService.GetModResources(ModInfo.ModId, false);
+            _buttonPrefab = modInactivableGo.transform.Find("Prefabs/FramelessButton").gameObject;
             //NetworkLevelLoader.Instance.onOverallLoadingDone += SetEnableState;
             //_coroutines.InvokeAfterLevelAndPlayersLoaded(NetworkLevelLoader.Instance, SetEnableState, 300);
             //_coroutines.InvokeAfterLevelAndPlayersLoaded(NetworkLevelLoader.Instance, TrySubscribe, 300);
@@ -174,29 +180,38 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             if (stashType == StashDisplayTypes.Disabled)
             {
+#if DEBUG
                 Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(GetIsDisplayEnabled)}: false. Stash Type is {stashType} for InventoryContentDisplay '{inventoryPath}'.");
+#endif
                 return false;
             }
 
             if (inventoryContentDisplay.LocalCharacter.UID != _character.UID)
             {
+#if DEBUG
                 Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(GetIsDisplayEnabled)}: false. inventoryContentDisplay.LocalCharacter.UID '{inventoryContentDisplay.LocalCharacter.UID}' does not" +
                     $"equal character.UID '{_character.UID}' for InventoryContentDisplay {inventoryContentDisplay.name}, path: '{inventoryPath}'.");
+#endif
                 return false;
             }
             if ((stashType == StashDisplayTypes.Inventory || stashType == StashDisplayTypes.Equipment) && _inventoryService.GetStashInventoryEnabled())
             {
+#if DEBUG
                 Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(GetIsDisplayEnabled)}: true for Inventory Display '{inventoryPath}'");
+#endif
                 return true;
             }
 
             if (stashType == StashDisplayTypes.Merchant & _inventoryService.GetMerchantStashEnabled())
             {
+#if DEBUG
                 Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(GetIsDisplayEnabled)}: true for Merchant Display '{inventoryPath}'");
+#endif
                 return true;
             }
-
+#if DEBUG
             Logger.LogTrace($"{nameof(CharacterMenuStashService)}::{nameof(GetIsDisplayEnabled)}: false for InventoryContentDisplay '{inventoryPath}'.");
+#endif
             return false;
         }
 
@@ -207,13 +222,15 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             Logger.LogDebug("Subscribing to Stash Container events");
 
+            InventoryContentDisplayPatches.AfterShow += AddStashViewButton;
             InventoryContentDisplayPatches.AfterOnHide += HideStashDisplay;
             InventoryContentDisplayPatches.AfterFocusMostRelevantItem += FocusMostRelevantItem;
             InventoryContentDisplayPatches.AfterSetContainersVisibility += SetContainersVisibility;
             InventoryContentDisplayPatches.AfterRefreshReferences += RefreshReferences;
             InventoryContentDisplayPatches.AfterRefreshContainerDisplays += RefreshContainerDisplays;
             CharacterInventoryPatches.OwnsItemDelegates.AddOrUpdate(_character.OwnerPlayerSys.PlayerID, IsStashOwned);
-
+            ItemDisplayClickPatches.PlayersOnItemCtrlClicked.AddOrUpdate(_character.OwnerPlayerSys.PlayerID, TryStashMoveItem);
+            CurrencyDisplayClickPatches.PlayersOnCurrencyCtrlClicked.AddOrUpdate(_character.OwnerPlayerSys.PlayerID, TryStashMoveCurrency);
             _hasPatchEvents = true;
         }
 
@@ -224,12 +241,15 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
             Logger.LogDebug("Unsubscribing from Stash Container events");
 
+            InventoryContentDisplayPatches.AfterShow -= AddStashViewButton;
             InventoryContentDisplayPatches.AfterOnHide -= HideStashDisplay;
             InventoryContentDisplayPatches.AfterFocusMostRelevantItem -= FocusMostRelevantItem;
             InventoryContentDisplayPatches.AfterSetContainersVisibility -= SetContainersVisibility;
             InventoryContentDisplayPatches.AfterRefreshReferences -= RefreshReferences;
             InventoryContentDisplayPatches.AfterRefreshContainerDisplays -= RefreshContainerDisplays;
-            CharacterInventoryPatches.OwnsItemDelegates.TryRemove(_character.OwnerPlayerSys.PlayerID, out var _);
+            CharacterInventoryPatches.OwnsItemDelegates.TryRemove(_character.OwnerPlayerSys.PlayerID, out _);
+            ItemDisplayClickPatches.PlayersOnItemCtrlClicked.TryRemove(_character.OwnerPlayerSys.PlayerID, out _);
+            CurrencyDisplayClickPatches.PlayersOnCurrencyCtrlClicked.TryRemove(_character.OwnerPlayerSys.PlayerID, out _);
 
             _hasPatchEvents = false;
         }
@@ -276,16 +296,93 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 stashDisplay.transform.ResetLocal();
                 stashDisplay.name = "StashDisplay";
 
-                var lblWeight = stashDisplay.transform.Find("lblWeight");
-                if (lblWeight != null)
-                    UnityEngine.Object.Destroy(lblWeight);
-
                 stashDisplay.SetPrivateField<ContainerDisplay, Text>("m_lblWeight", null);
+
+                if (stashType != StashDisplayTypes.Inventory)
+                {
+                    var header = stashDisplay.transform.Find("Header");
+                    if (header != null)
+                    {
+                        var lblWeight = (RectTransform)header.transform.Find("lblWeight");
+                        if (lblWeight != null)
+                            UnityEngine.Object.Destroy(lblWeight.gameObject);
+                        var iconWeight = header.transform.Find("iconWeight");
+                        if (iconWeight != null)
+                            UnityEngine.Object.Destroy(iconWeight.gameObject);
+                    }
+                }
 
                 _stashDisplays.Add(stashType, stashDisplay);
 
                 Logger.LogDebug($"Added stash display for character {_character.name}.");
             }
+        }
+
+        private void AddStashViewButton(InventoryContentDisplay inventoryContentDisplay)
+        {
+            var stashType = GetStashType(inventoryContentDisplay);
+            
+            if (stashType != StashDisplayTypes.Inventory || !_stashDisplays.TryGetValue(stashType, out var stashDisplay))
+                return;
+
+            var header = stashDisplay.transform.Find("Header");
+            if (header.Find("OpenStash") != null)
+                return;
+
+            var openStash = new GameObject("OpenStash", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
+            var hlg = openStash.GetComponent<HorizontalLayoutGroup>();
+            hlg.childControlWidth = true;
+            hlg.childControlHeight = true;
+            hlg.childForceExpandHeight = false;
+            hlg.childForceExpandWidth = false;
+            hlg.childScaleWidth = false;
+            hlg.childScaleHeight = false;
+            hlg.childAlignment = TextAnchor.MiddleRight;
+            openStash.GetComponent<LayoutElement>().flexibleWidth = 1;
+            openStash.transform.SetParent(header);
+            openStash.transform.ResetLocal(true);
+
+            _coroutines.DoNextFrame(() =>
+            {
+                //add button
+                var switchStashGo = UnityEngine.Object.Instantiate(_buttonPrefab, openStash.transform);
+                switchStashGo.name = "btnStashView";
+                var layoutElement = switchStashGo.GetOrAddComponent<LayoutElement>();
+                
+                var btnTransform = (RectTransform)switchStashGo.transform;
+                btnTransform.anchorMin = new Vector2(0, 1);
+                btnTransform.anchorMax = new Vector2(0, 1);
+                btnTransform.ResetLocal(true);
+
+                //set button text
+                var showStashText = switchStashGo.GetComponentInChildren<Text>();
+                showStashText.name = "lblStashView";
+                showStashText.text = "Open Stash";
+
+                var lblWeight = (RectTransform)header.transform.Find("lblWeight");
+
+                var width = lblWeight.rect.width / 2.5f;
+                //var height = lblWeight.rect.height;
+                layoutElement.flexibleHeight = 1;
+                layoutElement.preferredWidth = width;
+                switchStashGo.GetComponent<Button>().onClick.AddListener(ShowStashPanel);
+
+                lblWeight.gameObject.SetActive(false);
+                var iconWeight = header.transform.Find("iconWeight");
+                if (iconWeight != null)
+                    iconWeight.gameObject.SetActive(false);
+            });
+            
+        }
+
+        private void ShowStashPanel()
+        {
+            var character = CharacterManager.Instance.GetWorldHostCharacter();
+            var stashPanel = character.CharacterUI.StashPanel;
+            var stash = character.Stash;
+            stashPanel.SetStash(stash);
+            _characterUI.ShowMenu(CharacterUI.MenuScreens.Stash);
+            //stashPanel.Show();
         }
 
         private void RemoveStashDisplay(StashDisplayTypes stashType)
@@ -399,6 +496,82 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 return false;
 
             return _character.Stash.Contains(itemUID);
+        }
+
+        private bool TryStashMoveItem(ItemDisplay itemDisplay, bool stashKeyPressed)
+        {
+            if (!_inventoryService.GetStashInventoryEnabled() || !itemDisplay.RefItem.IsInContainer || !_character.CharacterUI.GetIsMenuDisplayed(CharacterUI.MenuScreens.Inventory))
+                return false;
+
+            var isItemInStash = itemDisplay.RefItem.ParentContainer.UID == _characterInventory.Stash.UID;
+
+            if (stashKeyPressed)
+            {
+                if (isItemInStash)
+                {
+                    var targetContainer = _characterInventory.HasABag ? _characterInventory.EquippedBag.Container : _characterInventory.Pouch;
+                    itemDisplay.TryMoveTo(targetContainer);
+                    return true;
+                }
+                else if (itemDisplay.RefItem.ParentContainer.UID == _characterInventory.Pouch.UID ||
+                    (_characterInventory.EquippedBag != null && itemDisplay.RefItem.ParentContainer.UID == _characterInventory.EquippedBag.Container.UID) ||
+                    itemDisplay.RefItem.IsEquipped)
+                {
+                    itemDisplay.TryMoveTo(_characterInventory.Stash);
+                    return true;
+                }
+                else
+                    return false;
+            }
+
+            if (isItemInStash && !_character.CharacterUI.GetIsMenuDisplayed(CharacterUI.MenuScreens.Shop))
+            {
+                var targetContainer = _characterInventory.HasABag ? _characterInventory.EquippedBag.Container : _characterInventory.Pouch;
+                itemDisplay.TryMoveTo(targetContainer);
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool TryStashMoveCurrency(CurrencyDisplay currencyDisplay, bool stashKeyPressed)
+        {
+            if (!_inventoryService.GetStashInventoryEnabled())
+                return false;
+
+            ItemContainer inventoryCurrencyContainer = currencyDisplay.LocalCharacter.Inventory.GetMostRelevantContainerCurrency();
+            if (inventoryCurrencyContainer == null || currencyDisplay.RefContainer == null)
+                return false;
+            
+            var isCurrencyInStash = currencyDisplay.RefContainer.UID == _characterInventory.Stash.UID;
+
+            if (stashKeyPressed)
+            {
+                if (isCurrencyInStash)
+                {
+                    currencyDisplay.TryMoveTo(inventoryCurrencyContainer);
+                    return true;
+                }
+                else if (currencyDisplay.RefContainer.UID == _characterInventory.Pouch.UID ||
+                    (_characterInventory.EquippedBag != null && currencyDisplay.RefContainer.UID == _characterInventory.EquippedBag.Container.UID))
+                {
+                    currencyDisplay.TryMoveTo(_characterInventory.Stash);
+                    return true;
+                }
+                else
+                    return false;
+            }
+
+            if (isCurrencyInStash && !_character.CharacterUI.GetIsMenuDisplayed(CharacterUI.MenuScreens.Shop))
+            {
+                var targetContainer = _characterInventory.HasABag ? _characterInventory.EquippedBag.Container : _characterInventory.Pouch;
+                currencyDisplay.TryMoveTo(targetContainer);
+                return true;
+            }
+
+
+            return false;
+
         }
 
         protected virtual void Dispose(bool disposing)

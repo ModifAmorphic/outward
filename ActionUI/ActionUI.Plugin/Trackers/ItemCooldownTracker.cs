@@ -1,4 +1,5 @@
-﻿using ModifAmorphic.Outward.Unity.ActionUI;
+﻿using ModifAmorphic.Outward.Extensions;
+using ModifAmorphic.Outward.Unity.ActionUI;
 using UnityEngine;
 
 namespace ModifAmorphic.Outward.ActionUI.Models
@@ -16,10 +17,10 @@ namespace ModifAmorphic.Outward.ActionUI.Models
             if (!GetIsInCooldown())
                 return 0f;
 
-            return Mathf.Clamp01(1f - skill.CoolDownProgress);
+            return skill.GetCooldownProgress();
         }
 
-        public float GetSecondsRemaining() => skill.RealCooldown * (1f - skill.CoolDownProgress);
+        public float GetSecondsRemaining() => skill.GetCooldownSecondsRemaining();
 
         public ItemCooldownTracker(Skill skill) => this.skill = skill;
 
