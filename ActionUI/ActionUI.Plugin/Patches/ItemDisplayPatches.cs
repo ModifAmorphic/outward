@@ -38,71 +38,71 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
             }
         }
 
-//        public delegate bool BeforeUpdateValueDisplayDelegate(ItemDisplay itemDisplay);
-//        public static Dictionary<int, BeforeUpdateValueDisplayDelegate> PlayersUpdateValueDisplay = new Dictionary<int, BeforeUpdateValueDisplayDelegate>();
-
-//        [HarmonyPatch("UpdateValueDisplay")]
-//        [HarmonyPatch(new Type[] { })]
-//        [HarmonyPrefix]
-//        private static bool UpdateValueDisplayPrefix(ItemDisplay __instance)
-//        {
-//            try
-//            {
-//                if (__instance?.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer)
-//                    return true;
-
-//                if (!PlayersUpdateValueDisplay.TryGetValue(__instance.LocalCharacter.OwnerPlayerSys.PlayerID, out var overrideUpdate))
-//                    return true;
-//#if DEBUG
-//                //Logger.LogTrace($"{nameof(ItemDisplayPatches)}::{nameof(SetReferencedItemPostfix)}(): Invoking {nameof(PlayersUpdateValueDisplay)}.");
-//#endif
-//                if (overrideUpdate.Invoke(__instance))
-//                {
-//                    //Logger.LogTrace($"{nameof(ItemDisplayPatches)}::{nameof(UpdateValueDisplayPrefix)}(): {__instance.name} Overridden.");
-//                    return false;
-//                }
-//                //else
-//                //{
-//                //    Logger.LogTrace($"{nameof(ItemDisplayPatches)}::{nameof(UpdateValueDisplayPrefix)}(): {__instance.name} Allowed.");
-//                //    return true;
-//                //}
-//            }
-//            catch (Exception ex)
-//            {
-//                Logger.LogException($"{nameof(ItemDisplayPatches)}::{nameof(UpdateValueDisplayPrefix)}(): Exception invoking {nameof(PlayersUpdateValueDisplay)}.", ex);
-//            }
-//            return true;
-//        }
-
-        public delegate bool AfterUpdateValueDisplayDelegate(ItemDisplay itemDisplay);
-        public static Dictionary<int, AfterUpdateValueDisplayDelegate> PlayersUpdateValueDisplay = new Dictionary<int, AfterUpdateValueDisplayDelegate>();
+        public delegate bool BeforeUpdateValueDisplayDelegate(ItemDisplay itemDisplay);
+        public static Dictionary<int, BeforeUpdateValueDisplayDelegate> PlayersUpdateValueDisplay = new Dictionary<int, BeforeUpdateValueDisplayDelegate>();
 
         [HarmonyPatch("UpdateValueDisplay")]
         [HarmonyPatch(new Type[] { })]
-        [HarmonyPostfix]
-        private static void UpdateValueDisplayPostfix(ItemDisplay __instance)
+        [HarmonyPrefix]
+        private static bool UpdateValueDisplayPrefix(ItemDisplay __instance)
         {
             try
             {
-                if (__instance?.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer || __instance.LocalCharacter.IsAI)
-                    return;
+                if (__instance?.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer)
+                    return true;
 
                 if (!PlayersUpdateValueDisplay.TryGetValue(__instance.LocalCharacter.OwnerPlayerSys.PlayerID, out var overrideUpdate))
-                    return;
+                    return true;
 #if DEBUG
                 //Logger.LogTrace($"{nameof(ItemDisplayPatches)}::{nameof(SetReferencedItemPostfix)}(): Invoking {nameof(PlayersUpdateValueDisplay)}.");
 #endif
                 if (overrideUpdate.Invoke(__instance))
                 {
                     //Logger.LogTrace($"{nameof(ItemDisplayPatches)}::{nameof(UpdateValueDisplayPrefix)}(): {__instance.name} Overridden.");
-                    return;
+                    return false;
                 }
+                //else
+                //{
+                //    Logger.LogTrace($"{nameof(ItemDisplayPatches)}::{nameof(UpdateValueDisplayPrefix)}(): {__instance.name} Allowed.");
+                //    return true;
+                //}
             }
             catch (Exception ex)
             {
-                Logger.LogException($"{nameof(ItemDisplayPatches)}::{nameof(UpdateValueDisplayPostfix)}(): Exception invoking {nameof(PlayersUpdateValueDisplay)}.", ex);
+                Logger.LogException($"{nameof(ItemDisplayPatches)}::{nameof(UpdateValueDisplayPrefix)}(): Exception invoking {nameof(PlayersUpdateValueDisplay)}.", ex);
             }
+            return true;
         }
+
+        //        public delegate bool AfterUpdateValueDisplayDelegate(ItemDisplay itemDisplay);
+        //        public static Dictionary<int, AfterUpdateValueDisplayDelegate> PlayersUpdateValueDisplay = new Dictionary<int, AfterUpdateValueDisplayDelegate>();
+
+        //        [HarmonyPatch("UpdateValueDisplay")]
+        //        [HarmonyPatch(new Type[] { })]
+        //        [HarmonyPostfix]
+        //        private static void UpdateValueDisplayPostfix(ItemDisplay __instance)
+        //        {
+        //            try
+        //            {
+        //                if (__instance?.LocalCharacter == null || __instance.LocalCharacter.OwnerPlayerSys == null || !__instance.LocalCharacter.IsLocalPlayer || __instance.LocalCharacter.IsAI)
+        //                    return;
+
+        //                if (!PlayersUpdateValueDisplay.TryGetValue(__instance.LocalCharacter.OwnerPlayerSys.PlayerID, out var overrideUpdate))
+        //                    return;
+        //#if DEBUG
+        //                //Logger.LogTrace($"{nameof(ItemDisplayPatches)}::{nameof(SetReferencedItemPostfix)}(): Invoking {nameof(PlayersUpdateValueDisplay)}.");
+        //#endif
+        //                if (overrideUpdate.Invoke(__instance))
+        //                {
+        //                    //Logger.LogTrace($"{nameof(ItemDisplayPatches)}::{nameof(UpdateValueDisplayPrefix)}(): {__instance.name} Overridden.");
+        //                    return;
+        //                }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                Logger.LogException($"{nameof(ItemDisplayPatches)}::{nameof(UpdateValueDisplayPostfix)}(): Exception invoking {nameof(PlayersUpdateValueDisplay)}.", ex);
+        //            }
+        //        }
 
         //public delegate void AfterRefreshEnchantedIconDelegate(ItemDisplay itemDisplay, EquipmentSetSkill setSkill);
         //public static event AfterRefreshEnchantedIconDelegate AfterRefreshEnchantedIcon;

@@ -86,6 +86,10 @@
   - Equipment sets should now unequip to stash correctly when hosting a game.
   - Several fixes for swapping between 2h and 1h weapon sets, or sets with empty slots.
 
+## 1.1.3
+- All changes in 1.1.4.
+- Introduced bug causing severe slowdown in the inventory menu.
+
 ## Release 1.1.2
   - Characters should no longer be stuck in a T-pose when joining another game.
   - Equipment Sets equip from stash fix. Set items could be equipped from stash even with the option disabled if the character or merchant stash options where enabled.
