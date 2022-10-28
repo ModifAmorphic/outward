@@ -500,7 +500,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private bool TryStashMoveItem(ItemDisplay itemDisplay, bool stashKeyPressed)
         {
-            if (!itemDisplay.RefItem.IsInContainer)
+            if (!_inventoryService.GetStashInventoryEnabled() || !itemDisplay.RefItem.IsInContainer || !_character.CharacterUI.GetIsMenuDisplayed(CharacterUI.MenuScreens.Inventory))
                 return false;
 
             var isItemInStash = itemDisplay.RefItem.ParentContainer.UID == _characterInventory.Stash.UID;
@@ -536,6 +536,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         private bool TryStashMoveCurrency(CurrencyDisplay currencyDisplay, bool stashKeyPressed)
         {
+            if (!_inventoryService.GetStashInventoryEnabled())
+                return false;
+
             ItemContainer inventoryCurrencyContainer = currencyDisplay.LocalCharacter.Inventory.GetMostRelevantContainerCurrency();
             if (inventoryCurrencyContainer == null || currencyDisplay.RefContainer == null)
                 return false;

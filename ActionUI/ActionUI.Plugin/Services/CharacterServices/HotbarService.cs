@@ -155,6 +155,8 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                     AssignSlotActions(profile);
                     _saveDisabled = false;
                 }
+
+                ScaleHotbars(profile.Scale);
             }
             catch (Exception ex)
             {
@@ -165,7 +167,10 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             try
             {
-                TryConfigureHotbars(profile);
+                if (changeType == HotbarProfileChangeTypes.Scale)
+                    ScaleHotbars(profile.Scale);
+                else
+                    TryConfigureHotbars(profile);
             }
             catch (Exception ex)
             {
@@ -190,6 +195,15 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             {
                 Logger.LogException($"Failed to Save Hotbar changes.", ex);
             }
+        }
+
+        private void ScaleHotbars(int scaleAmount)
+        {
+            if (_hotbars == null)
+                return;
+
+            float scale = (float)scaleAmount / 100f;
+            _hotbars.transform.localScale = new Vector3(scale, scale, 1f);
         }
 
         private void SwapCanvasGroup()

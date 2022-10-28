@@ -4,12 +4,15 @@
 
 ***
 
-- Add Multiple Hotbars and Action Slots (Quick Slots)
+- Add Highly Configurable Multiple Hotbars and Action Slots (Quick Slots)
   - Combat Mode: Extra Slots without ruining game balance.
+  - Scale size of hotbars.
+  - Add additional action slots, rows of slots and/or new hotbars.
+  - See [wiki](https://github.com/ModifAmorphic/outward/wiki/Action-UI#hotbar-settings) for more.
 - Create Weapon and Armor Sets. Equip entire sets with a single hotkey.
 - Reposition UI Elements with Drag and Drop
-- New Durability UI Displays Equipment
-- Use stash while crafting, selling, equiping gear or in the character inventory menu
+- Equipment Durability UI displays when equipment is damaged.
+- Use stash while crafting, selling, equiping gear or in the character menu.
 - See the [Action UI Wiki](https://github.com/ModifAmorphic/outward/wiki/Action-UI) for more details
 - For Manual Installations, download the latest "ModifAmorphic-ActionUI-*.Standalone-BepInEx.zip" version under [ModifAmorphic Releases](https://github.com/ModifAmorphic/outward/releases)
 
@@ -53,9 +56,9 @@
 
 ***
 
-## Stash Improvements
+## Storage Improvements
 
-![Stash Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/StashSettingsView.png?raw=true)
+![Storage Settings](https://github.com/ModifAmorphic/outward/blob/master/ActionUI/WikiReadmeAssets/StorageSettingsView_small.png?raw=true)
 
 ***
 
@@ -74,7 +77,8 @@
   - Fix for Durability Display not displaying after first save is loaded without switching gear.
 - Action Slots Updates and Fixes
   - Added new "Hide Left Navigation" option in the Hotkey Settings menu that hides the UI element left of the hotbar which displays the current hotbar number and hotkeys.
-  - Action Slots will now be hidden with the rest of the HUD when "Show HUD" is disabled in Outward's setting menu.
+  - "Show HUD" in Outward's setting menu will now also hide Hotbars when disabled.
+  - Added "Scale Hotbars %" to adjust size of hotbars.
   - Empty Action Slots without a hotkey bound will now only show when the "Action UI" settings menu is open or Hotkeys are being assigned.
   - Action Slots no longer stop tracking stack counts after switching from keyboard to controller and back to keyboard.
   - Fix for Action UI settings not displaying correctly when Action Slots are disabled.

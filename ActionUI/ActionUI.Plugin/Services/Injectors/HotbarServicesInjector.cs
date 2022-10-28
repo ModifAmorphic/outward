@@ -74,6 +74,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services.Injectors
                 .AddSingleton<IActionViewData>(new SlotActionViewData(player
                                         , splitPlayer.AssignedCharacter
                                         , usp.GetService<SlotDataService>()
+                                        , (ProfileService)usp.GetService<IActionUIProfileService>()
                                         , (HotbarProfileJsonService)usp.GetService<IHotbarProfileService>()
                                         , _getLogger))
                 .AddSingleton<IHotbarNavActions>(new HotbarKeyListener(player));

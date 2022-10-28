@@ -13,8 +13,10 @@ namespace ModifAmorphic.Outward.ActionUI.Settings
         public static class ActionViewer
         {
             public const string SkillsTab = "Skills";
+            public const string CosmeticsTab = "Cosmetics";
             public const string ConsumablesTab = "Consumables";
             public const string DeployablesTab = "Deployables";
+            public const string EquipmentSetsTab = "Equipment Sets";
             public const string EquippedTab = "Equipped";
             public const string ArmorTab = "Armor";
             public const string WeaponsTab = "Weapons";

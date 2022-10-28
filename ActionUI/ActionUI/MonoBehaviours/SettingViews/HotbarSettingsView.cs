@@ -29,6 +29,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         public Toggle CombatMode;
 
         public Dropdown EmptySlotDropdown;
+        
+        public ArrowInput ScaleAmountInput;
 
         public Button SetHotkeys;
 
@@ -112,6 +114,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             BarAmountInput.SetAmount(_hotbarProfile.Hotbars.Count);
             RowAmountInput.SetAmount(_hotbarProfile.Rows);
             SlotAmountInput.SetAmount(_hotbarProfile.SlotsPerRow);
+            ScaleAmountInput.SetAmount(_hotbarProfile.Scale);
 
             ShowCooldownTimer.isOn = config?.ShowCooldownTime ?? false;
             ShowPrecisionTime.isOn = config?.PreciseCooldownTime ?? false;
@@ -150,6 +153,8 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 else if (_hotbarProfile.SlotsPerRow > amount)
                     _hotbarService.RemoveSlot();
             });
+
+            ScaleAmountInput.OnValueChanged.AddListener((amount) => _hotbarService.SetScale(amount));
 
             ShowCooldownTimer.onValueChanged.AddListener(isOn =>
                 _hotbarService.SetCooldownTimer(ShowCooldownTimer.isOn, ShowPrecisionTime.isOn)

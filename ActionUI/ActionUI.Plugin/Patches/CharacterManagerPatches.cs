@@ -19,6 +19,8 @@ namespace ModifAmorphic.Outward.ActionUI.Patches
         {
             try
             {
+                if (!_char.IsLocalPlayer || _char.IsAI)
+                    return;
 #if DEBUG
                 Logger.LogTrace($"{nameof(CharacterManagerPatches)}::{nameof(AddCharacterPostfix)}(): Invoked. Invoking {nameof(AfterAddCharacter)} for character {_char?.name}.");
 #endif

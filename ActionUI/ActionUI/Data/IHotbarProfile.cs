@@ -11,5 +11,6 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Data
         bool CombatMode { get; set; }
         string NextHotkey { get; set; }
         string PrevHotkey { get; set; }
+        int Scale { get; set; }
     }
 }

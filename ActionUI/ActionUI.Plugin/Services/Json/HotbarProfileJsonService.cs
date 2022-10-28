@@ -308,6 +308,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             return GetProfile();
         }
 
+        public IHotbarProfile SetScale(int scale)
+        {
+            if (GetProfile().Scale != scale)
+            {
+                GetProfile().Scale = scale;
+                Save();
+                OnProfileChanged?.TryInvoke(GetProfile(), HotbarProfileChangeTypes.Scale);
+            }
+
+            return GetProfile();
+        }
+
         private void ReindexSlots(List<ISlotData> slots)
         {
             for (int i = 0; i < slots.Count; i++)

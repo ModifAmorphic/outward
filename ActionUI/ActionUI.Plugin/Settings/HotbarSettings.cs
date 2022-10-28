@@ -127,6 +127,7 @@ namespace ModifAmorphic.Outward.ActionUI.Settings
             Hotbars = hotbarAssignments,
             HideLeftNav = false,
             CombatMode = true,
+            Scale = 100,
             NextRewiredActionId = RewiredConstants.ActionSlots.NextHotbarAction.id,
             NextRewiredActionName = RewiredConstants.ActionSlots.NextHotbarAction.name,
             PrevRewiredActionId = RewiredConstants.ActionSlots.PreviousHotbarAction.id,

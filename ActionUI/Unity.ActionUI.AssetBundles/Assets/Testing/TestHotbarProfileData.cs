@@ -17,5 +17,6 @@ namespace Assets.Testing
         public string PrevHotkey { get; set; } = ",";
         public bool CombatMode { get; set; } = true;
         public bool HideLeftNav { get; set; }
+        public int Scale { get; set; } = 100;
     }
 }
