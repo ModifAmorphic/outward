@@ -54,21 +54,22 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             { KeyCode.None, new MouseButton() { KeyCode = KeyCode.None, elementIdentifierId = -1, DisplayName = string.Empty } },
             { KeyCode.Mouse0, new MouseButton() { KeyCode = KeyCode.Mouse0, elementIdentifierId = 3, DisplayName = "LMB" } },
-            { KeyCode.Mouse1, new MouseButton() { KeyCode = KeyCode.Mouse2, elementIdentifierId = 4, DisplayName = "RMB" } },
-            { KeyCode.Mouse2, new MouseButton() { KeyCode = KeyCode.Mouse2, elementIdentifierId = 5, DisplayName = "MWheel" } },
-            { KeyCode.Mouse3, new MouseButton() { KeyCode = KeyCode.Mouse3, elementIdentifierId = 6, DisplayName = "MB 3" } },
-            { KeyCode.Mouse4, new MouseButton() { KeyCode = KeyCode.Mouse4, elementIdentifierId = 7, DisplayName = "MB 4" } },
-            { KeyCode.Mouse5, new MouseButton() { KeyCode = KeyCode.Mouse5, elementIdentifierId = 8, DisplayName = "MB 5" } },
+            { KeyCode.Mouse1, new MouseButton() { KeyCode = KeyCode.Mouse1, elementIdentifierId = 4, DisplayName = "RMB" } },
+            { KeyCode.Mouse2, new MouseButton() { KeyCode = KeyCode.Mouse2, elementIdentifierId = 5, DisplayName = "MB 3" } },
+            { KeyCode.Mouse3, new MouseButton() { KeyCode = KeyCode.Mouse3, elementIdentifierId = 6, DisplayName = "MB 4" } },
+            { KeyCode.Mouse4, new MouseButton() { KeyCode = KeyCode.Mouse4, elementIdentifierId = 7, DisplayName = "MB 5" } },
+            { KeyCode.Mouse5, new MouseButton() { KeyCode = KeyCode.Mouse5, elementIdentifierId = 8, DisplayName = "MB 6" } },
         };
 
         public static Dictionary<int, MouseButton> MouseButtonElementIds = new Dictionary<int, MouseButton>()
         {
+            { 2, new MouseButton() { KeyCode = KeyCode.Mouse2, elementIdentifierId = 2, DisplayName = "Wheel" } },
             { 3, new MouseButton() { KeyCode = KeyCode.Mouse0, elementIdentifierId = 3, DisplayName = "LMB" } },
-            { 4, new MouseButton() { KeyCode = KeyCode.Mouse2, elementIdentifierId = 4, DisplayName = "RMB" } },
-            { 5, new MouseButton() { KeyCode = KeyCode.Mouse2, elementIdentifierId = 2, DisplayName = "MWheel" } },
-            { 6, new MouseButton() { KeyCode = KeyCode.Mouse3, elementIdentifierId = 5, DisplayName = "MB 3" } },
-            { 7, new MouseButton() { KeyCode = KeyCode.Mouse4, elementIdentifierId = 6, DisplayName = "MB 4" } },
-            { 8, new MouseButton() { KeyCode = KeyCode.Mouse5, elementIdentifierId = 7, DisplayName = "MB 5" } },
+            { 4, new MouseButton() { KeyCode = KeyCode.Mouse1, elementIdentifierId = 4, DisplayName = "RMB" } },
+            { 5, new MouseButton() { KeyCode = KeyCode.Mouse2, elementIdentifierId = 5, DisplayName = "MB 3" } },
+            { 6, new MouseButton() { KeyCode = KeyCode.Mouse3, elementIdentifierId = 6, DisplayName = "MB 4" } },
+            { 7, new MouseButton() { KeyCode = KeyCode.Mouse4, elementIdentifierId = 7, DisplayName = "MB 5" } },
+            { 8, new MouseButton() { KeyCode = KeyCode.Mouse5, elementIdentifierId = 8, DisplayName = "MB 6" } },
         };
         private bool disposedValue;
         private static readonly HashSet<KeyCode> MouseKeyCodes = new HashSet<KeyCode>()
@@ -400,7 +401,11 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             //Logger.LogDebug($"Setting Hotbar Hotkey for Bar Index {id}.");
             var profile = (HotbarProfileData)_hotbarProfileService.GetProfile();
+
             var rewiredId = category == HotkeyCategories.NextHotbar ? profile.NextRewiredActionId : profile.PrevRewiredActionId;
+            
+            if (keyGroup.KeyCode == KeyCode.Mouse2 && keyGroup.AxisDirection != AxisDirections.None)
+                rewiredId = category == HotkeyCategories.NextHotbar ? profile.NextRewiredAxisActionId : profile.PrevRewiredAxisActionId;
 
             ConfigureButtonMapping(rewiredId, keyGroup, controllerType, maps, out var hotKey);
 
@@ -425,22 +430,39 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             foreach (var map in maps)
             {
                 int elementIdentifierId = -1;
-                ElementAssignment eleMap;
+                
+                ElementAssignment eleAssign;
+                AxisRange axis = keyGroup.AxisDirection == AxisDirections.Down ? AxisRange.Negative : AxisRange.Positive;
+                Pole pole = keyGroup.AxisDirection == AxisDirections.Down ? Pole.Negative : Pole.Positive;
                 if (map.controllerType == controllerType)
                 {
                     if (controllerType == ControllerType.Mouse)
-                        elementIdentifierId = MouseButtons[keyGroup.KeyCode].elementIdentifierId;
+                    {
+                        if (keyGroup.KeyCode == KeyCode.Mouse2 && keyGroup.AxisDirection != AxisDirections.None)
+                            elementIdentifierId = 2;
+                        else
+                            elementIdentifierId = MouseButtons[keyGroup.KeyCode].elementIdentifierId;
+                    }
 
                     Logger.LogDebug($"Configuring Button Mapping for ControllerType {map.controllerType} and actionId {rewiredActionId}. Setting elementIdentifierId to {elementIdentifierId}.  Keycode is {keyGroup.KeyCode}");
-                    eleMap = new ElementAssignment(map.controllerType, ControllerElementType.Button, elementIdentifierId, AxisRange.Positive, keyGroup.KeyCode, GetModifierKeyFlags(keyGroup.Modifiers), rewiredActionId, Pole.Positive, false);
+                    
+                    if (keyGroup.AxisDirection == AxisDirections.None)
+                        eleAssign = new ElementAssignment(map.controllerType, ControllerElementType.Button, elementIdentifierId, AxisRange.Positive, keyGroup.KeyCode, GetModifierKeyFlags(keyGroup.Modifiers), rewiredActionId, Pole.Positive, false);
+                    else
+                        eleAssign = new ElementAssignment(map.controllerType, ControllerElementType.Axis, elementIdentifierId, axis, keyGroup.KeyCode, GetModifierKeyFlags(keyGroup.Modifiers), rewiredActionId, pole, false);
                 }
+                //Add existing element assignment to be removed
                 else
                 {
                     Logger.LogDebug($"Configuring Removal Button Mapping for ControllerType {map.controllerType} and actionId {rewiredActionId}.");
-                    eleMap = new ElementAssignment(map.controllerType, ControllerElementType.Button, elementIdentifierId, AxisRange.Positive, KeyCode.None, ModifierKeyFlags.None, rewiredActionId, Pole.Positive, false);
+                    eleAssign = new ElementAssignment(map.controllerType, ControllerElementType.Button, elementIdentifierId, AxisRange.Positive, KeyCode.None, ModifierKeyFlags.None, rewiredActionId, Pole.Positive, false);
+                    //if (keyGroup.AxisDirection == AxisDirections.None)
+                    //    eleAssign = new ElementAssignment(map.controllerType, ControllerElementType.Button, elementIdentifierId, AxisRange.Positive, KeyCode.None, ModifierKeyFlags.None, rewiredActionId, Pole.Positive, false);
+                    //else
+                    //    eleAssign = new ElementAssignment(map.controllerType, ControllerElementType.Axis, elementIdentifierId, axis, KeyCode.None, ModifierKeyFlags.None, rewiredActionId, pole, false);
                 }
 
-                ConfigureButtonMapping(eleMap, controllerType, map, out var text);
+                ConfigureButtonMapping(eleAssign, controllerType, map, out var text);
                 if (!string.IsNullOrWhiteSpace(text))
                     hotkeyText = text;
 
@@ -452,11 +474,14 @@ namespace ModifAmorphic.Outward.ActionUI.Services
         {
             hotkeyText = string.Empty;
 
-            var existingMaps = map.ButtonMaps.Where(m => m.actionId == assignment.actionId).ToArray();
+            var existingMaps = map.AllMaps.Where(m => m.actionId == assignment.actionId).ToList();
+
+            //Add button maps or axis maps for Left Nav Hotkeys to be removed, so only one set of hotkeys is used.
+            AddHotbarNavMaps(assignment, map, ref existingMaps);
 
             if (existingMaps.Any())
             {
-                for (int i = 0; i < existingMaps.Length; i++)
+                for (int i = 0; i < existingMaps.Count; i++)
                 {
                     if (map.DeleteElementMap(existingMaps[i].id))
                         Logger.LogDebug($"Deleted existing map {existingMaps[i].id} for rewiredId {assignment.actionId}.");
@@ -474,9 +499,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
                 }
                 hotkeyText = map.ButtonMaps.FirstOrDefault(m => m.actionId == assignment.actionId)?.elementIdentifierName;
                 if (map.controllerType == ControllerType.Mouse && MouseButtonElementIds.TryGetValue(assignment.elementIdentifierId, out var hotkeyEleId))
+                {
                     hotkeyText = hotkeyEleId.DisplayName;
+                    if (hotkeyEleId.KeyCode == KeyCode.Mouse2)
+                    {
+                        if (assignment.axisRange == AxisRange.Positive)
+                            hotkeyText += "+";
+                        else if (assignment.axisRange == AxisRange.Negative)
+                            hotkeyText += "-";
+                    }
+                    
+                }
             }
-
         }
 
         private void RemoveExistingAssignments(ElementAssignment assignment, ControllerMap map)
@@ -497,6 +531,36 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             //if (map.aem != null) conflictCheck.elementMapId = map.aem.id;
 
             return conflictCheck;
+        }
+
+        private void AddHotbarNavMaps(ElementAssignment assignment, ControllerMap map, ref List<ActionElementMap> maps)
+        {
+
+            //Add button maps or axis maps for Left Nav Hotkeys to be removed, so only one set of hotkeys is used.
+            if (assignment.actionId == RewiredConstants.ActionSlots.NextHotbarAction.id)
+            {
+                var nextAxisMap = map.AllMaps.FirstOrDefault(m => m.actionId == RewiredConstants.ActionSlots.NextHotbarAxisAction.id);
+                if (nextAxisMap != null)
+                    maps.Add(nextAxisMap);
+            }
+            if (assignment.actionId == RewiredConstants.ActionSlots.PreviousHotbarAction.id)
+            {
+                var prefAxisMap = map.AllMaps.FirstOrDefault(m => m.actionId == RewiredConstants.ActionSlots.PreviousHotbarAxisAction.id);
+                if (prefAxisMap != null)
+                    maps.Add(prefAxisMap);
+            }
+            if (assignment.actionId == RewiredConstants.ActionSlots.NextHotbarAxisAction.id)
+            {
+                var nextMap = map.AllMaps.FirstOrDefault(m => m.actionId == RewiredConstants.ActionSlots.NextHotbarAction.id);
+                if (nextMap != null)
+                    maps.Add(nextMap);
+            }
+            if (assignment.actionId == RewiredConstants.ActionSlots.PreviousHotbarAxisAction.id)
+            {
+                var prevMap = map.AllMaps.FirstOrDefault(m => m.actionId == RewiredConstants.ActionSlots.PreviousHotbarAction.id);
+                if (prevMap != null)
+                    maps.Add(prevMap);
+            }
         }
 
         private void SaveControllerMap(ControllerMap controllerMap)

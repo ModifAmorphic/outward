@@ -63,6 +63,12 @@
 ***
 
 ## Latest Release ${PACKAGE_VERSION}
+- Mousewheel Up/Down can now be set as a hotkey for selecting Hotbars.
+- Fix for Action Slot Hotkey Buttons disabling after setting one hotkey.
+- Performance fix for equipment sets when "Equip Sets from Stash" is enabled and stash contains several items.
+- Added number tracking of remaining items to skills that consume that item to Action Slots.
+
+## 1.1.4
 - Stash Updates and Fixes
   - Renamed section to "Storage" from "Stash".
   - Added new option to settings to display item currency values in stash and character inventory.

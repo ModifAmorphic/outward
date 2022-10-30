@@ -21,6 +21,10 @@ namespace ModifAmorphic.Outward.ActionUI.DataModels
         public string PrevHotkey { get; set; }
         public string PrevRewiredActionName { get; set; } = RewiredConstants.ActionSlots.PreviousHotbarAction.name;
         public int PrevRewiredActionId { get; set; } = RewiredConstants.ActionSlots.PreviousHotbarAction.id;
+        public string NextRewiredAxisActionName { get; set; } = RewiredConstants.ActionSlots.NextHotbarAxisAction.name;
+        public int NextRewiredAxisActionId { get; set; } = RewiredConstants.ActionSlots.NextHotbarAxisAction.id;
+        public string PrevRewiredAxisActionName { get; set; } = RewiredConstants.ActionSlots.PreviousHotbarAxisAction.name;
+        public int PrevRewiredAxisActionId { get; set; } = RewiredConstants.ActionSlots.PreviousHotbarAxisAction.id;
 
         [DefaultValue(100)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]

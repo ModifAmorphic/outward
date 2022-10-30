@@ -307,7 +307,16 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             var mouseMap = _player.controllers.maps.GetMap<MouseMap>(0, RewiredConstants.ActionSlots.CategoryMapId, 0);
             var profileData = (HotbarProfileData)profile;
             profileData.NextHotkey = keyMap.ButtonMaps.FirstOrDefault(m => m.actionId == profileData.NextRewiredActionId)?.elementIdentifierName;
+            if (string.IsNullOrWhiteSpace(profileData.NextHotkey))
+                profileData.NextHotkey = mouseMap.ButtonMaps.FirstOrDefault(m => m.actionId == profileData.NextRewiredActionId)?.elementIdentifierName;
+            if (string.IsNullOrWhiteSpace(profileData.NextHotkey) && mouseMap.AllMaps.Any(m => m.actionId == profileData.NextRewiredAxisActionId))
+                profileData.NextHotkey = "Wheel+";
+
             profileData.PrevHotkey = keyMap.ButtonMaps.FirstOrDefault(m => m.actionId == profileData.PrevRewiredActionId)?.elementIdentifierName;
+            if (string.IsNullOrWhiteSpace(profileData.PrevHotkey))
+                profileData.PrevHotkey = mouseMap.ButtonMaps.FirstOrDefault(m => m.actionId == profileData.PrevRewiredActionId)?.elementIdentifierName;
+            if (string.IsNullOrWhiteSpace(profileData.PrevHotkey) && mouseMap.AllMaps.Any(m => m.actionId == profileData.PrevRewiredAxisActionId))
+                profileData.PrevHotkey = "Wheel-";
 
             foreach (HotbarData bar in profileData.Hotbars)
             {

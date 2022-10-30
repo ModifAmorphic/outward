@@ -10,10 +10,17 @@ using UnityEngine.UI;
 
 namespace ModifAmorphic.Outward.Unity.ActionMenus
 {
+    public enum AxisDirections
+    {
+        None,
+        Up,
+        Down
+    }
     public class KeyGroup
     {
         public List<KeyCode> Modifiers { get; set; } = new List<KeyCode>();
         public KeyCode KeyCode { get; set; }
+        public AxisDirections AxisDirection { get; set; } = AxisDirections.None;
     }
 
     [UnityScriptComponent]
@@ -38,6 +45,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         private HotkeyCategories _category;
         private KeyGroup _keyGroup = new KeyGroup();
         private bool _modifierUp = false;
+        private bool _mouseWheelActive => _category == HotkeyCategories.NextHotbar || _category == HotkeyCategories.PreviousHotbar;
         private Text _text;
 
         private bool _monitorKeys = false;
@@ -88,6 +96,15 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 }
             }
 
+            if (Input.mouseScrollDelta.y > 0 && _mouseWheelActive)
+            {
+                AddKeyCode(KeyCode.Mouse2, AxisDirections.Up);
+            }
+            else if (Input.mouseScrollDelta.y < 0 && _mouseWheelActive)
+            {
+                AddKeyCode(KeyCode.Mouse2, AxisDirections.Down);
+            }
+
             //Check if any keys have been released and raise the OnKeysSelected event if they have.
             for (int m = 0; m < _keyGroup.Modifiers.Count; m++)
             {
@@ -97,7 +114,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                     break;
                 }
             }
-            if (Input.GetKeyUp(_keyGroup.KeyCode) || (_modifierUp && _keyGroup.KeyCode != KeyCode.None))
+            if (Input.GetKeyUp(_keyGroup.KeyCode) || (_modifierUp && _keyGroup.KeyCode != KeyCode.None) || (!Mathf.Approximately(Input.mouseScrollDelta.y, 0) && _mouseWheelActive))
             {
                 try
                 {
@@ -131,7 +148,7 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
             { KeyCode.Mouse5, "Mouse 5" },
         };
 
-        private void AddKeyCode(KeyCode key)
+        private void AddKeyCode(KeyCode key, AxisDirections axis = AxisDirections.None)
         {
             if (!string.IsNullOrWhiteSpace(_text.text))
             {
@@ -185,7 +202,10 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
                 case KeyCode.Mouse6:
                     _keyGroup.Modifiers.Clear();
                     _keyGroup.KeyCode = key;
+                    _keyGroup.AxisDirection = axis;
                     _text.text = MouseButtonNames[key];
+                    if (axis != AxisDirections.None)
+                        _text.text = "MW_" + axis.ToString();
                     break;
                 default:
                     _keyGroup.KeyCode = key;

@@ -322,7 +322,7 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public bool HasItem(EquipSlot equipSlot) => equipSlot == null
                         || IsItemInInventory(equipSlot.UID)
-                        || (GetIsStashEquipEnabled() && _character.Stash.GetContainedItemUIDs(equipSlot.ItemID).Any());
+                        || (GetIsStashEquipEnabled() && DoesStashContainUID(equipSlot.UID));
 
         public bool IsArmorSetEquipped(ArmorSet armorSet)
             => IsEquipSlotEquipped(armorSet.Head, EquipmentSlot.EquipmentSlotIDs.Helmet) &&
@@ -333,6 +333,18 @@ namespace ModifAmorphic.Outward.ActionUI.Services
             => IsEquipSlotEquipped(weaponSet.RightHand, EquipmentSlot.EquipmentSlotIDs.RightHand) &&
                 IsEquipSlotEquipped(weaponSet.LeftHand, EquipmentSlot.EquipmentSlotIDs.LeftHand);
 
+        DictionaryExt<string, Item> _cachedStashItems;
+        DateTime _cachedStashExpiry = DateTime.Now;
+        private bool DoesStashContainUID(string uid)
+        {
+            //TODO: Determine if this is necessary, if "m_containedItems" is being set to null or another reference.
+            if (DateTime.Now > _cachedStashExpiry)
+            {
+                _cachedStashItems = _characterInventory.Stash.GetPrivateField<ItemContainer, DictionaryExt<string, Item>>("m_containedItems");
+                _cachedStashExpiry = DateTime.Now.AddSeconds(60);
+            }
+            return _cachedStashItems.ContainsKey(uid);
+        }
 
         private bool IsEquipSlotEquipped(EquipSlot equipSlot, EquipmentSlot.EquipmentSlotIDs slotID)
         {

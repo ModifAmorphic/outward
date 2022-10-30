@@ -68,6 +68,9 @@ namespace ModifAmorphic.Outward.Unity.ActionMenus
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
         private void Update()
         {
+            if (_inHotkeyEditMode || _inEditMode)
+                return;
+
             var navActions = GetHotbarNavActions();
             if (navActions != null)
             {

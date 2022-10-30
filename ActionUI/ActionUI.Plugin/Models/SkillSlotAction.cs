@@ -21,10 +21,9 @@ namespace ModifAmorphic.Outward.ActionUI.Models
             this.skill = skill;
 
             this.Cooldown = new ItemCooldownTracker(skill);
-            this.Stack = null;
             this.equipmentSetSkill = skill as EquipmentSetSkill;
             this.isEquipmentSetSkill = equipmentSetSkill != null;
-
+            this.Stack = skill.RequiredItems != null && skill.RequiredItems.Length > 0 ? new StackTracker(this, character.Inventory) : null;
         }
 
         public override bool GetEnabled()

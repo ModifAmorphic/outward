@@ -253,13 +253,13 @@ namespace ModifAmorphic.Outward.Unity.ActionUI.Controllers
         public void ToggleHotkeyEdits(bool editMode)
         {
             
-            if (!_hbc.IsAwake && _hbc.IsInActionSlotEditMode == editMode)
+            if (!_hbc.IsAwake)
                 return;
 
             _hbc.LeftHotbarNav.ToggleHotkeyEditMode(editMode);
 
-            if (_hbc.IsInHotkeyEditMode == editMode)
-                return;
+            //if (_hbc.IsInHotkeyEditMode == editMode)
+            //    return;
 
             _hbc.IsInHotkeyEditMode = editMode;
             

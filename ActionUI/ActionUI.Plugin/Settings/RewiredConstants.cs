@@ -44,6 +44,9 @@ namespace ModifAmorphic.Outward.ActionUI.Settings
             public static InputAction NextHotbarAction;
             public static InputAction PreviousHotbarAction;
 
+            public static InputAction NextHotbarAxisAction;
+            public static InputAction PreviousHotbarAxisAction;
+
             public const string SelectHotbarNameFormat = "SelectHotbar_00";
 
             public static readonly string DefaultKeyboardMapFile = Path.Combine(ActionUISettings.PluginPath, "Profiles", "Default", "Default-Keyboard-Map_ActionSlots.xml");
@@ -95,8 +98,26 @@ namespace ModifAmorphic.Outward.ActionUI.Settings
                     userAssignable: true,
                     actionCategoryId: ActionCategory.id
                     );
+                NextHotbarAxisAction = GetAction(
+                    id: 131102,
+                    name: "NextHotbar+",
+                    descriptiveName: "Next Hotbar",
+                    inputActionType: InputActionType.Axis,
+                    userAssignable: true,
+                    actionCategoryId: ActionCategory.id
+                    );
+                PreviousHotbarAxisAction = GetAction(
+                    id: 131103,
+                    name: "PreviousHotbar-",
+                    descriptiveName: "Previous Hotbar",
+                    inputActionType: InputActionType.Axis,
+                    userAssignable: true,
+                    actionCategoryId: ActionCategory.id
+                    );
                 HotbarNavActions.Add(NextHotbarAction);
                 HotbarNavActions.Add(PreviousHotbarAction);
+                HotbarNavActions.Add(NextHotbarAxisAction);
+                HotbarNavActions.Add(PreviousHotbarAxisAction);
             }
         }
         private static InputMapCategory GetMapCategory(string name, string descriptiveName, int id, bool userAssignable)

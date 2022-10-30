@@ -1,6 +1,7 @@
 ﻿using ModifAmorphic.Outward.ActionUI.Settings;
 using ModifAmorphic.Outward.Unity.ActionUI;
 using Rewired;
+using UnityEngine;
 
 namespace ModifAmorphic.Outward.ActionUI.Services
 {
@@ -10,9 +11,9 @@ namespace ModifAmorphic.Outward.ActionUI.Services
 
         public HotbarKeyListener(Player player) => _player = player;
 
-        public bool IsNextRequested() => _player.GetButtonDown(RewiredConstants.ActionSlots.NextHotbarAction.id);
+        public bool IsNextRequested() => _player.GetButtonDown(RewiredConstants.ActionSlots.NextHotbarAction.id) || !Mathf.Approximately(_player.GetAxis(RewiredConstants.ActionSlots.NextHotbarAxisAction.id), 0f);
 
-        public bool IsPreviousRequested() => _player.GetButtonDown(RewiredConstants.ActionSlots.PreviousHotbarAction.id);
+        public bool IsPreviousRequested() => _player.GetButtonDown(RewiredConstants.ActionSlots.PreviousHotbarAction.id) || !Mathf.Approximately(_player.GetAxis(RewiredConstants.ActionSlots.PreviousHotbarAxisAction.id), 0f);
 
         public bool IsHotbarRequested(out int hotbarIndex)
         {
