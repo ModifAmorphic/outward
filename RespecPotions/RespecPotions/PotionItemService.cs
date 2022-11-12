@@ -100,22 +100,10 @@ namespace ModifAmorphic.Outward.RespecPotions
                 characterInstances.TryGetSkillSchools(out var skillSchools);
 
                 var prefabItems = new List<Item>();
-                //var prefabItems = new Dictionary<string, Item>();
                 var basePrefab = _resourcesPrefabManager.GetItemPrefab(4300220);
 
                 foreach (int schoolIndex in skillSchools.Keys)
                 {
-                    //if (prefabItems.TryGetValue(skillSchools[schoolIndex].name, out var existingPotion))
-                    //{
-                    //    _ = TryAddForgetSchoolEffect(existingPotion, schoolIndex);
-                    //    Logger.LogTrace($"{nameof(PotionItemService)}::{nameof(AddForgetPotionPrefabs)}: Added additional effect {nameof(ForgetSchoolEffect)} with SchoolIndex of {schoolIndex} to existing prefab {existingPotion.name}.");
-                    //}
-                    //else if (TryGetForgetPotion(skillSchools[schoolIndex], schoolIndex, basePrefab, iconDir, out var potionPrefab))
-                    //{
-                    //    Logger.LogTrace($"{nameof(PotionItemService)}::{nameof(AddForgetPotionPrefabs)}: Added effect {nameof(ForgetSchoolEffect)} with SchoolIndex of {schoolIndex} to prefab {potionPrefab.name}.");
-
-                    //    prefabItems.Add(skillSchools[schoolIndex].name, potionPrefab);
-                    //}
                     var potionName = RespecConstants.PotionNameFormat.Replace("{SchoolName}", skillSchools[schoolIndex].Name);
                     var potionDesc = RespecConstants.PotionDescFormat.Replace("{SchoolName}", skillSchools[schoolIndex].Name);
 
