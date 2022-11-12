@@ -18,6 +18,11 @@ Adds Blackout Potions to each town's local alchemist stock. For existing saves, 
 # Change Logs
 
 ## Latest Release ${PACKAGE_VERSION}
+- Fix for custom classes with non alpha characters in their names.
+  - Certain characters would cause the mod to fail to create and add potions to merchant inventories.
+- Added warning to duplicate potion descriptions for when a custom class mod registers the same skill school name multiple times.
+
+## Latest Release 1.0.1
 - Updated for Definitive Edition.
 - Removed Health Loss on consuming a potion. Was buggy when forgetting skills that added to health.
 

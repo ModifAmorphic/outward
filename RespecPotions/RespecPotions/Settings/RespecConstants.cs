@@ -26,6 +26,7 @@ namespace ModifAmorphic.Outward.RespecPotions.Settings
         public static string IconPath = Path.Combine("icons", "ForgetPotions");
         public const string PotionNameFormat = "Blackout - {SchoolName}";
         public const string PotionDescFormat = "<b><color=#d3aa30ff>{SchoolName}</color></b>\nA potent concoction known to cause extreme blackouts. Consuming this potion will cause you to forget all of your training for this school.";
+        public const string PotionDuplicateFormat = "<b><color=#ff4500>Custom Class '{SchoolName}' has been added multiple times. It is unlikely the '{SchoolName}' mod author did this intentionally. Drinking this potion may have unintended consequences, such as forgetting skills from other schools.</color></b>";
 
         /// <summary>
         /// Dictionary collection of Icon File Names, indexed by School Name.
