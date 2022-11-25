@@ -1,0 +1,92 @@
+ManifestFileVersion: 0
+CRC: 3383784022
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: db52f86a45a2c5ae5612c0b26aba7bc0
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: be369a5825336c11cc24794f48e23470
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 600202350, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+- Class: 114
+  Script: {fileID: 2057524556, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+- Class: 114
+  Script: {fileID: 1207377577, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+- Class: 114
+  Script: {fileID: -738088491, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+- Class: 114
+  Script: {fileID: -1047901896, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+- Class: 114
+  Script: {fileID: -498244278, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+- Class: 114
+  Script: {fileID: -1571853039, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+- Class: 114
+  Script: {fileID: 937600647, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+- Class: 114
+  Script: {fileID: -672243037, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 136
+  Script: {instanceID: 0}
+- Class: 193
+  Script: {instanceID: 0}
+- Class: 205
+  Script: {instanceID: 0}
+- Class: 226
+  Script: {instanceID: 0}
+- Class: 227
+  Script: {instanceID: 0}
+- Class: 228
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers:
+- AssemblyName: ModifAmorphic.Outward.UnityScripts
+  ClassName: ModifAmorphic.Outward.UnityScripts.BuildingResourceValuesBinder
+- AssemblyName: ModifAmorphic.Outward.UnityScripts
+  ClassName: ModifAmorphic.Outward.UnityScripts.ConstructionPhaseBinder
+- AssemblyName: ModifAmorphic.Outward.UnityScripts
+  ClassName: ModifAmorphic.Outward.UnityScripts.ItemQuantityBinder
+- AssemblyName: ModifAmorphic.Outward.UnityScripts
+  ClassName: ModifAmorphic.Outward.UnityScripts.Models.BuildingLimits
+- AssemblyName: ModifAmorphic.Outward.UnityScripts
+  ClassName: ModifAmorphic.Outward.UnityScripts.QuestEventReferenceBinder
+Assets:
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Visuals/-1330010151_naturePlantBigLeavesA.prefab
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Items/-1330010101_treeBanyanA.prefab
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Items/-1330010151_naturePlantBigLeavesA.prefab
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Visuals/-1330010141_treeWillowB.prefab
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Visuals/-1330010131_treeWillowA.prefab
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Items/-1330010130_treeWillowA_Blueprint.prefab
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Items/-1330010121_treeBanyanC.prefab
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Visuals/-1330010121_treeBanyanC_v.prefab
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Items/-1330010120_treeBanyanC_Blueprint.prefab
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Items/-1330010131_treeWillowA.prefab
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Items/-1330010100_treeBanyanA_Blueprint.prefab
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Visuals/-1330010111_treeBanyanB_v.prefab
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Visuals/-1330010101_treeBanyanA_v.prefab
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Items/-1330010110_treeBanyanB_Blueprint.prefab
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Items/-1330010141_treeWillowB.prefab
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Items/-1330010111_treeBanyanB.prefab
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Items/-1330010150_naturePlantBigLeavesA_Blueprint.prefab
+- Assets/ModifAmorphicPrefabs/HallowedMarsh-Foilage/Items/-1330010140_treeWillowB_Blueprint.prefab
+Dependencies: []

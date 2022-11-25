@@ -1,0 +1,64 @@
+{
+  "BuildingLocalizationTemplates": [
+    {
+      "ItemID": "-1330010100",
+      "Name": "Blueprint: Tree - Banyan A",
+      "Description": "Banyan A tree in a small square planter.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330010101",
+      "Name": "- Banyan A",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330010110",
+      "Name": "Blueprint: Tree - Banyan B",
+      "Description": "Banyan B tree in a small square planter.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330010111",
+      "Name": "- Banyan B",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330010120",
+      "Name": "Blueprint: Tree - Banyan (Dead)",
+      "Description": "Dead Banyan tree in a small square planter.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330010121",
+      "Name": "- Banyan Dead",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330010130",
+      "Name": "Blueprint: Tree - Willow A",
+      "Description": "Willow A tree in a square planter.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330010131",
+      "Name": "- Willow A",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330010140",
+      "Name": "Blueprint: Tree - Willow B",
+      "Description": "Willow B tree in a square planter.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330010141",
+      "Name": "- Willow B",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330010150",
+      "Name": "Blueprint: Plant - Big Leaves A",
+      "Description": "A tall plant with big leaves.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330010151",
+      "Name": "- Big Leaves A",
+      "Description": ""
+    }
+  ]
+}

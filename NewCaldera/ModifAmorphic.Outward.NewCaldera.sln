@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModifAmorphic.Outward.NewCaldera", "NewCaldera\ModifAmorphic.Outward.NewCaldera.csproj", "{5F58CFAE-310B-4BAE-9BC1-4E9BDBD74E31}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModifAmorphic.Outward.Shared", "..\..\..\..\outward-shared\outward\Outward.Shared\ModifAmorphic.Outward.Shared\ModifAmorphic.Outward.Shared.csproj", "{DC96F0FD-85A4-486F-B3EA-DD2D4A926749}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModifAmorphic.Outward.UnityScripts", "UnityScripts\ModifAmorphic.Outward.UnityScripts.csproj", "{817E8E71-C385-4DCF-94F2-47E19805CF47}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5F58CFAE-310B-4BAE-9BC1-4E9BDBD74E31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F58CFAE-310B-4BAE-9BC1-4E9BDBD74E31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F58CFAE-310B-4BAE-9BC1-4E9BDBD74E31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F58CFAE-310B-4BAE-9BC1-4E9BDBD74E31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC96F0FD-85A4-486F-B3EA-DD2D4A926749}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC96F0FD-85A4-486F-B3EA-DD2D4A926749}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC96F0FD-85A4-486F-B3EA-DD2D4A926749}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC96F0FD-85A4-486F-B3EA-DD2D4A926749}.Release|Any CPU.Build.0 = Release|Any CPU
+		{817E8E71-C385-4DCF-94F2-47E19805CF47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{817E8E71-C385-4DCF-94F2-47E19805CF47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{817E8E71-C385-4DCF-94F2-47E19805CF47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{817E8E71-C385-4DCF-94F2-47E19805CF47}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B25CBD97-F99D-4834-BEE2-EE6ECA90DCFA}
+	EndGlobalSection
+EndGlobal

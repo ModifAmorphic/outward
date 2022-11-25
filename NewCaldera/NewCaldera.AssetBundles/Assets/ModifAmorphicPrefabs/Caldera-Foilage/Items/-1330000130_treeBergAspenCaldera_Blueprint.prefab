@@ -1,0 +1,162 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8716942590055222477
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7916548917053376060}
+  - component: {fileID: 7050043127709593932}
+  - component: {fileID: 3626263763806026366}
+  - component: {fileID: 8701200089087937316}
+  - component: {fileID: 7479264419936693585}
+  m_Layer: 0
+  m_Name: -1330000130_treeBergAspenCaldera_Blueprint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7916548917053376060
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8716942590055222477}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7050043127709593932
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8716942590055222477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -738088491, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_visualPrefabPath: Assets/_Prefabs/_ItemsAssets/9000000_WorldItems/9400000_Buildings/9400000_BuildingBlueprints_v
+  m_specialVisualPrefabDefaultPath: 
+  m_specialVisualPrefabFemalePath: 
+  IsUsable: 1
+  SetupEffectsOnOwnerChange: 0
+  ForceDisallowUseWithoutOwning: 0
+  m_itemIconPath: Assets/_Data/_Items/_Icons/_CustomIcons/_DLC2/tex_men_iconItemBlueprintHouseA_v_icn
+  m_lockedIcon: {fileID: 0}
+  HasDynamicQuickSlotIcon: 0
+  m_overrideSigil: {fileID: 0}
+  m_UID: 
+  SaveType: 0
+  ForceNonSavable: 0
+  ForceUpdateParentChangeInit: 0
+  ItemID: -1330000130
+  m_name: 'BP: Caldera Aspen'
+  m_DLCID: 3
+  m_additionalDLCIDs: 
+  OverrideDistanceActiveness: -1
+  InteractionColliderRadius: 0.1
+  BagCategorySlot: 0
+  BagSlotAdjustedPos: {x: 0, y: 0, z: 0}
+  BagSlotAdjustedRotation: {x: 0, y: 0, z: 0}
+  IsPickable: 1
+  CanBePutInInventory: 1
+  HasPhysicsWhenWorld: 0
+  GroupItemInDisplay: 0
+  IsSkillItem: 0
+  IsForceInteractible: 0
+  HideInInventory: 0
+  QtyRemovedOnUse: 1
+  m_currentDurability: 0
+  BehaviorOnNoDurability: 0
+  m_itemIdOnNoDurability: -1
+  m_onBreakNotificationOverride: 
+  m_overrideInteractionRange: -1
+  DisallowQuickSlotSubstitution: 0
+  m_stuck: 0
+  PickUpAnim: -1
+  DroppAnim: -1
+  DropInPlace: 0
+  m_activateEffectAnimType: -1
+  m_alternateActivateEffectAnimType: -1
+  AlternateAnimHasSkillID: -1
+  CastLocomotionEnabled: 0
+  CastModifier: 0
+  MobileCastMovementMult: -1
+  MobileCastPersistToCastDone: 0
+  CastSheathRequired: 1
+  CastSheathRequiredAlternate: -1
+  CastTakeType: 0
+  IsSellable: 1
+  m_overrideSellModifier: -1
+  m_overrideBuyModifier: -1
+  SellWarning: 
+  RepairedInRest: 1
+  StartLitStatus: 0
+  IsGenerated: 0
+  ToDisableWhenInInventory: []
+  LegacyItemID: -1
+--- !u!114 &3626263763806026366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8716942590055222477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1571853039, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_requiredSkillID: -1
+  State: 0
+  DestroyOnNoPackState: 0
+  PackedStatePrefabItemID: -1
+  DeployedStatePrefabItemID: -1330000131
+  CastAnim: -1
+  DisassembleOffset: {x: 0, y: 0, z: 0}
+  AutoTake: 1
+  DeploySound: 0
+  DisassembleSound: 0
+  DeploymentOffset: {x: 0, y: 0, z: 3.5}
+  DeploymentDirection: {x: 1, y: 0, z: 0}
+  CantDeployInNoBedZones: 0
+--- !u!114 &8701200089087937316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8716942590055222477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1207377577, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7479264419936693585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8716942590055222477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -672243037, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_hasNoEffectivenessThreshold: 0
+  m_baseValue: 25
+  m_rawWeight: 0.1
+  m_baseMaxDurability: -1
+  StartingDurability: -1

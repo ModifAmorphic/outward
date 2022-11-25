@@ -1,0 +1,24 @@
+{
+  "Items": [
+    {
+      "ItemID": "-1330000100",
+      "Name": "Blueprint: - American Elm A",
+      "Description": "American Elm A tree in a small square planter.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330000101",
+      "Name": "- American Elm A",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330000110",
+      "Name": "Blueprint: - American Elm B",
+      "Description": "American Elm B tree in a small square planter.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330000111",
+      "Name": "- American Elm B",
+      "Description": ""
+    }
+  ]
+}

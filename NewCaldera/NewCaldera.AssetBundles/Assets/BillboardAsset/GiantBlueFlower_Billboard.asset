@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!226 &22600000
+BillboardAsset:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: GiantBlueFlower_Billboard
+  width: 2.4690752
+  bottom: -0.104530856
+  height: 4.388236
+  imageTexCoords:
+  - {x: 0, y: 0, z: 0.219547, w: 0.39019597}
+  - {x: 0.219547, y: 0, z: 0.21954802, w: 0.39019597}
+  - {x: 0.43909502, y: 0, z: 0.21954703, w: 0.39019597}
+  - {x: 0.65864205, y: 0, z: 0.21954697, w: 0.39019597}
+  - {x: 0, y: 0.39019597, z: 0.219547, w: 0.39019603}
+  - {x: 0.219547, y: 0.39019597, z: 0.21954802, w: 0.39019603}
+  - {x: 0.43909502, y: 0.39019597, z: 0.21954703, w: 0.39019603}
+  - {x: 0.65864205, y: 0.39019597, z: 0.21954697, w: 0.39019603}
+  vertices:
+  - {x: 0.4175, y: 0.022499999}
+  - {x: 0.03, y: 0.49875}
+  - {x: 0.03, y: 0.975}
+  - {x: 0.57750005, y: 0.022499999}
+  - {x: 0.96500003, y: 0.49875}
+  - {x: 0.96500003, y: 0.975}
+  indices:
+  - 4
+  - 3
+  - 0
+  - 1
+  - 4
+  - 0
+  - 5
+  - 4
+  - 1
+  - 2
+  - 5
+  - 1
+  material: {fileID: 2100000, guid: 5d3526c6d2823124fba6ce33abfc0d32, type: 2}

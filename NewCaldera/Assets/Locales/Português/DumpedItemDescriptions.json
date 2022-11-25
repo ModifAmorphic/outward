@@ -1,0 +1,49 @@
+{
+  "Items": {
+    "9400130": {
+      "ItemID": 9400130,
+      "Name": null,
+      "Description": "Uma cabana básica de caçadores. Fornece 15 de comida para o povoado diariamente.\n----\nRequisitos da construção\nVerba: 2500\nPedra: 20\nMadeira: 50\nHabitações: 1\nManutenção de fundos: 40 / dia\nConstrução: 3 semanas"
+    },
+    "9400132": {
+      "ItemID": 9400132,
+      "Name": null,
+      "Description": "Uma melhoria para a cabana dos caçadores. Fornece 25 de comida para o povoado diariamente.\n----\nRequisitos da construção\nVerba: 2500\nPedra: 50\nMadeira: 100\nHabitações: 2\nManutenção de verba: 100 / dia\nConstrução: 4 semanas"
+    },
+    "9400133": {
+      "ItemID": 9400133,
+      "Name": null,
+      "Description": "Uma melhoria para a guilda dos caçadores. Fornece 45 de comida para o povoado diariamente.\n----\nRequisitos da construção\nPrecisa da Câmara Municipal\nVerba: 2500\nPedra: 75\nMadeira: 200\nHabitações: 4\nManutenção de verba: 200 / dia\nConstrução: 4 semanas"
+    },
+    "9400140": {
+      "ItemID": 9400140,
+      "Name": null,
+      "Description": "Uma oficina básica para pedreiros. Fornece 4 de pedra para o povoado diariamente.\n----\nRequisitos da construção\nVerba: 2500\nPedra: 50\nMadeira: 20\nHabitações: 1\nManutenção de verba: 40 / dia\nConstrução: 3 semanas"
+    },
+    "9400142": {
+      "ItemID": 9400142,
+      "Name": null,
+      "Description": "Uma melhoria para a oficina dos pedreiros. Fornece 6 de pedra para o povoado diariamente.\n----\nRequisitos da construção\nVerba: 2500\nPedra: 100\nMadeira: 30\nHabitações: 2\nManutenção de verba: 80 / dia\nConstrução: 3 semanas"
+    },
+    "9400143": {
+      "ItemID": 9400143,
+      "Name": null,
+      "Description": "Uma melhoria para a guilda dos cortadores de pedra. Fornece 8 de pedra para o povoado diariamente.\n----\nRequisitos da construção\nPrecisa da Câmara Municipal\nVerba: 2500\nPedra: 100\nMadeira: 50\nHabitações: 4\nManutenção de verba: 100 / dia\nConstrução: 3 semanas"
+    },
+    "9400150": {
+      "ItemID": 9400150,
+      "Name": null,
+      "Description": "Uma cabana básica de lenhadores. Fornece 4 de madeira para o povoado diariamente.\n----\nRequisitos da construção\nVerba: 2500\nPedra: 20\nTora: 50\nHabitações: 1\nManutenção de fundos: 40 / dia\nConstrução: 3 semanas"
+    },
+    "9400152": {
+      "ItemID": 9400152,
+      "Name": null,
+      "Description": "Uma melhoria para a cabana dos lenhadores. Fornece 6 de madeira para o povoado diariamente.\n----\nRequisitos da construção\nVerba: 2500\nPedra: 30\nMadeira: 100\nHabitações: 2\nManutenção de verba: 80 / dia\nConstrução: 3 semanas"
+    },
+    "9400153": {
+      "ItemID": 9400153,
+      "Name": null,
+      "Description": "Uma melhoria para a guilda dos carpinteiros. Fornece 8 de madeira para o povoado diariamente.\n----\nRequisitos da construção\nPrecisa da Câmara Municipal\nVerba: 2500\nPedra: 50\nMadeira: 100\nHabitações: 4\nManutenção de verba: 100 / dia\nConstrução: 3 semanas"
+    }
+  }
+}

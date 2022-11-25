@@ -1,0 +1,49 @@
+{
+  "Items": {
+    "9400130": {
+      "ItemID": 9400130,
+      "Name": null,
+      "Description": "Basit bir Avcı kulübesidir. Yerleşim yerine her gün 15 Yiyecek kazandırır.\n----\nİnşaat Gereksinimleri\nSermaye: 2500\nTaş: 20\nKereste: 50\nKonut: 1\nSermaye verimi: 40/Gün\nİnşası: 3 Hafta"
+    },
+    "9400132": {
+      "ItemID": 9400132,
+      "Name": null,
+      "Description": "Avcılık Kulübesi için bir iyileştirme. Yerleşim yerine her gün 25 Yiyecek kazandırır.\n----\nİnşaat Gereksinimleri\nSermaye: 2500\nTaş: 50\nKereste: 100\nKonut: 2\nSermaye verimi: 100/Gün\nİnşası: 4 Hafta"
+    },
+    "9400133": {
+      "ItemID": 9400133,
+      "Name": null,
+      "Description": "Avcılık Loncası için bir iyileştirme. Yerleşim yerine her gün 45 Yiyecek kazandırır.\n----\nİnşaat Gereksinimleri\nValilik Binası Gereklidir\nSermaye: 2500\nTaş: 75\nKereste: 200\nKonut: 4\nSermaye verimi: 200/Gün\nİnşası: 4 Hafta"
+    },
+    "9400140": {
+      "ItemID": 9400140,
+      "Name": null,
+      "Description": "Basit bir Duvarcı atölyesidir. Yerleşim yerine her gün 4 Taş kazandırır.\n----\nİnşaat Gereksinimleri\nSermaye: 2500\nTaş: 50\nKereste: 20\nKonut: 1\nSermaye verimi: 40/Gün\nİnşası: 3 Hafta"
+    },
+    "9400142": {
+      "ItemID": 9400142,
+      "Name": null,
+      "Description": "Duvarcı atölyesi için bir iyileştirme. Yerleşim yerine her gün 6 Taş kazandırır.\n----\nİnşaat Gereksinimleri\nSermaye: 2500\nTaş: 100\nKereste: 30\nKonut: 2\nSermaye verimi: 80/Gün\nİnşası: 3 Hafta"
+    },
+    "9400143": {
+      "ItemID": 9400143,
+      "Name": null,
+      "Description": "Taşçı Loncası için bir iyileştirme. Yerleşim yerine her gün 8 Taş kazandırır.\n----\nİnşaat Gereksinimleri\nValilik Binası Gereklidir\nSermaye: 2500\nTaş: 100\nKereste: 50\nKonut: 4\nSermaye verimi: 100/Gün\nİnşası: 3 Hafta"
+    },
+    "9400150": {
+      "ItemID": 9400150,
+      "Name": null,
+      "Description": "Basit bir Oduncu Kulübesidir. Yerleşim yerine her gün 4 Tahta kazandırır.\n----\nİnşaat Gereksinimleri\nSermaye: 2500\nTaş: 20\nKereste: 50\nKonut: 1\nSermaye verimi: 40/Gün\nİnşası: 3 Hafta"
+    },
+    "9400152": {
+      "ItemID": 9400152,
+      "Name": null,
+      "Description": "Oduncu Kulübesi için bir iyileştirme. Yerleşim yerine her gün 6 Tahta kazandırır.\n----\nİnşaat Gereksinimleri\nSermaye: 2500\nTaş: 30\nKereste: 100\nKonut: 2\nSermaye verimi: 80/Gün\nİnşası: 3 Hafta"
+    },
+    "9400153": {
+      "ItemID": 9400153,
+      "Name": null,
+      "Description": "Marangoz Loncası için bir iyileştirme. Yerleşim yerine her gün 8 Tahta kazandırır.\n----\nİnşaat Gereksinimleri\nValilik Binası Gereklidir\nSermaye: 2500\nTaş: 50\nKereste: 100\nKonut: 4\nSermaye verimi: 100/Gün\nİnşası: 3 Hafta"
+    }
+  }
+}

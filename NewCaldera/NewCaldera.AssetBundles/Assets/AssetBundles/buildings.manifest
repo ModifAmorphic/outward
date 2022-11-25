@@ -1,0 +1,47 @@
+ManifestFileVersion: 0
+CRC: 1342513653
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 7b05f7a4fcc08f4e98e2a578cc2b9cc8
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: efb7ea49184288baebbed960e93c678b
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 136
+  Script: {instanceID: 0}
+- Class: 193
+  Script: {instanceID: 0}
+- Class: 205
+  Script: {instanceID: 0}
+- Class: 226
+  Script: {instanceID: 0}
+- Class: 227
+  Script: {instanceID: 0}
+- Class: 228
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/PrefabInstance/Buildings/MediumBuildingShellNoScripts.prefab
+- Assets/PrefabInstance/Buildings/Ledger.prefab
+Dependencies:
+- D:/repos/modifamorphic/GitHub-Outward/mods/newcaldera/outward/NewCaldera/NewCaldera.AssetBundles/Assets/AssetBundles/trees

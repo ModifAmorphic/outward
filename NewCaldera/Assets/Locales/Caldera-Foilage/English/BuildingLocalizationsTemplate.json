@@ -1,0 +1,104 @@
+{
+  "BuildingLocalizationTemplates": [
+    {
+      "ItemID": "-1330000100",
+      "Name": "Blueprint: Tree - American Elm A",
+      "Description": "American Elm A tree in a small square planter.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330000101",
+      "Name": "- American Elm A",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330000110",
+      "Name": "Blueprint: Tree - American Elm B",
+      "Description": "American Elm B tree in a small square planter.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330000111",
+      "Name": "- American Elm B",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330000120",
+      "Name": "Blueprint: Tree - American Elm C",
+      "Description": "American Elm C tree in a small square planter.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330000121",
+      "Name": "- American Elm C",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330000130",
+      "Name": "Blueprint: Tree - Caldera Aspen",
+      "Description": "Caldera Aspen tree in a small square planter.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330000131",
+      "Name": "- Aspen Caldera",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330000140",
+      "Name": "Blueprint: Tree - London Plane A",
+      "Description": "London Plane A tree in a small square planter.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330000141",
+      "Name": "- London Plane A",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330000150",
+      "Name": "Blueprint: Tree - London Plane B",
+      "Description": "London Plane B tree in a small square planter.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330000151",
+      "Name": "- London Plane B",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330000160",
+      "Name": "Blueprint: Tree - London Plane C",
+      "Description": "London Plane C tree in a small square planter.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330000161",
+      "Name": "- London Plane C",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330000170",
+      "Name": "Blueprint: Tree - White Oak A",
+      "Description": "White Oak A tree in a small square planter.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330000171",
+      "Name": "- White Oak A",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330000180",
+      "Name": "Blueprint: Tree - White Oak B",
+      "Description": "White Oak B tree in a small square planter.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330000181",
+      "Name": "- White Oak B",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330000190",
+      "Name": "Blueprint: Tree - White Oak C",
+      "Description": "White Oak C tree in a small square planter.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330000191",
+      "Name": "- White Oak C",
+      "Description": ""
+    }
+  ]
+}

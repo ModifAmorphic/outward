@@ -1,0 +1,35 @@
+[config]
+schemaVersion = "0.0.1"
+
+[package]
+namespace = "ModifAmorphic"
+name = "ActionUI"
+versionNumber = "${PACKAGE_VERSION}"
+description = "Expand QuickSlots with highly configurable Action Slots. Add hotkeyable Equipment Sets. Damaged equipment Durability Display. Reposition HUD elements. Access stash from character inventory, crafting and merchant menus. Preserve food in the stash."
+websiteUrl = "https://github.com/ModifAmorphic/outward/wiki/Action-UI"
+containsNsfwContent = false
+
+[package.dependencies]
+BepInEx-BepInExPack_Outward = "5.4.19"
+
+[build]
+icon = "Assets/icon.png"
+readme = "Assets/README.md"
+outdir = "Build"
+
+[[build.copy]]
+source = "bin"
+target = "files/plugins/"
+
+[[build.copy]]
+source = "../Assets/asset-bundles"
+target = "files/plugins/asset-bundles"
+
+[[build.copy]]
+source = "../Assets/Profiles"
+target = "files/plugins/Profiles"
+
+[publish]
+repository = "https://outward.thunderstore.io"
+communities = ["Outward"]
+categories = ["UI", "Items", "Utility"]

@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!226 &22600000
+BillboardAsset:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Plant_GeneralKnapweedFlowerA_Billboard
+  width: 1.041846
+  bottom: 0.72254974
+  height: 2.2968266
+  imageTexCoords:
+  - {x: 0, y: 0, z: 0.19999702, w: 0.440907}
+  - {x: 0.19999702, y: 0, z: 0.199997, w: 0.440907}
+  - {x: 0.39999402, y: 0, z: 0.199996, w: 0.440907}
+  - {x: 0.59999, y: 0, z: 0.19999695, w: 0.440907}
+  - {x: 0.79998696, y: 0, z: 0.19999707, w: 0.440907}
+  - {x: 0, y: 0.440907, z: 0.19999702, w: 0.440908}
+  - {x: 0.19999702, y: 0.440907, z: 0.199997, w: 0.440908}
+  - {x: 0.39999402, y: 0.440907, z: 0.199996, w: 0.440908}
+  vertices:
+  - {x: 0.20842601, y: 0.022172898}
+  - {x: 0.00443459, y: 0.481153}
+  - {x: 0.00443459, y: 0.94013304}
+  - {x: 0.791574, y: 0.022172898}
+  - {x: 0.986696, y: 0.481153}
+  - {x: 0.986696, y: 0.94013304}
+  indices:
+  - 4
+  - 3
+  - 0
+  - 1
+  - 4
+  - 0
+  - 5
+  - 4
+  - 1
+  - 2
+  - 5
+  - 1
+  material: {fileID: 2100000, guid: 1a25a8b79a3aa4a4ca961116fc4ab2e8, type: 2}

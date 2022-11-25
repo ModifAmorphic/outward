@@ -1,0 +1,199 @@
+{
+  "Items": {
+    "9400010": {
+      "ItemID": 9400010,
+      "Name": "- House A",
+      "Description": "Increase Housing by 1.\nA certain number of houses are required for many buildings\n----\nConstruction requirements\n Funds: {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\nFood upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400020": {
+      "ItemID": 9400020,
+      "Name": "- House B",
+      "Description": "Increase Housing by 1.\nA certain number of houses are required for many buildings\n----\nConstruction requirements\n Funds: {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\nFood upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400030": {
+      "ItemID": 9400030,
+      "Name": "- House C",
+      "Description": "Increase Housing by 1.\nA certain number of houses are required for many buildings\n----\nConstruction requirements\n Funds: {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\nFood upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400130": {
+      "ItemID": 9400130,
+      "Name": null,
+      "Description": "Produces (per day)\n Food: {food_production}\n Stone: {stone_production}\n Timber: {timber_production}\n +{food_capacity} Food Capacity\n----\nConstruction requirements\n Funds: {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Housing: {house_amount}\n----\nUpkeep (per day)\n Funds: {funds_upkeep}\n----\nConstruction:  {build_days} Days"
+    },
+    "9400132": {
+      "ItemID": 9400132,
+      "Name": null,
+      "Description": "An improvement to the Hunting lodge.\nProduces (per day)\n Food: {food_production}\n Stone: {stone_production}\n Timber: {timber_production}\n +{food_capacity} Food Capacity\n----\nConstruction requirements\n Funds: {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Housing: {house_amount}\n----\nUpkeep (per day)\n Funds: {funds_upkeep}\n----\nConstruction:  {build_days} Days"
+    },
+    "9400133": {
+      "ItemID": 9400133,
+      "Name": null,
+      "Description": "An improvement to the Hunting Guild.\nProduces (per day)\n Food: {food_production}\n Stone: {stone_production}\n Timber: {timber_production}\n +{food_capacity} Food Capacity\n----\nConstruction requirements\n City Hall Required\n Funds: {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Housing: {house_amount}\n----\nUpkeep (per day)\n Funds: {funds_upkeep}\n----\nConstruction:  {build_days} Days"
+    },
+    "9400140": {
+      "ItemID": 9400140,
+      "Name": null,
+      "Description": "A basic Mason’s workshop.\nProduces (per day)\n Stone: {stone_production}\n +{stone_capacity} Stone Capacity\n----\nConstruction requirements\n Funds: {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Housing: {house_amount}\n----\nUpkeep (per day)\n Funds: {funds_upkeep}\n Food: {food_upkeep}\n----\nConstruction:  {build_days} Days"
+    },
+    "9400142": {
+      "ItemID": 9400142,
+      "Name": null,
+      "Description": "An improvement to the Mason’s workshop.\nProduces (per day)\n Stone: {stone_production}\n +{stone_capacity} Stone Capacity\n----\nConstruction requirements\n Funds: {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Housing: {house_amount}\n----\nUpkeep (per day)\n Funds: {funds_upkeep}\n Food: {food_upkeep}\n----\nConstruction:  {build_days} Days"
+    },
+    "9400143": {
+      "ItemID": 9400143,
+      "Name": null,
+      "Description": "An improvement to the Stonecutter’s Guild.\nProduces (per day)\n Stone: {stone_production}\n +{stone_capacity} Stone Capacity\n----\nConstruction requirements\n City Hall Required\n Funds: {funds_cost}\n Food: {food_cost}\nStone: {stone_cost}\n Timber: {timber_cost}\n Housing: {house_amount}\n----\nUpkeep (per day)\n Funds: {funds_upkeep}\n Food: {food_upkeep}\n----\nConstruction:  {build_days} Days"
+    },
+    "9400150": {
+      "ItemID": 9400150,
+      "Name": null,
+      "Description": "A basic Woodcutter’s Lodge.\nProduces (per day)\n Timber: {timber_production}\n +{timber_capacity} Timber Capacity\n----\nConstruction requirements\n Funds: {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Housing: {house_amount}\n----\nUpkeep (per day)\n Funds: {funds_upkeep}\n Food: {food_upkeep}\n----\nConstruction:  {build_days} Days"
+    },
+    "9400152": {
+      "ItemID": 9400152,
+      "Name": null,
+      "Description": "An improvement to the Woodcutter’s Lodge.\nProduces (per day)\n Timber: {timber_production}\n +{timber_capacity} Timber Capacity\n----\nConstruction requirements\n Funds: {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Housing: {house_amount}\n----\nUpkeep (per day)\nFunds: {funds_upkeep}\n Food: {food_upkeep}\n----\nConstruction:  {build_days} Days"
+    },
+    "9400153": {
+      "ItemID": 9400153,
+      "Name": null,
+      "Description": "An improvement to the Carpenter’s Guild.\nProduces (per day)\n Timber: {timber_production}\n +{timber_capacity} Timber Capacity\n----\nConstruction requirements\n City Hall Required\n Funds: {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Housing: {house_amount}\n----\nUpkeep (per day)\n Funds: {funds_upkeep}\n Food: {food_upkeep}\n----\nConstruction:  {build_days} Days"
+    },
+    "9400120": {
+      "ItemID": 9400120,
+      "Name": null,
+      "Description": "Provides a basic bed. Required for several specialized buildings.\nProvides {funds_production} Funds per day per point of Housing.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Housing: {house_amount}\nConstruction:  {build_days} Days"
+    },
+    "9400122": {
+      "ItemID": 9400122,
+      "Name": null,
+      "Description": "Improves the City Hall’s sleeping bonus by increasing resistance to status effects.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Housing: {house_amount}\nConstruction:  {build_days} Days"
+    },
+    "9400123": {
+      "ItemID": 9400123,
+      "Name": null,
+      "Description": "Provides access to an active skill trainer, who teaches you to spend Health to infuse a weapon with blood.\n----\nConstruction requirements\n Joined the Blue Chamber Collective\n Funds:  {funds_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Housing: {house_amount}\nConstruction:  {build_days} Days"
+    },
+    "9400160": {
+      "ItemID": 9400160,
+      "Name": "Blacksmith shop",
+      "Description": "Sells new equipment and repairs.\nGenerates {funds_production} Funds per day.\nCounts as 1 House.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Housing: {house_amount}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400162": {
+      "ItemID": 9400162,
+      "Name": "Blacksmith shop – Weapon Forge",
+      "Description": "Allows crafting of a Custom Weapon Set.\nBuilding now generates {funds_production} Funds per day.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400163": {
+      "ItemID": 9400163,
+      "Name": "Blacksmith shop – Armor Forge",
+      "Description": "Allows crafting of a Custom Armor Set.\nBuilding now generates {funds_production} Funds per day.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400170": {
+      "ItemID": 9400170,
+      "Name": "Alchemist shop",
+      "Description": "Sells potions, magical items and grenades.\nProvides {funds_production} Funds per day.\nCounts as 1 House.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400172": {
+      "ItemID": 9400172,
+      "Name": "Alchemist shop – Fletcher’s Workshop",
+      "Description": "Adds new Arrows and Arrow Crafting materials.\nShop now generates {funds_production} Funds per day.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400173": {
+      "ItemID": 9400173,
+      "Name": "Alchemist shop – Military Lab",
+      "Description": "Provides access to a passive skill trainer, who increases max HP and physical damage.\nShop now generates {funds_production} Funds per day.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400180": {
+      "ItemID": 9400180,
+      "Name": "Enchanting Guild",
+      "Description": "Uses rare materials to enchant weapons and armor with new effects.\n----\nConstruction requirements\n City Hall Required\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400182": {
+      "ItemID": 9400182,
+      "Name": "Enchanting Guild – Arcane Library",
+      "Description": "Unlocks new enchantments for Trinkets at the Enchanting Guild’s Tablet.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400183": {
+      "ItemID": 9400183,
+      "Name": "Enchanting Guild – Mana Chambers",
+      "Description": "The Head Enchanter will freely teach you to infuse your weapon with the Ethereal element.\n----\nConstruction requirements\n Joined Sorobor\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400190": {
+      "ItemID": 9400190,
+      "Name": "Food Store",
+      "Description": "Sell meals and ingredients\nProvides {food_production} Food and {funds_production} Funds Per day\nCounts as 1 House.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Housing:  {house_amount}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400192": {
+      "ItemID": 9400192,
+      "Name": "Food Store – Inn",
+      "Description": "Adds a room that can be rented, to provide a generous sleep bonus and resistance to hot and cold weather.\nBuilding now provides 3 housing.\n----\nConstruction requirements\n City Hall Required\n Funds:  {funds_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400193": {
+      "ItemID": 9400193,
+      "Name": "Food Store – Communal Garden",
+      "Description": "Provides a varied selection of free food ingredients that refreshes every week.\nBuilding now generates {food_production} Food per day.\n----\n Construction requirements\n City Hall Required\n Funds:  {funds_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400200": {
+      "ItemID": 9400200,
+      "Name": "Gladiator’s Arena",
+      "Description": "Fight different regional champions to earn Medals, which can be exchanged for prizes.\n----\nConstruction requirements\n City Hall Required\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Housing:  {house_amount}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400202": {
+      "ItemID": 9400202,
+      "Name": "Arena – Training Ground",
+      "Description": "Hires a trainer who can teach advanced weapon skills.\n----\n Construction requirements\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Housing:  {house_amount}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400203": {
+      "ItemID": 9400203,
+      "Name": "Arena – Combat Academy",
+      "Description": "Hires a trainer who can teach high-commitment specialized Passive skills.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Housing:  {house_amount}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400210": {
+      "ItemID": 9400210,
+      "Name": "Chapel",
+      "Description": "A Disciple can provide a buff to increase your Barrier by 4 for 48 hours in exchange for 100 silvers.\nCounts as 1 House.\n----\nConstruction requirements\n City Hall Required\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Housing:  {house_amount}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400212": {
+      "ItemID": 9400212,
+      "Name": "Chapel – Temple",
+      "Description": "The Healer’s Buff now also increases Status Effect resistance by 25%, and increases the cost to 125 Silver.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400213": {
+      "ItemID": 9400213,
+      "Name": "Chapel – Monument to Elatt",
+      "Description": "Provides access to a passive skill trainer, who grants you increased Barrier and Protection stats.\n----\nConstruction requirements\nJoined the Holy Mission\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400220": {
+      "ItemID": 9400220,
+      "Name": "General Store",
+      "Description": "Sells basic goods, backpacks, lanterns and tents.\nProvides {funds_production} Funds per day.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Housing: {house_amount}\nConstruction:  {build_days} Days"
+    },
+    "9400222": {
+      "ItemID": 9400222,
+      "Name": "General Store – Courier",
+      "Description": "Unlocks a secondary inventory at the General Store, that has goods from a few different shops from other towns.  Refreshes to a different shop every 3 days.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Housing: {house_amount}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400223": {
+      "ItemID": 9400223,
+      "Name": "General Store – Caravan",
+      "Description": "Allows you to pay 300 Silvers to travel to any other town you choose.\nBuilding now generates {funds_production} Funds per day.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Housing: {house_amount}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400230": {
+      "ItemID": 9400230,
+      "Name": "Water Purifier",
+      "Description": "An advanced Water Purifier, which provides much better water than usual.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Food upkeep: {food_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    "9400232": {
+      "ItemID": 9400232,
+      "Name": "Water Purifier – Distillery",
+      "Description": "Provides some free Gaberry Wine every week.\nBuilding now generates {funds_production} Funds per day.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Food: {food_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\nConstruction:  {build_days} Days"
+    },
+    "9400233": {
+      "ItemID": 9400233,
+      "Name": "Water Purifier – Fountain of Life",
+      "Description": "Adds a source of Healing Water that regenerates health instead of Stamina.\n----\nConstruction requirements\n Funds:  {funds_cost}\n Stone: {stone_cost}\n Timber: {timber_cost}\n Material:  {item_cost}\n Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    }
+  }
+}

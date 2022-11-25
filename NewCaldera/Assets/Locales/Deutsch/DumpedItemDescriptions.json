@@ -1,0 +1,49 @@
+{
+  "Items": {
+    "9400130": {
+      "ItemID": 9400130,
+      "Name": null,
+      "Description": "Eine einfache Jagdhütte. Liefert der Siedlung täglich 15 Essen.\n----\nVoraussetzungen für Bau\nGeld: 2500\nStein: 20\nHolz: 50\nBehausung: 1\nErhaltung: 40 Geld/Tag\nBauzeit: 3 Wochen"
+    },
+    "9400132": {
+      "ItemID": 9400132,
+      "Name": null,
+      "Description": "Eine Verbesserung für die Jagdhütte. Liefert der Siedlung täglich 25 Essen.\n----\nVoraussetzungen für Bau\nGeld: 2500\nStein: 50\nHolz: 100\nBehausung: 2\nErhaltung: 100 Geld/Tag\nBauzeit: 4 Wochen"
+    },
+    "9400133": {
+      "ItemID": 9400133,
+      "Name": null,
+      "Description": "Eine Verbesserung für die Jägergilde. Liefert der Siedlung täglich 45 Essen.\n----\nVoraussetzungen für Bau\nRathaus\nGeld: 2500\nStein: 75\nHolz: 200\nBehausung: 4\nErhaltung: 200 Geld/Tag\nBauzeit: 4 Wochen"
+    },
+    "9400140": {
+      "ItemID": 9400140,
+      "Name": null,
+      "Description": "Eine einfache Steinmetzwerkstatt. Liefert der Siedlung täglich 4 Stein.\n----\nVoraussetzungen für Bau\nGeld: 2500\nStein: 50\nHolz: 20\nBehausung: 1\nErhaltung: 40 Geld/Tag\nBauzeit: 3 Wochen"
+    },
+    "9400142": {
+      "ItemID": 9400142,
+      "Name": null,
+      "Description": "Eine Verbesserung für die Steinmetzwerkstatt. Liefert der Siedlung täglich 6 Stein.\n----\nVoraussetzungen für Bau\nGeld: 2500\nStein: 100\nHolz: 30\nBehausung: 2\nErhaltung: 80 Geld/Tag\nBauzeit: 3 Wochen"
+    },
+    "9400143": {
+      "ItemID": 9400143,
+      "Name": null,
+      "Description": "Eine Verbesserung für die Steinmetzwerkstatt. Liefert der Siedlung täglich 8 Stein.\n----\nVoraussetzungen für Bau\nRathaus\nGeld: 2500\nStein: 100\nHolz: 50\nBehausung: 4\nErhaltung: 100 Geld/Tag\nBauzeit: 3 Wochen"
+    },
+    "9400150": {
+      "ItemID": 9400150,
+      "Name": null,
+      "Description": "Eine einfache Holzfällerhütte. Liefert der Siedlung täglich 4 Holz.\n----\nVoraussetzungen für Bau\nGeld: 2500\nStein: 20\nHolz: 50\nBehausung: 1\nErhaltung: 40 Geld/Tag\nBauzeit: 3 Wochen"
+    },
+    "9400152": {
+      "ItemID": 9400152,
+      "Name": null,
+      "Description": "Eine Verbesserung für die Holzfällerhütte. Liefert der Siedlung täglich 6 Holz.\n----\nVoraussetzungen für Bau\nGeld: 2500\nStein: 30\nHolz: 100\nBehausung: 2\nErhaltung: 80 Geld/Tag\nBauzeit: 3 Wochen"
+    },
+    "9400153": {
+      "ItemID": 9400153,
+      "Name": null,
+      "Description": "Eine Verbesserung für die Schreinergilde. Liefert der Siedlung täglich 8 Holz.\n----\nVoraussetzungen für Bau\nRathaus\nGeld: 2500\nStein: 50\nHolz: 100\nBehausung: 4\nErhaltung: 100 Geld/Tag\nBauzeit: 3 Wochen"
+    }
+  }
+}

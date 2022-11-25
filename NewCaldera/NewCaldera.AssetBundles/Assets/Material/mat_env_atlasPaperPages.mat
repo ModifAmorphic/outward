@@ -1,0 +1,301 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: mat_env_atlasPaperPages
+  m_Shader: {fileID: 4800000, guid: a025f8ba6dc596d4c9f05db475ab9235, type: 3}
+  m_ShaderKeywords: _ALPHATEST_ON _CUTOFF _DETAIL _DETAIL_TEXTURED _OCCLUSION_FROM_ALBEDO_ALPHA _WETNESS_NONE
+  m_LightmapFlags: 1
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2450
+  stringTagMap:
+  - RenderType: TransparentCutout
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AutoNormTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _AutoTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetMaskTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetNormTex:
+        m_Texture: {fileID: 2800000, guid: 4a39a2b6216788449ba9c6babf6710b9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GenTex:
+        m_Texture: {fileID: 2800000, guid: 43692467501ecf64f8ae632cc77c6f50, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: 85cb329e52f64a54481b7d6ef6f55f1e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormTex:
+        m_Texture: {fileID: 2800000, guid: 3ebde2f4fc83ff643889f7e3c6181de8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SpecColorTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VPRNormTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VPRTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _AutoNormStr: 1
+    - _AutoSpecTiling: 1
+    - _AutoTexAmount: 0.5
+    - _AutoTexHideEmission: 0
+    - _AutoTexNormalMapScale: 1
+    - _AutoTexNormalMapTransp: 0.5
+    - _AutoTexSharpness: 0.5
+    - _AutoTexTiling: 1
+    - _BendNormalsFreq: 4
+    - _BendNormalsStrength: 0.05
+    - _BendStrength: 0.4
+    - _BumpScale: -0.3
+    - _BumpScale2: 1
+    - _Cloth: 0
+    - _ClothShown: 1
+    - _Cull: 2
+    - _CurvatureCustomU: 0
+    - _CurvatureCustomV: 0
+    - _CurvatureMultU: 1
+    - _CurvatureMultV: 1
+    - _Cutoff: 0.5
+    - _Depth: 0.03
+    - _DepthReductionDistance: 20
+    - _DepthWrite: 0
+    - _DetNormStr: 0.2
+    - _DetailEmissiveness: 0
+    - _DetailGloss: 1
+    - _DetailMetalness: 1
+    - _DetailNormalLerp: 0
+    - _DetailNormalMapScale: 0.2
+    - _DetailSpecLerp: 0
+    - _DetailUVMult: 1
+    - _DiffuseAsColorMap: 0
+    - _DiffuseScatter: 1
+    - _DiffuseScatteringExponent: 8
+    - _DiffuseScatteringOffset: 0
+    - _DistSteps: 64
+    - _DistStepsShadows: 64
+    - _Dither: 0
+    - _DoubleFaced: 0
+    - _DropletsAnimSpeed: 10
+    - _DropletsTiling: 1
+    - _DstBlend: 0
+    - _EmissionPulsateSpeed: 0
+    - _EmitGIBoost: 1
+    - _EmitPulse: 0
+    - _EmitScroll: 0
+    - _FlowCycleScale: 2
+    - _Frost: 0
+    - _FrostFromGlobal: 1
+    - _Fur: 0
+    - _FurShown: 1
+    - _Glitter: 0
+    - _GlitterAnimationFrequency: 0.02
+    - _GlitterColorization: 0.2
+    - _GlitterDensity: 0.2
+    - _GlitterFilter: -1
+    - _GlitterMask: 0
+    - _GlitterShown: 1
+    - _GlitterTiling: 1
+    - _GlossMax: 1
+    - _GlossMin: 0
+    - _Glossiness: 0.284
+    - _Glossiness2: 1
+    - _MainShown: 1
+    - _MinPulseBrightness: 0
+    - _Mode: 1
+    - _NormStr: -0.3
+    - _OccStr: 1
+    - _OcclusionStrength: 0
+    - _OcclusionStrength2: 0
+    - _POM: 1
+    - _POMCurvatureType: 0
+    - _POMPrecomputedFlag: 0
+    - _POMShadows: 0
+    - _POMShown: 1
+    - _POM_BottomCut: 0
+    - _POM_ExtrudeVolume: 0
+    - _POM_MeshIsVolume: 0
+    - _PanEmissionMask: 0
+    - _PanUSpeed: 0
+    - _PanVSpeed: 0
+    - _Parallax: 0.04
+    - _Parallax2: 0.04
+    - _Phong: 0
+    - _PresetsShown: 0
+    - _ProximityMult: 0
+    - _PulsateEmission: 0
+    - _RainIntensity: 1
+    - _RainIntensityFromGlobal: 0
+    - _ReflectionRemoval: 0.98
+    - _Refraction: 0.02
+    - _RefractionBumpScale: 0.5
+    - _RefractionChromaticAberration: 0
+    - _ReliefMIPbias: 0
+    - _RippleAnimSpeed: 0.5
+    - _RippleRefraction: 0.3
+    - _RippleSpecFilter: 0.02
+    - _RippleStrength: 0.5
+    - _RippleStrengthFromGlobal: 0
+    - _RippleTiling: 1
+    - _SecOcclusionStrength: 0
+    - _SecondaryShown: 1
+    - _ShadowCull: 2
+    - _ShadowMIPbias: 0
+    - _ShadowStrength: 1
+    - _SmoothMax: 1
+    - _SmoothMin: 0
+    - _Snow: 0
+    - _SnowBumpMacro: 0.1
+    - _SnowBumpMicro: 0.08
+    - _SnowBumpMicroFromGlobal: 1
+    - _SnowDeepSmoothen: 4
+    - _SnowDiffuseScatteringExponent: 6
+    - _SnowDiffuseScatteringOffset: 0.4
+    - _SnowDissolve: 2
+    - _SnowDissolveFromGlobal: 1
+    - _SnowDissolveMaskOcclusion: 0
+    - _SnowEnabled: 0
+    - _SnowGlitterColorFromGlobal: 0
+    - _SnowHeightThreshold: -10000
+    - _SnowHeightThresholdTransition: 1000
+    - _SnowLevelFromGlobal: 1
+    - _SnowMacroTiling: 1
+    - _SnowMicroTiling: 4
+    - _SnowShown: 1
+    - _SnowSlopeDamp: 2
+    - _SnowSpecGlossFromGlobal: 1
+    - _SnowWorldMapping: 0
+    - _Softness: 2
+    - _SoftnessFade: 0.4
+    - _SpecBoost: 0
+    - _SpecMode: 0
+    - _SrcBlend: 1
+    - _Tan2ObjCustomU: 1
+    - _Tan2ObjCustomV: 1
+    - _Tan2ObjMultU: 1
+    - _Tan2ObjMultV: 1
+    - _Tess: 9
+    - _TessDepth: 0.05
+    - _TessEdgeLengthLimit: 5
+    - _TessOffset: 0.1
+    - _Translucency: 0
+    - _TranslucencyConstant: 0.1
+    - _TranslucencyDeferredLightIndex: 0
+    - _TranslucencyExponent: 30
+    - _TranslucencyNormalOffset: 0.05
+    - _TranslucencyOcclusion: 0
+    - _TranslucencyPointLightDirectionality: 0.7
+    - _TranslucencyShown: 1
+    - _TranslucencyStrength: 4
+    - _TranslucencySuppressRealtimeShadows: 0.5
+    - _UVSec: 0
+    - _UVSecOcclusion: 0
+    - _UVSecOcclusionLightmapPacked: 0
+    - _UV_Clip: 0
+    - _VPRNormStr: 1
+    - _VPRTiling: 1
+    - _VPRUnderAuto: 0
+    - _VPSpecTilingR: 1
+    - _VPTexRNormalMapScale: 1
+    - _VPTexRNormalMapTransp: 0.5
+    - _VPUnderAutoTex: 0
+    - _WaveSize: 5
+    - _WetDroplets: 0
+    - _WetRipples: 0
+    - _Wetness: 0
+    - _WetnessConst: 0
+    - _WetnessConstFromGlobal: 1
+    - _WetnessDarkening: 2
+    - _WetnessEmissiveness: 0
+    - _WetnessEmissivenessWrap: 0
+    - _WetnessFlowGlobalTime: 1
+    - _WetnessLevel: 1
+    - _WetnessLevelFromGlobal: 1
+    - _WetnessMergeWithSnowPerMaterial: 0
+    - _WetnessNormMIP: 5
+    - _WetnessNormStrength: 2
+    - _WetnessNormalInfluence: 0.5
+    - _WetnessShown: 1
+    - _WetnessUVMult: 1
+    - _WindSpeed: 2
+    - _ZOffset: 0
+    - _ZWrite: 1
+    - maxDist: 10
+    - minDist: 1
+    m_Colors:
+    - _AutoSpecColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    - _AutoTexColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    - _AutoTexSettings: {r: 1, g: 2, b: 1, a: 2}
+    - _Color: {r: 0.85294116, g: 0.82811415, b: 0.8090398, a: 1}
+    - _Color2: {r: 1, g: 1, b: 1, a: 1}
+    - _CurvatureMultOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _CutoffEdgeGlow: {r: 0, g: 0, b: 0, a: 0.02}
+    - _DetColor: {r: 1, g: 1, b: 1, a: 0}
+    - _DetTiling: {r: 2, g: 2, b: 0, a: 0}
+    - _DetailColor: {r: 1, g: 1, b: 1, a: 0}
+    - _DetailSpecGloss: {r: 0, g: 0, b: 0, a: 0}
+    - _DiffuseScatteringColor: {r: 0, g: 0, b: 0, a: 0}
+    - _DiffuseScatteringColor2: {r: 0, g: 0, b: 0, a: 0}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _EmitAnimSettings: {r: 0, g: 0, b: 0, a: 1}
+    - _GlitterColor: {r: 0.8, g: 0.8, b: 0.8, a: 0.2}
+    - _GlitterColor2: {r: 0.8, g: 0.8, b: 0.8, a: 0.2}
+    - _ProxColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SnowColorAndCoverage: {r: 1, g: 1, b: 1, a: 1}
+    - _SnowDiffuseScatteringColor: {r: 1, g: 1, b: 1, a: 0}
+    - _SnowEmissionTransparency: {r: 0.1, g: 0.1, b: 0.1, a: 1}
+    - _SnowGlitterColor: {r: 0.8, g: 0.8, b: 0.8, a: 0.2}
+    - _SnowSpecGloss: {r: 0.1, g: 0.1, b: 0.1, a: 0.15}
+    - _SnowTranslucencyColor: {r: 0.75, g: 1, b: 1, a: 1}
+    - _SpecColor: {r: 0, g: 0, b: 0, a: 0}
+    - _SpecColor2: {r: 1, g: 1, b: 1, a: 1}
+    - _Tan2ObjectMultOffset: {r: 0, g: 0, b: 1, a: 1}
+    - _TranslucencyColor: {r: 1, g: 1, b: 1, a: 1}
+    - _TranslucencyColor2: {r: 1, g: 1, b: 1, a: 1}
+    - _UV_Clip_Borders: {r: 0, g: 0, b: 1, a: 1}
+    - _VPRSpecColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    - _VPRTexColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    - _VPRTexSettings: {r: 0.5, g: 0.5, b: 0.5, a: 2}
+    - _VPSpecColorR: {r: 1, g: 1, b: 1, a: 1}
+    - _VPTexColorR: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    - _WetnessColor: {r: 0, g: 0, b: 0, a: 0}
+    - _WetnessSpecGloss: {r: 0.05, g: 0.05, b: 0.05, a: 0.7}
+    - _WorldColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
+    - _WorldColorSize: {r: 0, g: 0, b: 2000, a: 0}
+    - bumpMap2TexelSize: {r: 1, g: 1, b: 1, a: 1}
+    - bumpMapTexelSize: {r: 0.001953125, g: 0.001953125, b: 512, a: 512}
+    - heightMapTexelSize: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []

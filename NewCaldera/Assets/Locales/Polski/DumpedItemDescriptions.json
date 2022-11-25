@@ -1,0 +1,49 @@
+{
+  "Items": {
+    "9400130": {
+      "ItemID": 9400130,
+      "Name": null,
+      "Description": "Podstawowe stanowisko myśliwych. Codziennie zapewnia osadzie 15 jedn. jedzenia.\n----\nWymagania do budowy\nFundusze: 2500\nKamień: 20\nTarcica: 50\nZakwaterowanie: 1\nFundusze na utrzymanie: 40 / dzień\nCzas budowy: 3 tygodnie"
+    },
+    "9400132": {
+      "ItemID": 9400132,
+      "Name": null,
+      "Description": "Ulepszenie stanowiska myśliwych. Codziennie zapewnia osadzie 25 jedn. jedzenia.\n----\nWymagania do budowy\nFundusze: 2500\nKamień: 50\nTarcica: 100\nZakwaterowanie: 2\nFundusze na utrzymanie: 100 / dzień\nCzas budowy: 4 tygodnie"
+    },
+    "9400133": {
+      "ItemID": 9400133,
+      "Name": null,
+      "Description": "Ulepszenie gildii myśliwych. Codziennie zapewnia osadzie 45 jedn. jedzenia.\n----\nWymagania do budowy\nPotrzebny ratusz\nFundusze: 2500\nKamień: 75\nTarcica: 200\nZakwaterowanie: 4\nFundusze na utrzymanie: 200 / dzień\nCzas budowy: 4 tygodnie"
+    },
+    "9400140": {
+      "ItemID": 9400140,
+      "Name": null,
+      "Description": "Podstawowy warsztat kamieniarzy. Codziennie zapewnia osadzie 4 jedn. kamienia.\n----\nWymagania do budowy\nFundusze: 2500\nKamień: 50\nTarcica: 20\nZakwaterowanie: 1\nFundusze na utrzymanie: 40 / dzień\nCzas budowy: 3 tygodnie"
+    },
+    "9400142": {
+      "ItemID": 9400142,
+      "Name": null,
+      "Description": "Ulepszenie warsztatu kamieniarzy. Codziennie zapewnia osadzie 6 jedn. kamienia.\n----\nWymagania do budowy\nFundusze: 2500\nKamień: 100\nTarcica: 30\nZakwaterowanie: 2\nFundusze na utrzymanie: 80 / dzień\nCzas budowy: 3 tygodnie"
+    },
+    "9400143": {
+      "ItemID": 9400143,
+      "Name": null,
+      "Description": "Ulepszenie gildii kamieniarzy. Codziennie zapewnia osadzie 8 jedn. kamienia.\n----\nWymagania do budowy\nPotrzebny ratusz\nFundusze: 2500\nKamień: 100\nTarcica: 50\nZakwaterowanie: 4\nFundusze na utrzymanie: 100 / dzień\nCzas budowy: 3 tygodnie"
+    },
+    "9400150": {
+      "ItemID": 9400150,
+      "Name": null,
+      "Description": "Podstawowe stanowisko drwali. Codziennie zapewnia osadzie 4 jedn. drewna.\n----\nWymagania do budowy\nFundusze: 2500\nKamień: 20\nTarcica: 50\nZakwaterowanie: 1\nFundusze na utrzymanie: 40 / dzień\nCzas budowy: 3 tygodnie"
+    },
+    "9400152": {
+      "ItemID": 9400152,
+      "Name": null,
+      "Description": "Ulepszenie stanowiska drwali. Codziennie zapewnia osadzie 6 jedn. drewna.\n----\nWymagania do budowy\nFundusze: 2500\nKamień: 30\nTarcica: 100\nZakwaterowanie: 2\nFundusze na utrzymanie: 80 / dzień\nCzas budowy: 3 tygodnie"
+    },
+    "9400153": {
+      "ItemID": 9400153,
+      "Name": null,
+      "Description": "Ulepszenie gildii cieśli. Codziennie zapewnia osadzie 8 jedn. drewna.\n----\nWymagania do budowy\nPotrzebny ratusz\nFundusze: 2500\nKamień: 50\nTarcica: 100\nZakwaterowanie: 4\nFundusze na utrzymanie: 100 / dzień\nCzas budowy: 3 tygodnie"
+    }
+  }
+}

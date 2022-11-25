@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!226 &22600000
+BillboardAsset:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: tree_bergAspen_BillboardCaldera
+  width: 12.471594
+  bottom: -0.83717895
+  height: 27.07383
+  imageTexCoords:
+  - {x: 0, y: 0, z: 0.19999702, w: 0.43416}
+  - {x: 0.19999702, y: 0, z: 0.19999601, w: 0.43416}
+  - {x: 0.39999303, y: 0, z: 0.19999698, w: 0.43416}
+  - {x: 0.59999, y: 0, z: 0.199996, w: 0.43416}
+  - {x: 0.799986, y: 0, z: 0.19999605, w: 0.43416}
+  - {x: 0, y: 0.43416, z: 0.19999702, w: 0.43416005}
+  - {x: 0.19999702, y: 0.43416, z: 0.19999601, w: 0.43416005}
+  - {x: 0.39999303, y: 0.43416, z: 0.19999698, w: 0.43416005}
+  vertices:
+  - {x: 0.0134831, y: 0.0224719}
+  - {x: 0.0134831, y: 0.49662903}
+  - {x: 0.155056, y: 0.97078604}
+  - {x: 0.98202205, y: 0.0224719}
+  - {x: 0.98202205, y: 0.49662903}
+  - {x: 0.840448, y: 0.97078604}
+  indices:
+  - 4
+  - 3
+  - 0
+  - 1
+  - 4
+  - 0
+  - 5
+  - 4
+  - 1
+  - 2
+  - 5
+  - 1
+  material: {fileID: 2100000, guid: fc860b7ba58f3004a9e1d04a9d28698e, type: 2}

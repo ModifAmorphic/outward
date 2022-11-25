@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!226 &22600000
+BillboardAsset:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Plant_GeneralWesternFernB_Billboard
+  width: 2.628772
+  bottom: -0.14921059
+  height: 1.2848691
+  imageTexCoords:
+  - {x: 0.39635003, y: 0, z: 0.198175, w: -0.405455}
+  - {x: 0.60363, y: 0.405455, z: 0.19817498, w: -0.40545398}
+  - {x: 0.19817503, y: 0, z: 0.19817503, w: -0.405455}
+  - {x: 0.7927, y: 0, z: 0.1981749, w: -0.405455}
+  - {x: 0.99998003, y: 0.405455, z: 0.19817501, w: -0.40545398}
+  - {x: 0.99087507, y: 0, z: 0.19817507, w: -0.405455}
+  - {x: 0.5945251, y: 0, z: 0.19817507, w: -0.405455}
+  - {x: 0.801805, y: 0.405455, z: 0.19817501, w: -0.40545398}
+  vertices:
+  - {x: 0.122596, y: 0.108173005}
+  - {x: 0.0889423, y: 0.506009}
+  - {x: 0.0889423, y: 0.9038461}
+  - {x: 0.875, y: 0.108173005}
+  - {x: 0.908653, y: 0.506009}
+  - {x: 0.908653, y: 0.9038461}
+  indices:
+  - 4
+  - 3
+  - 0
+  - 1
+  - 4
+  - 0
+  - 5
+  - 4
+  - 1
+  - 2
+  - 5
+  - 1
+  material: {fileID: 2100000, guid: b6af273d9dcbc1347a76c5d5313173d4, type: 2}

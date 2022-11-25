@@ -1,0 +1,49 @@
+{
+  "Items": {
+    "9400130": {
+      "ItemID": 9400130,
+      "Name": null,
+      "Description": "Une simple cabane de chasseur qui produit 15 de nourriture chaque jour pour la colonie.\n----\nConditions de construction\nFonds : 2500\nPierres : 20\nBois : 50\nHabitations : 1\nFonds de maintien : 40 / jour\nConstruction : 3 semaines"
+    },
+    "9400132": {
+      "ItemID": 9400132,
+      "Name": null,
+      "Description": "Une cabane de chasse améliorée qui produit 25 de nourriture chaque jour pour la colonie\n----\nConditions de construction\nFonds : 2500\nPierres : 50\nBois : 100\nHabitations : 2\nFonds de maintien : 100 / jour\nConstruction : 4 semaines"
+    },
+    "9400133": {
+      "ItemID": 9400133,
+      "Name": null,
+      "Description": "Une guilde des chasseurs améliorée qui produit 45 de nourriture chaque jour pour la colonie\n----\nConditions de construction\nHôtel de ville requis\nFonds : 2500\nPierres : 75\nBois : 200\nHabitations : 4\nFonds de maintien : 200 / jour\nConstruction : 4 semaines"
+    },
+    "9400140": {
+      "ItemID": 9400140,
+      "Name": null,
+      "Description": "Un simple atelier de maçon qui produit 4 pierres par jour pour la colonie.\n----\nConditions de construction\nFonds : 2500\nPierres : 50\nBois : 20\nHabitations : 1\nFonds de maintien : 40 / jour\nConstruction : 3 semaines"
+    },
+    "9400142": {
+      "ItemID": 9400142,
+      "Name": null,
+      "Description": "Un atelier de maçon amélioré qui produit 6 pierres chaque jour pour la colonie.\n----\nConditions de construction\nFonds : 2500\nPierres : 100\nBois : 30\nHabitations : 2\nFonds de maintien : 80 / jour\nConstruction : 3 semaines"
+    },
+    "9400143": {
+      "ItemID": 9400143,
+      "Name": null,
+      "Description": "Une guilde des tailleurs de pierres améliorée qui produit 8 pierres chaque jour pour la colonie.\n----\nConditions de construction\nHôtel de ville requis\nFonds : 2500\nPierres : 100\nBois : 50\nHabitations : 4\nFonds de maintien : 100 / jour\nConstruction : 3 semaines"
+    },
+    "9400150": {
+      "ItemID": 9400150,
+      "Name": null,
+      "Description": "Une simple cabane de bûcheron qui produit 4 de bois par jour pour la colonie.\n----\nConditions de construction\nFonds : 2500\nPierres : 20\nBois : 50\nHabitations : 1\nFonds de maintien : 40 / jour\nConstruction : 3 semaines"
+    },
+    "9400152": {
+      "ItemID": 9400152,
+      "Name": null,
+      "Description": "Une cabane de bûcheron améliorée qui produit 6 de bois par jour pour la colonie.\n----\nConditions de construction\nFonds : 2500\nPierres : 30\nBois : 100\nHabitations : 2\nFonds de maintien : 80 / jour\nConstruction : 3 semaines"
+    },
+    "9400153": {
+      "ItemID": 9400153,
+      "Name": null,
+      "Description": "Une guilde des menuisiers améliorée qui produit 8 de bois par jour pour la colonie.\n----\nConditions de construction\nHôtel de ville requis\nFonds : 2500\nPierres : 50\nBois : 100\nHabitations : 4\nFonds de maintien : 100 / jour\nConstruction : 3 semaines"
+    }
+  }
+}

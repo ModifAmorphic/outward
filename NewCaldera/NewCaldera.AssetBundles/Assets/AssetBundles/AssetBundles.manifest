@@ -1,0 +1,10 @@
+ManifestFileVersion: 0
+CRC: 2019173013
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: modifamorphic-buildings
+      Dependencies: {}
+    Info_1:
+      Name: modifamorphic-vegetation
+      Dependencies: {}

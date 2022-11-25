@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!226 &22600000
+BillboardAsset:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Plant_GeneralElephantGrassA_Billboard
+  width: 2.2178712
+  bottom: -0.12799558
+  height: 4.4675756
+  imageTexCoords:
+  - {x: 0, y: 0, z: 0.19999202, w: 0.402856}
+  - {x: 0.19999202, y: 0, z: 0.19999199, w: 0.402856}
+  - {x: 0.399984, y: 0, z: 0.199992, w: 0.402856}
+  - {x: 0.599976, y: 0, z: 0.19999301, w: 0.402856}
+  - {x: 0.799969, y: 0, z: 0.19999206, w: 0.402856}
+  - {x: 0, y: 0.402856, z: 0.19999202, w: 0.40285605}
+  - {x: 0.19999202, y: 0.402856, z: 0.19999199, w: 0.40285605}
+  - {x: 0.399984, y: 0.402856, z: 0.199992, w: 0.40285605}
+  vertices:
+  - {x: 0.45278502, y: 0.021791799}
+  - {x: 0.0508475, y: 0.48668304}
+  - {x: 0.0508475, y: 0.951574}
+  - {x: 0.552056, y: 0.021791799}
+  - {x: 0.94431007, y: 0.48668304}
+  - {x: 0.94431007, y: 0.951574}
+  indices:
+  - 4
+  - 3
+  - 0
+  - 1
+  - 4
+  - 0
+  - 5
+  - 4
+  - 1
+  - 2
+  - 5
+  - 1
+  material: {fileID: 2100000, guid: 9f6c5a61975e69545b9b5097eecddc73, type: 2}
