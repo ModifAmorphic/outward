@@ -17,7 +17,7 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
             {"vegetation", new HashSet<string>() { "asset-bundles/modifamorphic-vegetation" } }
         };
 
-        public Dictionary<string, BuildingBundle> _buildingBundles = new Dictionary<string, BuildingBundle>();
+        public Dictionary<string, BuildingPacksManifest> _buildingBundles = new Dictionary<string, BuildingPacksManifest>();
 
         private readonly Func<Logging.Logger> _loggerFactory;
         private Logging.Logger Logger => _loggerFactory.Invoke();
@@ -33,7 +33,7 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
 
         public AssetBundlesService(Func<Logging.Logger> loggerFactory) => _loggerFactory = loggerFactory;
 
-        public void AddBuildingBundle(BuildingBundle bundle)
+        public void AddBuildingBundle(BuildingPacksManifest bundle)
         {
             _loadStarted = false;
             _buildingBundles.Add(bundle.Name, bundle);
@@ -68,8 +68,8 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
             foreach (var bundle in _buildingBundles)
             {
                 _loadingBundles.Add(bundle.Key);
-                Logger.LogDebug($"Loading Asset Bundle {bundle.Key} from location '{bundle.Value.BundlePath}'.");
-                AssetBundle.LoadFromFileAsync(bundle.Value.BundlePath).completed += (asyncOperation) => AddAssetBundle(bundle.Key, asyncOperation);
+                Logger.LogDebug($"Loading Asset Bundle {bundle.Key} from location '{bundle.Value.AssetBundlePath}'.");
+                AssetBundle.LoadFromFileAsync(bundle.Value.AssetBundlePath).completed += (asyncOperation) => AddAssetBundle(bundle.Key, asyncOperation);
             }
             _buildingBundles.Clear();
         }

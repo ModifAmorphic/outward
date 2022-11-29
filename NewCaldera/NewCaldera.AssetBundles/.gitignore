@@ -26,8 +26,8 @@
 #Custom DLL Plugins
 /[Aa]ssets/Plugins/*.dll
 
-#Downloaded Package
-/[Aa]ssets/MedievalKingdomUI/
+#GeneratedPrefabs
+/[Aa]ssets/ModifAmorphicPrefabs/
 
 # Visual Studio cache directory
 .vs/

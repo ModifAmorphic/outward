@@ -1,0 +1,73 @@
+ManifestFileVersion: 0
+CRC: 2011719873
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: ed9c9fa9daca4a17f5dd915d32b783cd
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: a80ae03a7a2c66980ab463aea32da9dd
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 600202350, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+- Class: 114
+  Script: {fileID: 2057524556, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+- Class: 114
+  Script: {fileID: -1047901896, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+- Class: 114
+  Script: {fileID: -498244278, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+- Class: 114
+  Script: {fileID: 937600647, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 136
+  Script: {instanceID: 0}
+- Class: 193
+  Script: {instanceID: 0}
+- Class: 205
+  Script: {instanceID: 0}
+- Class: 226
+  Script: {instanceID: 0}
+- Class: 227
+  Script: {instanceID: 0}
+- Class: 228
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers:
+- AssemblyName: ModifAmorphic.Outward.UnityScripts
+  ClassName: ModifAmorphic.Outward.UnityScripts.BuildingResourceValuesBinder
+- AssemblyName: ModifAmorphic.Outward.UnityScripts
+  ClassName: ModifAmorphic.Outward.UnityScripts.ConstructionPhaseBinder
+- AssemblyName: ModifAmorphic.Outward.UnityScripts
+  ClassName: ModifAmorphic.Outward.UnityScripts.ItemQuantityBinder
+- AssemblyName: ModifAmorphic.Outward.UnityScripts
+  ClassName: ModifAmorphic.Outward.UnityScripts.Models.BuildingLimits
+- AssemblyName: ModifAmorphic.Outward.UnityScripts
+  ClassName: ModifAmorphic.Outward.UnityScripts.QuestEventReferenceBinder
+Assets:
+- Assets/Prefabs/Buildings/Items/0000000_building_3Phase.prefab
+- Assets/Prefabs/Buildings/Visuals/MediumBuildingShell.prefab
+- Assets/Prefabs/Buildings/Visuals/LargeTreePlanter.prefab
+- Assets/Prefabs/Buildings/Items/0000000_building_tree.prefab
+- Assets/Prefabs/Buildings/Visuals/TinyBuildingShell_2Phase.prefab
+Dependencies:
+- D:/repos/modifamorphic/GitHub-Outward/mods/newcaldera/outward/NewCaldera/NewCaldera.AssetBundles/AssetBundles/StandaloneWindows64/shaders
+- D:/repos/modifamorphic/GitHub-Outward/mods/newcaldera/outward/NewCaldera/NewCaldera.AssetBundles/AssetBundles/StandaloneWindows64/trees

@@ -172,9 +172,26 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
             var itemVisualType = OutwardAssembly.Types.ItemVisual;
             var allAssets = bundleRequest.allAssets.Cast<GameObject>().ToList();
 
-            //process visuals and items first
+            
             foreach (var asset in allAssets)
             {
+                //Swap in real shaders
+                var meshRenders = asset.GetComponentsInChildren<Renderer>(true);
+                foreach (var mesh in meshRenders)
+                {
+                    foreach (var mat in mesh.materials)
+                    {
+                        if (mat.shader.name.StartsWith("Outward/"))
+                        {
+                            var shaderName = mat.shader.name.Replace("Outward/", string.Empty);
+                            //Logger.LogDebug($"Replacing Asset {asset.name}'s material {mat.shader.name} shader shader '{mat.shader.name}' with shader '{shaderName}'.");
+                            var shader = Shader.Find(shaderName);
+                            mat.shader = shader;
+                        }
+                    }
+                }
+
+                //process visuals and items first
                 if (asset.TryGetComponent<BuildingVisualBinder>(out var buildingVisual))
                 {
                     buildingVisual.Bind();
@@ -205,6 +222,9 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
                 }
             }
 
+            //var shader = Shader.Find("Custom/Main Set/Main Standard");
+            //Logger.LogDebug($"Tried to find shader 'Custom/Main Set/Main Standard'. Found '{shader.name}'.");
+
             //Try to set every Item's m_loadedVisual to the visual
             foreach (var itemKvp in _itemPrefabs)
             {
@@ -216,14 +236,18 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
                         if (visual.TryGetComponent(itemVisualType, out var customItemVisual))
                         {
                             item.SetField(itemType, "m_loadedVisual", customItemVisual);
+#if DEBUG
                             Logger.LogTrace($"Set {itemType.Name} {item.name}'s m_loadedVisual field to {itemVisualType.Name} {customItemVisual.name}.");
+#endif
                         }
                         else if (TryGetItemVisualPrefab(item.GetFieldValue(itemType, "m_visualPrefabPath").ToString(), out var visualTransform))
                         {
                             if (visualTransform.TryGetComponent(itemVisualType, out var itemVisual))
                             {
                                 item.SetField(itemType, "m_loadedVisual", itemVisual);
+#if DEBUG
                                 Logger.LogTrace($"Set {itemType.Name} {item.name}'s m_loadedVisual field to {itemVisualType.Name} {visualTransform.name}.");
+#endif
                             }
                         }
                     }
@@ -269,7 +293,9 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
                     if (!binders[i].IsBound)
                     {
                         var component = binders[i].Bind();
+#if DEBUG
                         Logger.LogTrace($"Bound {component.GetType().Name} component to asset {asset.name}.");
+#endif
                     }
                     UnityEngine.Object.Destroy(binders[i]);
                 }
@@ -279,7 +305,9 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
                     if (!childBinders[i].IsBound)
                     {
                         var component = childBinders[i].Bind();
+#if DEBUG
                         Logger.LogTrace($"Bound {component.GetType().Name} component to asset {asset.name}.");
+#endif
                     }
                     UnityEngine.Object.Destroy(childBinders[i]);
                 }

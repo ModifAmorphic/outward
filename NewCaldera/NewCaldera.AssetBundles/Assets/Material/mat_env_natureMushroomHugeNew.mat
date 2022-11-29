@@ -8,8 +8,9 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: mat_env_natureMushroomHugeNew
-  m_Shader: {fileID: 4800000, guid: a025f8ba6dc596d4c9f05db475ab9235, type: 3}
-  m_ShaderKeywords: _DETAIL _DETAIL_TEXTURED _EMISSION _EMISSION_ANIMATED _OPAQUE _WETNESS_NONE
+  m_Shader: {fileID: 4800000, guid: 4f05a26665cf68c45aac4c5729c0b4d2, type: 3}
+  m_ShaderKeywords: _DETAIL _DETAIL_TEXTURED _EMISSION _EMISSION_ANIMATED _OPAQUE
+    _WETNESS_NONE
   m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6737110963813188565
+--- !u!1 &7359840090136714211
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,8 +8,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6211019118693523335}
-  - component: {fileID: 255727952857516984}
+  - component: {fileID: 2076977776418434034}
+  - component: {fileID: 8408161910954872768}
   m_Layer: 0
   m_Name: -1330000131_treeBergAspenCaldera
   m_TagString: Untagged
@@ -17,13 +17,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6211019118693523335
+--- !u!4 &2076977776418434034
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6737110963813188565}
+  m_GameObject: {fileID: 7359840090136714211}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -31,13 +31,13 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &255727952857516984
+--- !u!114 &8408161910954872768
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6737110963813188565}
+  m_GameObject: {fileID: 7359840090136714211}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -1047901896, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
@@ -188,7 +188,7 @@ MonoBehaviour:
       ItemID: -1
       Quantity: 1
     UpkeepCosts:
-      Funds: 1
+      Funds: 0
       Food: 0
       Timber: 0
       Stone: 0
@@ -207,7 +207,7 @@ MonoBehaviour:
     QuestEventOnPhaseFinished:
       UID: 
       m_eventUID: 
-  _constructionPhasesJson: '[{"DebugName":"Foundation","NameLocKey":"Building_ConstructionPhase_Foundation","ConstructionType":0,"HouseCountRequirements":0,"m_constructionTime":0,"m_constructionCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"BuildingRequirements":[],"RareMaterialRequirement":{"ItemID":-1,"Quantity":1},"UpkeepCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"UpkeepProductions":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"CapacityBonus":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"MultiplyProductionPerHouse":false,"HousingValue":0,"QuestEventOnPhaseFinished":{"UID":"","m_eventUID":""},"ConstructionCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0}},{"DebugName":"Frame","NameLocKey":"Building_ConstructionPhase_Frame","ConstructionType":0,"HouseCountRequirements":0,"m_constructionTime":13,"m_constructionCosts":{"Funds":100,"Food":10,"Timber":0,"Stone":15},"BuildingRequirements":[],"RareMaterialRequirement":{"ItemID":-1,"Quantity":1},"UpkeepCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"UpkeepProductions":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"CapacityBonus":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"MultiplyProductionPerHouse":false,"HousingValue":0,"QuestEventOnPhaseFinished":{"UID":"","m_eventUID":""},"ConstructionCosts":{"Funds":100,"Food":10,"Timber":0,"Stone":15}},{"DebugName":"Finished","NameLocKey":"Building_ConstructionPhase_Finished","ConstructionType":1,"HouseCountRequirements":0,"m_constructionTime":13,"m_constructionCosts":{"Funds":100,"Food":0,"Timber":0,"Stone":0},"BuildingRequirements":[],"RareMaterialRequirement":{"ItemID":-1,"Quantity":1},"UpkeepCosts":{"Funds":1,"Food":0,"Timber":0,"Stone":0},"UpkeepProductions":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"CapacityBonus":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"MultiplyProductionPerHouse":false,"HousingValue":0,"QuestEventOnPhaseFinished":{"UID":"","m_eventUID":""},"ConstructionCosts":{"Funds":100,"Food":0,"Timber":0,"Stone":0}}]'
+  _constructionPhasesJson: '[{"DebugName":"Foundation","NameLocKey":"Building_ConstructionPhase_Foundation","ConstructionType":0,"HouseCountRequirements":0,"m_constructionTime":0,"m_constructionCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"BuildingRequirements":[],"RareMaterialRequirement":{"ItemID":-1,"Quantity":1},"UpkeepCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"UpkeepProductions":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"CapacityBonus":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"MultiplyProductionPerHouse":false,"HousingValue":0,"QuestEventOnPhaseFinished":{"UID":"","m_eventUID":""},"ConstructionCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0}},{"DebugName":"Frame","NameLocKey":"Building_ConstructionPhase_Frame","ConstructionType":0,"HouseCountRequirements":0,"m_constructionTime":13,"m_constructionCosts":{"Funds":100,"Food":10,"Timber":0,"Stone":15},"BuildingRequirements":[],"RareMaterialRequirement":{"ItemID":-1,"Quantity":1},"UpkeepCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"UpkeepProductions":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"CapacityBonus":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"MultiplyProductionPerHouse":false,"HousingValue":0,"QuestEventOnPhaseFinished":{"UID":"","m_eventUID":""},"ConstructionCosts":{"Funds":100,"Food":10,"Timber":0,"Stone":15}},{"DebugName":"Finished","NameLocKey":"Building_ConstructionPhase_Finished","ConstructionType":1,"HouseCountRequirements":0,"m_constructionTime":13,"m_constructionCosts":{"Funds":100,"Food":0,"Timber":0,"Stone":0},"BuildingRequirements":[],"RareMaterialRequirement":{"ItemID":-1,"Quantity":1},"UpkeepCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"UpkeepProductions":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"CapacityBonus":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"MultiplyProductionPerHouse":false,"HousingValue":0,"QuestEventOnPhaseFinished":{"UID":"","m_eventUID":""},"ConstructionCosts":{"Funds":100,"Food":0,"Timber":0,"Stone":0}}]'
   m_upgradePhases: []
   _upgradePhasesJson: '[]'
   m_currentBasicPhaseIndex: 0

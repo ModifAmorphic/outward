@@ -13,45 +13,58 @@ using Newtonsoft.Json.Linq;
 
 public class ConvertCsvLocales
 {
-    public static Dictionary<string, string> calderaLocales = new Dictionary<string, string>()
-    {
-        { "English",  Path.Combine("Assets", "Locales", "Caldera-Foilage", "BuildingLocales_English.csv")},
-    };
-    public static Dictionary<string, string> hallowedLocales = new Dictionary<string, string>()
-    {
-        { "English",  Path.Combine("Assets", "Locales", "HallowedMarsh-Foilage", "BuildingLocales_English.csv")}
-    };
-    public static Dictionary<string, Dictionary<string, string>> modLocales = new Dictionary<string, Dictionary<string, string>>()
-    {
-        { "Caldera-Foilage", calderaLocales },
-        { "HallowedMarsh-Foilage", hallowedLocales },
-    };
+    //public static Dictionary<string, string> calderaLocales = new Dictionary<string, string>()
+    //{
+    //    { "English",  Path.Combine("Assets", "Locales", "Caldera-Foilage", "BuildingLocales_English.csv")},
+    //};
+    //public static Dictionary<string, string> hallowedLocales = new Dictionary<string, string>()
+    //{
+    //    { "English",  Path.Combine("Assets", "Locales", "HallowedMarsh-Foilage", "BuildingLocales_English.csv")}
+    //};
+    //public static Dictionary<string, string> lightsLocales = new Dictionary<string, string>()
+    //{
+    //    { "English",  Path.Combine("Assets", "Locales", "Outward-Lights", "BuildingLocales_English.csv")}
+    //};
+    //public static Dictionary<string, Dictionary<string, string>> modLocales = new Dictionary<string, Dictionary<string, string>>()
+    //{
+    //    { "Caldera-Foilage", calderaLocales },
+    //    { "HallowedMarsh-Foilage", hallowedLocales },
+    //    { "Outward-Lights", lightsLocales },
+    //};
 
-    private readonly static string LocalesPublishDirectory = Path.Combine("..", "Assets", "Locales");
+    private readonly static string LocalesPublishDirectory = Path.Combine("..", "BuildingPacks");
 
-    //private static string ItemDescriptionsXlsPath = Path.Combine("Assets", "Locales", "ItemLocales.xslx");
-    private static string ItemDescriptionsJsonOutPath = Path.Combine("Assets", "Locales");
+    public readonly static string LocalsSourceDirectory = Path.Combine("Assets", "Locales");
+
+    public class LocalesFileInfo
+    {
+        public string FilePath { get; set; }
+        public string Language { get; set; }
+    }
 
     [MenuItem("Assets/Export Locales/Item Descriptions")]
     public static void ExportItemDescriptions()
     {
         var gos = BuildingPrefabsData.GetBuildingsGameObjects();
-        Dictionary<string, Dictionary<string, string>> buildingPackages = new Dictionary<string, Dictionary<string, string>>();
+        //Dictionary<string, Dictionary<string, string>> buildingPackages = new Dictionary<string, Dictionary<string, string>>();
 
+        Dictionary<string, List<LocalesFileInfo>> buildingPackages = new Dictionary<string, List<LocalesFileInfo>>();
+        var localesFiles = new List<LocalesFileInfo>();
         foreach (var go in gos)
         {
-            buildingPackages.Add(go.name, modLocales[go.name]);
+            buildingPackages.Add(go.name, GetPackLocaleFiles(go.name));
         }
 
         foreach (var package in buildingPackages)
         {
             foreach (var locale in package.Value)
             {
-                var json = ConvertToJson(locale.Value);
-                var outDir = Path.Combine(LocalesPublishDirectory, package.Key, locale.Key);
+                var json = ConvertToJson(locale.FilePath);
+                var outDir = Path.Combine(LocalesPublishDirectory, package.Key, "Locales", locale.Language);
                 if (!Directory.Exists(outDir))
                     Directory.CreateDirectory(outDir);
                 File.WriteAllText(Path.Combine(outDir, "BuildingLocalizationsTemplate.json"), json);
+                Debug.Log($"Exported {package.Key} pack locale {locale.Language} to {Path.Combine(outDir, "BuildingLocalizationsTemplate.json")}");
             }
         }
     }
@@ -90,5 +103,40 @@ public class ConvertCsvLocales
         var templates = new JObject();
         templates["BuildingLocalizationTemplates"] = items;
         return templates.ToString();
+    }
+
+    private static List<LocalesFileInfo> GetPackLocaleFiles(string packName)
+    {
+        var localesFiles = new List<LocalesFileInfo>();
+
+        var localsDir = Path.Combine(LocalsSourceDirectory, packName);
+        if (!Directory.Exists(localsDir))
+            Directory.CreateDirectory(localsDir);
+
+        var langDirs = Directory.GetDirectories(localsDir);
+        if (langDirs.Length == 0)
+        {
+            string localesFileName = $"{packName}_BuildingLocales_English.csv";
+            Directory.CreateDirectory(Path.Combine(localsDir, "English"));
+            File.WriteAllText(Path.Combine(localsDir, "English", localesFileName), "ItemID,Name,Description");
+            langDirs = Directory.GetDirectories(localsDir);
+        }
+        foreach (var langPath in langDirs)
+        {
+            var language = langPath.Split(Path.DirectorySeparatorChar).Last();
+            string localesFileName = $"{packName}_BuildingLocales_{language}.csv";
+            string langFilePath = Path.Combine(langPath, localesFileName);
+            if (!File.Exists(langFilePath))
+            {
+                File.WriteAllText(langFilePath, "ItemID,Name,Description");
+            }
+            localesFiles.Add(new LocalesFileInfo()
+            {
+                FilePath = langFilePath,
+                Language = language
+            });
+        }
+
+        return localesFiles;
     }
 }

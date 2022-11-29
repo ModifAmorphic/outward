@@ -35,8 +35,11 @@ namespace ModifAmorphic.Outward.UnityScripts
 
         private void Awake()
         {
-            Debug.Log($"{this.GetType().Name}::Awake");
-            Bind();
+            if (!IsBound)
+            {
+                ModifScriptsManager.Instance.Logger.LogWarning($"{this.GetType().Name} - {this.name} Awake event fired before Component was bound.");
+                Bind();
+            }
         }
 
         public Component Bind()
@@ -67,7 +70,7 @@ namespace ModifAmorphic.Outward.UnityScripts
             if (isActive)
             {
                 gameObject.SetActive(false);
-                Debug.Log($"{this.GetType().Name}'s gameObject {gameObject.name} deactivated prior to binding {ScriptName} MonoBehaviour script.");
+                //Debug.Log($"{this.GetType().Name}'s gameObject {gameObject.name} deactivated prior to binding {ScriptName} MonoBehaviour script.");
             }
 
             Init();
@@ -75,14 +78,17 @@ namespace ModifAmorphic.Outward.UnityScripts
             if (isActive)
             {
                 gameObject.SetActive(true);
-                Debug.Log($"{this.GetType().Name}'s gameObject {gameObject.name} activated.");
+                //Debug.Log($"{this.GetType().Name}'s gameObject {gameObject.name} activated.");
             }
 
         }
 
         protected virtual void Init()
         {
+            //Debug.Log($"{this.GetType().Name}: {this.name} tag is {gameObject.tag}.");
+            
             AttachScript(ScriptName);
+            _boundComponent.tag = this.tag;
         }
 
         private void AttachScript(string scriptName)
@@ -91,7 +97,7 @@ namespace ModifAmorphic.Outward.UnityScripts
 
             _boundComponent = gameObject.AddComponent(BoundType);
 
-            Debug.Log($"Binder {this.GetType().Name} attached MonoBehaviour script {BoundType.Name} to gameObject {gameObject.name}.");
+            //Debug.Log($"Binder {this.GetType().Name} attached MonoBehaviour script {BoundType.Name} to gameObject {gameObject.name}.");
         }
     }
 }

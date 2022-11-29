@@ -1,0 +1,34 @@
+{
+  "BuildingLocalizationTemplates": [
+    {
+      "ItemID": "-1330060100",
+      "Name": "Blueprint: Light - Levant Lantern",
+      "Description": "Levant style floor lantern.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330060101",
+      "Name": "- Levant Lantern",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330060110",
+      "Name": "Blueprint: Light - Harmattan Lamp Post",
+      "Description": "Lamp Post like those in the streets of Harmattan.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330060111",
+      "Name": "- Harmattan Lamp Post",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330060120",
+      "Name": "Blueprint: Light - Bonfire",
+      "Description": "A raging bonfire.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330060121",
+      "Name": "- Bonfire",
+      "Description": ""
+    }
+  ]
+}

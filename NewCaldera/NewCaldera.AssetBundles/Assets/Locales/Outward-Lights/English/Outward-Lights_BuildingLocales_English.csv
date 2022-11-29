@@ -1,0 +1,31 @@
+ItemID,Name,Description
+-1330060100,Blueprint: Light - Levant Lantern,"Levant style floor lantern.
+----
+Construction requirements
+  Funds: {funds_cost}
+  Food: {food_cost}
+  Stone: {stone_cost}
+  Material:  {item1_cost}
+  Funds upkeep: {funds_upkeep} / Day
+Construction:  {build_days} Days"
+-1330060101,- Levant Lantern,
+-1330060110,Blueprint: Light - Harmattan Lamp Post,"Lamp Post like those in the streets of Harmattan.
+----
+Construction requirements
+  Funds: {funds_cost}
+  Food: {food_cost}
+  Stone: {stone_cost}
+  Material:  {item1_cost}
+  Funds upkeep: {funds_upkeep} / Day
+Construction:  {build_days} Days"
+-1330060111,- Harmattan Lamp Post,
+-1330060120,Blueprint: Light - Bonfire,"A raging bonfire.
+----
+Construction requirements
+  Funds: {funds_cost}
+  Food: {food_cost}
+  Stone: {stone_cost}
+  Material:  {item1_cost}
+  Funds upkeep: {funds_upkeep} / Day
+Construction:  {build_days} Days"
+-1330060121,- Bonfire,

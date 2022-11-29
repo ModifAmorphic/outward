@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3688948769
+CRC: 3095333326
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 87c6d86ccf1002c9eba6767d032170c0
+    Hash: b1946ea62cc5ead2ba408292aa698cb2
   TypeTreeHash:
     serializedVersion: 2
-    Hash: be369a5825336c11cc24794f48e23470
+    Hash: 096134f272bb04e8cabcc7e9a2f245f6
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -27,6 +27,8 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 65
   Script: {instanceID: 0}
+- Class: 108
+  Script: {instanceID: 0}
 - Class: 114
   Script: {fileID: 600202350, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
 - Class: 114
@@ -45,6 +47,10 @@ ClassTypes:
   Script: {fileID: 937600647, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
 - Class: 114
   Script: {fileID: -672243037, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+- Class: 114
+  Script: {fileID: 1860158106, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+- Class: 114
+  Script: {fileID: -1758145494, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 136
@@ -73,12 +79,19 @@ SerializeReferenceClassIdentifiers:
 Assets:
 - Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000141_treeLondonPlaneA.prefab
 - Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000150_treeLondonPlaneB_Blueprint.prefab
+- Assets/ModifAmorphicPrefabs/Caldera-Foilage/Visuals/-1330000501_propLanternTorchBLight.prefab
 - Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000140_treeLondonPlaneA_Blueprint.prefab
 - Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000100_treeAmericanElmA_Blueprint.prefab
 - Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000151_treeLondonPlaneB.prefab
+- Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000501_propLampPostALight.prefab
 - Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000180_treeWhiteOakB_Blueprint.prefab
 - Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000160_treeLondonPlaneC_Blueprint.prefab
 - Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000171_treeWhiteOakA.prefab
+- Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000501_propLanternTorchBLight.prefab
+- Assets/ModifAmorphicPrefabs/Caldera-Foilage/Visuals/-1330000501_propLampPostALight_v.prefab
+- Assets/ModifAmorphicPrefabs/Caldera-Foilage/Visuals/-1330000511_propLampPostALight_v.prefab
+- Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000500_propLampPostALight_Blueprint.prefab
+- Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000511_propLampPostALight_Blueprint.prefab
 - Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000120_treeAmericanElmC_Blueprint.prefab
 - Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000130_treeBergAspenCaldera_Blueprint.prefab
 - Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000101_treeAmericanElmA.prefab
@@ -87,6 +100,7 @@ Assets:
 - Assets/ModifAmorphicPrefabs/Caldera-Foilage/Visuals/-1330000101_treeAmericanElmA_v.prefab
 - Assets/ModifAmorphicPrefabs/Caldera-Foilage/Visuals/-1330000151_treeLondonPlaneB_v.prefab
 - Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000181_treeWhiteOakB.prefab
+- Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000511_propLampPostALight.prefab
 - Assets/ModifAmorphicPrefabs/Caldera-Foilage/Visuals/-1330000121_treeAmericanElmC_v.prefab
 - Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000190_treeWhiteOakC_Blueprint.prefab
 - Assets/ModifAmorphicPrefabs/Caldera-Foilage/Items/-1330000121_treeAmericanElmC.prefab

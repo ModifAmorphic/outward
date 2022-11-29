@@ -1,5 +1,6 @@
 ﻿using ModifAmorphic.Outward.UnityScripts.Models;
 using ModifAmorphic.Outward.UnityScripts.Services;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,17 +18,18 @@ namespace ModifAmorphic.Outward.UnityScripts
 
         public Logging.Logger Logger { get; private set; }
 
+        public string RootPluginsFolder { get; private set; }
         public ModifGoService ModifGoService { get; private set; }
-
         public AssetBundlesService AssetBundles { get; private set; }
         public PrefabManager PrefabManager { get; private set; }
         public BuildingVisualPoolManager BuildingVisualPoolManager { get; private set; }
         public LocalizationService LocalizationService { get; private set; }
         public BuildLimitsManager BuildLimitsManager { get; private set; }
+        public BuildingPacksLocator BuildingPacksLocator { get; private set; }
 
         private bool _isLoaded = false;
 
-        public static ModifScriptsManager Init(Logging.LogLevel logLevel = Logging.LogLevel.Info)
+        public static ModifScriptsManager Init(string rootPluginsFolder, Logging.LogLevel logLevel = Logging.LogLevel.Info)
         {
             if (_isAttached)
             {
@@ -40,6 +42,7 @@ namespace ModifAmorphic.Outward.UnityScripts
             
             _instance = scriptGo.AddComponent<ModifScriptsManager>();
             _instance.Logger = new Logging.Logger(logLevel, ModInfo.ModName);
+            _instance.RootPluginsFolder = rootPluginsFolder;
             _instance.ModifGoService = new ModifGoService(() => _instance.Logger);
             var modGo = _instance.ModifGoService.GetModResources(ModInfo.ModId, true);
             scriptGo.transform.SetParent(modGo.transform);
@@ -51,6 +54,22 @@ namespace ModifAmorphic.Outward.UnityScripts
 
         public void Load()
         {
+            //var pack = new BuildingPacksManifest()
+            //{
+            //    AssetBundlePath = @"Assets\asset-bundles\caldera-foilage",
+            //    LocalesPath = @"Assets\Locales",
+            //    Name = "Caldera-Foilage"
+            //};
+            //var packJson = JsonConvert.SerializeObject(pack, Formatting.Indented);
+            //Logger.LogDebug($"Writing pack json to {System.IO.Path.Combine(RootPluginsFolder, "pack.json")}");
+            //System.IO.File.WriteAllText(System.IO.Path.Combine(RootPluginsFolder, "pack.json"), packJson);
+
+            var manifests = BuildingPacksLocator.FindManifests();
+            foreach (var manifest in manifests)
+            {
+                AddBuildingBundle(manifest.Name, manifest.AssetBundlePath, manifest.LocalesPath);
+            }
+
             AssetBundles.LoadAssetBundles();
             _isLoaded = true;
         }
@@ -63,6 +82,7 @@ namespace ModifAmorphic.Outward.UnityScripts
             BuildingVisualPoolManager = new BuildingVisualPoolManager(PrefabManager, () => Logger);
             BuildLimitsManager = new BuildLimitsManager(PrefabManager, () => Logger);
             LocalizationService = new LocalizationService(PrefabManager, () => Logger);
+            BuildingPacksLocator = new BuildingPacksLocator(RootPluginsFolder, () => Logger);
         }
 
         public void AttachMonoBehaviours()
@@ -89,7 +109,7 @@ namespace ModifAmorphic.Outward.UnityScripts
             if (_isLoaded)
                 throw new InvalidOperationException("Tried to add new Building Bundle after script has loaded.");
 
-            var bundle = new BuildingBundle() { Name = name, BundlePath = bundlePath, LocalesPath = localesPath };
+            var bundle = new BuildingPacksManifest() { Name = name, AssetBundlePath = bundlePath, LocalesPath = localesPath };
             AssetBundles.AddBuildingBundle(bundle);
             LocalizationService.AddLocalePath(localesPath);
         }

@@ -1,0 +1,19 @@
+ManifestFileVersion: 0
+CRC: 618238018
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 8479fbf370d6d312480a1264c9fdb7ac
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 68c985bf88fecc38b460cdb825182138
+HashAppended: 0
+ClassTypes:
+- Class: 48
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Shader/CustomDistortHeatDistortZWriteSpec.shader
+- Assets/Shader/CustomParticleAdd.shader
+- Assets/Shader/CustomMain SetMain Standard.shader
+Dependencies: []

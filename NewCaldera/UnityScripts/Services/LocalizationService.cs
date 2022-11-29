@@ -155,7 +155,7 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
                 var rareMaterial = phase.GetFieldValue(OutwardAssembly.Types.ConstructionPhase, "RareMaterialRequirement");
                 if (rareMaterial != null)
                 {
-                    Logger.LogDebug($"Found RareMaterialRequirement for building phase {phaseName}.");
+                    //Logger.LogDebug($"Found RareMaterialRequirement for building phase {phaseName}.");
                     var rareItem = rareMaterial.GetFieldValue<MonoBehaviour>(OutwardAssembly.Types.ItemQuantity, "Item");
                     if (rareItem != null)
                     {

@@ -65,15 +65,15 @@ namespace ModifAmorphic.Outward.NewCaldera
 
             //ConfigureAssetBundle();
 
-            var scriptManager = ModifScriptsManager.Init((UnityScripts.Logging.LogLevel)(int)Logger.LogLevel);
+            var scriptManager = ModifScriptsManager.Init(BepInEx.Paths.PluginPath, (UnityScripts.Logging.LogLevel)(int)Logger.LogLevel);
             NewCalderaPlugin.ModifScriptsManager = scriptManager;
-            scriptManager.AddBuildingBundle("Caldera-Foilage"
-                , Path.Combine(CalderaSettings.PluginPath, "asset-bundles", "caldera-foilage")
-                , Path.Combine(CalderaSettings.PluginPath, "Locales", "Caldera-Foilage"));
+            //scriptManager.AddBuildingBundle("Caldera-Foilage"
+            //    , Path.Combine(CalderaSettings.PluginPath, "asset-bundles", "caldera-foilage")
+            //    , Path.Combine(CalderaSettings.PluginPath, "Locales", "Caldera-Foilage"));
 
-            scriptManager.AddBuildingBundle("HallowedMarsh-Foilage"
-                , Path.Combine(CalderaSettings.PluginPath, "asset-bundles", "hallowedmarsh-foilage")
-                , Path.Combine(CalderaSettings.PluginPath, "Locales", "HallowedMarsh-Foilage"));
+            //scriptManager.AddBuildingBundle("HallowedMarsh-Foilage"
+            //    , Path.Combine(CalderaSettings.PluginPath, "asset-bundles", "hallowedmarsh-foilage")
+            //    , Path.Combine(CalderaSettings.PluginPath, "Locales", "HallowedMarsh-Foilage"));
 
             scriptManager.Load();
 

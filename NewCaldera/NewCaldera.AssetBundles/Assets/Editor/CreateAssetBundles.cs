@@ -10,7 +10,7 @@ public class CreateAssetBundles
     private static IEnumerable<GameObject> _buildingGos = BuildingPrefabsData.GetBuildingsGameObjects();
 
     private readonly static string AssetBundleDirectory = Path.Combine("Assets", "AssetBundles");
-    private readonly static string AssetPublishDirectory = Path.Combine("..", "Assets", "asset-bundles");
+    private readonly static string AssetPublishDirectory = Path.Combine("..", "BuildingPacks");
 
     //private const string BuildingsName = "modifamorphic-buildings";
     //private const string VegetationName = "modifamorphic-vegetation";
@@ -62,6 +62,14 @@ public class CreateAssetBundles
         BuildAssetBundle("HallowedMarsh-Foilage");
     }
 
+    [MenuItem("Assets/Publish AssetBundles/Publish Outward Lights")]
+    static void PublishNewSiroccoLights()
+    {
+        ConvertCsvLocales.ExportItemDescriptions();
+        GeneratePrefabs();
+        BuildAssetBundle("Outward-Lights");
+    }
+
     [MenuItem("Assets/Publish All AssetBundles")]
     static void PublishAll()
     {
@@ -98,7 +106,10 @@ public class CreateAssetBundles
             },
         };
 
-        BuildPipeline.BuildAssetBundles(AssetPublishDirectory, builds, BuildAssetBundleOptions.None, EditorUserBuildSettings.activeBuildTarget);
+        string bundleDir = Path.Combine(AssetPublishDirectory, bundleName, "asset-bundles");
+
+        Debug.Log($"Building Asset Bundle to '{Path.Combine(bundleDir, bundleName)}'.");
+        BuildPipeline.BuildAssetBundles(bundleDir, builds, BuildAssetBundleOptions.None, EditorUserBuildSettings.activeBuildTarget);
     }
 
     [MenuItem("Assets/Generate Prefabs")]

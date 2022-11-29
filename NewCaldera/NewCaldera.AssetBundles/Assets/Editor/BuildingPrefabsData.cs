@@ -1,4 +1,5 @@
 using ModifAmorphic.Outward.UnityScripts;
+using ModifAmorphic.Outward.UnityScripts.Behaviours;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using UnityEngine;
 public class BuildingPrefabsData
 {
     public static IEnumerable<GameObject> GetBuildingsGameObjects()
-        => UnityEngine.SceneManagement.SceneManager.GetSceneByName("BuildingPrefabs").GetRootGameObjects().Where(g => g.activeSelf);
+        => UnityEngine.SceneManagement.SceneManager.GetSceneByName("BuildingPrefabs").GetRootGameObjects().Where(g => g.activeSelf && g.TryGetComponent<BuildingPackBehaviour>(out _));
     
     public static Dictionary<int, BuildingResources> GetBlueprintResourceVaules()
     {

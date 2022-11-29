@@ -3,7 +3,29 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Ragdoll
+  - WoodHollow
+  - Stone
+  - Gravel
+  - Terrain
+  - Metal
+  - WoodHollowStairs
+  - WoodSolid
+  - Concrete
+  - Dirt
+  - Sand
+  - Water
+  - WaterDeep
+  - WaterLight
+  - Grass
+  - TallGrass
+  - GrassLight
+  - Wood
+  - SoundBlocker
+  - CampingZone
+  - DefeatZone
+  - CampingSafeZone
   layers:
   - Default
   - TransparentFX
@@ -13,30 +35,30 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - LockingPoints
+  - LargeEnvironment
+  - WorldItem
+  - Environment
+  - Hitbox
+  - StepBox
+  - Characters
+  - Projectiles
+  - Ragdoll
+  - LightShadow
+  - ItemDeployment
+  - LingerFX
+  - WeatherP1
+  - WeatherP2
+  - RangedHitbox
+  - DetectabilityEmitters
+  - Skybox
+  - DetailEnvironment
+  - LargeTerrainEnvironment
+  - Pets
+  - NoCollisions
+  - Trigger
+  - CharacterMovement
+  - uNature_Terrain
   m_SortingLayers:
   - name: Default
     uniqueID: 0
