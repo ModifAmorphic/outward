@@ -1,0 +1,11 @@
+{
+    "namespace": "ModifAmorphic",
+    "name": "CalderaFoilagePack",
+    "description": "Makes tree blueprints from the Caldera region available for purchase and construction in New Sirocco.",
+    "version_number": "1.0.5",
+    "dependencies": [
+      "BepInEx-BepInExPack_Outward-5.4.19",
+      "ModifAmorphic-NewCaldera-1.0.0"
+    ],
+    "website_url": "https://github.com/ModifAmorphic/outward/wiki/NewCaldera"
+  }

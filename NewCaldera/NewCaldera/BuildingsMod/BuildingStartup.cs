@@ -40,11 +40,6 @@ namespace ModifAmorphic.Outward.NewCaldera.BuildingsMod
             _harmony.PatchAll(typeof(ResourcesPrefabManagerPatches));
             _harmony.PatchAll(typeof(LedgerMenuPatches));
             _harmony.PatchAll(typeof(BuildingPhaseResourceReqDisplayPatches));
-            //_harmony.PatchAll(typeof(RewiredInputsPatches));
-            //_harmony.PatchAll(typeof(QuickSlotPanelPatches));
-            //_harmony.PatchAll(typeof(CharacterQuickSlotManagerPatches));
-            //_harmony.PatchAll(typeof(SkillMenuPatches));
-            //_harmony.PatchAll(typeof(ItemDisplayDropGroundPatches));
 
             var buildingsDirectory = new BuildingsDirectory(CalderaSettings.PluginPath, _services.GetService<IModifLogger>);
             var bpData = new BlueprintsData(buildingsDirectory, _loggerFactory);
