@@ -1,0 +1,7 @@
+ManifestFileVersion: 0
+CRC: 2500219864
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: outward-lights
+      Dependencies: {}

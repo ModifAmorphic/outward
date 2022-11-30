@@ -18,13 +18,13 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
         private readonly AssetBundlesService _assetBundles;
         private IDictionary _item_prefabs;
         private List<GameObject> _delayedBindings = new List<GameObject>();
-        
+
         private bool _outwardPrefabsLoaded = false;
         private bool _customPrefabsLoaded = false;
         private HashSet<string> _processingBundles = new HashSet<string>();
 
         //private List<UnityEngine.Object> _boundItems = new List<UnityEngine.Object>();
-        
+
         private Dictionary<int, GameObject> _itemPrefabs = new Dictionary<int, GameObject>();
         private Dictionary<int, GameObject> _itemVisuals = new Dictionary<int, GameObject>();
         private Dictionary<int, GameObject> _buildingVisuals = new Dictionary<int, GameObject>();
@@ -41,7 +41,7 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
             _loggerFactory = loggerFactory;
             TryGetCustomItemVisualPrefab = TryGetItemVisualPrefab;
             PatchResourcesPrefabManager();
-            
+
             if (_assetBundles.IsBundlesLoaded)
                 TryLoadAndBindPrefabs();
             else
@@ -119,9 +119,16 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
             Logger.LogDebug("RegisterBundlesItems");
             foreach (var bundle in _assetBundles.GetAllAssetBundles())
             {
-                _processingBundles.Add(bundle.name);
-                Logger.LogDebug($"Started processing of bundle {bundle.name}.");
-                bundle.LoadAllAssetsAsync<GameObject>().completed += (asyncOp) => BindPrefabs((AssetBundleRequest)asyncOp, bundle.name);
+                try
+                {
+                    _processingBundles.Add(bundle.name);
+                    Logger.LogDebug($"Started processing of bundle {bundle.name}.");
+                    bundle.LoadAllAssetsAsync<GameObject>().completed += (asyncOp) => TryBindPrefabs((AssetBundleRequest)asyncOp, bundle.name);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogException($"Failed starting async load of assets from asset bundle {bundle?.name}.", ex);
+                }
             }
         }
 
@@ -164,95 +171,61 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
         //    }
         //}
 
+        private bool TryBindPrefabs(AssetBundleRequest bundleRequest, string bundleName)
+        {
+            try
+            {
+                BindPrefabs(bundleRequest, bundleName);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"Failed to bind prefabs in asset bundle {bundleName}.", ex);
+            }
+            return false;
+        }
         private void BindPrefabs(AssetBundleRequest bundleRequest, string bundleName)
         {
             Logger.LogDebug("RegisterBundlesItems");
-            var itemType = OutwardAssembly.Types.Item;
-            var buildingVisualType = OutwardAssembly.Types.BuildingVisual;
-            var itemVisualType = OutwardAssembly.Types.ItemVisual;
             var allAssets = bundleRequest.allAssets.Cast<GameObject>().ToList();
 
-            
+
             foreach (var asset in allAssets)
             {
-                //Swap in real shaders
-                var meshRenders = asset.GetComponentsInChildren<Renderer>(true);
-                foreach (var mesh in meshRenders)
+                try
                 {
-                    foreach (var mat in mesh.materials)
-                    {
-                        if (mat.shader.name.StartsWith("Outward/"))
-                        {
-                            var shaderName = mat.shader.name.Replace("Outward/", string.Empty);
-                            //Logger.LogDebug($"Replacing Asset {asset.name}'s material {mat.shader.name} shader shader '{mat.shader.name}' with shader '{shaderName}'.");
-                            var shader = Shader.Find(shaderName);
-                            mat.shader = shader;
-                        }
-                    }
+                    //Swap in real shaders
+                    SwapShaders(asset);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogException($"Shader swap failed on asset {asset?.name} in bundle {bundleName}.", ex);
                 }
 
-                //process visuals and items first
-                if (asset.TryGetComponent<BuildingVisualBinder>(out var buildingVisual))
+                try
                 {
-                    buildingVisual.Bind();
-                    int itemID = buildingVisual.ItemID;
-                    UnityEngine.Object.Destroy(buildingVisual);
-                    _buildingVisuals.Add(itemID, asset);
+                    //process Binders and items first
+                    ProcessBinders(asset);
                 }
-                else if (asset.TryGetComponent<ItemVisualBinder>(out var itemVisual))
+                catch (Exception ex)
                 {
-                    itemVisual.Bind();
-                    int itemID = itemVisual.ItemID;
-                    UnityEngine.Object.Destroy(itemVisual);
-                    _itemVisuals.Add(itemID, asset);
-                }
-                else if (asset.TryGetComponent<ItemBinder>(out var itemBinder))
-                {
-                    itemBinder.Bind();
-                    int itemId = itemBinder.ItemID;
-                    UnityEngine.Object.Destroy(itemBinder);
-                    _itemPrefabs.Add(itemId, asset);
-                }
-
-                if (asset.TryGetComponent<LateScriptBinder>(out _) || asset.GetComponentsInChildren<LateScriptBinder>().Length > 0)
-                {
-                    //Delay binding of other assets until all items are loaded to the ResourcesPrefabManager.ITEM_PREFABs. 
-                    //This is done in case these other assets have links to items.
-                    _delayedBindings.Add(asset);
+                    Logger.LogException($"Binder processing failed on asset {asset?.name} in bundle {bundleName}.", ex);
                 }
             }
 
-            //var shader = Shader.Find("Custom/Main Set/Main Standard");
-            //Logger.LogDebug($"Tried to find shader 'Custom/Main Set/Main Standard'. Found '{shader.name}'.");
-
-            //Try to set every Item's m_loadedVisual to the visual
             foreach (var itemKvp in _itemPrefabs)
             {
-                GameObject visual;
-                if (_itemVisuals.TryGetValue(itemKvp.Key, out visual) || _buildingVisuals.TryGetValue(itemKvp.Key, out visual))
+                try
                 {
-                    if (itemKvp.Value.TryGetComponent(itemType, out var item) && item.GetFieldValue(itemType, "m_loadedVisual") == null)
-                    {
-                        if (visual.TryGetComponent(itemVisualType, out var customItemVisual))
-                        {
-                            item.SetField(itemType, "m_loadedVisual", customItemVisual);
-#if DEBUG
-                            Logger.LogTrace($"Set {itemType.Name} {item.name}'s m_loadedVisual field to {itemVisualType.Name} {customItemVisual.name}.");
-#endif
-                        }
-                        else if (TryGetItemVisualPrefab(item.GetFieldValue(itemType, "m_visualPrefabPath").ToString(), out var visualTransform))
-                        {
-                            if (visualTransform.TryGetComponent(itemVisualType, out var itemVisual))
-                            {
-                                item.SetField(itemType, "m_loadedVisual", itemVisual);
-#if DEBUG
-                                Logger.LogTrace($"Set {itemType.Name} {item.name}'s m_loadedVisual field to {itemVisualType.Name} {visualTransform.name}.");
-#endif
-                            }
-                        }
-                    }
+                    SetItemVisuals(itemKvp.Key, itemKvp.Value);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogException($"Failed to set loaded visual for item {itemKvp.Value?.name} in bundle {bundleName}.", ex);
                 }
             }
+
+
 
             _processingBundles.Remove(bundleName);
             if (_processingBundles.Count == 0)
@@ -263,6 +236,89 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
             }
         }
 
+        private void SwapShaders(GameObject asset)
+        {
+            var meshRenders = asset.GetComponentsInChildren<Renderer>(true);
+            foreach (var mesh in meshRenders)
+            {
+                foreach (var mat in mesh.materials)
+                {
+                    if (mat.shader.name.StartsWith("Outward/"))
+                    {
+                        var shaderName = mat.shader.name.Replace("Outward/", string.Empty);
+                        //Logger.LogDebug($"Replacing Asset {asset.name}'s material {mat.shader.name} shader shader '{mat.shader.name}' with shader '{shaderName}'.");
+                        var shader = Shader.Find(shaderName);
+                        mat.shader = shader;
+                    }
+                }
+            }
+        }
+
+        private void ProcessBinders(GameObject asset)
+        {
+            //process visuals and items first
+            if (asset.TryGetComponent<BuildingVisualBinder>(out var buildingVisual))
+            {
+                buildingVisual.Bind();
+                int itemID = buildingVisual.ItemID;
+                UnityEngine.Object.Destroy(buildingVisual);
+                _buildingVisuals.Add(itemID, asset);
+            }
+            else if (asset.TryGetComponent<ItemVisualBinder>(out var itemVisual))
+            {
+                itemVisual.Bind();
+                int itemID = itemVisual.ItemID;
+                UnityEngine.Object.Destroy(itemVisual);
+                _itemVisuals.Add(itemID, asset);
+            }
+            else if (asset.TryGetComponent<ItemBinder>(out var itemBinder))
+            {
+                itemBinder.Bind();
+                int itemId = itemBinder.ItemID;
+                UnityEngine.Object.Destroy(itemBinder);
+                _itemPrefabs.Add(itemId, asset);
+            }
+
+            if (asset.TryGetComponent<LateScriptBinder>(out _) || asset.GetComponentsInChildren<LateScriptBinder>().Length > 0)
+            {
+                //Delay binding of other assets until all items are loaded to the ResourcesPrefabManager.ITEM_PREFABs. 
+                //This is done in case these other assets have links to items.
+                _delayedBindings.Add(asset);
+            }
+        }
+
+        private void SetItemVisuals(int itemID, GameObject itemGo)
+        {
+            var itemType = OutwardAssembly.Types.Item;
+            var buildingVisualType = OutwardAssembly.Types.BuildingVisual;
+            var itemVisualType = OutwardAssembly.Types.ItemVisual;
+
+            //Try to set every Item's m_loadedVisual to the visual
+            GameObject visual;
+            if (_itemVisuals.TryGetValue(itemID, out visual) || _buildingVisuals.TryGetValue(itemID, out visual))
+            {
+                if (itemGo.TryGetComponent(itemType, out var item) && item.GetFieldValue(itemType, "m_loadedVisual") == null)
+                {
+                    if (visual.TryGetComponent(itemVisualType, out var customItemVisual))
+                    {
+                        item.SetField(itemType, "m_loadedVisual", customItemVisual);
+#if DEBUG
+                        Logger.LogTrace($"Set {itemType.Name} {item.name}'s m_loadedVisual field to {itemVisualType.Name} {customItemVisual.name}.");
+#endif
+                    }
+                    else if (TryGetItemVisualPrefab(item.GetFieldValue(itemType, "m_visualPrefabPath").ToString(), out var visualTransform))
+                    {
+                        if (visualTransform.TryGetComponent(itemVisualType, out var itemVisual))
+                        {
+                            item.SetField(itemType, "m_loadedVisual", itemVisual);
+#if DEBUG
+                            Logger.LogTrace($"Set {itemType.Name} {item.name}'s m_loadedVisual field to {itemVisualType.Name} {visualTransform.name}.");
+#endif
+                        }
+                    }
+                }
+            }
+        }
 
         private void AddPrefabsToResourcesManager()
         {

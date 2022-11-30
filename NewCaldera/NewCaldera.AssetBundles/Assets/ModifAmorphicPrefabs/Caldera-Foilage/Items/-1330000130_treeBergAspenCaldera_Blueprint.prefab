@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &730752479323174503
+--- !u!1 &1874687569187020114
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,11 +8,11 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2108703757969699882}
-  - component: {fileID: 1577276186900232320}
-  - component: {fileID: 5867030090958892843}
-  - component: {fileID: 7181507539246524675}
-  - component: {fileID: 5366035628205677099}
+  - component: {fileID: 2433638450821914621}
+  - component: {fileID: 6274753951992357316}
+  - component: {fileID: 8648729433633151570}
+  - component: {fileID: 2769925706307674186}
+  - component: {fileID: 6471739946563605907}
   m_Layer: 0
   m_Name: -1330000130_treeBergAspenCaldera_Blueprint
   m_TagString: Untagged
@@ -20,13 +20,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2108703757969699882
+--- !u!4 &2433638450821914621
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 730752479323174503}
+  m_GameObject: {fileID: 1874687569187020114}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -34,13 +34,13 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1577276186900232320
+--- !u!114 &6274753951992357316
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 730752479323174503}
+  m_GameObject: {fileID: 1874687569187020114}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -738088491, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
@@ -106,13 +106,13 @@ MonoBehaviour:
   IsGenerated: 0
   ToDisableWhenInInventory: []
   LegacyItemID: -1
---- !u!114 &5867030090958892843
+--- !u!114 &8648729433633151570
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 730752479323174503}
+  m_GameObject: {fileID: 1874687569187020114}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -1571853039, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
@@ -131,25 +131,25 @@ MonoBehaviour:
   DeploymentOffset: {x: 0, y: 0, z: 3.5}
   DeploymentDirection: {x: 1, y: 0, z: 0}
   CantDeployInNoBedZones: 0
---- !u!114 &7181507539246524675
+--- !u!114 &2769925706307674186
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 730752479323174503}
+  m_GameObject: {fileID: 1874687569187020114}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 1207377577, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &5366035628205677099
+--- !u!114 &6471739946563605907
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 730752479323174503}
+  m_GameObject: {fileID: 1874687569187020114}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -672243037, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}

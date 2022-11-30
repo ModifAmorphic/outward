@@ -130,6 +130,12 @@ public class CreateAssetBundles
             if (!Directory.Exists(Path.Combine(prefabDirectory, "Visuals")))
                 Directory.CreateDirectory(Path.Combine(prefabDirectory, "Visuals"));
 
+            //var itemDirInfo = new DirectoryInfo(Path.Combine(prefabDirectory, "Items"));
+            //itemDirInfo.Delete(true);
+
+            //var visualsDirInfo = new DirectoryInfo(Path.Combine(prefabDirectory, "Visuals"));
+            //visualsDirInfo.Delete(true);
+
             //if (go.name == "Buildings")
             //{
             //    assetBundle = "modifamorphic-buildings";

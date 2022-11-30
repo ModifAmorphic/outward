@@ -2,12 +2,12 @@
   "BuildingLocalizationTemplates": [
     {
       "ItemID": "-1330060100",
-      "Name": "Blueprint: Light - Levant Lantern",
-      "Description": "Levant style floor lantern.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+      "Name": "Blueprint: Light - Stylish Floor Lamp",
+      "Description": "Stylish floor lamp common to the Berg and Levant regions.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
     },
     {
       "ItemID": "-1330060101",
-      "Name": "- Levant Lantern",
+      "Name": "-  Stylish Floor Lamp",
       "Description": ""
     },
     {
@@ -22,11 +22,51 @@
     },
     {
       "ItemID": "-1330060120",
+      "Name": "Blueprint: Light - Barrel Lamp",
+      "Description": "Barrel shaped floor lamp.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330060121",
+      "Name": "- Barrel Lamp",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330060130",
+      "Name": "Blueprint: Light - Stone Lantern",
+      "Description": "Stone floor lantern.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330060131",
+      "Name": "- Stone Lantern",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330060140",
+      "Name": "Blueprint: Light - Cold Stone Lantern",
+      "Description": "Cold Stone floor lantern.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330060141",
+      "Name": "- Cold Stone Lantern",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330060150",
+      "Name": "Blueprint: Light - Stone Sun Pillar",
+      "Description": "Large stone sun pillar waypoint.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
+    },
+    {
+      "ItemID": "-1330060151",
+      "Name": "- Stone Sun Pillar",
+      "Description": ""
+    },
+    {
+      "ItemID": "-1330060200",
       "Name": "Blueprint: Light - Bonfire",
       "Description": "A raging bonfire.\n----\nConstruction requirements\n  Funds: {funds_cost}\n  Food: {food_cost}\n  Stone: {stone_cost}\n  Material:  {item1_cost}\n  Funds upkeep: {funds_upkeep} / Day\nConstruction:  {build_days} Days"
     },
     {
-      "ItemID": "-1330060121",
+      "ItemID": "-1330060201",
       "Name": "- Bonfire",
       "Description": ""
     }

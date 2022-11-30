@@ -303,7 +303,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 15a283cec42b8a04b960c22392bb1580, type: 2}
-  - {fileID: 2100000, guid: 38306391f2a95494f8aacb22ccfd3589, type: 2}
+  - {fileID: 2100000, guid: 9fcc6715ae5ef234aa86eb6f8ff9ec1c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -379,7 +379,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2534971441151951150}
   - component: {fileID: 3785661179736263857}
-  - component: {fileID: 5128285483815432723}
+  - component: {fileID: 3213813893412746171}
   m_Layer: 0
   m_Name: TinyBuildingShell2Phase
   m_TagString: Untagged
@@ -439,7 +439,7 @@ MonoBehaviour:
   IgnoreOnPreviewVisuals: []
   DisableOnUpgrade: []
   EnableOnContinueAndBuildingIsOperational: []
---- !u!114 &5128285483815432723
+--- !u!114 &3213813893412746171
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -448,10 +448,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 2534971441151889366}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 937600647, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+  m_Script: {fileID: -61155928, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FinalAdjustmentType: 0
   BuildingBase: {fileID: 2534971441151935247}
+  DeploymentCollider: {fileID: 2534971441151960639}
+  FinalBuildingBaseScale: {x: 0.5, y: 1, z: 0.5}
+  FinalDeploymentColliderScale: {x: 1, y: 1, z: 1}
 --- !u!1 &2534971441151891589
 GameObject:
   m_ObjectHideFlags: 0
@@ -928,7 +932,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2534971441151916879}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.8, z: 0}
+  m_LocalPosition: {x: 0, y: 2.100527, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2534971441151945150}

@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 3990571314
+CRC: 2617795340
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 6984f173e1c75627fb007c731c931d5e
+    Hash: 6706fdbb1cf030c5b3a81c2424a52f62
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 111954d18c005b6a7fb2c75441ec0a49
+    Hash: 40572af6aa00b2a74fcbe58a32a83a24
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -24,8 +24,6 @@ ClassTypes:
 - Class: 43
   Script: {instanceID: 0}
 - Class: 48
-  Script: {instanceID: 0}
-- Class: 64
   Script: {instanceID: 0}
 - Class: 65
   Script: {instanceID: 0}
@@ -48,8 +46,6 @@ ClassTypes:
 - Class: 114
   Script: {fileID: -1571853039, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
 - Class: 114
-  Script: {fileID: 937600647, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
-- Class: 114
   Script: {fileID: -672243037, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
 - Class: 114
   Script: {fileID: -1739677366, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
@@ -58,7 +54,7 @@ ClassTypes:
 - Class: 114
   Script: {fileID: -1758145494, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
 - Class: 114
-  Script: {fileID: -1157800603, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+  Script: {fileID: -61155928, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 136
@@ -81,13 +77,22 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: ModifAmorphic.Outward.UnityScripts
   ClassName: ModifAmorphic.Outward.UnityScripts.QuestEventReferenceBinder
 Assets:
-- Assets/ModifAmorphicPrefabs/Outward-Lights/Items/-1330060121_mdl_env_propBonfireA_c.prefab
+- Assets/ModifAmorphicPrefabs/Outward-Lights/Items/-1330060140_propLanternTorchC_cold_Blueprint.prefab
+- Assets/ModifAmorphicPrefabs/Outward-Lights/Visuals/-1330060121_propLanternTorchA_v.prefab
+- Assets/ModifAmorphicPrefabs/Outward-Lights/Items/-1330060121_propLanternTorchA.prefab
+- Assets/ModifAmorphicPrefabs/Outward-Lights/Items/-1330060131_propLanternTorchC.prefab
+- Assets/ModifAmorphicPrefabs/Outward-Lights/Items/-1330060130_propLanternTorchC_Blueprint.prefab
 - Assets/ModifAmorphicPrefabs/Outward-Lights/Items/-1330060110_propLampPostALight_Blueprint.prefab
 - Assets/ModifAmorphicPrefabs/Outward-Lights/Items/-1330060101_propLanternTorchBLight.prefab
-- Assets/ModifAmorphicPrefabs/Outward-Lights/Items/-1330060120_mdl_env_propBonfireA_c_Blueprint.prefab
-- Assets/ModifAmorphicPrefabs/Outward-Lights/Visuals/-1330060121_mdl_env_propBonfireA_c_v.prefab
+- Assets/ModifAmorphicPrefabs/Outward-Lights/Visuals/-1330060151_propSunPillar_v.prefab
 - Assets/ModifAmorphicPrefabs/Outward-Lights/Items/-1330060100_propLanternTorchBLight_Blueprint.prefab
+- Assets/ModifAmorphicPrefabs/Outward-Lights/Visuals/-1330060141_propLanternTorchC_cold_v.prefab
 - Assets/ModifAmorphicPrefabs/Outward-Lights/Visuals/-1330060111_propLampPostALight_v.prefab
 - Assets/ModifAmorphicPrefabs/Outward-Lights/Items/-1330060111_propLampPostALight.prefab
+- Assets/ModifAmorphicPrefabs/Outward-Lights/Items/-1330060120_propLanternTorchA_Blueprint.prefab
+- Assets/ModifAmorphicPrefabs/Outward-Lights/Visuals/-1330060131_propLanternTorchC_v.prefab
+- Assets/ModifAmorphicPrefabs/Outward-Lights/Items/-1330060151_propSunPillar.prefab
 - Assets/ModifAmorphicPrefabs/Outward-Lights/Visuals/-1330060101_propLanternTorchBLight_v.prefab
+- Assets/ModifAmorphicPrefabs/Outward-Lights/Items/-1330060150_propSunPillar_Blueprint.prefab
+- Assets/ModifAmorphicPrefabs/Outward-Lights/Items/-1330060141_propLanternTorchC_cold.prefab
 Dependencies: []

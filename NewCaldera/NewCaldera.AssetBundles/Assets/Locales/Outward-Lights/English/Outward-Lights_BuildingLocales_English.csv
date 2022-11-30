@@ -1,5 +1,5 @@
-ItemID,Name,Description
--1330060100,Blueprint: Light - Levant Lantern,"Levant style floor lantern.
+﻿ItemID,Name,Description
+-1330060100,Blueprint: Light - Stylish Floor Lamp,"Stylish floor lamp common to the Berg and Levant regions.
 ----
 Construction requirements
   Funds: {funds_cost}
@@ -8,7 +8,7 @@ Construction requirements
   Material:  {item1_cost}
   Funds upkeep: {funds_upkeep} / Day
 Construction:  {build_days} Days"
--1330060101,- Levant Lantern,
+-1330060101,-  Stylish Floor Lamp,
 -1330060110,Blueprint: Light - Harmattan Lamp Post,"Lamp Post like those in the streets of Harmattan.
 ----
 Construction requirements
@@ -19,7 +19,7 @@ Construction requirements
   Funds upkeep: {funds_upkeep} / Day
 Construction:  {build_days} Days"
 -1330060111,- Harmattan Lamp Post,
--1330060120,Blueprint: Light - Bonfire,"A raging bonfire.
+-1330060120,Blueprint: Light - Barrel Lamp,"Barrel shaped floor lamp.
 ----
 Construction requirements
   Funds: {funds_cost}
@@ -28,4 +28,44 @@ Construction requirements
   Material:  {item1_cost}
   Funds upkeep: {funds_upkeep} / Day
 Construction:  {build_days} Days"
--1330060121,- Bonfire,
+-1330060121,- Barrel Lamp,
+-1330060130,Blueprint: Light - Stone Lantern,"Stone floor lantern.
+----
+Construction requirements
+  Funds: {funds_cost}
+  Food: {food_cost}
+  Stone: {stone_cost}
+  Material:  {item1_cost}
+  Funds upkeep: {funds_upkeep} / Day
+Construction:  {build_days} Days"
+-1330060131,- Stone Lantern,
+-1330060140,Blueprint: Light - Cold Stone Lantern,"Cold Stone floor lantern.
+----
+Construction requirements
+  Funds: {funds_cost}
+  Food: {food_cost}
+  Stone: {stone_cost}
+  Material:  {item1_cost}
+  Funds upkeep: {funds_upkeep} / Day
+Construction:  {build_days} Days"
+-1330060141,- Cold Stone Lantern,
+-1330060150,Blueprint: Light - Stone Sun Pillar,"Large stone sun pillar waypoint.
+----
+Construction requirements
+  Funds: {funds_cost}
+  Food: {food_cost}
+  Stone: {stone_cost}
+  Material:  {item1_cost}
+  Funds upkeep: {funds_upkeep} / Day
+Construction:  {build_days} Days"
+-1330060151,- Stone Sun Pillar,
+-1330060200,Blueprint: Light - Bonfire,"A raging bonfire.
+----
+Construction requirements
+  Funds: {funds_cost}
+  Food: {food_cost}
+  Stone: {stone_cost}
+  Material:  {item1_cost}
+  Funds upkeep: {funds_upkeep} / Day
+Construction:  {build_days} Days"
+-1330060201,- Bonfire,
