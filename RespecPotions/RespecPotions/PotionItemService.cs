@@ -14,6 +14,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace ModifAmorphic.Outward.RespecPotions
 {
@@ -99,7 +100,6 @@ namespace ModifAmorphic.Outward.RespecPotions
                 characterInstances.TryGetSkillSchools(out var skillSchools);
 
                 var prefabItems = new List<Item>();
-
                 var basePrefab = _resourcesPrefabManager.GetItemPrefab(4300220);
 
                 foreach (int schoolIndex in skillSchools.Keys)
@@ -107,30 +107,20 @@ namespace ModifAmorphic.Outward.RespecPotions
                     var potionName = RespecConstants.PotionNameFormat.Replace("{SchoolName}", skillSchools[schoolIndex].Name);
                     var potionDesc = RespecConstants.PotionDescFormat.Replace("{SchoolName}", skillSchools[schoolIndex].Name);
 
-                    var potionPrefab = _preFabricator.CreatePrefab(basePrefab, RespecConstants.ItemStartID - schoolIndex, potionName, potionDesc);
-                    Logger.LogTrace($"{nameof(PotionItemService)}::{nameof(AddForgetPotionPrefabs)}: potionPrefab.gameObject.activeSelf={potionPrefab.gameObject.activeSelf}.");
-                    //potionPrefab.gameObject.SetActive(true);
-
-                    var iconFileName = GetIconFilePath(skillSchools[schoolIndex].name, iconDir);
-
-                    Logger.LogDebug($"{nameof(PotionItemService)}::{nameof(AddForgetPotionPrefabs)}: Created '{potionPrefab.Name}' prefab with ItemID {potionPrefab.ItemID}.");
-                    potionPrefab.ClearEffects()
-                        .ConfigureItemIcon(Path.Combine(iconDir, iconFileName))
-                        .AddEffect<ForgetSchoolEffect>()
-                        .SchoolIndex = schoolIndex;
-                    potionPrefab.AddEffect<AutoKnock>();
-                    //potionPrefab.AddEffect<BurnHealthEffect>()
-                    //    .AffectQuantity = .25f;
-                    potionPrefab.AddEffect<BurnStaminaEffect>()
-                        .AffectQuantity = .25f;
-
-                    var itemStats = potionPrefab.gameObject.GetOrAddComponent<ItemStats>();
-                    itemStats.SetBaseValue(_settings.PotionValue.Value);
-
-                    Logger.LogTrace($"{nameof(PotionItemService)}::{nameof(AddForgetPotionPrefabs)}: Added effect {nameof(ForgetSchoolEffect)} with SchoolIndex of {schoolIndex} to prefab {potionPrefab.ItemID}.");
-
-                    prefabItems.Add(potionPrefab);
+                    if (prefabItems.Any(p => p.Name.Equals(potionName, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        potionName += $" [{schoolIndex}]";
+                        potionDesc = RespecConstants.PotionDescFormat.Replace("{SchoolName}", potionName);
+                        potionDesc += "\n" + RespecConstants.PotionDuplicateFormat.Replace("{SchoolName}", skillSchools[schoolIndex].Name);
+                        Logger.LogDebug($"{nameof(PotionItemService)}::{nameof(AddForgetPotionPrefabs)}: Found duplicate potion with Name {skillSchools[schoolIndex].Name}. Renamed new potion to {potionName}.");
+                    }
+                    if (TryGetForgetPotion(skillSchools[schoolIndex], schoolIndex, potionName, potionDesc, basePrefab, iconDir, out var potionPrefab))
+                    {
+                        prefabItems.Add(potionPrefab);
+                        Logger.LogTrace($"{nameof(PotionItemService)}::{nameof(AddForgetPotionPrefabs)}: Added effect {nameof(ForgetSchoolEffect)} with SchoolIndex of {schoolIndex} to prefab {potionPrefab.name}.");
+                    }
                 }
+
                 Logger.LogInfo($"Created Respec Potions for {skillSchools.Count} schools.");
                 PotionPrefabsAdded?.Invoke(prefabItems);
             }
@@ -140,14 +130,96 @@ namespace ModifAmorphic.Outward.RespecPotions
                 coroutineStarted = false;
             }
         }
+
+        private bool TryGetForgetPotion(SkillSchool skillSchool, int schoolIndex, string potionName, string potionDesc, Item basePortionPrefab, string iconDir, out Item forgetPotion)
+        {
+            try
+            {
+                forgetPotion = _preFabricator.CreatePrefab(basePortionPrefab, RespecConstants.ItemStartID - schoolIndex, potionName, potionDesc, true);
+                Logger.LogTrace($"{nameof(PotionItemService)}::{nameof(AddForgetPotionPrefabs)}: potionPrefab.gameObject.activeSelf={forgetPotion.gameObject.activeSelf}.");
+                //potionPrefab.gameObject.SetActive(true);
+
+                var iconFileName = GetIconFilePath(skillSchool.name, iconDir);
+
+                Logger.LogDebug($"{nameof(PotionItemService)}::{nameof(AddForgetPotionPrefabs)}: Created '{forgetPotion.Name}' prefab with ItemID {forgetPotion.ItemID}.");
+                forgetPotion.ClearEffects()
+                    .ConfigureItemIcon(Path.Combine(iconDir, iconFileName))
+                    .AddEffect<ForgetSchoolEffect>()
+                    .SchoolIndex = schoolIndex;
+                forgetPotion.AddEffect<AutoKnock>();
+                //potionPrefab.AddEffect<BurnHealthEffect>()
+                //    .AffectQuantity = .25f;
+                forgetPotion.AddEffect<BurnStaminaEffect>()
+                    .AffectQuantity = .25f;
+
+                var itemStats = forgetPotion.gameObject.GetOrAddComponent<ItemStats>();
+                itemStats.SetBaseValue(_settings.PotionValue.Value);
+                
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (!string.IsNullOrWhiteSpace(skillSchool?.name))
+                    Logger.LogException($"Failed to create forgot potion for school '{skillSchool.name}'", ex);
+                else
+                    Logger.LogException($"Failed to create forgot potion for school index {schoolIndex}", ex);
+            }
+
+            forgetPotion = null;
+            return false;
+        }
+
+        private bool TryAddForgetSchoolEffect(Item item, int schoolIndex)
+        {
+            try
+            {
+                item
+                    .AddEffect<ForgetSchoolEffect>()
+                    .SchoolIndex = schoolIndex;
+                return true;
+            }
+            catch(Exception ex)
+            {
+                Logger.LogException($"Failed to add {nameof(ForgetSchoolEffect)} to item {item?.name} for school index {schoolIndex}.", ex);
+            }
+
+            return false;
+        }
+
         private string GetIconFilePath(string schoolname, string iconDirectory)
         {
             if (RespecConstants.CustomSchoolIcons.TryGetValue(schoolname, out var iFile) && File.Exists(Path.Combine(iconDirectory, iFile)))
                 return Path.Combine(iconDirectory, iFile);
 
-            string otherIcon = Path.Combine(iconDirectory, schoolname + ".png");
+            try
+            {
+                var cleanFile = RemoveInvalidFilePathCharacters(schoolname + ".png", "_");
+                var filePath = Path.Combine(iconDirectory, cleanFile);
+                Logger.LogDebug($"Original Filename: '{schoolname + ".png"}'. Cleaned Filename: '{cleanFile}'.");
+                if (File.Exists(filePath))
+                    return filePath;
+            }
+            catch
+            {
+                Logger.LogWarning($"Encountered error trying to find school icon file for school {schoolname}. Return default file icon.");
+            }
             
-            return File.Exists(otherIcon) ? otherIcon : RespecConstants.CustomSchoolIcons["Default"];
+            return RespecConstants.CustomSchoolIcons["Default"];
+        }
+        public static string RemoveInvalidFilePathCharacters(string filename, string replaceChar)
+        {
+            string regexSearch = new string(Path.GetInvalidFileNameChars()) + new string(Path.GetInvalidPathChars());
+            Regex r = new Regex(string.Format("[{0}]", Regex.Escape(regexSearch)));
+            var replaced1 = r.Replace(filename, replaceChar);
+            string replaced2 = string.Empty;
+            foreach(char c in replaced1)
+            {
+                if ((int)c.GetTypeCode() > 126)
+                    replaced2 += "_";
+                else
+                    replaced2 += c;
+            }
+            return replaced2;
         }
     }
 }
