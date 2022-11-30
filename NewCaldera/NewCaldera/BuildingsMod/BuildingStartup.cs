@@ -58,8 +58,8 @@ namespace ModifAmorphic.Outward.NewCaldera.BuildingsMod
 
             //Logger.LogDebug($"Loading blueprints to Mod Directory '{buildingsDirectory.GetOrAddDir()}'. Config Directory is '{CalderaSettings.ModConfigPath}'");
 
-
-
+//Generate blueprint and building config data only with debug builds
+#if DEBUG
             var blueprints = new BuildingBlueprints()
             {
                 Blueprints = new List<BuildingBlueprint>()
@@ -95,6 +95,7 @@ namespace ModifAmorphic.Outward.NewCaldera.BuildingsMod
 
             bpData.SaveNew(blueprints);
             tieredData.SaveNew(tiers);
+#endif
         }
 
         public void Stop()

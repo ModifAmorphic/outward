@@ -28,6 +28,7 @@
 
 #GeneratedPrefabs
 /[Aa]ssets/ModifAmorphicPrefabs/
+/AssetBundles/
 
 # Visual Studio cache directory
 .vs/
