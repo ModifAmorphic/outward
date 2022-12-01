@@ -49,6 +49,7 @@ public class ThunderstoreBuildingPack : MonoBehaviour
     public string GemeratedPrefabsPath => "Assets/" + Namespace + "/" + ModName + "/Prefabs";
     public string GeneratedItemsPath => "Assets/" + Namespace + "/" + ModName + "/Prefabs/Items";
     public string GeneratedVisualsPath => "Assets/" + Namespace + "/" + ModName + "/Prefabs/Visuals";
+    public string ZipfilePath => Path.Combine(GetOrCreateZipDirectory(), FullName + "-" + VersionNumber + ".zip");
 
     // Start is called before the first frame update
     void Start()
@@ -65,7 +66,7 @@ public class ThunderstoreBuildingPack : MonoBehaviour
     public string GetOrCreatePackPath()
     {
         string publishRoot = Path.Combine(PublishDirectory, FullName);
-        if (Directory.Exists(publishRoot))
+        if (!Directory.Exists(publishRoot))
         {
             Directory.CreateDirectory(publishRoot);
         }
@@ -77,11 +78,21 @@ public class ThunderstoreBuildingPack : MonoBehaviour
     {
         string publishRoot = Path.Combine(PublishDirectory, FullName);
         string publishPath = Path.Combine(publishRoot, "files", "plugins");
-        if (Directory.Exists(publishPath))
+        if (!Directory.Exists(publishPath))
         {
             Directory.CreateDirectory(publishPath);
         }
 
         return publishPath;
+    }
+    public string GetOrCreateZipDirectory()
+    {
+        var storeDir = Path.Combine(PublishDirectory, "Thunderstore");
+        if (!Directory.Exists(storeDir))
+        {
+            Directory.CreateDirectory(storeDir);
+        }
+
+        return storeDir;
     }
 }

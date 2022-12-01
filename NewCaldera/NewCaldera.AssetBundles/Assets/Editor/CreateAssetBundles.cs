@@ -6,6 +6,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using ModifAmorphic.Outward.UnityScripts.Models;
 using Newtonsoft.Json;
+using System.IO.Compression;
 
 public class CreateAssetBundles
 {
@@ -32,6 +33,7 @@ public class CreateAssetBundles
         GenerateBuildingPrefabs.GeneratePrefabs(pack);
         BuildAssetBundle(pack);
         PublishManifests(pack);
+        ZipPack(pack);
     }
 
     [MenuItem("Assets/Publish Packs/Hallowed Marsh Foilage")]
@@ -42,6 +44,7 @@ public class CreateAssetBundles
         GenerateBuildingPrefabs.GeneratePrefabs(pack);
         BuildAssetBundle(pack);
         PublishManifests(pack);
+        ZipPack(pack);
     }
 
     [MenuItem("Assets/Publish Packs/Outward Lights")]
@@ -52,6 +55,7 @@ public class CreateAssetBundles
         GenerateBuildingPrefabs.GeneratePrefabs(pack);
         BuildAssetBundle(pack);
         PublishManifests(pack);
+        ZipPack(pack);
     }
 
     [MenuItem("Assets/Publish Packs/All Packs")]
@@ -64,6 +68,7 @@ public class CreateAssetBundles
         {
             BuildAssetBundle(pack);
             PublishManifests(pack);
+            ZipPack(pack);
         }
     }
 
@@ -82,6 +87,7 @@ public class CreateAssetBundles
             GenerateBuildingPrefabs.GenerateAllPrefabs();
             BuildAssetBundle(pack);
             PublishManifests(pack);
+            ZipPack(pack);
         }
     }
 
@@ -140,5 +146,16 @@ public class CreateAssetBundles
         
         var manfestJson = JsonConvert.SerializeObject(pack, Formatting.Indented);
         File.WriteAllText(Path.Combine(pack.GetOrCreatePackPath(), "manifest.json"), manfestJson);
+    }
+
+    public static void ZipPack(ThunderstoreBuildingPack pack)
+    {
+        if (pack.CreateZip)
+        {
+            if (!File.Exists(pack.ZipfilePath))
+                File.Delete(pack.ZipfilePath);
+
+            ZipFile.CreateFromDirectory(pack.GetOrCreatePackPath(), pack.ZipfilePath);
+        }
     }
 }
