@@ -1,10 +1,10 @@
 # ![New Caldera - Foilage](https://github.com/ModifAmorphic/outward/blob/master/NewCaldera/WikiReadmeAssets/CalderaFoilage.png?raw=true)
 
-## Plant and grow foilage in New Sirocco from the New Caldera Region. Requires the New Caldera Mod.
+## NewCaldera building pack. Place trees, bushes, plants and flowers from the Hallowed Marsh region in New Sirocco.
 
 ***
 
-- Adds 10 new tree blueprints.
+- Adds trees, bushes, flowers and other foilage blueprints.
 
 ***
 
