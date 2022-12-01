@@ -12,10 +12,6 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
 {
     public class AssetBundlesService
     {
-        static Dictionary<string, HashSet<string>> AssetPaths = new Dictionary<string, HashSet<string>>()
-        {
-            {"vegetation", new HashSet<string>() { "asset-bundles/modifamorphic-vegetation" } }
-        };
 
         public Dictionary<string, BuildingPacksManifest> _buildingBundles = new Dictionary<string, BuildingPacksManifest>();
 
@@ -36,7 +32,7 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
         public void AddBuildingBundle(BuildingPacksManifest bundle)
         {
             _loadStarted = false;
-            _buildingBundles.Add(bundle.Name, bundle);
+            _buildingBundles.Add(bundle.PrefabsPath, bundle);
             //LoadAssetBundles();
         }
 
@@ -68,8 +64,8 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
             foreach (var bundle in _buildingBundles)
             {
                 _loadingBundles.Add(bundle.Key);
-                Logger.LogDebug($"Loading Asset Bundle {bundle.Key} from location '{bundle.Value.AssetBundlePath}'.");
-                AssetBundle.LoadFromFileAsync(bundle.Value.AssetBundlePath).completed += (asyncOperation) => AddAssetBundle(bundle.Key, asyncOperation);
+                Logger.LogDebug($"Loading Asset Bundle {bundle.Key} from location '{bundle.Value.AssetBundleFilePath}'.");
+                AssetBundle.LoadFromFileAsync(bundle.Value.AssetBundleFilePath).completed += (asyncOperation) => AddAssetBundle(bundle.Key, asyncOperation);
             }
             _buildingBundles.Clear();
         }
@@ -88,27 +84,28 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
         {
             asset = null;
 
-            var folders = assetPath.Split('/');
-            if (folders.Length < 3 || !folders[1].Equals("modifamorphicprefabs", StringComparison.InvariantCultureIgnoreCase))
-            {
-                Logger.LogDebug($"No Assetbundle found for path '{assetPath}'.");
-                return false;
-            }
-
             if (!IsBundlesLoaded)
             {
                 Logger.LogWarning($"Request to get asset '{assetPath}' was requested before AssetBundles were loaded.");
                 return false;
             }
 
-            var bundleKey = folders[2];
-            var prefabPath = assetPath + ".prefab";
-
-            if (!LoadedBundles.TryGetValue(bundleKey, out var bundle))
+            AssetBundle bundle = null;
+            foreach(var prefabsPath in LoadedBundles.Keys)
             {
-                Logger.LogDebug($"No Assetbundle for key '{bundleKey}' from asset path '{assetPath}' has been loaded.");
+                if (assetPath.StartsWith(prefabsPath, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    bundle = LoadedBundles[prefabsPath];
+                    break;
+                }
+            }
+            if (bundle == null)
+            {
+                Logger.LogDebug($"No Assetbundle found for path '{assetPath}'.");
                 return false;
             }
+
+            var prefabPath = assetPath + ".prefab";
             if (bundle.Contains(prefabPath))
             {
                 asset = bundle.LoadAsset<GameObject>(prefabPath);

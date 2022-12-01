@@ -53,14 +53,14 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
 
         private void LocalizePaths(string manifestDir, BuildingPacksManifest manifest)
         {
-            if (TryLocalizePath(manifest.AssetBundlePath, out var assetPath))
-                manifest.AssetBundlePath = assetPath;
+            if (TryLocalizePath(manifest.AssetBundleFilePath, out var assetPath))
+                manifest.AssetBundleFilePath = assetPath;
 
-            if (TryLocalizePath(manifest.LocalesPath, out var localesPath))
-                manifest.LocalesPath = localesPath;
+            if (TryLocalizePath(manifest.LocalesDirectory, out var localesPath))
+                manifest.LocalesDirectory = localesPath;
 
-            manifest.AssetBundlePath = Path.Combine(manifestDir, manifest.AssetBundlePath);
-            manifest.LocalesPath = Path.Combine(manifestDir, manifest.LocalesPath);
+            manifest.AssetBundleFilePath = Path.Combine(manifestDir, manifest.AssetBundleFilePath);
+            manifest.LocalesDirectory = Path.Combine(manifestDir, manifest.LocalesDirectory);
         }
 
         private bool TryLocalizePath(string path, out string localizedPath)

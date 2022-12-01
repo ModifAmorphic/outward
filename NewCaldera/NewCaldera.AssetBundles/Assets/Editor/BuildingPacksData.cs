@@ -1,19 +1,39 @@
 using ModifAmorphic.Outward.UnityScripts;
-using ModifAmorphic.Outward.UnityScripts.Behaviours;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
-public class BuildingPrefabsData
+public class BuildingPacksData
 {
-    public static IEnumerable<GameObject> GetBuildingsGameObjects()
-        => UnityEngine.SceneManagement.SceneManager.GetSceneByName("BuildingPrefabs").GetRootGameObjects().Where(g => g.activeSelf && g.TryGetComponent<BuildingPackBehaviour>(out _));
-    
+    public static IEnumerable<ThunderstoreBuildingPack> GetBuildingPacks()
+        => UnityEngine.SceneManagement.SceneManager.GetSceneByName("BuildingPrefabs").GetRootGameObjects()
+            .Where(g => g.activeSelf && g.TryGetComponent<ThunderstoreBuildingPack>(out _))
+            .Select(g => g.GetComponent<ThunderstoreBuildingPack>());
+
+    public static ThunderstoreBuildingPack GetBuildingPack(string gameObjectName) => 
+        UnityEngine.SceneManagement.SceneManager
+            .GetSceneByName("BuildingPrefabs")
+            .GetRootGameObjects()
+            .FirstOrDefault(p => p.name.Equals(gameObjectName, System.StringComparison.InvariantCultureIgnoreCase))
+            .GetComponent<ThunderstoreBuildingPack>();
+
+    public static IEnumerable<string> GetPrefabPaths(string prefabsPath)
+    {
+        var prefabGuids = AssetDatabase.FindAssets("t:prefab", new string[] { prefabsPath });
+        return prefabGuids.Select(g => AssetDatabase.GUIDToAssetPath(g));
+    }
+
+    public static IEnumerable<GameObject> GetPrefabs(string prefabsPath)
+    {
+        var prefabPaths = GetPrefabPaths(prefabsPath);
+        return prefabPaths.Select(p => AssetDatabase.LoadAssetAtPath<GameObject>(p));
+    }
+
     public static Dictionary<int, BuildingResources> GetBlueprintResourceVaules()
     {
 
-        var gos = GetBuildingsGameObjects();
+        var gos = GetBuildingPacks();
         var blueprintCosts = new Dictionary<int, BuildingResources>();
         var tempHolder = new GameObject("TemporaryHolder");
         tempHolder.SetActive(false);

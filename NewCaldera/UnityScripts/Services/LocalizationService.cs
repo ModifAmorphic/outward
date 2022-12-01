@@ -142,7 +142,6 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
             {
                 //Debug.Log("Phase: " + phase.DebugName);
                 string phaseName = phase.GetFieldValue<string>(OutwardAssembly.Types.ConstructionPhase, "DebugName");
-                Debug.Log("Calculating costs and production amounts for construction phase: " + phase.GetFieldValue<string>(OutwardAssembly.Types.ConstructionPhase, "DebugName"));
                 var constructionCosts = phase.GetFieldValue(OutwardAssembly.Types.ConstructionPhase, "m_constructionCosts");
                 if (constructionCosts != null)
                 {

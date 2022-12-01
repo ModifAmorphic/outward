@@ -45,26 +45,27 @@ public class ConvertCsvLocales
     [MenuItem("Assets/Export Locales/Item Descriptions")]
     public static void ExportItemDescriptions()
     {
-        var gos = BuildingPrefabsData.GetBuildingsGameObjects();
+        var packs = BuildingPacksData.GetBuildingPacks();
         //Dictionary<string, Dictionary<string, string>> buildingPackages = new Dictionary<string, Dictionary<string, string>>();
 
-        Dictionary<string, List<LocalesFileInfo>> buildingPackages = new Dictionary<string, List<LocalesFileInfo>>();
-        var localesFiles = new List<LocalesFileInfo>();
-        foreach (var go in gos)
-        {
-            buildingPackages.Add(go.name, GetPackLocaleFiles(go.name));
-        }
+        //Dictionary<string, List<LocalesFileInfo>> buildingPackages = new Dictionary<string, List<LocalesFileInfo>>();
+        //var localesFiles = new List<LocalesFileInfo>();
+        //foreach (var go in packs)
+        //{
+        //    buildingPackages.Add(go.name, GetPackLocaleFiles(go.name));
+        //}
 
-        foreach (var package in buildingPackages)
+        foreach (var pack in packs)
         {
-            foreach (var locale in package.Value)
+            var locales = GetPackLocaleFiles(pack.name);
+            foreach (var locale in locales)
             {
                 var json = ConvertToJson(locale.FilePath);
-                var outDir = Path.Combine(LocalesPublishDirectory, package.Key, "Locales", locale.Language);
+                var outDir = Path.Combine(pack.GetOrCreatePackPluginsPath(), "Locales", locale.Language);
                 if (!Directory.Exists(outDir))
                     Directory.CreateDirectory(outDir);
                 File.WriteAllText(Path.Combine(outDir, "BuildingLocalizationsTemplate.json"), json);
-                Debug.Log($"Exported {package.Key} pack locale {locale.Language} to {Path.Combine(outDir, "BuildingLocalizationsTemplate.json")}");
+                Debug.Log($"Exported {pack.name} pack locale {locale.Language} to {Path.Combine(outDir, "BuildingLocalizationsTemplate.json")}");
             }
         }
     }

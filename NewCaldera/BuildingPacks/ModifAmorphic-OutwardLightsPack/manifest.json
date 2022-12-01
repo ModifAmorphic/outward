@@ -1,0 +1,10 @@
+{
+  "namespace": "ModifAmorphic",
+  "name": "OutwardLightsPack",
+  "description": "NewCaldera building pack. Various light sources from Outward regions made available for construction in New Sirocco.",
+  "version_number": "1.0.0",
+  "dependencies": [
+    "ModifAmorphic-NewCaldera-1.0.0"
+  ],
+  "website_url": "https://github.com/ModifAmorphic/outward/wiki/NewCaldera"
+}

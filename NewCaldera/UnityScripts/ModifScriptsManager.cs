@@ -67,7 +67,7 @@ namespace ModifAmorphic.Outward.UnityScripts
             var manifests = BuildingPacksLocator.FindManifests();
             foreach (var manifest in manifests)
             {
-                AddBuildingBundle(manifest.Name, manifest.AssetBundlePath, manifest.LocalesPath);
+                AddBuildingBundle(manifest.PrefabsPath, manifest.AssetBundleFilePath, manifest.LocalesDirectory);
             }
 
             AssetBundles.LoadAssetBundles();
@@ -109,7 +109,7 @@ namespace ModifAmorphic.Outward.UnityScripts
             if (_isLoaded)
                 throw new InvalidOperationException("Tried to add new Building Bundle after script has loaded.");
 
-            var bundle = new BuildingPacksManifest() { Name = name, AssetBundlePath = bundlePath, LocalesPath = localesPath };
+            var bundle = new BuildingPacksManifest() { PrefabsPath = name, AssetBundleFilePath = bundlePath, LocalesDirectory = localesPath };
             AssetBundles.AddBuildingBundle(bundle);
             LocalizationService.AddLocalePath(localesPath);
         }

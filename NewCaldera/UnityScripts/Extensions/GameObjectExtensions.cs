@@ -7,6 +7,18 @@ namespace ModifAmorphic.Outward.UnityScripts.Extensions
 {
     public static class GameObjectExtensions
     {
+        public static string GetPath(this GameObject gameObject)
+        {
+            var path = gameObject.name;
+            var parent = gameObject.transform.parent;
+            while (parent != null)
+            {
+                path = parent.name + "/" + path;
+                parent = parent.parent;
+            }
+            return "/" + path;
+        }
+
         public static void DeCloneNames(this GameObject gameObject, bool recursive = false)
         {
             gameObject.name = gameObject.name.Replace("(Clone)", "");

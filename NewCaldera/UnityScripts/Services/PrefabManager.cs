@@ -457,7 +457,7 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
         {
             try
             {
-                if (__result != null || !_visualPath.ToLower().StartsWith("assets/modifamorphicprefabs"))
+                if (__result != null)
                     return;
 #if DEBUG
                 ModifScriptsManager.Instance.Logger.LogTrace($"{nameof(PrefabManager)}::{nameof(GetItemVisualPrefabPostFix)}(): Invoking {nameof(TryGetItemVisualPrefab)} for path '{_visualPath}'.");

@@ -27,7 +27,7 @@
 /[Aa]ssets/Plugins/*.dll
 
 #GeneratedPrefabs
-/[Aa]ssets/ModifAmorphicPrefabs/
+/[Aa]ssets/ModifAmorphic/
 /AssetBundles/
 
 # Visual Studio cache directory

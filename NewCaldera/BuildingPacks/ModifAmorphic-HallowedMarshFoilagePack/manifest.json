@@ -1,0 +1,10 @@
+{
+  "namespace": "ModifAmorphic",
+  "name": "HallowedMarshFoilagePack",
+  "description": "NewCaldera building pack. Place trees, bushes, plants and flowers from the Hallowed Marsh region in New Sirocco.",
+  "version_number": "1.0.0",
+  "dependencies": [
+    "ModifAmorphic-NewCaldera-1.0.0"
+  ],
+  "website_url": "https://github.com/ModifAmorphic/outward/wiki/NewCaldera"
+}

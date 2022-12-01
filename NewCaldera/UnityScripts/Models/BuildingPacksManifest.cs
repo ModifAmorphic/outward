@@ -6,8 +6,9 @@ namespace ModifAmorphic.Outward.UnityScripts.Models
 {
     public class BuildingPacksManifest
     {
-        public string Name { get; set; }
-        public string AssetBundlePath { get; set; }
-        public string LocalesPath { get; set; }
+        public string PrefabsPath { get; set; }
+        public string AssetBundleFilePath { get; set; }
+        public string LocalesDirectory { get; set; }
     }
+
 }

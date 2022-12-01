@@ -1268,63 +1268,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e621d67179f095943b32abb998de38d2, type: 3}
---- !u!1001 &110736253
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 1470327544}
-    m_Modifications:
-    - target: {fileID: 3312821460419903262, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
-      propertyPath: m_Name
-      value: mdl_env_propSunPillar
-      objectReference: {fileID: 0}
-    - target: {fileID: 5035129146110413105, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5035129146110413105, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5035129146110413105, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5035129146110413105, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 160
-      objectReference: {fileID: 0}
-    - target: {fileID: 5035129146110413105, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5035129146110413105, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5035129146110413105, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5035129146110413105, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5035129146110413105, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5035129146110413105, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5035129146110413105, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: -0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
 --- !u!1001 &118463976
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9853,9 +9796,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1002285189}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -488745769, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+  m_Script: {fileID: 11500000, guid: 0604c91ebac149346a8c3935af750f2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Namespace: ModifAmorphic
+  ModName: OutwardLightsPack
+  Description: NewCaldera building pack. Various light sources from Outward regions
+    made available for construction in New Sirocco.
+  VersionNumber: 1.0.0
+  Dependencies:
+  - ModifAmorphic-NewCaldera-1.0.0
+  ModWebsiteUri: https://github.com/ModifAmorphic/outward/wiki/NewCaldera
 --- !u!4 &1002285191
 Transform:
   m_ObjectHideFlags: 0
@@ -11985,9 +11936,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1231823322}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -488745769, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+  m_Script: {fileID: 11500000, guid: 0604c91ebac149346a8c3935af750f2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Namespace: ModifAmorphic
+  ModName: HallowedMarshFoilagePack
+  Description: NewCaldera building pack. Place trees, bushes, plants and flowers
+    from the Hallowed Marsh region in New Sirocco.
+  VersionNumber: 1.0.0
+  Dependencies:
+  - ModifAmorphic-NewCaldera-1.0.0
+  ModWebsiteUri: https://github.com/ModifAmorphic/outward/wiki/NewCaldera
 --- !u!1001 &1240017559
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12712,6 +12671,63 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3880970111885492459, guid: 6e8fbaa11e828ba4ca002260c328bfbb, type: 3}
   m_PrefabInstance: {fileID: 1270829060}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1286130650
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1470327544}
+    m_Modifications:
+    - target: {fileID: 2907567257895171000, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2907567257895171000, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2907567257895171000, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2907567257895171000, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2907567257895171000, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2907567257895171000, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2907567257895171000, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2907567257895171000, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2907567257895171000, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2907567257895171000, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2907567257895171000, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4629735408435660183, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
+      propertyPath: m_Name
+      value: mdl_env_propSunPillar
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 5240a4d44dc8fc144972033704d67639, type: 3}
 --- !u!1001 &1292849638
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19632,9 +19648,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 752163770783728055}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -488745769, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+  m_Script: {fileID: 11500000, guid: 0604c91ebac149346a8c3935af750f2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Namespace: ModifAmorphic
+  ModName: CalderaFoilagePack
+  Description: NewCaldera building pack. Place trees from the Caldera region in New
+    Sirocco.
+  VersionNumber: 1.0.0
+  Dependencies:
+  - ModifAmorphic-NewCaldera-1.0.0
+  ModWebsiteUri: https://github.com/ModifAmorphic/outward/wiki/NewCaldera
 --- !u!4 &2691074273066049947
 Transform:
   m_ObjectHideFlags: 0

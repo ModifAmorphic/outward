@@ -4,27 +4,12 @@ using System.Linq;
 using ModifAmorphic.Outward.UnityScripts;
 using UnityEngine;
 using System.Collections.Generic;
+using ModifAmorphic.Outward.UnityScripts.Models;
+using Newtonsoft.Json;
 
 public class CreateAssetBundles
 {
-    private static IEnumerable<GameObject> _buildingGos = BuildingPrefabsData.GetBuildingsGameObjects();
-
     private readonly static string AssetBundleDirectory = Path.Combine("Assets", "AssetBundles");
-    private readonly static string AssetPublishDirectory = Path.Combine("..", "BuildingPacks");
-
-    //private const string BuildingsName = "modifamorphic-buildings";
-    //private const string VegetationName = "modifamorphic-vegetation";
-
-    public const string PublishedPrefabsPath = "Assets/ModifAmorphicPrefabs";
-    public readonly static string PrefabPublishDirectory = Path.Combine("Assets", "ModifAmorphicPrefabs");
-
-
-    //public const string BuildingsItemsPath = "Assets/ModifAmorphicPrefabs/Buildings/Items";
-    //public const string BuildingsVisualsPath = "Assets/ModifAmorphicPrefabs/Buildings/Visuals";
-    //public const string VegetationItemsPath = "Assets/ModifAmorphicPrefabs/Vegetation/Items";
-    //public const string VegetationVisualsPath = "Assets/ModifAmorphicPrefabs/Vegetation/Visuals";
-
-    private static GameObject _temporaryHolder;
 
     [MenuItem("Assets/Build AssetBundles")]
     static void BuildAllAssetBundles()
@@ -39,147 +24,121 @@ public class CreateAssetBundles
                                         BuildTarget.StandaloneWindows);
     }
 
-    //[MenuItem("Assets/Publish AssetBundles")]
-    //static void PublishActionMenus()
-    //{
-    //    BuildAllAssetBundles();
-    //    File.Copy(Path.Combine(AssetBundleDirectory, BundleName), Path.Combine(PublishDirectory, BundleName), true);
-    //}
-
-    [MenuItem("Assets/Publish AssetBundles/Publish Caldera Foilage")]
+    [MenuItem("Assets/Publish Packs/Caldera Foilage")]
     static void PublishCalderaFoilage()
     {
         ConvertCsvLocales.ExportItemDescriptions();
-        GeneratePrefabs();
-        BuildAssetBundle("Caldera-Foilage");
+        var pack = BuildingPacksData.GetBuildingPack("Caldera-Foilage");
+        GenerateBuildingPrefabs.GeneratePrefabs(pack);
+        BuildAssetBundle(pack);
+        PublishManifests(pack);
     }
 
-    [MenuItem("Assets/Publish AssetBundles/Publish Hallowed Marsh Foilage")]
+    [MenuItem("Assets/Publish Packs/Hallowed Marsh Foilage")]
     static void PublishHallowedMarshFoilage()
     {
         ConvertCsvLocales.ExportItemDescriptions();
-        GeneratePrefabs();
-        BuildAssetBundle("HallowedMarsh-Foilage");
+        var pack = BuildingPacksData.GetBuildingPack("HallowedMarsh-Foilage");
+        GenerateBuildingPrefabs.GeneratePrefabs(pack);
+        BuildAssetBundle(pack);
+        PublishManifests(pack);
     }
 
-    [MenuItem("Assets/Publish AssetBundles/Publish Outward Lights")]
+    [MenuItem("Assets/Publish Packs/Outward Lights")]
     static void PublishNewSiroccoLights()
     {
         ConvertCsvLocales.ExportItemDescriptions();
-        GeneratePrefabs();
-        BuildAssetBundle("Outward-Lights");
+        var pack = BuildingPacksData.GetBuildingPack("Outward-Lights");
+        GenerateBuildingPrefabs.GeneratePrefabs(pack);
+        BuildAssetBundle(pack);
+        PublishManifests(pack);
     }
 
-    [MenuItem("Assets/Publish All AssetBundles")]
+    [MenuItem("Assets/Publish Packs/All Packs")]
     static void PublishAll()
     {
         ConvertCsvLocales.ExportItemDescriptions();
-        GeneratePrefabs();
-        foreach(var go in _buildingGos)
-            BuildAssetBundle(go.name);
+        GenerateBuildingPrefabs.GenerateAllPrefabs();
+        var buildingPacks = BuildingPacksData.GetBuildingPacks();
+        foreach (var pack in buildingPacks)
+        {
+            BuildAssetBundle(pack);
+            PublishManifests(pack);
+        }
     }
 
-
-
-    static void BuildAssetBundle(string bundleName)
+    [MenuItem("GameObject/Publish Building Pack", true)]
+    static bool ValidateLogSelectedTransformName()
     {
-        GeneratePrefabs();
+        return Selection.activeGameObject != null && Selection.activeGameObject.TryGetComponent<ThunderstoreBuildingPack>(out _);
+    }
 
-        var itemGuids = AssetDatabase.FindAssets("t:prefab", new string[] { PublishedPrefabsPath + "/" + bundleName + "/Items"});
+    [MenuItem("GameObject/Publish Building Pack")]
+    static void PublishSelected()
+    {
+        if (Selection.activeGameObject.TryGetComponent<ThunderstoreBuildingPack>(out var pack))
+        {
+            ConvertCsvLocales.ExportItemDescriptions();
+            GenerateBuildingPrefabs.GenerateAllPrefabs();
+            BuildAssetBundle(pack);
+            PublishManifests(pack);
+        }
+    }
+
+    static void BuildAssetBundle(ThunderstoreBuildingPack pack)
+    {
+        GenerateBuildingPrefabs.GenerateAllPrefabs();
+
+        var itemGuids = AssetDatabase.FindAssets("t:prefab", new string[] { pack.GeneratedItemsPath });
         var itemPaths = itemGuids.Select(g => AssetDatabase.GUIDToAssetPath(g)).ToArray();
-        Debug.Log($"Adding {itemPaths.Length} Item prefabs to asset bundle '{bundleName}'.");
-        var visualGuids = AssetDatabase.FindAssets("t:prefab", new string[] { PublishedPrefabsPath + "/" + bundleName + "/Visuals" });
+        Debug.Log($"Adding {itemPaths.Length} Item prefabs to asset bundle '{pack.name}'.");
+        var visualGuids = AssetDatabase.FindAssets("t:prefab", new string[] { pack.GeneratedVisualsPath });
         var visualPaths = visualGuids.Select(g => AssetDatabase.GUIDToAssetPath(g)).ToArray();
-        Debug.Log($"Adding {visualPaths.Length} Item Visual prefabs to asset bundle '{bundleName}'.");
+        Debug.Log($"Adding {visualPaths.Length} Item Visual prefabs to asset bundle '{pack.name}'.");
 
         AssetBundleBuild[] builds = new AssetBundleBuild[2]
         {
             new AssetBundleBuild()
             {
-                assetBundleName = bundleName,
+                assetBundleName = pack.FullName,
                 assetNames = itemPaths
             },
             new AssetBundleBuild()
             {
-                assetBundleName = bundleName,
+                assetBundleName = pack.FullName,
                 assetNames = visualPaths
             },
         };
 
-        string bundleDir = Path.Combine(AssetPublishDirectory, bundleName, "asset-bundles");
+        string bundleDir = Path.Combine(pack.GetOrCreatePackPluginsPath(), "asset-bundles");
+        if (!Directory.Exists(bundleDir))
+            Directory.CreateDirectory(bundleDir);
 
-        Debug.Log($"Building Asset Bundle to '{Path.Combine(bundleDir, bundleName)}'.");
+        Debug.Log($"Building Asset Bundle to '{Path.Combine(bundleDir, pack.FullName)}'.");
         BuildPipeline.BuildAssetBundles(bundleDir, builds, BuildAssetBundleOptions.None, EditorUserBuildSettings.activeBuildTarget);
+        if (File.Exists(Path.Combine(bundleDir, "asset-bundles.manifest")))
+            File.Delete(Path.Combine(bundleDir, "asset-bundles.manifest"));
+        if (File.Exists(Path.Combine(bundleDir, "asset-bundles")))
+            File.Delete(Path.Combine(bundleDir, "asset-bundles"));
+        if (File.Exists(Path.Combine(bundleDir, $"{pack.FullName}.manifest")))
+            File.Delete(Path.Combine(bundleDir, $"{pack.FullName}.manifest"));
     }
 
-    [MenuItem("Assets/Generate Prefabs")]
-    public static void GeneratePrefabs()
+    
+
+    private static void PublishManifests(ThunderstoreBuildingPack pack)
     {
-        _temporaryHolder = new GameObject("prefabCreation");
-        _temporaryHolder.SetActive(false);
-
-        foreach (var go in _buildingGos)
+        var buildingManifest = new BuildingPacksManifest()
         {
-            string assetBundle = go.name.ToLower();
-            string itemsBasePath = PublishedPrefabsPath + $"/{go.name}/Items";
-            string visualsBasePath = PublishedPrefabsPath + $"/{go.name}/Visuals";
-            string prefabDirectory = Path.Combine(PrefabPublishDirectory, go.name);
-            
-            if (!Directory.Exists(Path.Combine(prefabDirectory, "Items")))
-                Directory.CreateDirectory(Path.Combine(prefabDirectory, "Items"));
-            if (!Directory.Exists(Path.Combine(prefabDirectory, "Visuals")))
-                Directory.CreateDirectory(Path.Combine(prefabDirectory, "Visuals"));
+            PrefabsPath = pack.GemeratedPrefabsPath.ToLower(),
+            LocalesDirectory = pack.LocalesDirectory,
+            AssetBundleFilePath = pack.AssetFilePath
+        };
+        var packJson = JsonConvert.SerializeObject(buildingManifest, Formatting.Indented);
+        File.WriteAllText(Path.Combine(pack.GetOrCreatePackPluginsPath(), "buildingPacksManifest.json"), packJson);
 
-            //var itemDirInfo = new DirectoryInfo(Path.Combine(prefabDirectory, "Items"));
-            //itemDirInfo.Delete(true);
-
-            //var visualsDirInfo = new DirectoryInfo(Path.Combine(prefabDirectory, "Visuals"));
-            //visualsDirInfo.Delete(true);
-
-            //if (go.name == "Buildings")
-            //{
-            //    assetBundle = "modifamorphic-buildings";
-            //    itemsBasePath = BuildingsItemsPath;
-            //    visualsBasePath = BuildingsVisualsPath;
-            //}
-            //else if (go.name == "Vegetation")
-            //{
-            //    assetBundle = "modifamorphic-vegetation";
-            //    itemsBasePath = VegetationItemsPath;
-            //    visualsBasePath = VegetationVisualsPath;
-            //}
-            //else
-            //    continue;
-
-            var itemBinders = go.GetComponentsInChildren<ItemBinder>();
-            foreach (var binder in itemBinders)
-            {
-                CreateNewPrefab(binder.gameObject, itemsBasePath + "/" + binder.name + ".prefab", assetBundle);
-            }
-
-            var itemVisuals = go.GetComponentsInChildren<BuildingVisualBinder>();
-            foreach (var binder in itemVisuals)
-            {
-                CreateNewPrefab(binder.gameObject, visualsBasePath + "/" + binder.name + ".prefab", assetBundle);
-            }
-        }
-
-        UnityEngine.Object.DestroyImmediate(_temporaryHolder);
-        _temporaryHolder = null;
-    }
-
-    private static void CreateNewPrefab(GameObject origPrefab, string path, string assetBundle)
-    {
-        var tempGo = Object.Instantiate(origPrefab, _temporaryHolder.transform);
-
-        bool prefabSuccess;
-        var newPrefab = PrefabUtility.SaveAsPrefabAsset(tempGo, path, out prefabSuccess);
-        if (prefabSuccess)
-        {
-            Debug.Log("Prefab was saved successfully");
-        }
-        else
-            Debug.Log("Prefab failed to save" + prefabSuccess);
-        UnityEngine.Object.DestroyImmediate(tempGo);
+        
+        var manfestJson = JsonConvert.SerializeObject(pack, Formatting.Indented);
+        File.WriteAllText(Path.Combine(pack.GetOrCreatePackPath(), "manifest.json"), manfestJson);
     }
 }

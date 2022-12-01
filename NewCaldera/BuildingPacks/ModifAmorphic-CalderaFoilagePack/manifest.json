@@ -1,0 +1,10 @@
+{
+  "namespace": "ModifAmorphic",
+  "name": "CalderaFoilagePack",
+  "description": "NewCaldera building pack. Place trees from the Caldera region in New Sirocco.",
+  "version_number": "1.0.0",
+  "dependencies": [
+    "ModifAmorphic-NewCaldera-1.0.0"
+  ],
+  "website_url": "https://github.com/ModifAmorphic/outward/wiki/NewCaldera"
+}
