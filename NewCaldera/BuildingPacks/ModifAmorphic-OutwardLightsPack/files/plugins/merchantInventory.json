@@ -1,0 +1,48 @@
+{
+  "AdditonalMerchantInventories": [
+    {
+      "Name": "OutwardLightsPack",
+      "Area": 601,
+      "NpcSearchType": 2,
+      "MerchantUIDs": [],
+      "ShopNames": [
+        ""
+      ],
+      "ShopNpcNames": [
+        "UNPC_DLC2_Josef_Engineer"
+      ],
+      "GuaranteedItems": [
+        {
+          "ItemID": -1330060100,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330060110,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330060120,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330060130,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330060140,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330060150,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        }
+      ]
+    }
+  ]
+}

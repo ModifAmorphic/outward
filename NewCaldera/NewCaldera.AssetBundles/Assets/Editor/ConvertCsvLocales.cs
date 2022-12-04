@@ -3,8 +3,6 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Data.OleDb;
 using UnityEngine;
 using UnityEditor;
 using System.IO;

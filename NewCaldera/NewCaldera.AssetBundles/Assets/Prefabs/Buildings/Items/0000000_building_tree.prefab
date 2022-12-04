@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3880970111885492459}
   - component: {fileID: 7039977881531210348}
+  - component: {fileID: 3232990083917749370}
   m_Layer: 0
   m_Name: 0000000_building_tree
   m_TagString: Untagged
@@ -215,3 +216,16 @@ MonoBehaviour:
   _buildingLimits:
     BuildLimit: 12
   _buildingLimitsJson: '{"BuildLimit":12}'
+--- !u!114 &3232990083917749370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3309382413598868460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1852750335, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisallowCancelConstruction: 0

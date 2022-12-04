@@ -1,0 +1,136 @@
+{
+  "AdditonalMerchantInventories": [
+    {
+      "Name": "HallowedMarshFoilagePack",
+      "Area": 601,
+      "NpcSearchType": 2,
+      "MerchantUIDs": [],
+      "ShopNames": [],
+      "ShopNpcNames": [
+        "UNPC_DLC2_FoodStore"
+      ],
+      "GuaranteedItems": [
+        {
+          "ItemID": -1330010110,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010120,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010130,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010140,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010150,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010160,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010170,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010180,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010190,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010200,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010210,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010220,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010230,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010240,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010250,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010260,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010270,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010280,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010290,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010300,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010320,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010340,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010350,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330010360,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        }
+      ]
+    }
+  ]
+}

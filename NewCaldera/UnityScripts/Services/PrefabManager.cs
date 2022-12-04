@@ -132,45 +132,6 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
             }
         }
 
-        //private void PopulatePrefabs(AssetBundleRequest bundleRequest, string bundleName)
-        //{
-        //    Logger.LogDebug("RegisterBundlesItems");
-        //    var itemType = OutwardAssembly.Types.Item;
-        //    var buildingVisualType = OutwardAssembly.Types.BuildingVisual;
-        //    var itemVisualType = OutwardAssembly.Types.ItemVisual;
-
-        //    foreach (var asset in bundleRequest.allAssets)
-        //    {
-        //        var assetGo = (GameObject)asset;
-        //        if (assetGo.TryGetComponent(itemType, out var item))
-        //            _itemPrefabs.Add((int)item.GetFieldValue(itemType, "ItemID"), assetGo);
-        //        else if (assetGo.TryGetComponent(buildingVisualType, out var buildingVisual))
-        //            _buildingVisuals.Add((int)buildingVisual.GetFieldValue(buildingVisualType, "m_itemID"), assetGo);
-        //        else if (assetGo.TryGetComponent(itemVisualType, out var itemVisual))
-        //            _itemVisuals.Add((int)itemVisual.GetFieldValue(itemVisualType, "m_itemID"), assetGo);
-        //    }
-
-        //    foreach (var itemKvp in _itemPrefabs)
-        //    {
-        //        GameObject visual;
-        //        if (_itemVisuals.TryGetValue(itemKvp.Key, out visual) || _buildingVisuals.TryGetValue(itemKvp.Key, out visual))
-        //        {
-        //            if (itemKvp.Value.TryGetComponent(itemType, out var item) && visual.TryGetComponent(itemVisualType, out var itemVisual))
-        //            {
-        //                item.SetField(itemType, "m_loadedVisual", itemVisual);
-        //                Logger.LogTrace($"Set {itemType.Name} {item.name}'s m_loadedVisual field to {itemVisualType.Name} {itemVisual.name}.");
-        //            }
-        //        }
-        //    }
-
-        //    _processingBundles.Remove(bundleName);
-        //    if (_processingBundles.Count == 0)
-        //    {
-        //        _customPrefabsLoaded = true;
-        //        ProcessQueuedItemPrefabs();
-        //    }
-        //}
-
         private bool TryBindPrefabs(AssetBundleRequest bundleRequest, string bundleName)
         {
             try
@@ -350,7 +311,7 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
                     {
                         var component = binders[i].Bind();
 #if DEBUG
-                        Logger.LogTrace($"Bound {component.GetType().Name} component to asset {asset.name}.");
+                        //Logger.LogTrace($"Bound {component.GetType().Name} component to asset {asset.name}.");
 #endif
                     }
                     UnityEngine.Object.Destroy(binders[i]);
@@ -362,7 +323,7 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
                     {
                         var component = childBinders[i].Bind();
 #if DEBUG
-                        Logger.LogTrace($"Bound {component.GetType().Name} component to asset {asset.name}.");
+                        //Logger.LogTrace($"Bound {component.GetType().Name} component to asset {asset.name}.");
 #endif
                     }
                     UnityEngine.Object.Destroy(childBinders[i]);
@@ -371,68 +332,6 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
 
             _delayedBindings.Clear();
         }
-
-        //public void AddItemPrefab(ItemBinder itemBinder)
-        //{
-        //    if (!_outwardPrefabsLoaded)
-        //    {
-        //        _queuedItemBinders.Enqueue(itemBinder);
-        //    }
-        //    else
-        //    {
-        //        string itemId = itemBinder.ItemID.ToString();
-        //        if (!GetItemPrefabs().Contains(itemId))
-        //            GetItemPrefabs().Add(itemId, itemBinder.BoundComponent);
-        //    }
-        //}
-
-        //private void RegisterItemsAfterAssetLoad(AssetBundleRequest bundleRequest, string bundleName)
-        //{
-        //    var assets = bundleRequest.allAssets.Cast<GameObject>();
-        //    Logger.LogDebug($"Looking for {nameof(ItemBinder)} components in asset bundle '{bundleRequest}'.");
-        //    foreach (var asset in assets)
-        //    {
-        //        if (asset.TryGetComponent<ItemBinder>(out var itemBinder))
-        //        {
-        //            Logger.LogTrace($"Found {nameof(ItemBinder)} '{itemBinder.name}' in asset bundle '{bundleName}'.");
-        //            //itemBinder.SetIsPrefab(true);
-        //            //AddItemPrefab(itemBinder);
-        //            //UnityEngine.Object.DontDestroyOnLoad(itemBinder.gameObject);
-        //            if (_assetBundles.TryGetPrefabAsset(itemBinder.VisualPrefabPath, out var visualGo))
-        //            {
-        //                var itemVisualBinder = visualGo.GetComponent<ItemVisualBinder>();
-        //                if (itemVisualBinder != null)
-        //                {
-        //                    itemBinder.BoundComponent.SetField(itemBinder.BoundType, "m_loadedVisual", itemVisualBinder.BoundComponent);
-        //                    Logger.LogTrace($"Set {itemBinder.BoundType.Name} '{itemBinder.name}''s Item Visual to '{itemVisualBinder.name}'.");
-        //                    //newVisual.SetActive(true);
-        //                }
-        //                visualGo.SetActive(true);
-
-        //                //visualGo.SetActive(false);
-        //                //var newVisual = UnityEngine.GameObject.Instantiate(visualGo);
-        //                //var itemVisualBinder = newVisual.GetComponent<ItemVisualBinder>();
-        //                //if (itemVisualBinder != null)
-        //                //{
-        //                //    itemBinder.BoundComponent.SetField(itemBinder.BoundType, "m_loadedVisual", itemVisualBinder.BoundComponent);
-        //                //    Logger.LogTrace($"Set {itemBinder.BoundType.Name} '{itemBinder.name}''s Item Visual to '{itemVisualBinder.name}'.");
-        //                //    newVisual.SetActive(true);
-        //                //}
-        //                //visualGo.SetActive(true);
-        //            }
-
-        //            _boundItems.Add(itemBinder.BoundComponent.gameObject);
-        //        }
-
-        //        //var itemBinders = asset.GetComponentsInChildren<ItemBinder>(true);
-        //        //foreach (var binder in itemBinders)
-        //        //{
-        //        //    Logger.LogTrace($"Found {nameof(ItemBinder)} '{binder.name}' in asset bundle '{bundleName}'.");
-        //        //    AddItemPrefab(binder);
-        //        //}
-        //    }
-        //    ProcessQueuedItemPrefabs();
-        //}
 
         #region Patches
         private void PatchResourcesPrefabManager()

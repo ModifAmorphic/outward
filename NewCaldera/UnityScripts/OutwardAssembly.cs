@@ -36,8 +36,14 @@ namespace ModifAmorphic.Outward.UnityScripts
         public static Type GetOutwardEnumType<T>() where T : Enum =>
             _enumToOutwardMappings.TryGetValue(typeof(T), out var outwardEnumType) ? outwardEnumType : null;
 
+        public static Type GetLocalEnumType<T>(Type outwardEnumType) where T : Enum =>
+            _outwardToEnumMappings.TryGetValue(outwardEnumType, out var localEnumType) ? localEnumType : null;
+
         public static class Types
         {
+            public static Type Area => OutwardAssembly.GetType("Area");
+            public static Type AreaManager => OutwardAssembly.GetType("AreaManager");
+            public static Type BasicItemDrop => OutwardAssembly.GetType("BasicItemDrop");
             public static Type Blueprint => OutwardAssembly.GetType("Blueprint");
             public static Type Building => OutwardAssembly.GetType("Building");
             public static Type BuildingRequirement => OutwardAssembly.GetNestedType(Building, "BuildingRequirement");
@@ -48,18 +54,24 @@ namespace ModifAmorphic.Outward.UnityScripts
             public static Type Character => OutwardAssembly.GetType("Character");
             public static Type ConstructionPhase => OutwardAssembly.GetNestedType(Building, "ConstructionPhase");
             public static Type Deployable => OutwardAssembly.GetType("Deployable");
+            public static Type Global => OutwardAssembly.GetType("Global");
             public static Type GlobalAudioManager => OutwardAssembly.GetType("GlobalAudioManager");
+            public static Type GuaranteedDrop => OutwardAssembly.GetType("GuaranteedDrop");
             public static Type Item => OutwardAssembly.GetType("Item");
             public static Type ItemLocalization => OutwardAssembly.GetType("Localizer.ItemLocalization");            
             public static Type ItemQuantity => OutwardAssembly.GetType("ItemQuantity");
             public static Type ItemVisual => OutwardAssembly.GetType("ItemVisual");
             public static Type LocalizationManager => OutwardAssembly.GetType("LocalizationManager");
             public static Type OTWStoreAPI => OutwardAssembly.GetType("OTWStoreAPI");
+            public static Type Merchant => OutwardAssembly.GetType("Merchant");
             public static Type QuestEventReference => OutwardAssembly.GetType("QuestEventReference");
             public static Type ResourcesPrefabManager => OutwardAssembly.GetType("ResourcesPrefabManager");
+            public static Type SNPC => OutwardAssembly.GetType("SNPC");
+            
 
             public static class Enums
             {
+                public static Type AreaEnum => OutwardAssembly.GetNestedType(AreaManager, "AreaEnum");
                 public static Type BagCategorySlotType => OutwardAssembly.GetNestedType(Item, "BagCategorySlotType");
                 public static Type BehaviorOnNoDurabilityType => OutwardAssembly.GetNestedType(Item, "BehaviorOnNoDurabilityType");
                 public static Type BuildingTypes => OutwardAssembly.GetNestedType(Building, "BuildingTypes");
@@ -78,6 +90,7 @@ namespace ModifAmorphic.Outward.UnityScripts
 
         private static readonly Dictionary<Type, Type> _enumToOutwardMappings = new Dictionary<Type, Type>()
         {
+            { typeof(AreaEnum), Types.Enums.AreaEnum },
             { typeof(BagCategorySlotType), Types.Enums.BagCategorySlotType },
             { typeof(BehaviorOnNoDurabilityType), Types.Enums.BehaviorOnNoDurabilityType },
             { typeof(BuildingTypes), Types.Enums.BuildingTypes },
@@ -91,6 +104,8 @@ namespace ModifAmorphic.Outward.UnityScripts
             { typeof(SpellCastType), Types.Enums.SpellCastType },
             { typeof(Sounds), Types.Enums.Sounds },
         };
+
+        private static readonly Dictionary<Type, Type> _outwardToEnumMappings = _enumToOutwardMappings.ToDictionary(x => x.Value, x => x.Key);
 
     }
 }

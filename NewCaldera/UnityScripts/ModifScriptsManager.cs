@@ -26,6 +26,7 @@ namespace ModifAmorphic.Outward.UnityScripts
         public LocalizationService LocalizationService { get; private set; }
         public BuildLimitsManager BuildLimitsManager { get; private set; }
         public BuildingPacksLocator BuildingPacksLocator { get; private set; }
+        public MerchantService MerchantService { get; private set; }
 
         private bool _isLoaded = false;
 
@@ -67,7 +68,7 @@ namespace ModifAmorphic.Outward.UnityScripts
             var manifests = BuildingPacksLocator.FindManifests();
             foreach (var manifest in manifests)
             {
-                AddBuildingBundle(manifest.PrefabsPath, manifest.AssetBundleFilePath, manifest.LocalesDirectory);
+                AddBuildingBundle(manifest);
             }
 
             AssetBundles.LoadAssetBundles();
@@ -83,6 +84,7 @@ namespace ModifAmorphic.Outward.UnityScripts
             BuildLimitsManager = new BuildLimitsManager(PrefabManager, () => Logger);
             LocalizationService = new LocalizationService(PrefabManager, () => Logger);
             BuildingPacksLocator = new BuildingPacksLocator(RootPluginsFolder, () => Logger);
+            MerchantService = new MerchantService(() => Logger);
         }
 
         public void AttachMonoBehaviours()
@@ -104,14 +106,14 @@ namespace ModifAmorphic.Outward.UnityScripts
             }
         }
 
-        public void AddBuildingBundle(string name, string bundlePath, string localesPath)
+        public void AddBuildingBundle(BuildingPacksManifest manifest)
         {
             if (_isLoaded)
                 throw new InvalidOperationException("Tried to add new Building Bundle after script has loaded.");
 
-            var bundle = new BuildingPacksManifest() { PrefabsPath = name, AssetBundleFilePath = bundlePath, LocalesDirectory = localesPath };
-            AssetBundles.AddBuildingBundle(bundle);
-            LocalizationService.AddLocalePath(localesPath);
+            AssetBundles.AddBuildingBundle(manifest);
+            LocalizationService.AddLocalePath(manifest.LocalesDirectory);
+            MerchantService.AddMerchants(manifest.MerchantInventoryFilePath);
         }
     }
 }

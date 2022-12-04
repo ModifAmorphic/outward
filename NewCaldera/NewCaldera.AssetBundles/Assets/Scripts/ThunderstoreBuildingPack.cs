@@ -38,10 +38,13 @@ public class ThunderstoreBuildingPack : MonoBehaviour
     
     [Tooltip("The directory where this packs locales folders will be published under the PublishDirectory.")]
     public string LocalesDirectory = "Locales";
-    
+
+    [Tooltip("Builds the Asset Bundle.")]
+    public bool BuildAssetBundle = true;
+
     [Tooltip("The directory where this packs asset-bundle will be published under the PublishDirectory.")]
     public string AssetBundleDirectory = "asset-bundles";
-    
+
     public bool CreateZip = false;
 
     public string FullName => Namespace + "-" + ModName;
@@ -49,6 +52,8 @@ public class ThunderstoreBuildingPack : MonoBehaviour
     public string GemeratedPrefabsPath => "Assets/" + Namespace + "/" + ModName + "/Prefabs";
     public string GeneratedItemsPath => "Assets/" + Namespace + "/" + ModName + "/Prefabs/Items";
     public string GeneratedVisualsPath => "Assets/" + Namespace + "/" + ModName + "/Prefabs/Visuals";
+    public string MerchantInvManifestFilePath => "merchantInventory.json";
+    public string MerchantInvOutputFilePath => Path.Combine(GetOrCreatePackPluginsPath(), "merchantInventory.json");
     public string ZipfilePath => Path.Combine(GetOrCreateZipDirectory(), FullName + "-" + VersionNumber + ".zip");
 
     // Start is called before the first frame update

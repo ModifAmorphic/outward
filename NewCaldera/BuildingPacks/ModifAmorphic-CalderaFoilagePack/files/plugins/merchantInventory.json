@@ -1,0 +1,66 @@
+{
+  "AdditonalMerchantInventories": [
+    {
+      "Name": "CalderaFoilagePack",
+      "Area": 601,
+      "NpcSearchType": 2,
+      "MerchantUIDs": [],
+      "ShopNames": [],
+      "ShopNpcNames": [
+        "UNPC_DLC2_FoodStore"
+      ],
+      "GuaranteedItems": [
+        {
+          "ItemID": -1330000100,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330000110,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330000120,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330000130,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330000140,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330000150,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330000160,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330000170,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330000180,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        },
+        {
+          "ItemID": -1330000190,
+          "MinQuantity": 5,
+          "MaxQuantity": 5
+        }
+      ]
+    }
+  ]
+}

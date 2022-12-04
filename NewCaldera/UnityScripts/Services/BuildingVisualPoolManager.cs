@@ -19,6 +19,7 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
 
         private bool _buildingVisualPoolAwake;
         private bool _prefabsProcessed;
+        private MonoBehaviour _buildingVisualPool;
 
         public BuildingVisualPoolManager(PrefabManager prefabManager, Func<Logging.Logger> loggerFactory)
         {
@@ -33,7 +34,8 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
         {
             _prefabsProcessed = true;
             if (_buildingVisualPoolAwake)
-                throw new Exception("Custom Prefabs Loaded After BuildingVisualPool.Awake!");
+                AttachAllBuildingVisuals(_buildingVisualPool);
+                //throw new Exception("Custom Prefabs Loaded After BuildingVisualPool.Awake!");
         }
 
         public Type GetBuildingVisualPoolType()
@@ -50,8 +52,10 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
         private void AttachAllBuildingVisuals(MonoBehaviour buildingVisualPool)
         {
             _buildingVisualPoolAwake = true;
+            _buildingVisualPool = buildingVisualPool;
             if (!_prefabsProcessed)
-                throw new Exception("BuildingVisualPool.Awake happened before custom prefab processing complete!");
+                return;
+                //throw new Exception("BuildingVisualPool.Awake happened before custom prefab processing complete!");
             var tempGo = new GameObject("temporaryBuildingVisuals");
             tempGo.SetActive(false);
 

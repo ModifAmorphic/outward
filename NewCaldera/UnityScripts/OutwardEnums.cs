@@ -4,6 +4,100 @@ using System.Text;
 
 namespace ModifAmorphic.Outward.UnityScripts
 {
+    public enum AreaEnum
+    {
+        PT_Test = 0,
+        PL_Test = 1,
+        Nath_Test = 2,
+        Enemies_Test = 3,
+        Aurelie_Test = 4,
+        Aurelie_Test2 = 5,
+        CierzoVillage = 100, // 0x00000064
+        CierzoOutside = 101, // 0x00000065
+        CierzoDungeon = 102, // 0x00000066
+        ChersoDungeon1 = 103, // 0x00000067
+        ChersoDungeon2 = 104, // 0x00000068
+        ChersoDungeon3 = 105, // 0x00000069
+        ChersoDungeon4 = 106, // 0x0000006A
+        ChersoDungeon5 = 107, // 0x0000006B
+        ChersoDungeon6 = 108, // 0x0000006C
+        ChersoDungeon7 = 109, // 0x0000006D
+        ChersoDungeon8 = 110, // 0x0000006E
+        ChersoDungeon9 = 111, // 0x0000006F
+        ChersoDungeon4_BC = 112, // 0x00000070
+        ChersoDungeon4_HM = 113, // 0x00000071
+        ChersoDungeon4_LV = 114, // 0x00000072
+        CierzoDestroyed = 115, // 0x00000073
+        ChersoDungeonsSmall = 150, // 0x00000096
+        ChersoDungeonsBosses = 151, // 0x00000097
+        Monsoon = 200, // 0x000000C8
+        HallowedMarsh = 201, // 0x000000C9
+        HallowedDungeon1 = 202, // 0x000000CA
+        HallowedDungeon2 = 203, // 0x000000CB
+        HallowedDungeon3 = 204, // 0x000000CC
+        HallowedDungeon4 = 205, // 0x000000CD
+        HallowedDungeon4_Interior = 206, // 0x000000CE
+        HallowedDungeon5 = 207, // 0x000000CF
+        HallowedDungeon6 = 208, // 0x000000D0
+        HallowedDungeon7 = 209, // 0x000000D1
+        HallowedDungeonsSmall = 250, // 0x000000FA
+        HallowedDungeonsBosses = 251, // 0x000000FB
+        Levant = 300, // 0x0000012C
+        Abrassar = 301, // 0x0000012D
+        AbrassarDungeon1 = 302, // 0x0000012E
+        AbrassarDungeon2 = 303, // 0x0000012F
+        AbrassarDungeon3 = 304, // 0x00000130
+        AbrassarDungeon4 = 305, // 0x00000131
+        AbrassarDungeon5 = 306, // 0x00000132
+        AbrassarDungeon6 = 307, // 0x00000133
+        AbrassarDungeon7 = 308, // 0x00000134
+        AbrassarDungeon8 = 309, // 0x00000135
+        AbrassarDungeonsSmall = 350, // 0x0000015E
+        AbrassarDungeonsBosses = 351, // 0x0000015F
+        Harmattan = 400, // 0x00000190
+        AntiqueField = 401, // 0x00000191
+        AntiqueFieldDungeon1 = 402, // 0x00000192
+        AntiqueFieldDungeon2 = 403, // 0x00000193
+        AntiqueFieldDungeon3 = 404, // 0x00000194
+        AntiqueFieldDungeon4 = 405, // 0x00000195
+        AntiqueFieldDungeon5 = 406, // 0x00000196
+        AntiqueFieldDungeon6 = 407, // 0x00000197
+        AntiqueFieldDungeon7 = 408, // 0x00000198
+        AntiqueFieldDungeon8 = 409, // 0x00000199
+        AntiqueFieldDungeon9 = 410, // 0x0000019A
+        AntiqueFieldDungeonsSmall = 450, // 0x000001C2
+        AntiqueFieldDungeonsBosses = 451, // 0x000001C3
+        Berg = 500, // 0x000001F4
+        Emercar = 501, // 0x000001F5
+        EmercarDungeon1 = 502, // 0x000001F6
+        EmercarDungeon2 = 503, // 0x000001F7
+        EmercarDungeon3 = 504, // 0x000001F8
+        EmercarDungeon4 = 505, // 0x000001F9
+        EmercarDungeon5 = 506, // 0x000001FA
+        EmercarDungeon6 = 507, // 0x000001FB
+        EmercarDungeon7 = 508, // 0x000001FC
+        EmercarDungeonsSmall = 550, // 0x00000226
+        DreamWorld = 551, // 0x00000227
+        Tutorial = 552, // 0x00000228
+        EmercarDungeonsBosses = 553, // 0x00000229
+        TutorialStandalone = 554, // 0x0000022A
+        Sirocco = 600, // 0x00000258
+        NewSirocco = 601, // 0x00000259
+        Caldera = 602, // 0x0000025A
+        CalderaDungeon1 = 603, // 0x0000025B
+        CalderaDungeon2 = 604, // 0x0000025C
+        CalderaDungeon3 = 605, // 0x0000025D
+        CalderaDungeon4 = 606, // 0x0000025E
+        CalderaDungeon5 = 607, // 0x0000025F
+        CalderaDungeon6 = 608, // 0x00000260
+        CalderaDungeon7 = 609, // 0x00000261
+        CalderaDungeon8 = 610, // 0x00000262
+        CalderaDungeon9 = 611, // 0x00000263
+        CalderaDungeon10 = 612, // 0x00000264
+        CalderaDungeonsSmall = 650, // 0x0000028A
+        CalderaDungeonsBosses = 651, // 0x0000028B
+    }
+
     public enum BagCategorySlotType
     {
         None,

@@ -30,5 +30,25 @@ namespace ModifAmorphic.Outward.NewCaldera.BuildingsMod.Patches
                 Logger.LogException($"{nameof(LedgerMenuPatches)}::{nameof(StartInitPrefix)}(): Exception invoking {nameof(BeforeStartInit)}.", ex);
             }
         }
+
+        public static event Action<LedgerMenu> AfterShow;
+
+        [HarmonyPatch("Show", MethodType.Normal)]
+        [HarmonyPatch(new Type[] { typeof(Item) })]
+        [HarmonyPostfix]
+        private static void ShowPostfix(LedgerMenu __instance)
+        {
+            try
+            {
+#if DEBUG
+                Logger.LogTrace($"{nameof(LedgerMenuPatches)}::{nameof(ShowPostfix)}(): Invoking {nameof(AfterShow)}.");
+#endif
+                AfterShow?.Invoke(__instance);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException($"{nameof(LedgerMenuPatches)}::{nameof(ShowPostfix)}(): Exception invoking {nameof(AfterShow)}.", ex);
+            }
+        }
     }
 }

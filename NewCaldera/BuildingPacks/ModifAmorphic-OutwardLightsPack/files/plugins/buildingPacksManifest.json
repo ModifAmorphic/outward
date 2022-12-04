@@ -1,5 +1,6 @@
 {
   "PrefabsPath": "assets/modifamorphic/outwardlightspack/prefabs",
   "AssetBundleFilePath": "asset-bundles/modifamorphic-outwardlightspack",
-  "LocalesDirectory": "Locales"
+  "LocalesDirectory": "Locales",
+  "MerchantInventoryFilePath": "merchantInventory.json"
 }

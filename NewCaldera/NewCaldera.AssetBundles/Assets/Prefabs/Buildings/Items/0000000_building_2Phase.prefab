@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3880970111885492459}
   - component: {fileID: 7039977881531210348}
+  - component: {fileID: 5345620528029098167}
   m_Layer: 0
   m_Name: 0000000_building_2Phase
   m_TagString: Untagged
@@ -173,8 +174,24 @@ MonoBehaviour:
     QuestEventOnPhaseFinished:
       UID: 
       m_eventUID: 
-  _constructionPhasesJson: '[{"DebugName":"Foundation","NameLocKey":"Building_ConstructionPhase_Foundation","ConstructionType":0,"HouseCountRequirements":0,"m_constructionTime":0,"m_constructionCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"BuildingRequirements":[],"RareMaterialRequirement":{"ItemID":-1,"Quantity":1},"UpkeepCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"UpkeepProductions":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"CapacityBonus":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"MultiplyProductionPerHouse":false,"HousingValue":0,"QuestEventOnPhaseFinished":{"UID":"","m_eventUID":""}},{"DebugName":"Finished","NameLocKey":"Building_ConstructionPhase_Finished","ConstructionType":1,"HouseCountRequirements":0,"m_constructionTime":3,"m_constructionCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"BuildingRequirements":[],"RareMaterialRequirement":{"ItemID":-1,"Quantity":1},"UpkeepCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"UpkeepProductions":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"CapacityBonus":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"MultiplyProductionPerHouse":false,"HousingValue":0,"QuestEventOnPhaseFinished":{"UID":"","m_eventUID":""}}]'
+  _constructionPhasesJson: '[{"DebugName":"Foundation","NameLocKey":"Building_ConstructionPhase_Foundation","ConstructionType":0,"HouseCountRequirements":0,"m_constructionTime":0,"m_constructionCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"BuildingRequirements":[],"RareMaterialRequirement":{"ItemID":-1,"Quantity":1},"UpkeepCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"UpkeepProductions":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"CapacityBonus":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"MultiplyProductionPerHouse":false,"HousingValue":0,"QuestEventOnPhaseFinished":{"UID":"","m_eventUID":""},"ConstructionCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0}},{"DebugName":"Finished","NameLocKey":"Building_ConstructionPhase_Finished","ConstructionType":1,"HouseCountRequirements":0,"m_constructionTime":3,"m_constructionCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"BuildingRequirements":[],"RareMaterialRequirement":{"ItemID":-1,"Quantity":1},"UpkeepCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"UpkeepProductions":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"CapacityBonus":{"Funds":0,"Food":0,"Timber":0,"Stone":0},"MultiplyProductionPerHouse":false,"HousingValue":0,"QuestEventOnPhaseFinished":{"UID":"","m_eventUID":""},"ConstructionCosts":{"Funds":0,"Food":0,"Timber":0,"Stone":0}}]'
   m_upgradePhases: []
   _upgradePhasesJson: '[]'
   m_currentBasicPhaseIndex: 0
   m_currentUpgradePhaseIndex: -1
+  _buildingLimits:
+    BuildLimit: 1
+  _buildingLimitsJson: '{"BuildLimit":1}'
+--- !u!114 &5345620528029098167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3309382413598868460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1852750335, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DisallowCancelConstruction: 0

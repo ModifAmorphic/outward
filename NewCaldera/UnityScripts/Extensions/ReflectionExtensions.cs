@@ -39,6 +39,7 @@ namespace ModifAmorphic.Outward.UnityScripts
             var field = parentType.GetAnyField(fieldName);
             return field.GetValue(null);
         }
+        public static T GetStaticFieldValue<T>(Type parentType, string fieldName) => (T)GetStaticFieldValue(parentType, fieldName);
 
         public static object GetStaticPropertyValue(Type parentType, string propertyName)
         {
@@ -46,22 +47,24 @@ namespace ModifAmorphic.Outward.UnityScripts
             return property.GetValue(null);
         }
 
-        public static void SetField<T>(this object instance, Type instanceType, string fieldName, T value)
+        public static T GetStaticPropertyValue<T>(Type parentType, string fieldName) => (T)GetStaticPropertyValue(parentType, fieldName);
+
+        public static void SetField<T>(this object instance, Type parentType, string fieldName, T value)
         {
-            var field = instanceType.GetAnyField(fieldName);
+            var field = parentType.GetAnyField(fieldName);
             if (field == null)
             {
-                Debug.LogWarning($"Could not determine type for field {instanceType.Name}.{fieldName}.");
+                Debug.LogWarning($"Could not determine type for field {parentType.Name}.{fieldName}.");
             }
             field.SetValue(instance, value);
         }
 
-        public static void SetProperty<T>(this object instance, Type instanceType, string propertyName, T value)
+        public static void SetProperty<T>(this object instance, Type parentType, string propertyName, T value)
         {
-            var property = instanceType.GetAnyProperty(propertyName);
+            var property = parentType.GetAnyProperty(propertyName);
             if (property == null)
             {
-                Debug.LogWarning($"Could not determine type for field {instanceType.Name}.{propertyName}.");
+                Debug.LogWarning($"Could not determine type for field {parentType.Name}.{propertyName}.");
             }
             property.SetValue(instance, value);
         }
@@ -127,6 +130,16 @@ namespace ModifAmorphic.Outward.UnityScripts
 
         public static object ToOutwardEnumValue<T>(this T instance) where T : Enum
             => Enum.ToObject(OutwardAssembly.GetOutwardEnumType<T>(), instance);
+
+        public static T ToLocalEnumValue<T>(this Enum instance) where T : Enum
+        {
+            var outwardType = OutwardAssembly.GetOutwardEnumType<T>();
+            
+            var localType = OutwardAssembly.GetLocalEnumType<T>(instance.GetType());
+            return (T)Enum.ToObject(localType, instance);
+
+        }
+            
 
         public static IDictionary<K,V> CastDictionary<K, V>(this IDictionary dictionary) =>
             Enumerate(dictionary).ToDictionary(kvp => (K)kvp.Key, kvp => (V)kvp.Value);

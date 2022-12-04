@@ -1,5 +1,6 @@
 {
   "PrefabsPath": "assets/modifamorphic/calderafoilagepack/prefabs",
   "AssetBundleFilePath": "asset-bundles/modifamorphic-calderafoilagepack",
-  "LocalesDirectory": "Locales"
+  "LocalesDirectory": "Locales",
+  "MerchantInventoryFilePath": "merchantInventory.json"
 }

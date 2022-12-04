@@ -379,7 +379,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2534971441151951150}
   - component: {fileID: 3785661179736263857}
-  - component: {fileID: 5128285483815432723}
+  - component: {fileID: 2842362854143027750}
   m_Layer: 0
   m_Name: SmallPlanter
   m_TagString: Untagged
@@ -440,7 +440,7 @@ MonoBehaviour:
   IgnoreOnPreviewVisuals: []
   DisableOnUpgrade: []
   EnableOnContinueAndBuildingIsOperational: []
---- !u!114 &5128285483815432723
+--- !u!114 &2842362854143027750
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -449,10 +449,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 2534971441151889366}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 937600647, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
+  m_Script: {fileID: -434924885, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FinalAdjustmentType: 1
+  FinishedBuilding: {fileID: 2534971441151951625}
   BuildingBase: {fileID: 2534971441151935247}
+  DeploymentCollider: {fileID: 2534971441151960639}
+  FinalBuildingBaseScale: {x: 0, y: 0, z: 0}
+  FinalDeploymentColliderScale: {x: 0, y: 0, z: 0}
 --- !u!1 &2534971441151891589
 GameObject:
   m_ObjectHideFlags: 0

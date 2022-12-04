@@ -30,10 +30,7 @@ public class CreateAssetBundles
     {
         ConvertCsvLocales.ExportItemDescriptions();
         var pack = BuildingPacksData.GetBuildingPack("Caldera-Foilage");
-        GenerateBuildingPrefabs.GeneratePrefabs(pack);
-        BuildAssetBundle(pack);
-        PublishManifests(pack);
-        ZipPack(pack);
+        PublishPack(pack);
     }
 
     [MenuItem("Assets/Publish Packs/Hallowed Marsh Foilage")]
@@ -41,10 +38,7 @@ public class CreateAssetBundles
     {
         ConvertCsvLocales.ExportItemDescriptions();
         var pack = BuildingPacksData.GetBuildingPack("HallowedMarsh-Foilage");
-        GenerateBuildingPrefabs.GeneratePrefabs(pack);
-        BuildAssetBundle(pack);
-        PublishManifests(pack);
-        ZipPack(pack);
+        PublishPack(pack);
     }
 
     [MenuItem("Assets/Publish Packs/Outward Lights")]
@@ -52,23 +46,17 @@ public class CreateAssetBundles
     {
         ConvertCsvLocales.ExportItemDescriptions();
         var pack = BuildingPacksData.GetBuildingPack("Outward-Lights");
-        GenerateBuildingPrefabs.GeneratePrefabs(pack);
-        BuildAssetBundle(pack);
-        PublishManifests(pack);
-        ZipPack(pack);
+        PublishPack(pack);
     }
 
     [MenuItem("Assets/Publish Packs/All Packs")]
     static void PublishAll()
     {
         ConvertCsvLocales.ExportItemDescriptions();
-        GenerateBuildingPrefabs.GenerateAllPrefabs();
         var buildingPacks = BuildingPacksData.GetBuildingPacks();
         foreach (var pack in buildingPacks)
         {
-            BuildAssetBundle(pack);
-            PublishManifests(pack);
-            ZipPack(pack);
+            PublishPack(pack);
         }
     }
 
@@ -84,11 +72,19 @@ public class CreateAssetBundles
         if (Selection.activeGameObject.TryGetComponent<ThunderstoreBuildingPack>(out var pack))
         {
             ConvertCsvLocales.ExportItemDescriptions();
-            GenerateBuildingPrefabs.GenerateAllPrefabs();
-            BuildAssetBundle(pack);
-            PublishManifests(pack);
-            ZipPack(pack);
+            PublishPack(pack);
         }
+    }
+
+    private static void PublishPack(ThunderstoreBuildingPack pack)
+    {
+        GenerateBuildingPrefabs.GeneratePrefabs(pack);
+        if (pack.BuildAssetBundle)
+            BuildAssetBundle(pack);
+        PublishMerchantInventories(pack);
+        PublishManifests(pack);
+        if (pack.CreateZip)
+            ZipPack(pack);
     }
 
     static void BuildAssetBundle(ThunderstoreBuildingPack pack)
@@ -121,7 +117,8 @@ public class CreateAssetBundles
             Directory.CreateDirectory(bundleDir);
 
         Debug.Log($"Building Asset Bundle to '{Path.Combine(bundleDir, pack.FullName)}'.");
-        BuildPipeline.BuildAssetBundles(bundleDir, builds, BuildAssetBundleOptions.None, EditorUserBuildSettings.activeBuildTarget);
+        BuildPipeline.BuildAssetBundles(bundleDir, builds, BuildAssetBundleOptions.UncompressedAssetBundle, EditorUserBuildSettings.activeBuildTarget);
+
         if (File.Exists(Path.Combine(bundleDir, "asset-bundles.manifest")))
             File.Delete(Path.Combine(bundleDir, "asset-bundles.manifest"));
         if (File.Exists(Path.Combine(bundleDir, "asset-bundles")))
@@ -130,15 +127,14 @@ public class CreateAssetBundles
             File.Delete(Path.Combine(bundleDir, $"{pack.FullName}.manifest"));
     }
 
-    
-
     private static void PublishManifests(ThunderstoreBuildingPack pack)
     {
         var buildingManifest = new BuildingPacksManifest()
         {
             PrefabsPath = pack.GemeratedPrefabsPath.ToLower(),
             LocalesDirectory = pack.LocalesDirectory,
-            AssetBundleFilePath = pack.AssetFilePath
+            AssetBundleFilePath = pack.AssetFilePath,
+            MerchantInventoryFilePath = pack.MerchantInvManifestFilePath
         };
         var packJson = JsonConvert.SerializeObject(buildingManifest, Formatting.Indented);
         File.WriteAllText(Path.Combine(pack.GetOrCreatePackPluginsPath(), "buildingPacksManifest.json"), packJson);
@@ -148,11 +144,28 @@ public class CreateAssetBundles
         File.WriteAllText(Path.Combine(pack.GetOrCreatePackPath(), "manifest.json"), manfestJson);
     }
 
+    private static void PublishMerchantInventories(ThunderstoreBuildingPack pack)
+    {
+        var merchants = pack.GetComponentsInChildren<MerchantInventory>();
+        var inventories = new MerchantInventoriesHolder();
+        foreach (var merchant in merchants)
+        {
+            if (merchant.GuaranteedItems != null && merchant.GuaranteedItems.Any())
+            {
+                var merchInv = merchant.ToAdditonalMerchantInventory();
+                merchInv.Name = pack.ModName;
+                inventories.AdditonalMerchantInventories.Add(merchInv);
+            }
+        }
+        var merchantJson = JsonConvert.SerializeObject(inventories, Formatting.Indented);
+        File.WriteAllText(pack.MerchantInvOutputFilePath, merchantJson);
+    }
+
     public static void ZipPack(ThunderstoreBuildingPack pack)
     {
         if (pack.CreateZip)
         {
-            if (!File.Exists(pack.ZipfilePath))
+            if (File.Exists(pack.ZipfilePath))
                 File.Delete(pack.ZipfilePath);
 
             ZipFile.CreateFromDirectory(pack.GetOrCreatePackPath(), pack.ZipfilePath);

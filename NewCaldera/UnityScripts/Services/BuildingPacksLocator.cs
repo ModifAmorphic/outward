@@ -61,6 +61,7 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
 
             manifest.AssetBundleFilePath = Path.Combine(manifestDir, manifest.AssetBundleFilePath);
             manifest.LocalesDirectory = Path.Combine(manifestDir, manifest.LocalesDirectory);
+            manifest.MerchantInventoryFilePath = Path.Combine(manifestDir, manifest.MerchantInventoryFilePath);
         }
 
         private bool TryLocalizePath(string path, out string localizedPath)
