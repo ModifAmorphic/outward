@@ -49,7 +49,6 @@ namespace ModifAmorphic.Outward.UnityScripts.Behaviours
             if (buildingVisual.TryGetComponent<BuildingVisualFinalizer>(out var visualFinalizer))
             {
                 var phases = buildingVisual.GetFieldValue<Transform[]>(OutwardAssembly.Types.BuildingVisual, "Phases");
-                ModifScriptsManager.Instance.Logger.LogDebug($"Processing {FinishedBuilding.name} {nameof(BuildingVisualFinalizer)}. PhaseIndex=={phaseIndex}, Phases.Length=={phases?.Length}.");
                 if (phases.Length > 0 && phaseIndex != -1 && phaseIndex + 1 == phases.Length)
                 {
                     visualFinalizer.Apply();
@@ -104,12 +103,11 @@ namespace ModifAmorphic.Outward.UnityScripts.Behaviours
                     break;
                 }
             }
-            
-            //if (Physics.Raycast(castPosition, Vector3.down, out hit, 10f, envMask))
+
             if (hitGround)
             {
-                ModifScriptsManager.Instance.Logger.LogDebug($"Direction==Down. Raycast hit collider {hit.collider?.name}. Moving {FinishedBuilding.name} from position " +
-                    $"({FinishedBuilding.position.x}, {FinishedBuilding.position.y}, {FinishedBuilding.position.z}) to ({hit.point.x}, {hit.point.y}, {hit.point.z})");
+                //ModifScriptsManager.Instance.Logger.LogDebug($"Direction==Down. Raycast hit collider {hit.collider?.name}. Moving {FinishedBuilding.name} from position " +
+                //    $"({FinishedBuilding.position.x}, {FinishedBuilding.position.y}, {FinishedBuilding.position.z}) to ({hit.point.x}, {hit.point.y}, {hit.point.z})");
                 FinishedBuilding.localPosition = Vector3.zero;
                 FinishedBuilding.position = hit.point;
             }

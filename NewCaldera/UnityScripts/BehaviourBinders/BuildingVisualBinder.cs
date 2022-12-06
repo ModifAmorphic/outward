@@ -42,7 +42,6 @@ namespace ModifAmorphic.Outward.UnityScripts
             BoundComponent.SetField(BoundType, nameof(DisableOnUpgrade), DisableOnUpgrade);
             BoundComponent.SetField(BoundType, nameof(EnableOnContinueAndBuildingIsOperational), EnableOnContinueAndBuildingIsOperational);
             var awakeInit = BoundComponent.GetMethod(BoundType, "AwakeInit", new object[0]);
-            ModifScriptsManager.Instance.Logger.LogTrace($"Invoking {BoundType.Name} AwakeInit.");
             awakeInit.Invoke(BoundComponent, new object[0]);
         }
     }

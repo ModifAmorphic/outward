@@ -38,9 +38,6 @@ namespace ModifAmorphic.Outward.NewCaldera.BuildingsMod
             Logger.LogInfo($"Patching...");
 
             _harmony.PatchAll(typeof(ResourcesPrefabManagerPatches));
-            //_harmony.PatchAll(typeof(LedgerMenuPatches));
-            //_harmony.PatchAll(typeof(PanelPatches));
-            //_harmony.PatchAll(typeof(BuildingPhaseResourceReqDisplayPatches));
 
             var buildingsDirectory = new BuildingsDirectory(CalderaSettings.PluginPath, _services.GetService<IModifLogger>);
             var bpData = new BlueprintsData(buildingsDirectory, _loggerFactory);
@@ -50,9 +47,6 @@ namespace ModifAmorphic.Outward.NewCaldera.BuildingsMod
                      .AddSingleton(tieredData)
                      .AddSingleton(new BuildingUpdater(tieredData, _loggerFactory))
                      .AddSingleton(new BlueprintUpdater(bpData, tieredData, _localizations, _loggerFactory));
-                     //.AddSingleton(new LedgerMenuService(_loggerFactory));
-
-            //Logger.LogDebug($"Loading blueprints to Mod Directory '{buildingsDirectory.GetOrAddDir()}'. Config Directory is '{CalderaSettings.ModConfigPath}'");
 
 //Generate blueprint and building config data only with debug builds
 #if DEBUG

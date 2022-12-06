@@ -292,13 +292,12 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
         {
             try
             {
-#if DEBUG
-                ModifScriptsManager.Instance.Logger.LogTrace($"{nameof(LedgerMenuService)}::{nameof(GetBuildingResourcePrefix)}(): Invoking {nameof(TryOverrideGetBuildingResource)}.");
-#endif
                 if (TryOverrideGetBuildingResource?.Invoke(__instance, out var resourceType) ?? false)
                 {
                     __result = resourceType;
+#if DEBUG
                     ModifScriptsManager.Instance.Logger.LogTrace($"{nameof(LedgerMenuService)}::{nameof(GetBuildingResourcePrefix)}(): {nameof(TryOverrideGetBuildingResource)} success. Overriding GetBuildingResource result to {__result} {(int)(object)__result}.");
+#endif
                     return false;
                 }
             }
