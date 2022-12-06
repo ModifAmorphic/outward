@@ -173,9 +173,9 @@ MonoBehaviour:
   m_Script: {fileID: 134790371, guid: aaa7c8e44960db04c83c483e6aad91db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Savable: 0
+  Savable: 1
   AutoStack: 1
-  m_maxStackAmount: 50
+  m_maxStackAmount: 10
   AppliedOnPrice: 1
   AppliedOnWeight: 1
   m_currentStack: 1

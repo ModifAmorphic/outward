@@ -10,7 +10,7 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
     public class BuildingPacksLocator
     {
         private readonly Func<Logging.Logger> _loggerFactory;
-        private Logging.Logger Logger => ModifScriptsManager.Instance.Logger;
+        private Logging.Logger Logger => _loggerFactory.Invoke();
         private readonly string _rootPath;
 
         public BuildingPacksLocator(string rootPath, Func<Logging.Logger> loggerFactory)

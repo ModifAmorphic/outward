@@ -26,6 +26,7 @@ namespace ModifAmorphic.Outward.UnityScripts
         public LocalizationService LocalizationService { get; private set; }
         public BuildLimitsManager BuildLimitsManager { get; private set; }
         public BuildingPacksLocator BuildingPacksLocator { get; private set; }
+        public LedgerMenuService LedgerMenuService { get; private set; }
         public MerchantService MerchantService { get; private set; }
 
         private bool _isLoaded = false;
@@ -81,10 +82,11 @@ namespace ModifAmorphic.Outward.UnityScripts
             //AssetBundles.LoadAssetBundles();
             PrefabManager = new PrefabManager(AssetBundles, () => Logger);
             BuildingVisualPoolManager = new BuildingVisualPoolManager(PrefabManager, () => Logger);
-            BuildLimitsManager = new BuildLimitsManager(PrefabManager, () => Logger);
-            LocalizationService = new LocalizationService(PrefabManager, () => Logger);
-            BuildingPacksLocator = new BuildingPacksLocator(RootPluginsFolder, () => Logger);
-            MerchantService = new MerchantService(() => Logger);
+            try { BuildLimitsManager = new BuildLimitsManager(PrefabManager , () => Logger); } catch (Exception ex) { Logger.LogException($"Failed to create {nameof(BuildLimitsManager)}.", ex); }
+            try { LocalizationService = new LocalizationService(PrefabManager, () => Logger); } catch (Exception ex) { Logger.LogException($"Failed to create {nameof(LocalizationService)}.", ex); }
+            try { LedgerMenuService = new LedgerMenuService(BuildingVisualPoolManager , () => Logger); } catch (Exception ex) { Logger.LogException($"Failed to create {nameof(LedgerMenuService)}.", ex); }
+            try { BuildingPacksLocator = new BuildingPacksLocator(RootPluginsFolder, () => Logger); } catch (Exception ex) { Logger.LogException($"Failed to create {nameof(BuildingPacksLocator)}.", ex); }
+            try { MerchantService = new MerchantService(() => Logger); } catch (Exception ex) { Logger.LogException($"Failed to create {nameof(MerchantService)}.", ex); }
         }
 
         public void AttachMonoBehaviours()

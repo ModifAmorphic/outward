@@ -12,7 +12,7 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
     public class BuildLimitsManager
     {
         private readonly Func<Logging.Logger> _loggerFactory;
-        private Logging.Logger Logger => ModifScriptsManager.Instance.Logger;
+        private Logging.Logger Logger => _loggerFactory.Invoke();
         private readonly PrefabManager _prefabManager;
         private Dictionary<int, BuildingLimits> _buildingLimits = new Dictionary<int, BuildingLimits>();
 

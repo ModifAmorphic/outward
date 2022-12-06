@@ -157,6 +157,22 @@ namespace ModifAmorphic.Outward.UnityScripts
         Unlit,
     }
 
+    public enum ResourceRequirement
+    {
+        Funds,
+        Timber,
+        Stones,
+        Housing,
+    }
+
+    public enum ResourceTypes
+    {
+        Funds,
+        Food,
+        Timber,
+        Stone,
+    }
+
     public enum SaveTypes
     {
         Savable,

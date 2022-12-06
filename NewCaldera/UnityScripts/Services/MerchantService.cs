@@ -14,7 +14,7 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
     public class MerchantService
     {
         private readonly Func<Logging.Logger> _loggerFactory;
-        private Logging.Logger Logger => ModifScriptsManager.Instance.Logger;
+        private Logging.Logger Logger => _loggerFactory.Invoke();
 
         public Dictionary<AreaEnum, List<AdditonalMerchantInventory>> AreaMerchants { get; set; } = new Dictionary<AreaEnum,List<AdditonalMerchantInventory>>();
 

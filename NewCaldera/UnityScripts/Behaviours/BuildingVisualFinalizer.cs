@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace ModifAmorphic.Outward.UnityScripts.Behaviours
     public enum FinalAdjustments
     {
         None,
-        Hide,
+        RemoveBase,
         Resize,
         Destroy
     }
@@ -62,10 +63,10 @@ namespace ModifAmorphic.Outward.UnityScripts.Behaviours
 
         public void Apply()
         {
-            if (FinalAdjustmentType == FinalAdjustments.Hide)
+            if (FinalAdjustmentType == FinalAdjustments.RemoveBase)
             {
                 BuildingBase?.gameObject?.SetActive(false);
-                DeploymentCollider?.gameObject?.SetActive(false);
+                //DeploymentCollider?.gameObject?.SetActive(false);
                 GroundTransform();
             }
             else if (FinalAdjustmentType == FinalAdjustments.Resize)
@@ -88,43 +89,70 @@ namespace ModifAmorphic.Outward.UnityScripts.Behaviours
 
             var envMask = ReflectionExtensions.GetStaticFieldValue<int>(OutwardAssembly.Types.Global, "LargeEnvironmentMask");
             var castPosition = FinishedBuilding.position + new Vector3(0, 5f, 0);
-            //var fromPos = new Vector3(69.2342f, 150f, -58.9996f);
-            //var toPos = new Vector3(69.2342f, -150f, -58.9996f);
-            //Physics.Raycast(fromPos, Vector3.up, out RaycastHit hit, 200f, 67111425);
-            //Debug.DrawRay(fromPos, toPos, Color.green, 120f);
-            //Log($"Raycast hit collider {hit.collider?.name} at ({hit.point.x}, {hit.point.y}, {hit.point.z}). Started from " +
-            //    $"({fromPos.x}, {fromPos.y}, {fromPos.z})");
-            FinishedBuilding.GetChild(0).gameObject.layer = Physics.IgnoreRaycastLayer;
-            RaycastHit hit;
-            if (Physics.Raycast(castPosition, Vector3.down, out hit, 10f, envMask))
+
+            var colliderLayers = SetCollidersIgnoreRaycasts(gameObject);
+            var hits = Physics.RaycastAll(castPosition, Vector3.down, 10.0F, envMask);
+
+            bool hitGround = false;
+            RaycastHit hit = default;
+            for (int i = 0; i < hits.Length; i++)
+            {
+                if (hits[i].collider != null && hits[i].collider.name.Equals("mdl_env_calderaBaseBuildingTerrain_c (NonExplodedTerrain)", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    hit = hits[i];
+                    hitGround = true;
+                    break;
+                }
+            }
+            
+            //if (Physics.Raycast(castPosition, Vector3.down, out hit, 10f, envMask))
+            if (hitGround)
             {
                 ModifScriptsManager.Instance.Logger.LogDebug($"Direction==Down. Raycast hit collider {hit.collider?.name}. Moving {FinishedBuilding.name} from position " +
                     $"({FinishedBuilding.position.x}, {FinishedBuilding.position.y}, {FinishedBuilding.position.z}) to ({hit.point.x}, {hit.point.y}, {hit.point.z})");
-                //FinishedBuilding.position = hit.point;
+                FinishedBuilding.localPosition = Vector3.zero;
+                FinishedBuilding.position = hit.point;
             }
 
-            var castPositionUp = FinishedBuilding.position - new Vector3(0, 20f, 0);
-            RaycastHit upHit;
-            if (Physics.Raycast(castPosition, Vector3.up, out upHit, 50f, envMask))
+            ResetColliderLayers(colliderLayers);
+        }
+
+        
+        private List<(Collider Collider, int Layer)> SetCollidersIgnoreRaycasts(GameObject parent)
+        {
+            var colliderLayers = new List<(Collider, int)>();
+            if (parent.TryGetComponent<Collider>(out var parentCollider))
             {
-                ModifScriptsManager.Instance.Logger.LogDebug($"Direction==Up. Raycast hit collider {hit.collider?.name}. Moving {FinishedBuilding.name} from position " +
-                    $"({FinishedBuilding.position.x}, {FinishedBuilding.position.y}, {FinishedBuilding.position.z}) to ({hit.point.x}, {hit.point.y}, {hit.point.z})");
-                //FinishedBuilding.position = hit.point;
+                colliderLayers.Add((parentCollider, parentCollider.gameObject.layer));
+                parentCollider.gameObject.layer = OutwardAssembly.IgnoreRaycastsLayer;
             }
+            var colliders = parent.GetComponentsInChildren<Collider>();
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                colliderLayers.Add((colliders[i], colliders[i].gameObject.layer));
+                colliders[i].gameObject.layer = OutwardAssembly.IgnoreRaycastsLayer;
+            }
+            return colliderLayers;
+        }
+
+        private void ResetColliderLayers(List<(Collider Collider, int Layer)> colliderLayers)
+        {
+            for (int i = 0; i < colliderLayers.Count; i++)
+                colliderLayers[i].Collider.gameObject.layer = colliderLayers[i].Layer;
         }
 
         public void Reset()
         {
-            if (FinalAdjustmentType == FinalAdjustments.Hide)
+            if (FinalAdjustmentType == FinalAdjustments.RemoveBase)
             {
                 BuildingBase?.gameObject?.SetActive(true);
-                DeploymentCollider?.gameObject?.SetActive(true);
+                //DeploymentCollider?.gameObject?.SetActive(true);
             }
             else if (FinalAdjustmentType == FinalAdjustments.Resize)
             {
-                if (BuildingBase != null)
+                if (BuildingBase != null && _originalScale != Vector3.zero)
                     BuildingBase.localScale = new Vector3(_originalScale.x, _originalScale.y, _originalScale.z);
-                if (DeploymentCollider != null)
+                if (DeploymentCollider != null && _originalColliderScale != Vector3.zero)
                     DeploymentCollider.localScale = new Vector3(_originalColliderScale.x, _originalColliderScale.y, _originalColliderScale.z);
             }
         }

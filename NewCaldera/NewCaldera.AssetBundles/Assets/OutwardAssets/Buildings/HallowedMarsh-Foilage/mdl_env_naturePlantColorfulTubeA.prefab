@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6069073506354714336}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.212, y: 0, z: 0.25}
   m_LocalScale: {x: 1.784215, y: 1.784215, z: 1.784215}
   m_Children:
   - {fileID: 6069073506354691257}
@@ -111,8 +111,7 @@ Tree:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6069073506354719055}
-  m_SpeedTreeWindAsset: {fileID: 22800000, guid: e1c2fde104bee264dabb2eb698dec825,
-    type: 2}
+  m_SpeedTreeWindAsset: {fileID: 22800000, guid: e1c2fde104bee264dabb2eb698dec825, type: 2}
   m_TreeData: {fileID: 0}
 --- !u!1 &6069073506354719338
 GameObject:
@@ -204,8 +203,7 @@ Tree:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6069073506354719338}
-  m_SpeedTreeWindAsset: {fileID: 22800000, guid: e1c2fde104bee264dabb2eb698dec825,
-    type: 2}
+  m_SpeedTreeWindAsset: {fileID: 22800000, guid: e1c2fde104bee264dabb2eb698dec825, type: 2}
   m_TreeData: {fileID: 0}
 --- !u!1 &6069073506354719673
 GameObject:
@@ -297,8 +295,7 @@ Tree:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6069073506354719673}
-  m_SpeedTreeWindAsset: {fileID: 22800000, guid: e1c2fde104bee264dabb2eb698dec825,
-    type: 2}
+  m_SpeedTreeWindAsset: {fileID: 22800000, guid: e1c2fde104bee264dabb2eb698dec825, type: 2}
   m_TreeData: {fileID: 0}
 --- !u!1 &6069073506354720462
 GameObject:

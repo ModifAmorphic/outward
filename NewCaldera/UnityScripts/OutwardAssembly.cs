@@ -9,6 +9,8 @@ namespace ModifAmorphic.Outward.UnityScripts
 {
     public static class OutwardAssembly
     {
+        public const int IgnoreRaycastsLayer = 2;
+
         private static Assembly _assembly = null;
         public static Assembly GetAssembly()
         {
@@ -46,12 +48,16 @@ namespace ModifAmorphic.Outward.UnityScripts
             public static Type BasicItemDrop => OutwardAssembly.GetType("BasicItemDrop");
             public static Type Blueprint => OutwardAssembly.GetType("Blueprint");
             public static Type Building => OutwardAssembly.GetType("Building");
+            public static Type BuildingPhaseResourceReqDisplay => OutwardAssembly.GetType("BuildingPhaseResourceReqDisplay");            
+            public static Type BuildingRemovedProp => OutwardAssembly.GetType("BuildingRemovedProp");
             public static Type BuildingRequirement => OutwardAssembly.GetNestedType(Building, "BuildingRequirement");
+            public static Type BuildingResource => OutwardAssembly.GetType("BuildingResource");            
             public static Type BuildingResourceValues => OutwardAssembly.GetType("BuildingResourceValues");
             public static Type BuildingResourcesManager => OutwardAssembly.GetType("BuildingResourcesManager");            
             public static Type BuildingVisual => OutwardAssembly.GetType("BuildingVisual");
             public static Type BuildingVisualPool => OutwardAssembly.GetType("BuildingVisualPool");
             public static Type Character => OutwardAssembly.GetType("Character");
+            public static Type CharacterUI => OutwardAssembly.GetType("CharacterUI");            
             public static Type ConstructionPhase => OutwardAssembly.GetNestedType(Building, "ConstructionPhase");
             public static Type Deployable => OutwardAssembly.GetType("Deployable");
             public static Type Global => OutwardAssembly.GetType("Global");
@@ -63,11 +69,14 @@ namespace ModifAmorphic.Outward.UnityScripts
             public static Type ItemVisual => OutwardAssembly.GetType("ItemVisual");
             public static Type LocalizationManager => OutwardAssembly.GetType("LocalizationManager");
             public static Type OTWStoreAPI => OutwardAssembly.GetType("OTWStoreAPI");
+            public static Type LedgerMenu => OutwardAssembly.GetType("LedgerMenu");            
             public static Type Merchant => OutwardAssembly.GetType("Merchant");
             public static Type QuestEventReference => OutwardAssembly.GetType("QuestEventReference");
             public static Type ResourcesPrefabManager => OutwardAssembly.GetType("ResourcesPrefabManager");
             public static Type SNPC => OutwardAssembly.GetType("SNPC");
+            public static Type UILocalize => OutwardAssembly.GetType("UILocalize");
             
+
 
             public static class Enums
             {
@@ -80,6 +89,8 @@ namespace ModifAmorphic.Outward.UnityScripts
                 public static Type ConstructionPhaseTypes => OutwardAssembly.GetNestedType(ConstructionPhase, "Type");
                 public static Type DLCs => OutwardAssembly.GetNestedType(OTWStoreAPI, "DLCs");
                 public static Type Lit => OutwardAssembly.GetNestedType(Item, "Lit");
+                public static Type ResourceRequirement => OutwardAssembly.GetNestedType(BuildingPhaseResourceReqDisplay, "ResourceRequirement");
+                public static Type ResourceTypes => OutwardAssembly.GetNestedType(BuildingResource, "ResourceTypes");
                 public static Type SaveTypes => OutwardAssembly.GetNestedType(Item, "SaveTypes");
                 public static Type Sounds => OutwardAssembly.GetNestedType(GlobalAudioManager, "Sounds");
                 public static Type SpellCastModifier => OutwardAssembly.GetNestedType(Character, "SpellCastModifier");
@@ -99,6 +110,8 @@ namespace ModifAmorphic.Outward.UnityScripts
             { typeof(DeployStates), Types.Enums.DeployStates },
             { typeof(DLCs), Types.Enums.DLCs },
             { typeof(Lit), Types.Enums.Lit },
+            { typeof(ResourceTypes), Types.Enums.ResourceTypes },            
+            { typeof(ResourceRequirement), Types.Enums.ResourceRequirement },            
             { typeof(SaveTypes), Types.Enums.SaveTypes },
             { typeof(SpellCastModifier), Types.Enums.SpellCastModifier },
             { typeof(SpellCastType), Types.Enums.SpellCastType },

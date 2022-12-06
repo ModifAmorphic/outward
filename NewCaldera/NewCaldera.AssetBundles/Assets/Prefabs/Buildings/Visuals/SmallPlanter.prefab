@@ -453,6 +453,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FinalAdjustmentType: 1
+  BuildingTransform: {fileID: 2534971441151950688}
   FinishedBuilding: {fileID: 2534971441151951625}
   BuildingBase: {fileID: 2534971441151935247}
   DeploymentCollider: {fileID: 2534971441151960639}

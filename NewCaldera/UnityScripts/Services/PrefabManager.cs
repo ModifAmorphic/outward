@@ -14,7 +14,7 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
         private object _manager = null;
         private Type _type;
         private readonly Func<Logging.Logger> _loggerFactory;
-        private Logging.Logger Logger => ModifScriptsManager.Instance.Logger;
+        private Logging.Logger Logger => _loggerFactory.Invoke();
         private readonly AssetBundlesService _assetBundles;
         private IDictionary _item_prefabs;
         private List<GameObject> _delayedBindings = new List<GameObject>();

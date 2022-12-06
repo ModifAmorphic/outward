@@ -13,7 +13,7 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
     public class LocalizationService
     {
         private readonly Func<Logging.Logger> _loggerFactory;
-        private Logging.Logger Logger => ModifScriptsManager.Instance.Logger;
+        private Logging.Logger Logger => _loggerFactory.Invoke();
         private readonly PrefabManager _prefabManager;
         public HashSet<string> _localePaths = new HashSet<string>();
 

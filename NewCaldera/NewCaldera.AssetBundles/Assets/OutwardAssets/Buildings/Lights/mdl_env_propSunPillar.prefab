@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6234654132073992422}
   - component: {fileID: 373034770593450968}
   - component: {fileID: 5182620884209582087}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: mdl_env_propSunPillar_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 8142263826823393462}
   - component: {fileID: 972827259100510991}
   - component: {fileID: 8068215540371903872}
-  m_Layer: 11
+  m_Layer: 9
   m_Name: mdl_env_propSunPillar_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -172,7 +172,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2907567257895171000}
   - component: {fileID: 3479576830201934653}
-  m_Layer: 11
+  - component: {fileID: 1465915051917329128}
+  m_Layer: 9
   m_Name: mdl_env_propSunPillar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,6 +224,20 @@ LODGroup:
     renderers:
     - renderer: {fileID: 5182620884209582087}
   m_Enabled: 1
+--- !u!136 &1465915051917329128
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4629735408435660183}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 5.1
+  m_Direction: 1
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!1 &7764906788733446945
 GameObject:
   m_ObjectHideFlags: 0
@@ -234,7 +249,7 @@ GameObject:
   - component: {fileID: 2833959474249786655}
   - component: {fileID: 203806640430109335}
   - component: {fileID: 4870722431051884367}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: mdl_env_propSunPillar_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

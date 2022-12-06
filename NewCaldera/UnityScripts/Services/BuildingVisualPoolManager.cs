@@ -14,7 +14,7 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
     {
         private Type _type;
         private readonly Func<Logging.Logger> _loggerFactory;
-        private Logging.Logger Logger => ModifScriptsManager.Instance.Logger;
+        private Logging.Logger Logger => _loggerFactory.Invoke();
         private readonly PrefabManager _prefabManager;
 
         private bool _buildingVisualPoolAwake;
@@ -46,6 +46,15 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
             _type = OutwardAssembly.Types.BuildingVisualPool;
 
             return _type;
+        }
+
+        public MonoBehaviour GetBuildingVisualPoolInstance()
+        {
+            if (_buildingVisualPool != null)
+                return _buildingVisualPool;
+            _buildingVisualPool = ReflectionExtensions.GetStaticFieldValue<MonoBehaviour>(GetBuildingVisualPoolType(), "m_instance");
+
+            return _buildingVisualPool;
         }
 
 
@@ -84,6 +93,45 @@ namespace ModifAmorphic.Outward.UnityScripts.Services
                     Logger.LogDebug($"Added new BuildingVisual '{buildingVisualPrefab.name}' as child of gameobject '{buildingVisualPool.transform.name}'.");
                 }
             }
+        }
+
+        public MonoBehaviour GetBuildingVisual(int buildingID)
+        {
+            var types = new Type[] { typeof(int) };
+            var method = GetBuildingVisualPoolType().GetMethod("GetVisual", BindingFlags.Public | BindingFlags.Instance, null, types, null);
+            var itemVisual = (MonoBehaviour)method.Invoke(GetBuildingVisualPoolInstance(), new object[] { buildingID });
+            return itemVisual;
+        }
+
+        public void PutbackNewVisual(int buildingID)
+        {
+            var prefab = _prefabManager.GetCustomBuildingVisualPrefab(buildingID);
+            if (prefab == null)
+            {
+                Logger.LogWarning($"Unable to put back new visual to BuildingVisualPool. Could not find custom building visual for ItemID {buildingID}.");
+                return;
+            }
+
+            //Destroy any existing visuals.
+            var existing = GetBuildingVisual(buildingID);
+            while (existing != null)
+            {
+                UnityEngine.Object.Destroy(existing.gameObject);
+                existing = GetBuildingVisual(buildingID);
+            }
+
+            //create new visual and store it
+            var buildingVisual = UnityEngine.Object.Instantiate(prefab, GetBuildingVisualPoolInstance().transform);
+            buildingVisual.name = prefab.name;
+            PutbackVisual(buildingID, (MonoBehaviour)buildingVisual.GetComponent(OutwardAssembly.Types.ItemVisual));
+        }
+
+        public void PutbackVisual(int buildingID, MonoBehaviour itemVisual)
+        {
+            var args = new object[] { buildingID, itemVisual };
+            var types = new Type[] { typeof(int), OutwardAssembly.Types.ItemVisual };
+            var method = GetBuildingVisualPoolType().GetMethod("PutbackVisual", BindingFlags.Public | BindingFlags.Static, null, types, null);
+            method.Invoke(null, args);
         }
 
         #region Patches

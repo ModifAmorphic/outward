@@ -26,6 +26,12 @@
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>..\..\outward-shared-assemblies\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>..\..\outward-shared-assemblies\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Patchers\" />

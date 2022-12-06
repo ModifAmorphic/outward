@@ -59,6 +59,16 @@ namespace ModifAmorphic.Outward.UnityScripts
             field.SetValue(instance, value);
         }
 
+        public static void SetField(this object instance, Type parentType, string fieldName, object value)
+        {
+            var field = parentType.GetAnyField(fieldName);
+            if (field == null)
+            {
+                Debug.LogWarning($"Could not determine type for field {parentType.Name}.{fieldName}.");
+            }
+            field.SetValue(instance, value);
+        }
+
         public static void SetProperty<T>(this object instance, Type parentType, string propertyName, T value)
         {
             var property = parentType.GetAnyProperty(propertyName);
@@ -71,6 +81,17 @@ namespace ModifAmorphic.Outward.UnityScripts
 
         public static MethodInfo GetMethod(this object instance, Type instanceType, string methodName, params object[] orderedArgs) =>
             instanceType.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, orderedArgs.Select(a => a.GetType()).ToArray(), null);
+
+        public static void InvokeMethod(this object instance, Type instanceType, string methodName)
+        {
+            InvokeMethod(instance, instanceType, methodName, new object[0]);
+        }
+
+        public static void InvokeMethod(this object instance, Type instanceType, string methodName, params object[] orderedArgs)
+        {
+            var method = instanceType.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, orderedArgs.Select(a => a.GetType()).ToArray(), null);
+            method.Invoke(instance, orderedArgs);
+        }
 
         public static object GetMethodResult(this object instance, Type instanceType, string methodName, params object[] orderedArgs)
         {
@@ -128,8 +149,8 @@ namespace ModifAmorphic.Outward.UnityScripts
         //    return Enum.ToObject(OutwardAssembly.GetNestedType(parentType, enumName), sourceEnum);
         //}
 
-        public static object ToOutwardEnumValue<T>(this T instance) where T : Enum
-            => Enum.ToObject(OutwardAssembly.GetOutwardEnumType<T>(), instance);
+        public static Enum ToOutwardEnumValue<T>(this T instance) where T : Enum
+            => (Enum)Enum.ToObject(OutwardAssembly.GetOutwardEnumType<T>(), instance);
 
         public static T ToLocalEnumValue<T>(this Enum instance) where T : Enum
         {
